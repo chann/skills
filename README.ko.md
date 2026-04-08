@@ -1,4 +1,4 @@
-# engineering-skills
+# skills
 
 [English](README.md)
 
@@ -11,6 +11,7 @@
 git diff를 분석하여 **마크다운 및 HTML 리포트 파일**을 생성하는 자동화된 코드 리뷰 스킬입니다.
 
 **주요 기능:**
+
 - 5가지 차원으로 코드 변경사항 분석: 정확성, 보안, 복잡도/일관성, 유지보수성, 언어별 베스트 프랙티스
 - `.reviews/` 디렉토리에 날짜+커밋SHA 기반 리포트 생성 (예: `2026-04-08_a1b2c3d.md`)
 - 심각도 배지, 접을 수 있는 항목, 사이드바 네비게이션이 포함된 스타일링된 HTML 리포트 옵션
@@ -30,13 +31,13 @@ git diff를 분석하여 **마크다운 및 HTML 리포트 파일**을 생성하
 ### [skills.sh](https://skills.sh) 사용 (권장)
 
 ```bash
-npx skills add chann/engineering-skills
+npx skills add chann/skills
 ```
 
 전역 설치 (모든 프로젝트에서 사용 가능):
 
 ```bash
-npx skills add -g chann/engineering-skills
+npx skills add -g chann/skills
 ```
 
 ### 수동 설치
@@ -44,8 +45,8 @@ npx skills add -g chann/engineering-skills
 저장소를 클론하고 Claude Code 스킬 디렉토리에 심볼릭 링크를 생성합니다:
 
 ```bash
-git clone https://github.com/chann/engineering-skills.git
-ln -s "$(pwd)/engineering-skills/code-review" ~/.claude/skills/code-review
+git clone https://github.com/chann/skills.git
+ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 ```
 
 ## 사용 방법
@@ -63,6 +64,7 @@ ln -s "$(pwd)/engineering-skills/code-review" ~/.claude/skills/code-review
 ```
 
 스킬은 다음 순서로 동작합니다:
+
 1. 해당 git diff를 수집
 2. 언어를 감지하고 적절한 베스트 프랙티스 참조 파일 로드
 3. 각 변경된 파일을 분석하여 이슈 탐지
@@ -73,6 +75,7 @@ ln -s "$(pwd)/engineering-skills/code-review" ~/.claude/skills/code-review
 ### 리포트 구조
 
 각 리포트에는 다음이 포함됩니다:
+
 - **Executive Summary** — 변경된 파일 수, 추가/삭제 라인, 발견 사항 수, 전체 리스크 수준
 - **Findings** — 심각도별 그룹핑 (CRITICAL / HIGH / MEDIUM / LOW), 파일 참조, 코드 스니펫, 수정 제안 포함
 - **Positive Observations** — 코드에서 잘된 점
@@ -80,13 +83,13 @@ ln -s "$(pwd)/engineering-skills/code-review" ~/.claude/skills/code-review
 
 ### 심각도 수준
 
-| 수준 | 의미 |
-|------|------|
+| 수준     | 의미                                                |
+| -------- | --------------------------------------------------- |
 | CRITICAL | 데이터 손실, 보안 침해, 프로덕션 장애 — 반드시 수정 |
-| HIGH | 버그, 취약점, 심각한 설계 결함 — 수정 권장 |
-| MEDIUM | 코드 스멜, 불일치, 중간 리스크 — 개선 권장 |
-| LOW | 스타일, 네이밍, 사소한 개선 — 하면 좋음 |
-| INFO | 긍정적 관찰 또는 참고 사항 |
+| HIGH     | 버그, 취약점, 심각한 설계 결함 — 수정 권장          |
+| MEDIUM   | 코드 스멜, 불일치, 중간 리스크 — 개선 권장          |
+| LOW      | 스타일, 네이밍, 사소한 개선 — 하면 좋음             |
+| INFO     | 긍정적 관찰 또는 참고 사항                          |
 
 ## 프로젝트 구조
 

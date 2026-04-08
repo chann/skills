@@ -1,4 +1,4 @@
-# engineering-skills
+# skills
 
 [한국어](README.ko.md)
 
@@ -11,6 +11,7 @@ A collection of practical agent skills for software engineering workflows.
 Automated code review that generates persistent **markdown and HTML report files** from git diffs.
 
 **What it does:**
+
 - Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
 - Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
 - Optionally generates a styled, self-contained HTML report with severity badges, collapsible findings, and sidebar navigation
@@ -30,13 +31,13 @@ Automated code review that generates persistent **markdown and HTML report files
 ### Using [skills.sh](https://skills.sh) (recommended)
 
 ```bash
-npx skills add chann/engineering-skills
+npx skills add chann/skills
 ```
 
 Install globally (available across all projects):
 
 ```bash
-npx skills add -g chann/engineering-skills
+npx skills add -g chann/skills
 ```
 
 ### Manual installation
@@ -44,8 +45,8 @@ npx skills add -g chann/engineering-skills
 Clone and symlink the skill into your Claude Code skills directory:
 
 ```bash
-git clone https://github.com/chann/engineering-skills.git
-ln -s "$(pwd)/engineering-skills/code-review" ~/.claude/skills/code-review
+git clone https://github.com/chann/skills.git
+ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 ```
 
 ## Usage
@@ -63,6 +64,7 @@ Once installed, the skill triggers automatically when you ask Claude Code to rev
 ```
 
 The skill will:
+
 1. Gather the relevant git diff
 2. Detect languages and load appropriate best practice references
 3. Analyze each changed file for issues
@@ -73,6 +75,7 @@ The skill will:
 ### Report format
 
 Each report includes:
+
 - **Executive Summary** — files changed, lines added/removed, finding counts, overall risk level
 - **Findings** — grouped by severity (CRITICAL / HIGH / MEDIUM / LOW), each with file reference, code snippet, and suggested fix
 - **Positive Observations** — things the code does well
@@ -80,13 +83,13 @@ Each report includes:
 
 ### Severity levels
 
-| Level | Meaning |
-|-------|---------|
+| Level    | Meaning                                                       |
+| -------- | ------------------------------------------------------------- |
 | CRITICAL | Data loss, security breach, or crash in production — must fix |
-| HIGH | Bug, vulnerability, or serious design flaw — should fix |
-| MEDIUM | Code smell, inconsistency, or moderate risk — recommended fix |
-| LOW | Style, naming, minor improvement — nice to have |
-| INFO | Positive observation or contextual note |
+| HIGH     | Bug, vulnerability, or serious design flaw — should fix       |
+| MEDIUM   | Code smell, inconsistency, or moderate risk — recommended fix |
+| LOW      | Style, naming, minor improvement — nice to have               |
+| INFO     | Positive observation or contextual note                       |
 
 ## Project structure
 
