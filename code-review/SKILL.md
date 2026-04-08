@@ -185,6 +185,29 @@ After writing the report, show the user a brief conversation summary:
 - Path to the report file(s)
 - The top 1-3 most important findings inline (so they get the critical stuff without opening the file)
 
+## Report Language
+
+Write the report in the same language as the user's prompt. If the user writes in Korean, the report should be in Korean. If in English, write in English. Default to English when the language is ambiguous.
+
+What to translate:
+- Section headings (e.g., "Executive Summary" → "요약", "Findings" → "발견 사항")
+- Finding descriptions, summaries, and the overall narrative
+- Table headers and metadata labels
+
+What stays in English always:
+- Finding IDs: `CR-001`, `CR-002`, etc.
+- Severity labels: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, `INFO`
+- Code snippets (code is code)
+- File paths and technical identifiers
+
+Add a `**Language:**` field in the report metadata header so the HTML generator can set the correct `lang` attribute:
+
+```markdown
+**Language:** ko
+```
+
+Use the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag): `en`, `ko`, `ja`, `zh`, etc.
+
 ## Behavior Guidelines
 
 **Be specific, not generic.** Every finding must point to a file and line range. "Consider adding error handling" is useless without specifying where and why. Show the code, explain the risk, suggest the fix.

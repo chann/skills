@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="__REPORT_LANG__">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>__REPORT_TITLE__</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,6 +24,12 @@
       --medium: #d97706;
       --low: #2563eb;
       --info: #6b7280;
+      --diff-add-bg: rgba(46, 160, 67, 0.15);
+      --diff-add-ln: rgba(46, 160, 67, 0.30);
+      --diff-add-fg: #7ee787;
+      --diff-del-bg: rgba(248, 81, 73, 0.15);
+      --diff-del-ln: rgba(248, 81, 73, 0.30);
+      --diff-del-fg: #ffa198;
       --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', Menlo, Consolas, monospace;
     }
@@ -68,10 +75,7 @@
       margin-bottom: 16px;
     }
 
-    #sidebar nav ul {
-      list-style: none;
-    }
-
+    #sidebar nav ul { list-style: none; }
     #sidebar nav ul li { margin-bottom: 2px; }
 
     #sidebar nav ul li a {
@@ -94,13 +98,8 @@
       color: var(--surface);
     }
 
-    #sidebar nav ul li.nav-severity {
-      padding-left: 12px;
-    }
-
-    #sidebar nav ul li.nav-severity a {
-      font-size: 12px;
-    }
+    #sidebar nav ul li.nav-severity { padding-left: 12px; }
+    #sidebar nav ul li.nav-severity a { font-size: 12px; }
 
     /* Main content */
     main {
@@ -143,18 +142,15 @@
       margin-bottom: 8px;
     }
 
-    /* Severity heading colors */
     h3.severity-critical { color: var(--critical); }
     h3.severity-high { color: var(--high); }
     h3.severity-medium { color: var(--medium); }
     h3.severity-low { color: var(--low); }
     h3.severity-info { color: var(--info); }
 
-    /* Paragraphs and text */
     p { margin-bottom: 12px; }
     strong { font-weight: 600; }
 
-    /* Metadata block */
     .metadata { margin-bottom: 24px; color: var(--text-secondary); font-size: 14px; }
     .metadata p { margin-bottom: 4px; }
 
@@ -176,28 +172,28 @@
     .badge-low { background: var(--low); }
     .badge-info { background: var(--info); }
 
-    /* Horizontal rules */
     hr {
       border: none;
       border-top: 1px solid var(--border);
       margin: 32px 0;
     }
 
-    /* Tables */
-    table {
+    /* Tables (report tables — NOT diff tables) */
+    table:not(.diff-table) {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
       font-size: 14px;
     }
 
-    th, td {
+    table:not(.diff-table) th,
+    table:not(.diff-table) td {
       text-align: left;
       padding: 10px 14px;
       border-bottom: 1px solid var(--border);
     }
 
-    th {
+    table:not(.diff-table) th {
       font-weight: 600;
       background: var(--sidebar-bg);
       font-size: 12px;
@@ -206,10 +202,9 @@
       color: var(--text-secondary);
     }
 
-    tbody tr:nth-child(even) { background: #fafaf8; }
-    tbody tr:hover { background: #f0efec; }
+    table:not(.diff-table) tbody tr:nth-child(even) { background: #fafaf8; }
+    table:not(.diff-table) tbody tr:hover { background: #f0efec; }
 
-    /* Risk coloring in table cells */
     td.risk-critical { color: var(--critical); font-weight: 600; }
     td.risk-high { color: var(--high); font-weight: 600; }
     td.risk-medium { color: var(--medium); font-weight: 600; }
@@ -255,10 +250,7 @@
     }
 
     details.finding[open] > summary::before { transform: rotate(90deg); }
-
-    details.finding > .finding-body {
-      padding: 4px 18px 18px;
-    }
+    details.finding > .finding-body { padding: 4px 18px 18px; }
 
     /* Inline code */
     code:not(pre code) {
@@ -287,12 +279,17 @@
       margin: 0;
     }
 
+    /* Let highlight.js handle token colors */
     pre code {
       background: none;
       padding: 0;
       border-radius: 0;
       font-size: inherit;
-      color: inherit;
+    }
+
+    pre code.hljs {
+      background: var(--code-bg);
+      padding: 0;
     }
 
     .copy-btn {
@@ -320,6 +317,188 @@
       border-color: #a6e3a1;
     }
 
+    /* ---------------------------------------------------------------
+       Diff view — VSCode-inspired unified & split
+       --------------------------------------------------------------- */
+    .diff-container {
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--code-bg);
+    }
+
+    .diff-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: #181825;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .diff-toggles {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .diff-toggle {
+      padding: 3px 12px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .diff-toggle:hover { color: rgba(255,255,255,0.7); }
+
+    .diff-toggle.active {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .diff-copy-btn {
+      padding: 3px 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-size: 11px;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.15s;
+    }
+
+    .diff-copy-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .diff-copy-btn.copied {
+      color: #a6e3a1;
+      border-color: #a6e3a1;
+    }
+
+    .diff-body { overflow-x: auto; }
+
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .diff-table td {
+      padding: 0;
+      border: none;
+      vertical-align: top;
+    }
+
+    .diff-col-ln { width: 48px; }
+    .diff-col-divider { width: 1px; }
+
+    .diff-ln {
+      width: 48px;
+      min-width: 48px;
+      padding: 0 12px 0 0;
+      text-align: right;
+      color: rgba(255,255,255,0.22);
+      font-size: 12px;
+      user-select: none;
+      background: rgba(255,255,255,0.015);
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .diff-code {
+      padding: 0 16px;
+      white-space: pre;
+      color: var(--code-fg);
+    }
+
+    /* Deleted lines */
+    .diff-ln-del { background: var(--diff-del-ln); color: var(--diff-del-fg); }
+    .diff-code-del { background: var(--diff-del-bg); color: var(--diff-del-fg); }
+
+    /* Added lines */
+    .diff-ln-add { background: var(--diff-add-ln); color: var(--diff-add-fg); }
+    .diff-code-add { background: var(--diff-add-bg); color: var(--diff-add-fg); }
+
+    /* Empty side in split view */
+    .diff-code-empty { background: rgba(255,255,255,0.015); }
+
+    /* Hunk headers & meta */
+    .diff-text-hunk {
+      color: rgba(137, 180, 250, 0.6);
+      font-style: italic;
+      padding: 6px 16px !important;
+      background: rgba(137, 180, 250, 0.04);
+    }
+
+    .diff-text-meta {
+      color: rgba(203, 166, 247, 0.7);
+      font-weight: 600;
+      padding: 2px 16px !important;
+    }
+
+    /* Split view divider */
+    .diff-divider {
+      width: 1px;
+      min-width: 1px;
+      padding: 0;
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* Row hover */
+    .diff-table tr:hover .diff-code:not(.diff-code-del):not(.diff-code-add):not(.diff-code-empty):not(.diff-text-hunk):not(.diff-text-meta) {
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* ---------------------------------------------------------------
+       Copy Markdown button (report footer)
+       --------------------------------------------------------------- */
+    .report-actions {
+      margin-top: 40px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+    }
+
+    .copy-md-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 28px;
+      background: var(--text);
+      color: var(--surface);
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: opacity 0.15s, background 0.2s;
+    }
+
+    .copy-md-btn:hover { opacity: 0.85; }
+
+    .copy-md-btn.copied {
+      background: #16a34a;
+    }
+
+    .copy-md-btn svg {
+      flex-shrink: 0;
+    }
+
     /* Lists */
     ul, ol {
       margin-bottom: 12px;
@@ -338,7 +517,7 @@
       font-style: italic;
     }
 
-    /* Responsive: collapse sidebar on narrow screens */
+    /* Responsive */
     @media (max-width: 860px) {
       #sidebar {
         position: static;
@@ -362,9 +541,11 @@
         margin-left: 0;
         padding: 24px 20px;
       }
+
+      .diff-table-split .diff-code { font-size: 11px; }
     }
 
-    /* Print styles */
+    /* Print */
     @media print {
       #sidebar { display: none; }
 
@@ -378,13 +559,12 @@
       details.finding[open] > summary ~ * { display: block; }
       details.finding > .finding-body { display: block !important; }
 
-      /* Force all details open */
       details { display: block !important; }
       details > summary { list-style: none; }
       details > summary::before { display: none; }
 
-      .copy-btn { display: none; }
-      .code-block-wrapper { break-inside: avoid; }
+      .copy-btn, .diff-header, .report-actions { display: none; }
+      .code-block-wrapper, .diff-container { break-inside: avoid; }
 
       pre {
         white-space: pre-wrap;
@@ -401,17 +581,34 @@
     <div class="sidebar-date">__REPORT_DATE__</div>
     <nav>__SIDEBAR_CONTENT__</nav>
   </div>
-  <main>__REPORT_CONTENT__</main>
+  <main>
+    __REPORT_CONTENT__
+    <div class="report-actions">
+      <button class="copy-md-btn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copy Markdown
+      </button>
+    </div>
+  </main>
+  <script type="application/json" id="raw-markdown">__RAW_MARKDOWN__</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
   <script>
     (function () {
-      // Scroll spy: highlight active sidebar link
-      const links = document.querySelectorAll('#sidebar nav a');
-      const sections = [];
+      // Syntax highlighting (skip diff tables)
+      document.querySelectorAll('pre code:not(.language-diff)').forEach(function (el) {
+        hljs.highlightElement(el);
+      });
 
+      // Scroll spy
+      var links = document.querySelectorAll('#sidebar nav a');
+      var sections = [];
       links.forEach(function (link) {
-        const id = link.getAttribute('href');
+        var id = link.getAttribute('href');
         if (id && id.startsWith('#')) {
-          const el = document.getElementById(id.slice(1));
+          var el = document.getElementById(id.slice(1));
           if (el) sections.push({ el: el, link: link });
         }
       });
@@ -420,9 +617,7 @@
         var current = null;
         var scrollY = window.scrollY || window.pageYOffset;
         for (var i = 0; i < sections.length; i++) {
-          if (sections[i].el.offsetTop <= scrollY + 80) {
-            current = sections[i];
-          }
+          if (sections[i].el.offsetTop <= scrollY + 80) current = sections[i];
         }
         links.forEach(function (l) { l.classList.remove('active'); });
         if (current) current.link.classList.add('active');
@@ -431,40 +626,88 @@
       window.addEventListener('scroll', updateActive, { passive: true });
       updateActive();
 
-      // Copy to clipboard
+      // Copy code block
       document.querySelectorAll('.copy-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var code = btn.closest('.code-block-wrapper').querySelector('code');
           if (!code) return;
-          var text = code.textContent;
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(function () {
-              btn.textContent = 'Copied';
-              btn.classList.add('copied');
-              setTimeout(function () {
-                btn.textContent = 'Copy';
-                btn.classList.remove('copied');
-              }, 1500);
-            });
-          } else {
-            // Fallback for older browsers
-            var ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            btn.textContent = 'Copied';
-            btn.classList.add('copied');
-            setTimeout(function () {
-              btn.textContent = 'Copy';
-              btn.classList.remove('copied');
-            }, 1500);
-          }
+          copyText(code.textContent, btn, 'Copy');
         });
       });
+
+      // Copy diff block
+      document.querySelectorAll('.diff-copy-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var pane = btn.closest('.diff-container').querySelector('.diff-pane:not([hidden])');
+          if (!pane) return;
+          var rows = pane.querySelectorAll('tr');
+          var lines = [];
+          rows.forEach(function (tr) {
+            var codeTd = tr.querySelector('.diff-code, .diff-text-hunk, .diff-text-meta');
+            if (codeTd) lines.push(codeTd.textContent);
+          });
+          copyText(lines.join('\n'), btn, 'Copy');
+        });
+      });
+
+      // Diff view toggle
+      document.querySelectorAll('.diff-container').forEach(function (container) {
+        var toggles = container.querySelectorAll('.diff-toggle');
+        toggles.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var view = btn.getAttribute('data-view');
+            toggles.forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            container.querySelectorAll('.diff-pane').forEach(function (pane) {
+              pane.hidden = !pane.classList.contains('diff-pane-' + view);
+            });
+          });
+        });
+      });
+
+      // Copy Markdown button
+      var mdBtn = document.querySelector('.copy-md-btn');
+      if (mdBtn) {
+        mdBtn.addEventListener('click', function () {
+          var el = document.getElementById('raw-markdown');
+          if (!el) return;
+          try {
+            var md = JSON.parse(el.textContent);
+            copyText(md, mdBtn, 'Copy Markdown');
+          } catch (e) {
+            // ignore
+          }
+        });
+      }
+
+      // Shared clipboard helper
+      function copyText(text, btn, label) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            showCopied(btn, label);
+          });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showCopied(btn, label);
+        }
+      }
+
+      function showCopied(btn, label) {
+        var orig = btn.innerHTML;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.innerHTML = orig;
+          btn.classList.remove('copied');
+        }, 1500);
+      }
     })();
   </script>
 </body>

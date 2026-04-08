@@ -10,6 +10,7 @@ Reads the HTML template from ../assets/report-template.html (relative to this sc
 
 import argparse
 import html
+import json
 import re
 import sys
 from pathlib import Path
@@ -65,11 +66,195 @@ def parse_table(lines: list[str]) -> str:
 
 def wrap_code_block(code: str, lang: str) -> str:
     """Wrap escaped code in a pre/code block with a Copy button."""
+    if lang == "diff":
+        return wrap_diff_block(code)
     lang_attr = f' class="language-{escape(lang)}"' if lang else ''
     return (
         '<div class="code-block-wrapper">'
         f'<button class="copy-btn" type="button">Copy</button>'
         f'<pre><code{lang_attr}>{code}</code></pre>'
+        '</div>'
+    )
+
+
+# ---------------------------------------------------------------------------
+# Diff rendering — unified and split (side-by-side) views
+# ---------------------------------------------------------------------------
+
+def parse_diff(escaped_code: str) -> list[dict]:
+    """Parse an HTML-escaped unified diff into structured line records."""
+    lines = escaped_code.split('\n')
+    result: list[dict] = []
+    old_no = new_no = 0
+
+    for raw in lines:
+        if raw.startswith('@@'):
+            m = re.match(r'@@ -(\d+)(?:,\d+)? \+(\d+)', raw)
+            if m:
+                old_no = int(m.group(1)) - 1
+                new_no = int(m.group(2)) - 1
+            result.append({'type': 'hunk', 'content': raw,
+                           'old_no': '', 'new_no': ''})
+        elif raw.startswith('---') or raw.startswith('+++'):
+            result.append({'type': 'meta', 'content': raw,
+                           'old_no': '', 'new_no': ''})
+        elif raw.startswith('-'):
+            old_no += 1
+            result.append({'type': 'del', 'content': raw[1:],
+                           'old_no': old_no, 'new_no': ''})
+        elif raw.startswith('+'):
+            new_no += 1
+            result.append({'type': 'add', 'content': raw[1:],
+                           'old_no': '', 'new_no': new_no})
+        elif raw:
+            old_no += 1
+            new_no += 1
+            content = raw[1:] if raw.startswith(' ') else raw
+            result.append({'type': 'ctx', 'content': content,
+                           'old_no': old_no, 'new_no': new_no})
+
+    return result
+
+
+def render_unified(parsed: list[dict]) -> str:
+    """Render parsed diff lines as a unified-view HTML table (single line-number column)."""
+    rows: list[str] = []
+    for d in parsed:
+        t = d['type']
+        if t == 'meta':
+            rows.append(
+                '<tr class="diff-row-meta">'
+                '<td class="diff-ln"></td>'
+                f'<td class="diff-code diff-text-meta">{d["content"]}</td></tr>'
+            )
+        elif t == 'hunk':
+            rows.append(
+                '<tr class="diff-row-hunk">'
+                '<td class="diff-ln"></td>'
+                f'<td class="diff-code diff-text-hunk">{d["content"]}</td></tr>'
+            )
+        elif t == 'del':
+            rows.append(
+                '<tr class="diff-row-del">'
+                f'<td class="diff-ln diff-ln-del">{d["old_no"]}</td>'
+                f'<td class="diff-code diff-code-del">{d["content"]}</td></tr>'
+            )
+        elif t == 'add':
+            rows.append(
+                '<tr class="diff-row-add">'
+                f'<td class="diff-ln diff-ln-add">{d["new_no"]}</td>'
+                f'<td class="diff-code diff-code-add">{d["content"]}</td></tr>'
+            )
+        elif t == 'ctx':
+            rows.append(
+                '<tr class="diff-row-ctx">'
+                f'<td class="diff-ln">{d["new_no"]}</td>'
+                f'<td class="diff-code">{d["content"]}</td></tr>'
+            )
+    return (
+        '<table class="diff-table">'
+        '<colgroup><col class="diff-col-ln"><col></colgroup>'
+        f'{"".join(rows)}</table>'
+    )
+
+
+def _build_split_pairs(parsed: list[dict]) -> list[tuple]:
+    """Group parsed diff lines into side-by-side pairs."""
+    pairs: list[tuple] = []
+    i, n = 0, len(parsed)
+    while i < n:
+        d = parsed[i]
+        t = d['type']
+        if t in ('meta', 'hunk'):
+            pairs.append(('full', d))
+            i += 1
+        elif t == 'ctx':
+            pairs.append(('both', d, d))
+            i += 1
+        else:
+            dels: list[dict] = []
+            adds: list[dict] = []
+            while i < n and parsed[i]['type'] == 'del':
+                dels.append(parsed[i])
+                i += 1
+            while i < n and parsed[i]['type'] == 'add':
+                adds.append(parsed[i])
+                i += 1
+            for j in range(max(len(dels), len(adds))):
+                left = dels[j] if j < len(dels) else None
+                right = adds[j] if j < len(adds) else None
+                pairs.append(('change', left, right))
+    return pairs
+
+
+def render_split(parsed: list[dict]) -> str:
+    """Render parsed diff lines as a split (side-by-side) HTML table."""
+    pairs = _build_split_pairs(parsed)
+    rows: list[str] = []
+    for pair in pairs:
+        kind = pair[0]
+        if kind == 'full':
+            d = pair[1]
+            cls = 'diff-text-hunk' if d['type'] == 'hunk' else 'diff-text-meta'
+            rows.append(
+                f'<tr class="diff-row-{d["type"]}">'
+                f'<td class="{cls}" colspan="5">{d["content"]}</td></tr>'
+            )
+        elif kind == 'both':
+            d = pair[1]
+            rows.append(
+                '<tr class="diff-row-ctx">'
+                f'<td class="diff-ln">{d["old_no"]}</td>'
+                f'<td class="diff-code">{d["content"]}</td>'
+                '<td class="diff-divider"></td>'
+                f'<td class="diff-ln">{d["new_no"]}</td>'
+                f'<td class="diff-code">{d["content"]}</td></tr>'
+            )
+        elif kind == 'change':
+            left, right = pair[1], pair[2]
+            l_no = left['old_no'] if left else ''
+            l_content = left['content'] if left else ''
+            l_ln = ' diff-ln-del' if left else ''
+            l_code = ' diff-code-del' if left else ' diff-code-empty'
+            r_no = right['new_no'] if right else ''
+            r_content = right['content'] if right else ''
+            r_ln = ' diff-ln-add' if right else ''
+            r_code = ' diff-code-add' if right else ' diff-code-empty'
+            rows.append(
+                '<tr>'
+                f'<td class="diff-ln{l_ln}">{l_no}</td>'
+                f'<td class="diff-code{l_code}">{l_content}</td>'
+                '<td class="diff-divider"></td>'
+                f'<td class="diff-ln{r_ln}">{r_no}</td>'
+                f'<td class="diff-code{r_code}">{r_content}</td></tr>'
+            )
+    return (
+        '<table class="diff-table diff-table-split">'
+        '<colgroup><col class="diff-col-ln"><col>'
+        '<col class="diff-col-divider">'
+        '<col class="diff-col-ln"><col></colgroup>'
+        f'{"".join(rows)}</table>'
+    )
+
+
+def wrap_diff_block(escaped_code: str) -> str:
+    """Generate a complete diff block with unified and split view toggle."""
+    parsed = parse_diff(escaped_code)
+    unified = render_unified(parsed)
+    split = render_split(parsed)
+    return (
+        '<div class="diff-container">'
+        '<div class="diff-header">'
+        '<div class="diff-toggles">'
+        '<button class="diff-toggle active" data-view="unified">Unified</button>'
+        '<button class="diff-toggle" data-view="split">Split</button>'
+        '</div>'
+        '<button class="diff-copy-btn" type="button">Copy</button>'
+        '</div>'
+        '<div class="diff-body">'
+        f'<div class="diff-pane diff-pane-unified">{unified}</div>'
+        f'<div class="diff-pane diff-pane-split" hidden>{split}</div>'
+        '</div>'
         '</div>'
     )
 
@@ -83,12 +268,14 @@ class ReportMetadata:
         self.reviewer: str = ""
         self.scope: str = ""
         self.repository: str = ""
+        self.language: str = "en"
 
     def parse_line(self, line: str) -> bool:
         """Try to extract a metadata field. Return True if consumed."""
         for key, attr in (
             ("Date:", "date"), ("Reviewer:", "reviewer"),
             ("Scope:", "scope"), ("Repository:", "repository"),
+            ("Language:", "language"),
         ):
             pattern = f"**{key}**"
             if pattern in line:
@@ -303,13 +490,17 @@ def load_template() -> str:
 
 
 def assemble(template: str, content: str, meta: ReportMetadata,
-             sidebar_html: str) -> str:
+             sidebar_html: str, raw_markdown: str = "") -> str:
     """Replace placeholders in the template with generated content."""
     result = template
     result = result.replace("__REPORT_TITLE__", escape(meta.title))
     result = result.replace("__REPORT_DATE__", escape(meta.date))
+    result = result.replace("__REPORT_LANG__", escape(meta.language))
     result = result.replace("__REPORT_CONTENT__", content)
     result = result.replace("__SIDEBAR_CONTENT__", sidebar_html)
+    # Embed raw markdown for the Copy Markdown button (JSON-encoded, safe for inline script)
+    raw_json = json.dumps(raw_markdown).replace('</','<\\/')
+    result = result.replace("__RAW_MARKDOWN__", raw_json)
     return result
 
 
@@ -335,7 +526,7 @@ def main() -> None:
 
     content_html, meta, sidebar_entries = parse_markdown(md_text)
     sidebar_html = build_sidebar_html(sidebar_entries)
-    final_html = assemble(template, content_html, meta, sidebar_html)
+    final_html = assemble(template, content_html, meta, sidebar_html, md_text)
 
     output_path.write_text(final_html, encoding="utf-8")
     print(f"Report written to {output_path}")
