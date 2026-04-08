@@ -30,14 +30,22 @@ git diff를 분석하여 **마크다운 및 HTML 리포트 파일**을 생성하
 
 ### [skills.sh](https://skills.sh) 사용 (권장)
 
+모든 스킬 설치:
+
 ```bash
 npx skills add chann/skills
+```
+
+`code-review` 스킬만 설치:
+
+```bash
+npx skills add chann/skills@code-review
 ```
 
 전역 설치 (모든 프로젝트에서 사용 가능):
 
 ```bash
-npx skills add -g chann/skills
+npx skills add -g chann/skills@code-review
 ```
 
 ### 수동 설치

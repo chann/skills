@@ -30,14 +30,22 @@ Automated code review that generates persistent **markdown and HTML report files
 
 ### Using [skills.sh](https://skills.sh) (recommended)
 
+Install all skills from this repo:
+
 ```bash
 npx skills add chann/skills
+```
+
+Install only the `code-review` skill:
+
+```bash
+npx skills add chann/skills@code-review
 ```
 
 Install globally (available across all projects):
 
 ```bash
-npx skills add -g chann/skills
+npx skills add -g chann/skills@code-review
 ```
 
 ### Manual installation
