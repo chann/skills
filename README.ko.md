@@ -51,16 +51,22 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## 사용 방법
 
-설치 후 Claude Code에 코드 리뷰를 요청하면 자동으로 트리거됩니다:
+설치 후 Claude Code에 코드 리뷰를 요청하면 자동으로 트리거되거나, 명시적 커맨드를 사용할 수 있습니다:
+
+| 커맨드 | 출력 |
+|---|---|
+| `/code-review` | 대화에서 결과 표시 (파일 생성 안 함) |
+| `/code-review:md` | `.reviews/`에 마크다운 리포트 파일 생성 |
+| `/code-review:markdown` | `:md`와 동일 |
+| `/code-review:html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
+
+**예시:**
 
 ```
 > 내 변경사항 리뷰해줘
 > 마지막 커밋 리뷰
-> 스테이징된 변경사항 리뷰
-> 최근 3개 커밋 코드 리뷰
-> feature-auth 브랜치를 main과 비교해서 리뷰
-> PR #42 리뷰
-> 코드 리뷰하고 HTML 리포트 생성해줘
+> /code-review:html 스테이징된 변경사항 리뷰
+> /code-review:md feature-auth 브랜치를 main과 비교해서 리뷰
 ```
 
 스킬은 다음 순서로 동작합니다:
@@ -68,9 +74,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 1. 해당 git diff를 수집
 2. 언어를 감지하고 적절한 베스트 프랙티스 참조 파일 로드
 3. 각 변경된 파일을 분석하여 이슈 탐지
-4. `.reviews/`에 구조화된 마크다운 리포트 작성
-5. 요청 시 HTML 리포트 생성
-6. 대화에서 핵심 요약 제시
+4. 대화에서 결과 표시, 또는 리포트 파일 생성 (커맨드에 따라)
+5. 핵심 요약 제시
 
 ### 리포트 구조
 
@@ -95,17 +100,26 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ```
 code-review/
-├── SKILL.md                          # 스킬 정의 및 워크플로우
-├── scripts/
-│   ├── diff_stats.py                 # Git diff 통계 추출기
-│   └── generate_html_report.py       # Markdown → HTML 리포트 변환기
-├── references/
-│   ├── review-criteria.md            # 리뷰 기준 프레임워크
-│   ├── common-vulnerabilities.md     # OWASP 기반 보안 체크리스트
-│   ├── python.md                     # Python 베스트 프랙티스
-│   └── javascript-typescript.md      # JS/TS 베스트 프랙티스
-└── assets/
-    └── report-template.html          # HTML 리포트 템플릿
+├── .claude-plugin/
+│   └── plugin.json                   # 플러그인 메타데이터
+├── commands/
+│   ├── html.md                       # /code-review:html 커맨드
+│   ├── md.md                         # /code-review:md 커맨드
+│   └── markdown.md                   # /code-review:markdown 커맨드
+├── skills/
+│   └── code-review/
+│       ├── SKILL.md                  # 스킬 정의 및 워크플로우
+│       ├── scripts/
+│       │   ├── diff_stats.py         # Git diff 통계 추출기
+│       │   └── generate_html_report.py  # Markdown → HTML 리포트 변환기
+│       ├── references/
+│       │   ├── review-criteria.md    # 리뷰 기준 프레임워크
+│       │   ├── common-vulnerabilities.md  # OWASP 기반 보안 체크리스트
+│       │   ├── python.md            # Python 베스트 프랙티스
+│       │   └── javascript-typescript.md   # JS/TS 베스트 프랙티스
+│       └── assets/
+│           └── report-template.html  # HTML 리포트 템플릿
+└── samples/                          # 테스트 샘플 파일
 ```
 
 ## 요구 사항

@@ -51,16 +51,22 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## Usage
 
-Once installed, the skill triggers automatically when you ask Claude Code to review code. Examples:
+Once installed, the skill triggers automatically when you ask Claude Code to review code, or you can use explicit commands:
+
+| Command | Output |
+|---|---|
+| `/code-review` | Show findings in conversation (no file) |
+| `/code-review:md` | Write markdown report to `.reviews/` |
+| `/code-review:markdown` | Same as `:md` |
+| `/code-review:html` | Write markdown + HTML reports to `.reviews/` |
+
+**Examples:**
 
 ```
 > review my changes
 > review the last commit
-> review staged changes
-> code review for the last 3 commits
-> review branch feature-auth compared to main
-> review PR #42
-> review my code and generate an HTML report
+> /code-review:html review staged changes
+> /code-review:md review branch feature-auth compared to main
 ```
 
 The skill will:
@@ -68,9 +74,8 @@ The skill will:
 1. Gather the relevant git diff
 2. Detect languages and load appropriate best practice references
 3. Analyze each changed file for issues
-4. Write a structured markdown report to `.reviews/`
-5. Generate an HTML report if requested
-6. Show a summary of findings in the conversation
+4. Present findings in the conversation, or write report files (depending on command)
+5. Show a summary of findings
 
 ### Report format
 
@@ -95,17 +100,26 @@ Each report includes:
 
 ```
 code-review/
-├── SKILL.md                          # Skill definition and workflow
-├── scripts/
-│   ├── diff_stats.py                 # Git diff statistics extractor
-│   └── generate_html_report.py       # Markdown → HTML report converter
-├── references/
-│   ├── review-criteria.md            # Detailed review criteria framework
-│   ├── common-vulnerabilities.md     # OWASP-based security checklist
-│   ├── python.md                     # Python best practices
-│   └── javascript-typescript.md      # JS/TS best practices
-└── assets/
-    └── report-template.html          # HTML report template
+├── .claude-plugin/
+│   └── plugin.json                   # Plugin metadata
+├── commands/
+│   ├── html.md                       # /code-review:html command
+│   ├── md.md                         # /code-review:md command
+│   └── markdown.md                   # /code-review:markdown command
+├── skills/
+│   └── code-review/
+│       ├── SKILL.md                  # Skill definition and workflow
+│       ├── scripts/
+│       │   ├── diff_stats.py         # Git diff statistics extractor
+│       │   └── generate_html_report.py  # Markdown → HTML report converter
+│       ├── references/
+│       │   ├── review-criteria.md    # Detailed review criteria framework
+│       │   ├── common-vulnerabilities.md  # OWASP-based security checklist
+│       │   ├── python.md            # Python best practices
+│       │   └── javascript-typescript.md   # JS/TS best practices
+│       └── assets/
+│           └── report-template.html  # HTML report template
+└── samples/                          # Test sample files
 ```
 
 ## Requirements
