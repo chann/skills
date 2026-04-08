@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>__REPORT_TITLE__</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --border: #e5e3df;
+      --text: #1a1a1a;
+      --text-secondary: #6b7280;
+      --sidebar-bg: #f3f2ef;
+      --sidebar-width: 240px;
+      --content-max: 900px;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --critical: #dc2626;
+      --high: #ea580c;
+      --medium: #d97706;
+      --low: #2563eb;
+      --info: #6b7280;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 24px 16px;
+      z-index: 100;
+    }
+
+    #sidebar .sidebar-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #sidebar .sidebar-date {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    #sidebar nav ul {
+      list-style: none;
+    }
+
+    #sidebar nav ul li { margin-bottom: 2px; }
+
+    #sidebar nav ul li a {
+      display: block;
+      padding: 6px 10px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    #sidebar nav ul li a:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    #sidebar nav ul li a.active {
+      background: var(--text);
+      color: var(--surface);
+    }
+
+    #sidebar nav ul li.nav-severity {
+      padding-left: 12px;
+    }
+
+    #sidebar nav ul li.nav-severity a {
+      font-size: 12px;
+    }
+
+    /* Main content */
+    main {
+      margin-left: var(--sidebar-width);
+      padding: 40px 48px;
+      max-width: calc(var(--content-max) + 96px);
+    }
+
+    /* Headings */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    /* Severity heading colors */
+    h3.severity-critical { color: var(--critical); }
+    h3.severity-high { color: var(--high); }
+    h3.severity-medium { color: var(--medium); }
+    h3.severity-low { color: var(--low); }
+    h3.severity-info { color: var(--info); }
+
+    /* Paragraphs and text */
+    p { margin-bottom: 12px; }
+    strong { font-weight: 600; }
+
+    /* Metadata block */
+    .metadata { margin-bottom: 24px; color: var(--text-secondary); font-size: 14px; }
+    .metadata p { margin-bottom: 4px; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #fff;
+      vertical-align: middle;
+    }
+    .badge-critical { background: var(--critical); }
+    .badge-high { background: var(--high); }
+    .badge-medium { background: var(--medium); }
+    .badge-low { background: var(--low); }
+    .badge-info { background: var(--info); }
+
+    /* Horizontal rules */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-weight: 600;
+      background: var(--sidebar-bg);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    tbody tr:nth-child(even) { background: #fafaf8; }
+    tbody tr:hover { background: #f0efec; }
+
+    /* Risk coloring in table cells */
+    td.risk-critical { color: var(--critical); font-weight: 600; }
+    td.risk-high { color: var(--high); font-weight: 600; }
+    td.risk-medium { color: var(--medium); font-weight: 600; }
+    td.risk-low { color: var(--low); font-weight: 600; }
+
+    /* Finding cards */
+    details.finding {
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    details.finding[open] { box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+    details.finding.finding-critical { border-left-color: var(--critical); }
+    details.finding.finding-high { border-left-color: var(--high); }
+    details.finding.finding-medium { border-left-color: var(--medium); }
+    details.finding.finding-low { border-left-color: var(--low); }
+    details.finding.finding-info { border-left-color: var(--info); }
+
+    details.finding > summary {
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+
+    details.finding > summary::-webkit-details-marker { display: none; }
+
+    details.finding > summary::before {
+      content: '\25B6';
+      font-size: 10px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    details.finding[open] > summary::before { transform: rotate(90deg); }
+
+    details.finding > .finding-body {
+      padding: 4px 18px 18px;
+    }
+
+    /* Inline code */
+    code:not(pre code) {
+      background: #eeecea;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    /* Code blocks */
+    .code-block-wrapper {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 16px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 5px;
+      color: rgba(255,255,255,0.6);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .copy-btn.copied {
+      color: #a6e3a1;
+      border-color: #a6e3a1;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-bottom: 12px;
+      padding-left: 24px;
+    }
+
+    li { margin-bottom: 6px; }
+
+    /* Footer */
+    .report-footer {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Responsive: collapse sidebar on narrow screens */
+    @media (max-width: 860px) {
+      #sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 16px;
+      }
+
+      #sidebar nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      #sidebar nav ul li.nav-severity { padding-left: 0; }
+
+      main {
+        margin-left: 0;
+        padding: 24px 20px;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      #sidebar { display: none; }
+
+      main {
+        margin-left: 0;
+        padding: 0;
+        max-width: 100%;
+      }
+
+      details.finding { break-inside: avoid; }
+      details.finding[open] > summary ~ * { display: block; }
+      details.finding > .finding-body { display: block !important; }
+
+      /* Force all details open */
+      details { display: block !important; }
+      details > summary { list-style: none; }
+      details > summary::before { display: none; }
+
+      .copy-btn { display: none; }
+      .code-block-wrapper { break-inside: avoid; }
+
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+
+      body { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <div class="sidebar-title">Code Review</div>
+    <div class="sidebar-date">__REPORT_DATE__</div>
+    <nav>__SIDEBAR_CONTENT__</nav>
+  </div>
+  <main>__REPORT_CONTENT__</main>
+  <script>
+    (function () {
+      // Scroll spy: highlight active sidebar link
+      const links = document.querySelectorAll('#sidebar nav a');
+      const sections = [];
+
+      links.forEach(function (link) {
+        const id = link.getAttribute('href');
+        if (id && id.startsWith('#')) {
+          const el = document.getElementById(id.slice(1));
+          if (el) sections.push({ el: el, link: link });
+        }
+      });
+
+      function updateActive() {
+        var current = null;
+        var scrollY = window.scrollY || window.pageYOffset;
+        for (var i = 0; i < sections.length; i++) {
+          if (sections[i].el.offsetTop <= scrollY + 80) {
+            current = sections[i];
+          }
+        }
+        links.forEach(function (l) { l.classList.remove('active'); });
+        if (current) current.link.classList.add('active');
+      }
+
+      window.addEventListener('scroll', updateActive, { passive: true });
+      updateActive();
+
+      // Copy to clipboard
+      document.querySelectorAll('.copy-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var code = btn.closest('.code-block-wrapper').querySelector('code');
+          if (!code) return;
+          var text = code.textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+              btn.textContent = 'Copied';
+              btn.classList.add('copied');
+              setTimeout(function () {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+              }, 1500);
+            });
+          } else {
+            // Fallback for older browsers
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = 'Copied';
+            btn.classList.add('copied');
+            setTimeout(function () {
+              btn.textContent = 'Copy';
+              btn.classList.remove('copied');
+            }, 1500);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
