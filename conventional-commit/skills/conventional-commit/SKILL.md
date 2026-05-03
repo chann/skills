@@ -1,6 +1,6 @@
 ---
 name: conventional-commit
-description: Use when the user asks to commit changes, organize commits, write commit messages, push commits, clean up commit history, or fix non-Conventional commit messages. Trigger on phrases like "commit my changes", "커밋해줘", "커밋 분리", "make commits", "rewrite commit history", "커밋 메시지 다시 써줘", "fix these commit messages", "/conventional-commit", "/conventional-commit:rewrite", "/conventional-commit:push", or whenever the user shows a non-Conventional `git log` and asks for help.
+description: Use when the user asks to commit changes, organize commits, write commit messages, or split working-tree changes into Conventional Commits. Trigger on phrases like "commit my changes", "커밋해줘", "커밋 분리", "make commits", "/conventional-commit", or whenever the user wants to turn current changes into Conventional Commit-style commits. For commit + push use `conventional-commit-push`; for rewriting non-Conventional commit history use `conventional-commit-rewrite`.
 ---
 
 # Conventional Commit Skill
@@ -15,11 +15,11 @@ Group working-tree changes into [Conventional Commits 1.0.0](https://www.convent
 
 ## Commands
 
-| Command | Action | Operates on |
-|---|---|---|
-| `/conventional-commit` | Group working-tree changes into Conventional Commits | Uncommitted (staged + unstaged) changes |
-| `/conventional-commit:push` | Same as above, then `git push` (no `--force`) | Uncommitted changes + remote |
-| `/conventional-commit:rewrite` | Rewrite recent non-Conformant commit subjects | Existing local history |
+| Command | Skill | Action | Operates on |
+|---|---|---|---|
+| `/conventional-commit` | `conventional-commit` | Group working-tree changes into Conventional Commits | Uncommitted (staged + unstaged) changes |
+| `/conventional-commit-push` | `conventional-commit-push` | Same as above, then `git push` (no `--force`) | Uncommitted changes + remote |
+| `/conventional-commit-rewrite` | `conventional-commit-rewrite` | Rewrite recent non-Conformant commit subjects | Existing local history |
 
 ## Choosing the Right Command
 
@@ -33,11 +33,11 @@ git log --oneline -10     # Are recent messages already Conventional?
 | Situation | Command |
 |---|---|
 | Working tree has changes, history is fine | `/conventional-commit` |
-| Working tree has changes + want to push | `/conventional-commit:push` |
-| Working tree clean, recent history is messy ("Added X", "WIP", "Fixed bug") | `/conventional-commit:rewrite` |
-| Both: working tree dirty AND history messy | First commit (`/conventional-commit`), then `:rewrite` separately |
+| Working tree has changes + want to push | `/conventional-commit-push` |
+| Working tree clean, recent history is messy ("Added X", "WIP", "Fixed bug") | `/conventional-commit-rewrite` |
+| Both: working tree dirty AND history messy | First commit (`/conventional-commit`), then `/conventional-commit-rewrite` separately |
 
-**Auto-routing:** If the user runs bare `/conventional-commit` but the working tree is clean, look at recent history. If recent commits are non-conformant, surface this and ask: "No working changes to commit. Recent history has N non-Conformant subjects — do you want to rewrite them with `/conventional-commit:rewrite`?"
+**Auto-routing:** If the user runs bare `/conventional-commit` but the working tree is clean, look at recent history. If recent commits are non-conformant, surface this and ask: "No working changes to commit. Recent history has N non-Conformant subjects — do you want to rewrite them with `/conventional-commit-rewrite`?"
 
 ## Conventional Commits Format
 
@@ -190,7 +190,7 @@ git status --short →
 → git log --oneline -3
 ```
 
-## Workflow: `/conventional-commit:push`
+## Workflow: `/conventional-commit-push`
 
 Run the default workflow above. After every commit succeeds:
 
@@ -209,7 +209,7 @@ git push -u origin "$(git branch --show-current)"
 ### Worked Example
 
 ```
-User: /conventional-commit:push
+User: /conventional-commit-push
 
 (Same workflow as default, then:)
 → git push
@@ -219,7 +219,7 @@ User: /conventional-commit:push
     first, then re-push manually. I will not auto-resolve."
 ```
 
-## Workflow: `/conventional-commit:rewrite`
+## Workflow: `/conventional-commit-rewrite`
 
 Rewrites non-Conformant commit messages in recent history. **This is destructive** — it changes commit SHAs. The default policy refuses to touch any commit that already exists on a remote.
 
@@ -479,8 +479,8 @@ Use these translations when generating new subjects in Step 4.
 
 | Symptom | Action |
 |---|---|
-| No working changes + messy history | Suggest `/conventional-commit:rewrite` |
-| Working changes + messy history | Commit first, then `:rewrite` |
+| No working changes + messy history | Suggest `/conventional-commit-rewrite` |
+| Working changes + messy history | Commit first, then `/conventional-commit-rewrite` |
 | Pushed history + want to fix | Use Step 7 (branch-based rewrite) |
 | Pre-commit hook fails | Fix the underlying issue; never `--no-verify` |
 | Push rejected (non-FF) | Stop, surface error, never `--force` without explicit consent |
