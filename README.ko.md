@@ -85,39 +85,38 @@ ln -s "$(pwd)/conventional-commit" ~/.claude/skills/conventional-commit
 
 설치 후 Claude Code에 코드 리뷰를 요청하면 자동으로 트리거되거나, 명시적 커맨드를 사용할 수 있습니다:
 
-| 커맨드                  | 출력                                      |
-| ----------------------- | ----------------------------------------- |
-| `/code-review`          | 대화에서 결과 표시 (파일 생성 안 함)      |
-| `/code-review:md`       | `.reviews/`에 마크다운 리포트 파일 생성   |
-| `/code-review:markdown` | `:md`와 동일                              |
-| `/code-review:html`     | `.reviews/`에 마크다운 + HTML 리포트 생성 |
+| 커맨드               | 스킬               | 출력                                      |
+| -------------------- | ------------------ | ----------------------------------------- |
+| `/code-review`       | `code-review`      | 대화에서 결과 표시 (파일 생성 안 함)      |
+| `/code-review-md`    | `code-review-md`   | `.reviews/`에 마크다운 리포트 파일 생성   |
+| `/code-review-html`  | `code-review-html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
 
 **예시:**
 
 ```
 > 내 변경사항 리뷰해줘
 > 마지막 커밋 리뷰
-> /code-review:html 스테이징된 변경사항 리뷰
-> /code-review:md feature-auth 브랜치를 main과 비교해서 리뷰
+> /code-review-html 스테이징된 변경사항 리뷰
+> /code-review-md feature-auth 브랜치를 main과 비교해서 리뷰
 ```
 
 ### conventional-commit
 
 커밋 작성을 요청하면 자동으로 트리거되거나, 명시적 커맨드를 사용할 수 있습니다:
 
-| 커맨드                         | 동작                                                                           |
-| ------------------------------ | ------------------------------------------------------------------------------ |
-| `/conventional-commit`         | staged + unstaged 변경을 의미 단위로 분리해 unit 마다 Conventional Commit 생성 |
-| `/conventional-commit:push`    | 위 작업 후 `git push` 까지 진행 (force 안 함)                                  |
-| `/conventional-commit:rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                       |
+| 커맨드                         | 스킬                           | 동작                                                                           |
+| ------------------------------ | ------------------------------ | ------------------------------------------------------------------------------ |
+| `/conventional-commit`         | `conventional-commit`          | staged + unstaged 변경을 의미 단위로 분리해 unit 마다 Conventional Commit 생성 |
+| `/conventional-commit-push`    | `conventional-commit-push`     | 위 작업 후 `git push` 까지 진행 (force 안 함)                                  |
+| `/conventional-commit-rewrite` | `conventional-commit-rewrite`  | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                       |
 
 **예시:**
 
 ```
 > 변경사항 의미 단위로 커밋해줘
 > commit my changes
-> /conventional-commit:push
-> /conventional-commit:rewrite
+> /conventional-commit-push
+> /conventional-commit-rewrite
 ```
 
 스킬은 다음 순서로 동작합니다:
@@ -152,39 +151,46 @@ ln -s "$(pwd)/conventional-commit" ~/.claude/skills/conventional-commit
 ```
 code-review/
 ├── .claude-plugin/
-│   └── plugin.json                   # 플러그인 메타데이터
+│   └── plugin.json                       # 플러그인 메타데이터
 ├── commands/
-│   ├── code-review.md                # /code-review (대화에서 결과 표시)
-│   ├── html.md                       # /code-review:html 커맨드
-│   ├── md.md                         # /code-review:md 커맨드
-│   └── markdown.md                   # /code-review:markdown 커맨드
+│   ├── code-review.md                    # /code-review (대화에서 결과 표시)
+│   ├── code-review-md.md                 # /code-review-md 커맨드
+│   └── code-review-html.md               # /code-review-html 커맨드
 ├── skills/
-│   └── code-review/
-│       ├── SKILL.md                  # 스킬 정의 및 워크플로우
-│       ├── scripts/
-│       │   ├── diff_stats.py         # Git diff 통계 추출기
-│       │   └── generate_html_report.py  # Markdown → HTML 리포트 변환기
-│       ├── references/
-│       │   ├── review-criteria.md    # 리뷰 기준 프레임워크
-│       │   ├── common-vulnerabilities.md  # OWASP 기반 보안 체크리스트
-│       │   ├── python.md            # Python 베스트 프랙티스
-│       │   └── javascript-typescript.md   # JS/TS 베스트 프랙티스
-│       └── assets/
-│           └── report-template.html  # HTML 리포트 템플릿
-└── samples/                          # 테스트 샘플 파일
+│   ├── code-review/                      # 메인 스킬 — 전체 워크플로우 + 공유 자산
+│   │   ├── SKILL.md                      # 스킬 정의 및 워크플로우
+│   │   ├── scripts/
+│   │   │   ├── diff_stats.py             # Git diff 통계 추출기
+│   │   │   └── generate_html_report.py   # Markdown → HTML 리포트 변환기
+│   │   ├── references/
+│   │   │   ├── review-criteria.md        # 리뷰 기준 프레임워크
+│   │   │   ├── common-vulnerabilities.md # OWASP 기반 보안 체크리스트
+│   │   │   ├── python.md                 # Python 베스트 프랙티스
+│   │   │   └── javascript-typescript.md  # JS/TS 베스트 프랙티스
+│   │   └── assets/
+│   │       └── report-template.html      # HTML 리포트 템플릿
+│   ├── code-review-md/
+│   │   └── SKILL.md                      # 마크다운 변형 스킬 (메인 워크플로우 참조)
+│   └── code-review-html/
+│       └── SKILL.md                      # HTML 변형 스킬 (메인 워크플로우 참조)
+└── samples/                              # 테스트 샘플 파일
 
 conventional-commit/
 ├── .claude-plugin/
-│   └── plugin.json                   # 플러그인 메타데이터
+│   └── plugin.json                       # 플러그인 메타데이터
 ├── commands/
-│   ├── conventional-commit.md        # /conventional-commit (기본 동작)
-│   ├── push.md                       # /conventional-commit:push 커맨드
-│   └── rewrite.md                    # /conventional-commit:rewrite 커맨드
+│   ├── conventional-commit.md            # /conventional-commit (기본 동작)
+│   ├── conventional-commit-push.md       # /conventional-commit-push 커맨드
+│   └── conventional-commit-rewrite.md    # /conventional-commit-rewrite 커맨드
 └── skills/
-    └── conventional-commit/
-        ├── SKILL.md                  # 스킬 정의 및 워크플로우
-        └── scripts/
-            └── rewrite_msg.py        # :rewrite 용 filter-branch 헬퍼
+    ├── conventional-commit/              # 메인 스킬 — 전체 워크플로우 + 공유 스크립트
+    │   ├── SKILL.md                      # 스킬 정의 및 워크플로우
+    │   └── scripts/
+    │       └── rewrite_msg.py            # rewrite 용 filter-branch 헬퍼
+    ├── conventional-commit-push/
+    │   └── SKILL.md                      # push 변형 스킬 (메인 워크플로우 참조)
+    └── conventional-commit-rewrite/
+        └── SKILL.md                      # rewrite 변형 스킬 (메인 워크플로우 참조)
 ```
 
 ## 요구 사항

@@ -85,39 +85,38 @@ ln -s "$(pwd)/conventional-commit" ~/.claude/skills/conventional-commit
 
 Once installed, the skill triggers automatically when you ask Claude Code to review code, or you can use explicit commands:
 
-| Command                 | Output                                       |
-| ----------------------- | -------------------------------------------- |
-| `/code-review`          | Show findings in conversation (no file)      |
-| `/code-review:md`       | Write markdown report to `.reviews/`         |
-| `/code-review:markdown` | Same as `:md`                                |
-| `/code-review:html`     | Write markdown + HTML reports to `.reviews/` |
+| Command              | Skill              | Output                                       |
+| -------------------- | ------------------ | -------------------------------------------- |
+| `/code-review`       | `code-review`      | Show findings in conversation (no file)      |
+| `/code-review-md`    | `code-review-md`   | Write markdown report to `.reviews/`         |
+| `/code-review-html`  | `code-review-html` | Write markdown + HTML reports to `.reviews/` |
 
 **Examples:**
 
 ```
 > review my changes
 > review the last commit
-> /code-review:html review staged changes
-> /code-review:md review branch feature-auth compared to main
+> /code-review-html review staged changes
+> /code-review-md review branch feature-auth compared to main
 ```
 
 ### conventional-commit
 
 Triggers when you ask Claude Code to commit your changes, or via explicit commands:
 
-| Command                        | Action                                                                                      |
-| ------------------------------ | ------------------------------------------------------------------------------------------- |
-| `/conventional-commit`         | Group staged + unstaged changes into logical units; create one Conventional Commit per unit |
-| `/conventional-commit:push`    | Same as above, then `git push` (no force)                                                   |
-| `/conventional-commit:rewrite` | Rewrite recent non-conformant commit subjects to Conventional format                        |
+| Command                        | Skill                          | Action                                                                                      |
+| ------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------------- |
+| `/conventional-commit`         | `conventional-commit`          | Group staged + unstaged changes into logical units; create one Conventional Commit per unit |
+| `/conventional-commit-push`    | `conventional-commit-push`     | Same as above, then `git push` (no force)                                                   |
+| `/conventional-commit-rewrite` | `conventional-commit-rewrite`  | Rewrite recent non-conformant commit subjects to Conventional format                        |
 
 **Examples:**
 
 ```
 > commit my changes
 > 변경사항 의미 단위로 커밋해줘
-> /conventional-commit:push
-> /conventional-commit:rewrite
+> /conventional-commit-push
+> /conventional-commit-rewrite
 ```
 
 The skill will:
@@ -152,39 +151,46 @@ Each report includes:
 ```
 code-review/
 ├── .claude-plugin/
-│   └── plugin.json                   # Plugin metadata
+│   └── plugin.json                       # Plugin metadata
 ├── commands/
-│   ├── code-review.md                # /code-review (conversation-only)
-│   ├── html.md                       # /code-review:html command
-│   ├── md.md                         # /code-review:md command
-│   └── markdown.md                   # /code-review:markdown command
+│   ├── code-review.md                    # /code-review (conversation-only)
+│   ├── code-review-md.md                 # /code-review-md command
+│   └── code-review-html.md               # /code-review-html command
 ├── skills/
-│   └── code-review/
-│       ├── SKILL.md                  # Skill definition and workflow
-│       ├── scripts/
-│       │   ├── diff_stats.py         # Git diff statistics extractor
-│       │   └── generate_html_report.py  # Markdown → HTML report converter
-│       ├── references/
-│       │   ├── review-criteria.md    # Detailed review criteria framework
-│       │   ├── common-vulnerabilities.md  # OWASP-based security checklist
-│       │   ├── python.md            # Python best practices
-│       │   └── javascript-typescript.md   # JS/TS best practices
-│       └── assets/
-│           └── report-template.html  # HTML report template
-└── samples/                          # Test sample files
+│   ├── code-review/                      # Main skill — full workflow + shared assets
+│   │   ├── SKILL.md                      # Skill definition and workflow
+│   │   ├── scripts/
+│   │   │   ├── diff_stats.py             # Git diff statistics extractor
+│   │   │   └── generate_html_report.py   # Markdown → HTML report converter
+│   │   ├── references/
+│   │   │   ├── review-criteria.md        # Detailed review criteria framework
+│   │   │   ├── common-vulnerabilities.md # OWASP-based security checklist
+│   │   │   ├── python.md                 # Python best practices
+│   │   │   └── javascript-typescript.md  # JS/TS best practices
+│   │   └── assets/
+│   │       └── report-template.html      # HTML report template
+│   ├── code-review-md/
+│   │   └── SKILL.md                      # Markdown variant skill (refers to main workflow)
+│   └── code-review-html/
+│       └── SKILL.md                      # HTML variant skill (refers to main workflow)
+└── samples/                              # Test sample files
 
 conventional-commit/
 ├── .claude-plugin/
-│   └── plugin.json                   # Plugin metadata
+│   └── plugin.json                       # Plugin metadata
 ├── commands/
-│   ├── conventional-commit.md        # /conventional-commit (default)
-│   ├── push.md                       # /conventional-commit:push command
-│   └── rewrite.md                    # /conventional-commit:rewrite command
+│   ├── conventional-commit.md            # /conventional-commit (default)
+│   ├── conventional-commit-push.md       # /conventional-commit-push command
+│   └── conventional-commit-rewrite.md    # /conventional-commit-rewrite command
 └── skills/
-    └── conventional-commit/
-        ├── SKILL.md                  # Skill definition and workflow
-        └── scripts/
-            └── rewrite_msg.py        # filter-branch helper for :rewrite
+    ├── conventional-commit/              # Main skill — full workflow + shared scripts
+    │   ├── SKILL.md                      # Skill definition and workflow
+    │   └── scripts/
+    │       └── rewrite_msg.py            # filter-branch helper for rewrite
+    ├── conventional-commit-push/
+    │   └── SKILL.md                      # Push variant skill (refers to main workflow)
+    └── conventional-commit-rewrite/
+        └── SKILL.md                      # Rewrite variant skill (refers to main workflow)
 ```
 
 ## Requirements
