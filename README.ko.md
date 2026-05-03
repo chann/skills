@@ -154,6 +154,7 @@ code-review/
 ├── .claude-plugin/
 │   └── plugin.json                   # 플러그인 메타데이터
 ├── commands/
+│   ├── code-review.md                # /code-review (대화에서 결과 표시)
 │   ├── html.md                       # /code-review:html 커맨드
 │   ├── md.md                         # /code-review:md 커맨드
 │   └── markdown.md                   # /code-review:markdown 커맨드
@@ -176,6 +177,7 @@ conventional-commit/
 ├── .claude-plugin/
 │   └── plugin.json                   # 플러그인 메타데이터
 ├── commands/
+│   ├── conventional-commit.md        # /conventional-commit (기본 동작)
 │   ├── push.md                       # /conventional-commit:push 커맨드
 │   └── rewrite.md                    # /conventional-commit:rewrite 커맨드
 └── skills/

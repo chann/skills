@@ -154,6 +154,7 @@ code-review/
 ├── .claude-plugin/
 │   └── plugin.json                   # Plugin metadata
 ├── commands/
+│   ├── code-review.md                # /code-review (conversation-only)
 │   ├── html.md                       # /code-review:html command
 │   ├── md.md                         # /code-review:md command
 │   └── markdown.md                   # /code-review:markdown command
@@ -176,6 +177,7 @@ conventional-commit/
 ├── .claude-plugin/
 │   └── plugin.json                   # Plugin metadata
 ├── commands/
+│   ├── conventional-commit.md        # /conventional-commit (default)
 │   ├── push.md                       # /conventional-commit:push command
 │   └── rewrite.md                    # /conventional-commit:rewrite command
 └── skills/
