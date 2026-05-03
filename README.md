@@ -26,6 +26,19 @@ Automated code review that generates persistent **markdown and HTML report files
 └── 2026-04-08_a1b2c3d.html
 ```
 
+### conventional-commit
+
+Splits current working-tree changes into meaningful units and creates one [Conventional Commits](https://www.conventionalcommits.org/)-formatted commit per unit. Optionally pushes after committing, or rewrites recent non-conformant commit history.
+
+**What it does:**
+
+- Groups staged + unstaged changes into logical commits (separates `feat`/`fix`/`docs`/etc. and never combines them)
+- Creates each commit with explicit `git add <paths>` — never `git add .`
+- Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...)
+- Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
+- Refuses to rewrite commits already pushed to a remote (safety default)
+- Never force-pushes, never bypasses hooks
+
 ## Installation
 
 ### Using [skills.sh](https://skills.sh) (recommended)
@@ -42,10 +55,17 @@ Install only the `code-review` skill:
 npx skills add chann/skills@code-review
 ```
 
+Install only the `conventional-commit` skill:
+
+```bash
+npx skills add chann/skills@conventional-commit
+```
+
 Install globally (available across all projects):
 
 ```bash
 npx skills add -g chann/skills@code-review
+npx skills add -g chann/skills@conventional-commit
 ```
 
 ### Manual installation
@@ -54,19 +74,23 @@ Clone and symlink the skill into your Claude Code skills directory:
 
 ```bash
 git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
+cd skills;
+ln -s "$(pwd)/code-review" ~/.claude/skills/code-review
+ln -s "$(pwd)/conventional-commit" ~/.claude/skills/conventional-commit
 ```
 
 ## Usage
 
+### code-review
+
 Once installed, the skill triggers automatically when you ask Claude Code to review code, or you can use explicit commands:
 
-| Command | Output |
-|---|---|
-| `/code-review` | Show findings in conversation (no file) |
-| `/code-review:md` | Write markdown report to `.reviews/` |
-| `/code-review:markdown` | Same as `:md` |
-| `/code-review:html` | Write markdown + HTML reports to `.reviews/` |
+| Command                 | Output                                       |
+| ----------------------- | -------------------------------------------- |
+| `/code-review`          | Show findings in conversation (no file)      |
+| `/code-review:md`       | Write markdown report to `.reviews/`         |
+| `/code-review:markdown` | Same as `:md`                                |
+| `/code-review:html`     | Write markdown + HTML reports to `.reviews/` |
 
 **Examples:**
 
@@ -75,6 +99,25 @@ Once installed, the skill triggers automatically when you ask Claude Code to rev
 > review the last commit
 > /code-review:html review staged changes
 > /code-review:md review branch feature-auth compared to main
+```
+
+### conventional-commit
+
+Triggers when you ask Claude Code to commit your changes, or via explicit commands:
+
+| Command                        | Action                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| `/conventional-commit`         | Group staged + unstaged changes into logical units; create one Conventional Commit per unit |
+| `/conventional-commit:push`    | Same as above, then `git push` (no force)                                                   |
+| `/conventional-commit:rewrite` | Rewrite recent non-conformant commit subjects to Conventional format                        |
+
+**Examples:**
+
+```
+> commit my changes
+> 변경사항 의미 단위로 커밋해줘
+> /conventional-commit:push
+> /conventional-commit:rewrite
 ```
 
 The skill will:
@@ -128,6 +171,18 @@ code-review/
 │       └── assets/
 │           └── report-template.html  # HTML report template
 └── samples/                          # Test sample files
+
+conventional-commit/
+├── .claude-plugin/
+│   └── plugin.json                   # Plugin metadata
+├── commands/
+│   ├── push.md                       # /conventional-commit:push command
+│   └── rewrite.md                    # /conventional-commit:rewrite command
+└── skills/
+    └── conventional-commit/
+        ├── SKILL.md                  # Skill definition and workflow
+        └── scripts/
+            └── rewrite_msg.py        # filter-branch helper for :rewrite
 ```
 
 ## Requirements

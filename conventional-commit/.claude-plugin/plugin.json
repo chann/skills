@@ -1,0 +1,5 @@
+{
+  "name": "conventional-commit",
+  "description": "Group current changes into Conventional Commits and rewrite non-conformant commit history.",
+  "version": "0.1.0"
+}

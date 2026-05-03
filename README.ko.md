@@ -26,6 +26,19 @@ git diff를 분석하여 **마크다운 및 HTML 리포트 파일**을 생성하
 └── 2026-04-08_a1b2c3d.html
 ```
 
+### conventional-commit
+
+작업 디렉터리(working tree)의 변경사항을 의미 단위로 분리하여 [Conventional Commits](https://www.conventionalcommits.org/) 규약에 맞춘 커밋을 만들어 주는 스킬입니다. 커밋 후 push 까지 실행하거나, 비순응 커밋 히스토리를 재작성할 수도 있습니다.
+
+**주요 기능:**
+
+- staged + unstaged 변경을 의미 단위(feat / fix / docs / ...)로 그룹핑하여 unit 별로 단일 커밋 생성
+- 절대 `git add .` 사용하지 않고 항상 명시 경로로 staging
+- `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고
+- `git filter-branch` 로 비순응 커밋 subject 만 재작성, 기존 body 는 보존
+- 이미 원격에 푸시된 커밋의 rewrite 는 기본 거부 (안전장치)
+- force push / hook 우회 (`--no-verify`) 자동 실행 안 함
+
 ## 설치 방법
 
 ### [skills.sh](https://skills.sh) 사용 (권장)
@@ -42,10 +55,17 @@ npx skills add chann/skills
 npx skills add chann/skills@code-review
 ```
 
+`conventional-commit` 스킬만 설치:
+
+```bash
+npx skills add chann/skills@conventional-commit
+```
+
 전역 설치 (모든 프로젝트에서 사용 가능):
 
 ```bash
 npx skills add -g chann/skills@code-review
+npx skills add -g chann/skills@conventional-commit
 ```
 
 ### 수동 설치
@@ -54,19 +74,23 @@ npx skills add -g chann/skills@code-review
 
 ```bash
 git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
+cd skills;
+ln -s "$(pwd)/code-review" ~/.claude/skills/code-review
+ln -s "$(pwd)/conventional-commit" ~/.claude/skills/conventional-commit
 ```
 
 ## 사용 방법
 
+### code-review
+
 설치 후 Claude Code에 코드 리뷰를 요청하면 자동으로 트리거되거나, 명시적 커맨드를 사용할 수 있습니다:
 
-| 커맨드 | 출력 |
-|---|---|
-| `/code-review` | 대화에서 결과 표시 (파일 생성 안 함) |
-| `/code-review:md` | `.reviews/`에 마크다운 리포트 파일 생성 |
-| `/code-review:markdown` | `:md`와 동일 |
-| `/code-review:html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
+| 커맨드                  | 출력                                      |
+| ----------------------- | ----------------------------------------- |
+| `/code-review`          | 대화에서 결과 표시 (파일 생성 안 함)      |
+| `/code-review:md`       | `.reviews/`에 마크다운 리포트 파일 생성   |
+| `/code-review:markdown` | `:md`와 동일                              |
+| `/code-review:html`     | `.reviews/`에 마크다운 + HTML 리포트 생성 |
 
 **예시:**
 
@@ -75,6 +99,25 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 > 마지막 커밋 리뷰
 > /code-review:html 스테이징된 변경사항 리뷰
 > /code-review:md feature-auth 브랜치를 main과 비교해서 리뷰
+```
+
+### conventional-commit
+
+커밋 작성을 요청하면 자동으로 트리거되거나, 명시적 커맨드를 사용할 수 있습니다:
+
+| 커맨드                         | 동작                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| `/conventional-commit`         | staged + unstaged 변경을 의미 단위로 분리해 unit 마다 Conventional Commit 생성 |
+| `/conventional-commit:push`    | 위 작업 후 `git push` 까지 진행 (force 안 함)                                  |
+| `/conventional-commit:rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                       |
+
+**예시:**
+
+```
+> 변경사항 의미 단위로 커밋해줘
+> commit my changes
+> /conventional-commit:push
+> /conventional-commit:rewrite
 ```
 
 스킬은 다음 순서로 동작합니다:
@@ -128,6 +171,18 @@ code-review/
 │       └── assets/
 │           └── report-template.html  # HTML 리포트 템플릿
 └── samples/                          # 테스트 샘플 파일
+
+conventional-commit/
+├── .claude-plugin/
+│   └── plugin.json                   # 플러그인 메타데이터
+├── commands/
+│   ├── push.md                       # /conventional-commit:push 커맨드
+│   └── rewrite.md                    # /conventional-commit:rewrite 커맨드
+└── skills/
+    └── conventional-commit/
+        ├── SKILL.md                  # 스킬 정의 및 워크플로우
+        └── scripts/
+            └── rewrite_msg.py        # :rewrite 용 filter-branch 헬퍼
 ```
 
 ## 요구 사항
