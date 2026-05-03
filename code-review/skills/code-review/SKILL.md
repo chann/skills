@@ -1,24 +1,76 @@
 ---
 name: code-review
-description: >
-  Review code changes in git repositories. Analyzes diffs for correctness, security, complexity,
-  consistency, maintainability, and language-specific best practices. Use this skill when the user
-  asks to review code, review changes, review a commit, review a PR, audit code quality, check for
-  security issues, or generate a code review report. Trigger on phrases like "review my changes",
-  "코드 리뷰", "check my code", "review the last commit", "what do you think of this diff",
-  "compare branches", "code audit", or any request for a written review of code changes — even if
-  they don't say "code review" explicitly.
+description: Use when the user asks to review code, review changes, review a commit, review a PR, audit code quality, check for security issues, or generate a code review report. Trigger on phrases like "review my changes", "코드 리뷰", "check my code", "review the last commit", "what do you think of this diff", "compare branches", "code audit" — even if they don't say "code review" explicitly.
 ---
 
 # Code Review Skill
 
-Structured code review from git diffs. This skill analyzes changes and presents findings directly in the conversation. For persistent report files, use the sub-commands:
+## Overview
 
-| Command | Output |
-|---|---|
-| `/code-review` | Analyze and show findings in conversation (no file) |
-| `/code-review:md` or `/code-review:markdown` | Write markdown report to `.reviews/` |
-| `/code-review:html` | Write markdown + HTML reports to `.reviews/` |
+Structured code review from git diffs. Analyzes changes for correctness, security, complexity, maintainability, and language-specific best practices, then presents findings either inline or as a persistent report.
+
+**Core principle:** Diff in → severity-tagged findings out, scoped strictly to what changed.
+
+**Announce at start:** "I'm using the code-review skill to review the requested changes."
+
+## Commands
+
+| Command | Output | When to use |
+|---|---|---|
+| `/code-review` (or implicit trigger) | Findings shown in conversation; no file | Quick interactive review |
+| `/code-review:md`, `/code-review:markdown` | Markdown file at `.reviews/<date>_<sha>.md` | Persistent record, share via git |
+| `/code-review:html` | Markdown file + self-contained HTML | Browser-readable report with badges, syntax highlighting, sidebar nav |
+
+## Command Examples
+
+### `/code-review` — interactive
+
+```
+User: review my changes
+→ git diff && git diff --staged
+→ Analyze
+→ Print findings in conversation; write nothing
+```
+
+```
+User: 마지막 커밋 코드 리뷰해줘
+→ git diff HEAD~1..HEAD
+→ Analyze; output narrative in Korean (section headings translated)
+→ Print findings in conversation
+```
+
+### `/code-review:md` — markdown report
+
+```
+User: /code-review:md review staged changes
+→ git diff --staged
+→ Analyze
+→ mkdir -p .reviews/
+→ Write .reviews/2026-05-03_staged.md
+→ Print 1-3 top findings + path to report
+```
+
+```
+User: /code-review:markdown review branch feature-auth compared to main
+→ git diff main...feature-auth
+→ Analyze
+→ Write .reviews/2026-05-03_<latest-sha>.md
+→ Suggest adding `.reviews/` to .gitignore (do NOT modify it)
+```
+
+### `/code-review:html` — HTML + markdown
+
+```
+User: /code-review:html review PR #42
+→ gh pr diff 42
+→ diff_stats.py reports has_security_sensitive_files: true
+→ Load python.md + common-vulnerabilities.md
+→ Analyze; find SQL injection (CRITICAL)
+→ Write .reviews/2026-05-03_a1b2c3d.md
+→ python <skill-path>/scripts/generate_html_report.py .reviews/2026-05-03_a1b2c3d.md
+→ open .reviews/2026-05-03_a1b2c3d.html
+→ Print summary in conversation
+```
 
 ## Determining Review Scope
 
@@ -214,23 +266,61 @@ Add a `**Language:**` field in the report metadata header so the HTML generator 
 
 Use the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag): `en`, `ko`, `ja`, `zh`, etc.
 
-## Behavior Guidelines
+## Quick Reference
 
-**Be specific, not generic.** Every finding must point to a file and line range. "Consider adding error handling" is useless without specifying where and why. Show the code, explain the risk, suggest the fix.
-
-**Balance criticism with praise.** The Positive Observations section is not optional. Balanced feedback is more actionable because reviewers who only criticize get tuned out.
-
-**Only review what changed.** Do not comment on existing code that wasn't part of the diff. The scope is the diff, not the entire codebase.
-
-**Minimize false positives.** If you're not confident something is an issue, use INFO severity and phrase it as a question: "This might cause X under Y conditions — worth verifying?" A false alarm wastes more time than a missed suggestion.
-
-**Handle large diffs gracefully.** For diffs over ~1000 changed lines, focus on CRITICAL and HIGH findings. Group similar MEDIUM/LOW findings by pattern (e.g., "12 instances of unused imports") rather than listing each one separately.
-
-**Trivial changes are OK to call trivial.** If the diff is only whitespace, comments, version bumps, or dependency updates, say so and produce a short report. Don't manufacture findings to fill space.
-
-**File naming convention:**
+**Filename convention:**
 - Commit-based: `.reviews/2026-04-08_a1b2c3d.md`
-- Staged changes: `.reviews/2026-04-08_staged.md`
+- Staged: `.reviews/2026-04-08_staged.md`
 - Working tree: `.reviews/2026-04-08_working.md`
 
-**Suggest adding `.reviews/` to `.gitignore`** if it's not already there, but don't modify `.gitignore` automatically.
+**Report language:** Match the user's prompt language. Translate section headings + narrative; keep finding IDs (`CR-001`), severity labels, code, and file paths in English. Add `**Language:** <bcp47>` field so the HTML generator sets `lang` correctly.
+
+**Large diffs (>1000 lines):** Focus on CRITICAL/HIGH. Group similar MEDIUM/LOW findings by pattern ("12 instances of unused imports") rather than listing each one separately.
+
+## Common Mistakes
+
+**Generic findings without location**
+- **Problem:** "Consider adding error handling" with no file/line
+- **Fix:** Every finding cites file + line range, shows current code, suggests fix
+
+**Reviewing unchanged code**
+- **Problem:** Comment on code outside the diff
+- **Fix:** Scope is the diff. Don't expand to the whole repo.
+
+**Manufactured findings on trivial diffs**
+- **Problem:** Inventing issues for whitespace/version-bump-only diffs
+- **Fix:** Call it trivial in 2-3 lines. Don't pad.
+
+**Loading every reference file**
+- **Problem:** Reading `python.md` when the diff is JS-only
+- **Fix:** Only load references for languages reported by `diff_stats.py`
+
+**False positives stated as facts**
+- **Problem:** "This is a bug" when you cannot verify
+- **Fix:** Use INFO + a question: "This might cause X under Y conditions — worth verifying?"
+
+**Missing positive observations**
+- **Problem:** Only listing issues; reviewers tune out
+- **Fix:** Always include the Positive Observations section, even on small diffs
+
+## Red Flags
+
+**Never:**
+- Write files for bare `/code-review` (conversation only)
+- Modify `.gitignore` automatically (suggest, don't apply)
+- Comment on code outside the diff
+- Skip the Positive Observations section
+- Manufacture findings to fill space
+
+**Always:**
+- Cite file + line range in every finding
+- Show before/after code
+- Default to INFO severity when uncertain
+- Match the user's prompt language for narrative
+- Suggest adding `.reviews/` to `.gitignore` if absent
+
+## Integration
+
+**Pairs with:**
+- **conventional-commit** — Review before committing for a final quality gate
+- Triggers via plugin commands; runs against any `git diff` output, so works on any repo with git history
