@@ -1,5 +1,5 @@
 ---
-description: Generate a markdown code review report file in .reviews/
+description: Variant of /code-review — write a markdown report to .reviews/<YYYY-MM-DD>_<short-sha>.md (no HTML)
 ---
 
 Use the code-review skill to review the requested changes.

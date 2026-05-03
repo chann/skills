@@ -1,5 +1,5 @@
 ---
-description: Generate an HTML code review report with syntax highlighting, diff views, and severity badges
+description: Variant of /code-review — write markdown + a styled HTML report (syntax highlighting, diff views, severity badges) to .reviews/
 ---
 
 Use the code-review skill to review the requested changes.

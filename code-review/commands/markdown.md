@@ -1,5 +1,5 @@
 ---
-description: Generate a markdown code review report file in .reviews/ (alias for md)
+description: Variant of /code-review — alias of :md, write a markdown report to .reviews/<YYYY-MM-DD>_<short-sha>.md
 ---
 
 Use the code-review skill to review the requested changes.
