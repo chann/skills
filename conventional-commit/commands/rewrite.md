@@ -1,5 +1,5 @@
 ---
-description: Rewrite recent non-Conventional commit messages to follow the Conventional Commits spec
+description: Variant of /conventional-commit — rewrite recent non-Conventional commit subjects in place (safety checks; never --force)
 ---
 
 Use the conventional-commit skill in **rewrite mode**. Follow the rewrite workflow in `SKILL.md` (`## Workflow: /conventional-commit:rewrite`) exactly:

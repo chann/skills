@@ -1,5 +1,5 @@
 ---
-description: Group current changes into Conventional Commits, then push to remote
+description: Variant of /conventional-commit — split working-tree changes into Conventional Commits, then git push (never --force)
 ---
 
 Use the conventional-commit skill to group the working-tree changes into Conventional Commits and create them.
