@@ -1,5 +1,5 @@
 {
   "name": "code-review",
   "description": "Automated code review that generates structured reports from git diffs. Analyzes correctness, security, complexity, maintainability, and language-specific best practices.",
-  "version": "1.2.0"
+  "version": "2.0.0"
 }
