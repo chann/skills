@@ -13,14 +13,16 @@ Variant of the `code-review` skill that produces a markdown report **and** a sel
 
 ## Workflow
 
-Follow the **Review Process** in the main `code-review` skill SKILL.md (`code-review/skills/code-review/SKILL.md`) exactly — steps 1–6 all apply, including HTML generation.
+**Before starting, Read the main `code-review` SKILL.md** at `<plugin-root>/skills/code-review/SKILL.md` — the Review Process steps, severity table, language reference mapping, and report markdown template all live there. The variant relies on those sections.
+
+Then follow the **Review Process** in the main SKILL.md exactly — steps 1–6 all apply, including HTML generation.
 
 In short:
 
 1. Determine review scope and run the matching `git diff` (see "Determining Review Scope" in the main SKILL.md).
 2. Run `diff_stats.py`, load language-relevant references, and `common-vulnerabilities.md` if needed.
 3. Analyze the diff against the five dimensions and assign severities.
-4. Write `.reviews/<YYYY-MM-DD>_<short-sha>.md` using the template.
+4. Write `.reviews/<YYYY-MM-DD>_<short-sha>.md` using the template. Suggest adding `.reviews/` to `.gitignore` if absent — never modify `.gitignore` automatically.
 5. Run `python <skill-path>/scripts/generate_html_report.py .reviews/<report>.md` to produce the `.html` file, then `open` it.
 6. Print a brief conversation summary.
 
@@ -36,7 +38,7 @@ Match the user's prompt language; see "Report Language" in the main SKILL.md. Se
 
 ## Red Flags
 
-Same Never/Always lists as the main `code-review/SKILL.md`. In particular: never modify `.gitignore` automatically (suggest only); never comment on code outside the diff.
+Same Never/Always lists as the main `<plugin-root>/skills/code-review/SKILL.md`. In particular: never modify `.gitignore` automatically (suggest only); never comment on code outside the diff.
 
 ## Integration
 

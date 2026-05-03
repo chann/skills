@@ -13,7 +13,9 @@ Variant of the `conventional-commit` skill that runs the standard commit workflo
 
 ## Workflow
 
-Follow the default workflow in the main `conventional-commit` skill SKILL.md (`conventional-commit/skills/conventional-commit/SKILL.md`) under `## Workflow: /conventional-commit` exactly — steps 1–5 (inspect, group, plan, commit, summary). Then push:
+**Before starting, Read the main `conventional-commit` SKILL.md** at `<plugin-root>/skills/conventional-commit/SKILL.md` — the full default workflow (steps 1–5), the secrets check, the commit-plan template, and the Red Flags list all live there. The variant relies on those sections.
+
+Then follow `## Workflow: /conventional-commit` in the main SKILL.md exactly — steps 1–5 (inspect, group, plan, commit, summary). After every commit succeeds, push:
 
 ```bash
 git push
@@ -31,7 +33,7 @@ See the "Worked Example" under `## Workflow: /conventional-commit-push` in the m
 
 ## Red Flags
 
-Same Never/Always lists as the main `conventional-commit/SKILL.md`. In particular:
+Same Never/Always lists as the main `<plugin-root>/skills/conventional-commit/SKILL.md`. In particular:
 
 - **Never** `git add .` or `git add -A` — always explicit paths.
 - **Never** bypass hooks with `--no-verify`.

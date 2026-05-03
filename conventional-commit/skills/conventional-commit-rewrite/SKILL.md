@@ -13,7 +13,9 @@ Rewrites non-Conformant commit subjects in recent history into Conventional Comm
 
 ## Workflow
 
-Follow `## Workflow: /conventional-commit-rewrite` in the main `conventional-commit` skill SKILL.md (`conventional-commit/skills/conventional-commit/SKILL.md`) exactly. Steps:
+**Before starting, Read the main `conventional-commit` SKILL.md** at `<plugin-root>/skills/conventional-commit/SKILL.md` — the safety check details, regex, "Mapping Common Non-Conformant Patterns" table, in-place / branch-based rewrite scripts, and post-rewrite cleanup commands all live there. The variant relies on those sections.
+
+Then follow `## Workflow: /conventional-commit-rewrite` in the main SKILL.md exactly. Steps:
 
 1. **Determine the rewrite range** — default base is the upstream merge-base (or `main` / `master` merge-base); or `HEAD~N` if the user specifies a count. Never use `--root`.
 2. **Run safety checks A, B, C** — working tree clean; HEAD attached; check whether any commit in range is on a remote.
@@ -30,7 +32,7 @@ The script lives at `<plugin-root>/skills/conventional-commit/scripts/rewrite_ms
 
 ## Red Flags
 
-Same Never/Always lists as the main `conventional-commit/SKILL.md`. In particular:
+Same Never/Always lists as the main `<plugin-root>/skills/conventional-commit/SKILL.md`. In particular:
 
 - **Never** `--force` push (only `--force-with-lease` after explicit user consent).
 - **Never** rewrite pushed commits without showing the 3-option menu first.

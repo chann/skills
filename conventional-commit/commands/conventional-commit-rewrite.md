@@ -2,7 +2,7 @@
 description: Rewrite recent non-Conventional commit subjects in place (safety checks; never --force)
 ---
 
-Use the **conventional-commit-rewrite** skill to rewrite recent non-Conventional commit subjects. Follow the rewrite workflow in `conventional-commit/SKILL.md` (`## Workflow: /conventional-commit-rewrite`) exactly:
+Use the **conventional-commit-rewrite** skill to rewrite recent non-Conventional commit subjects. Follow the rewrite workflow in `conventional-commit/skills/conventional-commit/SKILL.md` (`## Workflow: /conventional-commit-rewrite`) exactly:
 
 1. **Determine the rewrite range** — default: from upstream merge-base (or `main`/`master` merge-base) to HEAD; or `HEAD~N` if the user specifies a count.
 2. **Run safety checks (A, B, C)** — working tree clean; HEAD attached; check whether any commit in range is on a remote.
