@@ -10,6 +10,7 @@
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트                       |
 | **[conventional-commit](conventional-commit/README.ko.md)** | 변경사항을 Conventional Commits 단위로 분리, 선택적 push, 또는 어수선한 커밋 히스토리 재작성 |
+| **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 
 ## 설치 방법
 
@@ -23,6 +24,7 @@ npx skills add -y -g chann/skills
 
 - [code-review 설치](code-review/README.ko.md#설치-방법)
 - [conventional-commit 설치](conventional-commit/README.ko.md#설치-방법)
+- [long-task 설치](long-task/README.ko.md#설치-방법)
 
 ## 빠른 참조
 
@@ -42,9 +44,33 @@ npx skills add -y -g chann/skills
 | `/conventional-commit-push`    | 위 작업 후 `git push` 까지 진행 (`--force` 안 함)                 |
 | `/conventional-commit-rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성          |
 
+### long-task → [상세](long-task/README.ko.md)
+
+| 커맨드       | 동작                                                                                          |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| `/long-task` | 병렬 worktree 서브에이전트 + 마일스톤 리뷰로 프로젝트를 처음부터 끝까지 자율적으로 구현       |
+
+*"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 문구에도 자동 트리거됩니다.
+
+## 다른 에이전트 플랫폼에서 사용
+
+이 저장소의 모든 `SKILL.md` 파일은 표준 스킬 포맷을 따르고 Claude-Code 전용 툴을 참조하지 않으므로, 스킬을 지원하는 모든 에이전트 플랫폼에서 동작합니다:
+
+| 플랫폼                                                  | 설치 방법                                                                                       |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **[Claude Code](https://code.claude.com)**              | `npx skills add chann/skills` — 전체 플러그인 설치 (스킬 + 슬래시 커맨드)                       |
+| **[Codex](https://github.com/openai/codex)**            | `<plugin>/skills/<name>/` 를 Codex 스킬 디렉토리(`~/.agents/skills/` 등)에 심볼릭 링크          |
+| **[opencode](https://github.com/sst/opencode)**         | 스킬 디렉토리를 opencode 의 스킬 경로에 배치                                                    |
+| **Copilot CLI / Gemini CLI / 기타**                     | 플랫폼별 스킬 로더가 `<plugin>/skills/<name>/SKILL.md` 를 가리키도록 설정 (각 플랫폼 문서 참조) |
+
+이식 가능한 것 vs 그렇지 않은 것:
+
+- **이식 가능** — 모든 `SKILL.md` 본문과 `references/`. 자연어 문구만으로 어떤 플랫폼에서든 트리거됩니다.
+- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼, `npx skills` 설치 도구, 슬래시 커맨드(`/code-review`, `/conventional-commit`, `/long-task`). 다른 플랫폼에서는 자연어 또는 자체 활성화 메커니즘으로 호출합니다.
+
 ## 요구 사항
 
-- [Claude Code](https://code.claude.com) (CLI, 데스크톱 앱, 또는 IDE 확장)
+- 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
 - Python 3.10+ (`code-review-html`, `conventional-commit-rewrite` 사용 시 필요)
 
