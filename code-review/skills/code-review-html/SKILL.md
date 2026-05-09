@@ -42,4 +42,4 @@ Same Never/Always lists as the main `<plugin-root>/skills/code-review/SKILL.md`.
 
 ## Integration
 
-**Pairs with:** `conventional-commit` — review before committing for a final quality gate.
+**Pairs with:** `git-commit` — review before committing for a final quality gate.

@@ -1,9 +1,9 @@
 ---
-name: conventional-commit
-description: Use when the user asks to commit changes, organize commits, write commit messages, or split working-tree changes into Conventional Commits. Trigger on phrases like "commit my changes", "커밋해줘", "커밋 분리", "make commits", "/conventional-commit", or whenever the user wants to turn current changes into Conventional Commit-style commits. For commit + push use `conventional-commit-push`; for rewriting non-Conventional commit history use `conventional-commit-rewrite`.
+name: git-commit
+description: Use when the user asks to commit changes, organize commits, write commit messages, or split working-tree changes into Conventional Commits. Trigger on phrases like "commit my changes", "커밋해줘", "커밋 분리", "make commits", "/git-commit", or whenever the user wants to turn current changes into Conventional Commit-style commits. For commit + push use `git-commit-push`; for rewriting non-Conventional commit history use `git-commit-rewrite`.
 ---
 
-# Conventional Commit Skill
+# Git Commit Skill
 
 ## Overview
 
@@ -11,15 +11,15 @@ Group working-tree changes into [Conventional Commits 1.0.0](https://www.convent
 
 **Core principle:** Match user intent to the right workflow — new commits vs. history rewrite — and never bypass safety with destructive flags.
 
-**Announce at start:** "I'm using the conventional-commit skill to <commit / push / rewrite> these changes."
+**Announce at start:** "I'm using the git-commit skill to <commit / push / rewrite> these changes."
 
 ## Commands
 
 | Command | Skill | Action | Operates on |
 |---|---|---|---|
-| `/conventional-commit` | `conventional-commit` | Group working-tree changes into Conventional Commits | Uncommitted (staged + unstaged) changes |
-| `/conventional-commit-push` | `conventional-commit-push` | Same as above, then `git push` (no `--force`) | Uncommitted changes + remote |
-| `/conventional-commit-rewrite` | `conventional-commit-rewrite` | Rewrite recent non-Conformant commit subjects | Existing local history |
+| `/git-commit` | `git-commit` | Group working-tree changes into Conventional Commits | Uncommitted (staged + unstaged) changes |
+| `/git-commit-push` | `git-commit-push` | Same as above, then `git push` (no `--force`) | Uncommitted changes + remote |
+| `/git-commit-rewrite` | `git-commit-rewrite` | Rewrite recent non-Conformant commit subjects | Existing local history |
 
 ## Choosing the Right Command
 
@@ -32,12 +32,12 @@ git log --oneline -10     # Are recent messages already Conventional?
 
 | Situation | Command |
 |---|---|
-| Working tree has changes, history is fine | `/conventional-commit` |
-| Working tree has changes + want to push | `/conventional-commit-push` |
-| Working tree clean, recent history is messy ("Added X", "WIP", "Fixed bug") | `/conventional-commit-rewrite` |
-| Both: working tree dirty AND history messy | First commit (`/conventional-commit`), then `/conventional-commit-rewrite` separately |
+| Working tree has changes, history is fine | `/git-commit` |
+| Working tree has changes + want to push | `/git-commit-push` |
+| Working tree clean, recent history is messy ("Added X", "WIP", "Fixed bug") | `/git-commit-rewrite` |
+| Both: working tree dirty AND history messy | First commit (`/git-commit`), then `/git-commit-rewrite` separately |
 
-**Auto-routing:** If the user runs bare `/conventional-commit` but the working tree is clean, look at recent history. If recent commits are non-conformant, surface this and ask: "No working changes to commit. Recent history has N non-Conformant subjects — do you want to rewrite them with `/conventional-commit-rewrite`?"
+**Auto-routing:** If the user runs bare `/git-commit` but the working tree is clean, look at recent history. If recent commits are non-conformant, surface this and ask: "No working changes to commit. Recent history has N non-Conformant subjects — do you want to rewrite them with `/git-commit-rewrite`?"
 
 ## Conventional Commits Format
 
@@ -88,7 +88,7 @@ feat!: send email on registration
 BREAKING CHANGE: email service is now required at boot
 ```
 
-## Workflow: `/conventional-commit` (default)
+## Workflow: `/git-commit` (default)
 
 ### Step 1: Inspect the working tree
 
@@ -190,7 +190,7 @@ git status --short →
 → git log --oneline -3
 ```
 
-## Workflow: `/conventional-commit-push`
+## Workflow: `/git-commit-push`
 
 Run the default workflow above. After every commit succeeds:
 
@@ -209,7 +209,7 @@ git push -u origin "$(git branch --show-current)"
 ### Worked Example
 
 ```
-User: /conventional-commit-push
+User: /git-commit-push
 
 (Same workflow as default, then:)
 → git push
@@ -219,7 +219,7 @@ User: /conventional-commit-push
     first, then re-push manually. I will not auto-resolve."
 ```
 
-## Workflow: `/conventional-commit-rewrite`
+## Workflow: `/git-commit-rewrite`
 
 Rewrites non-Conformant commit messages in recent history. **This is destructive** — it changes commit SHAs. The default policy refuses to touch any commit that already exists on a remote.
 
@@ -343,9 +343,9 @@ The new full message is `<new subject>\n\n<original body>` (or just `<new subjec
 Then run (use absolute path to the script):
 
 ```bash
-script="$HOME/.claude/skills/conventional-commit/scripts/rewrite_msg.py"
+script="$HOME/.claude/skills/git-commit/scripts/rewrite_msg.py"
 # Plugin install path may differ; resolve via:
-#   script=$(find ~/.claude -name rewrite_msg.py -path '*conventional-commit*' | head -1)
+#   script=$(find ~/.claude -name rewrite_msg.py -path '*git-commit*' | head -1)
 FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f \
   --msg-filter "python3 '$script'" \
   "$base..HEAD"
@@ -479,8 +479,8 @@ Use these translations when generating new subjects in Step 4.
 
 | Symptom | Action |
 |---|---|
-| No working changes + messy history | Suggest `/conventional-commit-rewrite` |
-| Working changes + messy history | Commit first, then `/conventional-commit-rewrite` |
+| No working changes + messy history | Suggest `/git-commit-rewrite` |
+| Working changes + messy history | Commit first, then `/git-commit-rewrite` |
 | Pushed history + want to fix | Use Step 7 (branch-based rewrite) |
 | Pre-commit hook fails | Fix the underlying issue; never `--no-verify` |
 | Push rejected (non-FF) | Stop, surface error, never `--force` without explicit consent |
@@ -554,6 +554,7 @@ Use these translations when generating new subjects in Step 4.
 
 **Pairs with:**
 - **code-review** — Run `/code-review` before committing as a final quality gate
+- **git-merge-to-main** / **git-merge-to-dev** — After committing, integrate the branch
 - Any plugin commit hooks (commitlint, husky) — fix violations rather than `--no-verify`
 
 **Called by:** Manual user invocation only. Never auto-run during another skill's workflow.

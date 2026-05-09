@@ -315,5 +315,5 @@ Use the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag): 
 ## Integration
 
 **Pairs with:**
-- **conventional-commit** — Review before committing for a final quality gate
+- **git-commit** — Review before committing for a final quality gate
 - Triggers via plugin commands; runs against any `git diff` output, so works on any repo with git history
