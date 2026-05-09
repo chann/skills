@@ -9,7 +9,7 @@ A collection of practical agent skills for software engineering workflows.
 | Skill                                              | What it does                                                                                  |
 | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.md)**           | Automated code review from git diffs — markdown / HTML reports with severity ratings          |
-| **[conventional-commit](conventional-commit/README.md)** | Group changes into Conventional Commits, optionally push, or rewrite messy commit history |
+| **[git-skill](git-skill/README.md)**               | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup     |
 | **[long-task](long-task/README.md)**               | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews  |
 
 ## Installation
@@ -23,7 +23,7 @@ npx skills add -y -g chann/skills
 Per-skill or non-global installs (and manual setup) are documented in each skill's README:
 
 - [code-review installation](code-review/README.md#installation)
-- [conventional-commit installation](conventional-commit/README.md#installation)
+- [git-skill installation](git-skill/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
 
 ## Quick reference
@@ -36,13 +36,16 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 | `/code-review-md`   | Write markdown report to `.reviews/`         |
 | `/code-review-html` | Write markdown + HTML reports to `.reviews/` |
 
-### conventional-commit → [details](conventional-commit/README.md)
+### git-skill → [details](git-skill/README.md)
 
-| Command                        | Action                                                            |
-| ------------------------------ | ----------------------------------------------------------------- |
-| `/conventional-commit`         | Group working-tree changes into Conventional Commits              |
-| `/conventional-commit-push`    | Same, then `git push` (no `--force`)                              |
-| `/conventional-commit-rewrite` | Rewrite recent non-Conventional commit subjects                   |
+| Command                | Action                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------- |
+| `/git-commit`          | Group working-tree changes into Conventional Commits                                  |
+| `/git-commit-push`     | Same, then `git push` (no `--force`)                                                  |
+| `/git-commit-rewrite`  | Rewrite recent non-Conventional commit subjects                                       |
+| `/git-merge-to-main`   | Merge current branch into `main`, then `git branch -d` the source                     |
+| `/git-merge-to-dev`    | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
+| `/git-branch-cleanup`  | Delete every local branch already merged into a protected branch                      |
 
 ### long-task → [details](long-task/README.md)
 
@@ -66,13 +69,13 @@ All `SKILL.md` files in this repo follow the standard skill format and reference
 What is and isn't portable:
 
 - **Portable** — every `SKILL.md` body and its `references/`. The skills trigger on natural-language phrases on any platform.
-- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/code-review`, `/conventional-commit`, `/long-task`). Other platforms invoke the skill via natural language or their own activation mechanism.
+- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/code-review`, `/git-commit`, `/long-task`, ...). Other platforms invoke the skill via natural language or their own activation mechanism.
 
 ## Requirements
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
-- Python 3.10+ (for `code-review-html` and `conventional-commit-rewrite`)
+- Python 3.10+ (for `code-review-html` and `git-commit-rewrite`)
 
 ## License
 

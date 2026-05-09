@@ -9,7 +9,7 @@
 | 스킬                                                | 설명                                                                                          |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트                       |
-| **[conventional-commit](conventional-commit/README.ko.md)** | 변경사항을 Conventional Commits 단위로 분리, 선택적 push, 또는 어수선한 커밋 히스토리 재작성 |
+| **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, push, 히스토리 재작성, main/dev 머지, 머지된 로컬 브랜치 정리            |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 
 ## 설치 방법
@@ -23,7 +23,7 @@ npx skills add -y -g chann/skills
 스킬별 설치 또는 비전역 / 수동 설치는 각 스킬 README 참조:
 
 - [code-review 설치](code-review/README.ko.md#설치-방법)
-- [conventional-commit 설치](conventional-commit/README.ko.md#설치-방법)
+- [git-skill 설치](git-skill/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
 
 ## 빠른 참조
@@ -36,13 +36,16 @@ npx skills add -y -g chann/skills
 | `/code-review-md`   | `.reviews/`에 마크다운 리포트 파일 생성   |
 | `/code-review-html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
 
-### conventional-commit → [상세](conventional-commit/README.ko.md)
+### git-skill → [상세](git-skill/README.ko.md)
 
-| 커맨드                         | 동작                                                              |
-| ------------------------------ | ----------------------------------------------------------------- |
-| `/conventional-commit`         | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋          |
-| `/conventional-commit-push`    | 위 작업 후 `git push` 까지 진행 (`--force` 안 함)                 |
-| `/conventional-commit-rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성          |
+| 커맨드                | 동작                                                                            |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `/git-commit`         | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
+| `/git-commit-push`    | 위 작업 후 `git push` 까지 진행 (`--force` 안 함)                               |
+| `/git-commit-rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                        |
+| `/git-merge-to-main`  | 현재 브랜치를 `main` 으로 머지 후 소스 브랜치를 `git branch -d` 로 삭제         |
+| `/git-merge-to-dev`   | 현재 브랜치를 `dev` (없으면 `develop`) 으로 머지 후 소스 브랜치 삭제            |
+| `/git-branch-cleanup` | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                 |
 
 ### long-task → [상세](long-task/README.ko.md)
 
@@ -66,13 +69,13 @@ npx skills add -y -g chann/skills
 이식 가능한 것 vs 그렇지 않은 것:
 
 - **이식 가능** — 모든 `SKILL.md` 본문과 `references/`. 자연어 문구만으로 어떤 플랫폼에서든 트리거됩니다.
-- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼, `npx skills` 설치 도구, 슬래시 커맨드(`/code-review`, `/conventional-commit`, `/long-task`). 다른 플랫폼에서는 자연어 또는 자체 활성화 메커니즘으로 호출합니다.
+- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼, `npx skills` 설치 도구, 슬래시 커맨드(`/code-review`, `/git-commit`, `/long-task` 등). 다른 플랫폼에서는 자연어 또는 자체 활성화 메커니즘으로 호출합니다.
 
 ## 요구 사항
 
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
-- Python 3.10+ (`code-review-html`, `conventional-commit-rewrite` 사용 시 필요)
+- Python 3.10+ (`code-review-html`, `git-commit-rewrite` 사용 시 필요)
 
 ## 라이선스
 
