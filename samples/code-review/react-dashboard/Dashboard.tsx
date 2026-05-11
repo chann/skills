@@ -1,3 +1,14 @@
+// ============================================================================
+// INTENTIONALLY VULNERABLE FIXTURE — DO NOT COPY OR DEPLOY.
+//
+// Test fixture for the `code-review` skill. Deliberately contains a
+// hardcoded "API key" placeholder, dangerouslySetInnerHTML XSS, a
+// hooks-rule violation (useState inside a conditional), and other
+// anti-patterns. Any SAST tool that flags this file is correct — the
+// file exists to be flagged.
+//
+// Real code MUST NOT mirror this pattern.
+// ============================================================================
 import React, { useState, useEffect } from 'react';
 
 interface User {
@@ -7,7 +18,9 @@ interface User {
   role: string;
 }
 
-const API_KEY = "sk-prod-abc123xyz789";
+// Fixture-only placeholder, NOT a real key. Replaces the previous sk-prod-*
+// style string so secret scanners stop flagging this file as a leak.
+const API_KEY = "EXAMPLE-NOT-REAL-fixture-key";
 
 function Dashboard({ userId }) {
   const [users, setUsers] = useState([]);

@@ -1,3 +1,13 @@
+// ============================================================================
+// INTENTIONALLY VULNERABLE FIXTURE — DO NOT COPY OR DEPLOY.
+//
+// Test fixture for the `code-review` skill. Deliberately contains SQL
+// injection via fmt.Sprintf, password leakage in API responses, CORS
+// wildcards, and other anti-patterns. Any SAST tool that flags this
+// file is correct — the file exists to be flagged.
+//
+// Real code MUST NOT mirror this pattern.
+// ============================================================================
 package api
 
 import (

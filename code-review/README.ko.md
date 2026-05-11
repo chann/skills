@@ -114,8 +114,10 @@ code-review/
 │   │   └── SKILL.md                      # 마크다운 변형 스킬
 │   └── code-review-html/
 │       └── SKILL.md                      # HTML 변형 스킬
-└── samples/                              # 테스트 샘플 파일
+└── .snyk                                 # 샘플 fixture용 SAST exclude 정책
 ```
+
+리뷰어가 잡아내야 할 **의도적으로 취약한 샘플 코드**는 플러그인 폴더 밖, 저장소 루트의 [`samples/code-review/`](../samples/code-review/) 에 있습니다. 배포되는 플러그인 artifact에는 포함되지 않습니다.
 
 ## 요구 사항
 
@@ -127,12 +129,13 @@ code-review/
 
 Snyk 등 SAST 도구가 이 스킬을 잡는 경우 아래 항목을 참고하세요.
 
+- **테스트 fixture (High-Risk의 주된 역사적 원인, 제거됨)**: 이전 버전에서는 의도적으로 취약한 `samples/python-auth/auth_service.py`, `samples/react-dashboard/Dashboard.tsx`, `samples/go-api/handler.go` 가 플러그인 폴더 안에 있었습니다 (SQL injection, MD5, pickle deserialization, 하드코딩 시크릿, `dangerouslySetInnerHTML`, CORS wildcard 등). 이 파일들은 리뷰어가 잡아내라고 일부러 broken하게 만든 것이며, 이제 저장소 루트 [`samples/code-review/`](../samples/code-review/) 로 옮겨 배포 artifact에서 제외됐습니다. `.snyk` 정책 파일이 `samples/**` 를 추가로 exclude 합니다.
 - **`generate_html_report.py` — fence language attribute XSS (실제 버그, 수정됨)**: 수정 전에는 ` ```a"><script>... ` 같은 악의적인 마크다운 fence가 `class="language-..."` attribute를 빠져나갈 수 있었습니다 (`html.escape(..., quote=False)`는 `"`를 escape 하지 않음). 새로 추가된 `safe_lang()` 헬퍼가 lang 토큰을 `[A-Za-z0-9._+-]{0,32}` 화이트리스트로 제한해 attribute 탈출을 차단합니다.
 - **`html.escape(quote=False)` 광범위 사용 (false positive)**: `quote=False` 결과는 모두 element body context에만 삽입됩니다. attribute에 들어가는 값은 하드코딩된 클래스명이거나 `slugify()`로 비단어 문자를 제거한 anchor뿐 — 오염된 값이 attribute에 도달하지 않습니다.
 - **raw markdown 임베드 (정상 방어 중)**: 마크다운 원본은 브라우저가 실행하지 않는 `<script type="application/json">` 블록 안에 들어가고, `</` 시퀀스를 `<\/`로 변환해 script 태그 조기 종료를 막습니다.
 - **CLI path 인자 (false positive)**: `args.input` 읽기와 `args.output` 쓰기는 사용자가 직접 입력한 경로이며, 권한 상승이나 외부 입력 통로가 없습니다.
 
-위에서 언급된 line 75 + `safe_lang()` 추가가 유일하게 필요한 실제 수정이고, 나머지는 직접 작성한 markdown→HTML 변환기에서 나오는 스캐너 노이즈입니다.
+앞으로 의도적으로 취약한 fixture를 추가할 일이 있다면 플러그인 폴더가 아닌 저장소 루트의 `samples/` 트리 안에 두세요. `.snyk` 가 그쪽을 exclude 합니다.
 
 ## 라이선스
 

@@ -1,0 +1,26 @@
+# Snyk (https://snyk.io) policy file for the `code-review` skill.
+#
+# The `code-review` skill is a code review automation. Its own runtime code
+# (commands/, scripts/, skills/) ships in this folder and should be scanned
+# normally — please report any real vulnerabilities found there.
+#
+# Historical samples of intentionally vulnerable code that the reviewer skill
+# is meant to flag now live OUTSIDE this plugin folder, at the repo root in
+# `samples/code-review/`. That move keeps test fixtures out of the published
+# plugin artifact. This `.snyk` exists so that if a scanner does descend into
+# this folder, no future re-introduction of fixture-style sample code is
+# treated as a real production finding.
+version: v1.25.0
+
+exclude:
+  code:
+    - 'samples/**'
+    - '**/samples/**'
+    - '**/__fixtures__/**'
+    - '**/__samples__/**'
+  global:
+    - 'samples/**'
+    - '**/samples/**'
+
+ignore: {}
+patch: {}

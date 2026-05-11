@@ -1,0 +1,24 @@
+# Snyk (https://snyk.io) policy file for the chann/skills monorepo.
+#
+# `samples/` contains intentionally vulnerable code that the `code-review`
+# skill is designed to flag. These files exist so the reviewer skill has
+# obvious findings to detect during development and demos. They are NOT
+# shipped inside any published plugin artifact (`code-review/`, `git-skill/`,
+# `long-task/` etc.) and they are NOT meant to be deployed.
+#
+# Tell Snyk Code to skip the samples folder so that fixture vulnerabilities
+# are not mistaken for real production findings.
+version: v1.25.0
+
+exclude:
+  code:
+    - 'samples/**'
+    - '**/samples/**'
+    - '**/__fixtures__/**'
+    - '**/__samples__/**'
+  global:
+    - 'samples/**'
+    - '**/samples/**'
+
+ignore: {}
+patch: {}

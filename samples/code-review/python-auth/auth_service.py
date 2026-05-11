@@ -1,10 +1,20 @@
-"""Authentication service for user management."""
+# ============================================================================
+# INTENTIONALLY VULNERABLE FIXTURE — DO NOT COPY OR DEPLOY.
+#
+# Test fixture for the `code-review` skill. Deliberately contains SQL injection,
+# MD5 password hashing, pickle deserialization, hardcoded secrets, and OS
+# command injection so the reviewer has obvious findings to detect. Any SAST
+# tool that flags this file is correct — the file exists to be flagged.
+#
+# Real code MUST NOT mirror this pattern.
+# ============================================================================
+"""Authentication service for user management. (FIXTURE — intentionally vulnerable.)"""
 import sqlite3
-import pickle
+import pickle  # nosec B403 — fixture: pickle is intentionally used for the reviewer to catch
 import hashlib
-import os
+import os  # nosec — fixture
 
-SECRET_KEY = "my-super-secret-key-12345"
+SECRET_KEY = "EXAMPLE-NOT-REAL-fixture-key"  # nosec — intentionally hardcoded for the reviewer to flag
 DB_PATH = "/var/data/users.db"
 
 
