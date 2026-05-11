@@ -123,6 +123,17 @@ code-review/
 - Git repository
 - Python 3.10+ (for HTML report generation)
 
+## Security notes
+
+If you see Snyk or other SAST tools flag this skill, here is the breakdown:
+
+- **`generate_html_report.py` — fence-language attribute XSS (real, fixed)**: prior to the fix, a malicious markdown fence like ` ```a"><script>... ` could break out of the `class="language-..."` attribute because `html.escape(..., quote=False)` does not escape `"`. The lang token is now whitelisted to `[A-Za-z0-9._+-]{0,32}` via `safe_lang()`, eliminating attribute breakout regardless of input.
+- **`generate_html_report.py` — `html.escape(quote=False)` flagged broadly (false positive)**: the helper deliberately uses `quote=False` and only inserts the result into element-body contexts. All attribute insertions are either hardcoded class names or anchor values produced by `slugify()` (which strips non-word characters). No tainted value reaches an attribute.
+- **`generate_html_report.py` — raw-markdown embed (correctly defended)**: the markdown source is embedded into the HTML inside a `<script type="application/json">` block (not executed by browsers) and `</` sequences are escaped to `<\/` so the script tag cannot be closed prematurely.
+- **`generate_html_report.py` — path arguments (false positive)**: the tool reads `args.input` and writes `args.output`. These are CLI arguments the user typed themselves; there is no privileged read/write surface to attack.
+
+The fix above (line 75 of `generate_html_report.py` plus the new `safe_lang()` helper) is the only real change required. The rest is scanner noise from rolling our own markdown-to-HTML conversion.
+
 ## License
 
 MIT

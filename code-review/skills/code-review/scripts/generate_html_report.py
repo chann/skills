@@ -17,10 +17,20 @@ from pathlib import Path
 
 SEVERITY_LEVELS = ("CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO")
 SEVERITY_LOWER = {s: s.lower() for s in SEVERITY_LEVELS}
+LANG_TOKEN_RE = re.compile(r"[^\w.+-]")
 
 
 def escape(text: str) -> str:
     return html.escape(text, quote=False)
+
+
+def safe_lang(text: str) -> str:
+    """Sanitize a markdown fence language tag for safe insertion as an HTML class.
+
+    Drops everything outside `[A-Za-z0-9_.+-]` so a malicious fence like
+    ``` ```a"><script>``` ``` cannot break out of the attribute. Caps length to 32.
+    """
+    return LANG_TOKEN_RE.sub("", text)[:32]
 
 
 def convert_inline(text: str) -> str:
@@ -68,7 +78,8 @@ def wrap_code_block(code: str, lang: str) -> str:
     """Wrap escaped code in a pre/code block with a Copy button."""
     if lang == "diff":
         return wrap_diff_block(code)
-    lang_attr = f' class="language-{escape(lang)}"' if lang else ''
+    sanitized = safe_lang(lang) if lang else ""
+    lang_attr = f' class="language-{sanitized}"' if sanitized else ""
     return (
         '<div class="code-block-wrapper">'
         f'<button class="copy-btn" type="button">Copy</button>'

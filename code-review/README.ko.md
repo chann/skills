@@ -123,6 +123,17 @@ code-review/
 - Git 저장소
 - Python 3.10+ (HTML 리포트 생성 시 필요)
 
+## 보안 노트
+
+Snyk 등 SAST 도구가 이 스킬을 잡는 경우 아래 항목을 참고하세요.
+
+- **`generate_html_report.py` — fence language attribute XSS (실제 버그, 수정됨)**: 수정 전에는 ` ```a"><script>... ` 같은 악의적인 마크다운 fence가 `class="language-..."` attribute를 빠져나갈 수 있었습니다 (`html.escape(..., quote=False)`는 `"`를 escape 하지 않음). 새로 추가된 `safe_lang()` 헬퍼가 lang 토큰을 `[A-Za-z0-9._+-]{0,32}` 화이트리스트로 제한해 attribute 탈출을 차단합니다.
+- **`html.escape(quote=False)` 광범위 사용 (false positive)**: `quote=False` 결과는 모두 element body context에만 삽입됩니다. attribute에 들어가는 값은 하드코딩된 클래스명이거나 `slugify()`로 비단어 문자를 제거한 anchor뿐 — 오염된 값이 attribute에 도달하지 않습니다.
+- **raw markdown 임베드 (정상 방어 중)**: 마크다운 원본은 브라우저가 실행하지 않는 `<script type="application/json">` 블록 안에 들어가고, `</` 시퀀스를 `<\/`로 변환해 script 태그 조기 종료를 막습니다.
+- **CLI path 인자 (false positive)**: `args.input` 읽기와 `args.output` 쓰기는 사용자가 직접 입력한 경로이며, 권한 상승이나 외부 입력 통로가 없습니다.
+
+위에서 언급된 line 75 + `safe_lang()` 추가가 유일하게 필요한 실제 수정이고, 나머지는 직접 작성한 markdown→HTML 변환기에서 나오는 스캐너 노이즈입니다.
+
 ## 라이선스
 
 MIT
