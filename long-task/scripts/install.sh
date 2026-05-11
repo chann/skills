@@ -49,7 +49,11 @@ settings_path.parent.mkdir(parents=True, exist_ok=True)
 
 if settings_path.exists():
     text = settings_path.read_text(encoding="utf-8").strip()
-    data = json.loads(text) if text else {}
+    try:
+        data = json.loads(text) if text else {}
+    except json.JSONDecodeError as exc:
+        print(f"Refusing to patch malformed JSON at {settings_path}: {exc}", file=sys.stderr)
+        sys.exit(1)
 else:
     data = {}
 
@@ -81,7 +85,22 @@ else:
     })
     action = "installed"
 
-settings_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+# Atomic write: tempfile in same directory, fsync, then os.replace.
+serialized = json.dumps(data, indent=2) + "\n"
+tmp_path = settings_path.with_suffix(settings_path.suffix + ".tmp")
+try:
+    with open(tmp_path, "w", encoding="utf-8") as fh:
+        fh.write(serialized)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp_path, settings_path)
+finally:
+    if tmp_path.exists():
+        try:
+            tmp_path.unlink()
+        except OSError:
+            pass
+
 print(f"long-task Stop hook {action}.")
 print(f"  Command:  {command}")
 print(f"  Settings: {settings_path}")

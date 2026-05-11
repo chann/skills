@@ -75,18 +75,41 @@ def fmt_elapsed(seconds: int) -> str:
 # state.md frontmatter I/O
 # ---------------------------------------------------------------------------
 
+VALID_STATUSES = {"active", "paused", "complete"}
+PHASE_MIN, PHASE_MAX = 1, 3
+RUNAWAY_HARD_CAP = 100_000  # absolute ceiling regardless of state.md contents
+
+
+def _coerce_int(value: Any, default: int, *, lo: int | None = None, hi: int | None = None) -> int:
+    """Best-effort int conversion with bounds; corrupted state.md never crashes."""
+    try:
+        out = int(value)
+    except (TypeError, ValueError):
+        return default
+    if lo is not None and out < lo:
+        return lo
+    if hi is not None and out > hi:
+        return hi
+    return out
+
+
 class State:
     """In-memory view of `.agent/state.md` frontmatter."""
 
     KEYS = ("status", "phase", "started_at", "last_update", "runaway_count", "max_runaway")
 
     def __init__(self, data: dict[str, Any]):
-        self.status: str = data.get("status", "active")
-        self.phase: int = int(data.get("phase", 1))
+        status = (data.get("status") or "active").strip()
+        self.status: str = status if status in VALID_STATUSES else "active"
+        self.phase: int = _coerce_int(data.get("phase"), 1, lo=PHASE_MIN, hi=PHASE_MAX)
         self.started_at: str = data.get("started_at") or now_iso()
         self.last_update: str = data.get("last_update") or self.started_at
-        self.runaway_count: int = int(data.get("runaway_count", 0))
-        self.max_runaway: int = int(data.get("max_runaway", DEFAULT_MAX_RUNAWAY))
+        self.runaway_count: int = _coerce_int(
+            data.get("runaway_count"), 0, lo=0, hi=RUNAWAY_HARD_CAP
+        )
+        self.max_runaway: int = _coerce_int(
+            data.get("max_runaway"), DEFAULT_MAX_RUNAWAY, lo=1, hi=RUNAWAY_HARD_CAP
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -113,7 +136,10 @@ def read_state(cwd: Path) -> State | None:
     path = state_path(cwd)
     if not path.is_file():
         return None
-    text = path.read_text(encoding="utf-8")
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
     match = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not match:
         return None
@@ -127,10 +153,24 @@ def read_state(cwd: Path) -> State | None:
     return State(data)
 
 
+def _atomic_write_text(path: Path, content: str) -> None:
+    """Write `content` to `path` atomically: tempfile in same dir, then os.replace."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    try:
+        tmp.write_text(content, encoding="utf-8")
+        os.replace(tmp, path)
+    finally:
+        if tmp.exists():
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
+
+
 def write_state(cwd: Path, state: State) -> None:
     state.last_update = now_iso()
     path = state_path(cwd)
-    path.parent.mkdir(parents=True, exist_ok=True)
     fm_lines = [f"{k}: {state.to_dict()[k]}" for k in State.KEYS]
     body = (
         "---\n"
@@ -145,7 +185,7 @@ def write_state(cwd: Path, state: State) -> None:
         f"- Elapsed: {fmt_elapsed(state.elapsed_seconds())}\n"
         f"- Auto-continuations: {state.runaway_count} / {state.max_runaway}\n"
     )
-    path.write_text(body, encoding="utf-8")
+    _atomic_write_text(path, body)
 
 
 def clear_state(cwd: Path) -> bool:
@@ -509,13 +549,35 @@ def invoke(raw_args: str, cwd: Path) -> str:
 # Stop hook
 # ---------------------------------------------------------------------------
 
+def _resolve_cwd(raw: Any) -> Path | None:
+    """Return a resolved, existing directory from a Stop-hook stdin value.
+
+    Anything non-string, non-existent, or not a directory yields None so the
+    hook silently no-ops instead of leaking errors back to Claude Code.
+    """
+    if not isinstance(raw, str) or not raw:
+        return None
+    try:
+        path = Path(raw).expanduser().resolve()
+    except (OSError, RuntimeError):
+        return None
+    if not path.is_dir():
+        return None
+    return path
+
+
 def stop_hook() -> int:
     try:
         data = json.load(sys.stdin)
     except (json.JSONDecodeError, ValueError):
         data = {}
-    cwd_raw = data.get("cwd") or os.environ.get("PWD") or os.getcwd()
-    cwd = Path(cwd_raw)
+    cwd = (
+        _resolve_cwd(data.get("cwd"))
+        or _resolve_cwd(os.environ.get("PWD"))
+        or _resolve_cwd(os.getcwd())
+    )
+    if cwd is None:
+        return 0
     state = read_state(cwd)
     if not state or state.status != "active":
         return 0
