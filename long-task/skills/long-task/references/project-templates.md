@@ -2,6 +2,35 @@
 
 Templates for `.agent/` project files. Customize to your project's tech stack and patterns.
 
+## state.md
+
+This file is **auto-managed** by `/long-task` slash commands and the Stop hook. Do not write it by hand — but here is its shape so you know what to expect.
+
+```markdown
+---
+status: active
+phase: 2
+started_at: 2026-05-11T14:30:00Z
+last_update: 2026-05-11T15:42:11Z
+runaway_count: 47
+max_runaway: 500
+---
+
+# Long-Task State
+
+Auto-managed by /long-task slash commands. Don't edit manually — use
+/long-task status, pause, resume, clear, or complete instead.
+
+- Status: **active**
+- Phase: 2
+- Started: 2026-05-11T14:30:00Z
+- Last update: 2026-05-11T15:42:11Z
+- Elapsed: 1h 12m
+- Auto-continuations: 47 / 500
+```
+
+The Stop hook reads only the frontmatter. The body is for human eyes.
+
 ## goal.md
 
 ```markdown
