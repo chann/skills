@@ -39,22 +39,9 @@ ln -s "$(pwd)/skills/long-task/skills/long-task" ~/.claude/skills/long-task
 
 ### Stop hook setup
 
-The Stop hook drives auto-continuation. It is **auto-installed on the first `/long-task` run** — the slash command runs `scripts/install.sh` for you if the hook is missing.
+No separate setup script is required. The helper is packaged inside the installable skill folder and installs or updates the Stop hook on the first `/long-task` run.
 
-You can also manage it manually:
-
-```bash
-# install (skip if already installed)
-bash scripts/install.sh
-
-# overwrite an existing entry (e.g., after moving the repo)
-bash scripts/install.sh --overwrite
-
-# remove the hook entirely
-bash scripts/uninstall.sh
-```
-
-The installer safely patches `~/.claude/settings.json` and is idempotent. The hook only fires when the current working directory contains `.agent/state.md` with `status: active`, so unrelated Claude Code sessions are unaffected.
+The helper safely patches `~/.claude/settings.json` and is idempotent. The hook only fires when the current working directory contains `.agent/state.md` with `status: active`, so unrelated Claude Code sessions are unaffected. To disable continuation for a project, run `/long-task pause`, `/long-task clear`, or `/long-task complete`.
 
 ## Usage
 
@@ -115,13 +102,11 @@ long-task/
 │   └── plugin.json                        # Plugin metadata
 ├── commands/
 │   └── long-task.md                       # /long-task slash command
-├── scripts/
-│   ├── long_task.py                       # Lifecycle helper + Stop hook
-│   ├── install.sh                         # Idempotent Stop-hook installer
-│   └── uninstall.sh                       # Stop-hook remover
 └── skills/
     └── long-task/
         ├── SKILL.md                       # Skill definition and workflow
+        ├── scripts/
+        │   └── long_task.py               # Lifecycle helper + Stop hook
         └── references/
             ├── project-templates.md       # .agent/ file templates
             └── completion-audit.md        # Completion-audit guide

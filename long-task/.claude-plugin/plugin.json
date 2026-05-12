@@ -1,5 +1,5 @@
 {
   "name": "long-task",
   "description": "Autonomous orchestrator for long-running, multi-milestone projects. Dispatches parallel subagents in git worktrees, enforces milestone reviews, persists .agent/ state files, and uses a Stop hook to auto-continue across many turns. Lifecycle subcommands (status / pause / resume / clear / complete) plus a completion-audit gate.",
-  "version": "0.2.0"
+  "version": "0.2.1"
 }

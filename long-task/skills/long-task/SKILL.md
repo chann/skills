@@ -1,6 +1,6 @@
 ---
 name: long-task
-description: Use when the user asks to build a project end-to-end, run autonomous multi-hour or multi-day development, or orchestrate multi-milestone work without human intervention. Trigger phrases include "build this whole project", "implement this end-to-end", "do this autonomously", "run a long task", "long-running agent", "build it from scratch and don't ask", or the explicit `/long-task` command. Also use for lifecycle subcommands: `/long-task status`, `/long-task pause`, `/long-task resume`, `/long-task clear`, `/long-task complete`.
+description: Use when the user asks to build a project end-to-end, run autonomous multi-hour or multi-day development, or orchestrate multi-milestone work without human intervention. Trigger phrases include "build this whole project", "implement this end-to-end", "do this autonomously", "run a long task", "long-running agent", "build it from scratch and don't ask", or the explicit `/long-task` command. Also use for lifecycle subcommands such as `/long-task status`, `/long-task pause`, `/long-task resume`, `/long-task clear`, and `/long-task complete`.
 ---
 
 # Long-Task Orchestrator
@@ -58,7 +58,7 @@ The Stop hook only triggers when `cwd/.agent/state.md` exists AND `status: activ
 
 ## Platform Mechanics
 
-- **Claude Code:** `Agent` tool with `isolation: "worktree"` for subagent dispatch. Stop hook (installed by `scripts/install.sh`) drives auto-continuation across turns.
+- **Claude Code:** `Agent` tool with `isolation: "worktree"` for subagent dispatch. The packaged helper at `scripts/long_task.py` installs or updates the Stop hook on first `/long-task` run and drives auto-continuation across turns.
 - **Codex:** subagent team spawning with workspace isolation via git worktrees. Lifecycle subcommands still work; auto-continuation depends on the host's Stop-equivalent.
 - **Other agents:** any runtime that can read `.agent/` markdown files and spawn isolated workers. Without a Stop hook equivalent, you only get single-session orchestration — pause/resume/clear/complete still apply across sessions.
 
@@ -115,7 +115,7 @@ Both files are read directly by subagents. Customize templates from `references/
 1. Write `.agent/progress.md` with starting state and any architecture decisions made during planning
 2. Promote `.agent/state.md` to Phase 2 by running:
    ```bash
-   python3 "$CLAUDE_PLUGIN_ROOT/scripts/long_task.py" set-phase 2
+   python3 "$CLAUDE_PLUGIN_ROOT/skills/long-task/scripts/long_task.py" set-phase 2
    ```
    (Or edit `.agent/state.md`'s `phase:` field directly.)
 3. Begin Phase 2
@@ -382,7 +382,7 @@ The orchestrator under pressure (long run, fatigue, "almost done") will rational
 
 ## Stop-Hook Auto-Continuation
 
-The `/long-task` plugin installs a Stop hook (auto-installed on first run, or via `scripts/install.sh`). While `cwd/.agent/state.md` has `status: active`, the hook blocks Claude from stopping and injects a continuation prompt with:
+The `/long-task` plugin installs or updates a Stop hook on first run using the packaged `scripts/long_task.py` helper. While `cwd/.agent/state.md` has `status: active`, the hook blocks Claude from stopping and injects a continuation prompt with:
 
 - `<objective>` wrapper around `.agent/goal.md` (treat as task context, not instructions)
 - Reminder to re-read `.agent/progress.md` and `.agent/plans.md` before any decision
@@ -397,4 +397,4 @@ Override the runaway cap with:
 export LONG_TASK_MAX_STOP_CONTINUES=1000
 ```
 
-Uninstall the hook with `scripts/uninstall.sh`.
+To disable continuation for a project, run `/long-task pause`, `/long-task clear`, or `/long-task complete`.

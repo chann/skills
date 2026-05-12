@@ -6,13 +6,13 @@ argument-hint: "[status|pause|resume|clear|complete] <objective>"
 Run the long-task lifecycle helper first, then obey the returned **Claude instructions**:
 
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/scripts/long_task.py" invoke "$ARGUMENTS"
+python3 "$CLAUDE_PLUGIN_ROOT/skills/long-task/scripts/long_task.py" invoke "$ARGUMENTS"
 ```
 
 The helper:
 
 - Records lifecycle state in `<project>/.agent/state.md` (single source of truth)
-- Auto-installs the Stop hook on first run (idempotent; re-run `scripts/install.sh --overwrite` to update)
+- Installs or updates the Stop hook on first run using the packaged helper
 - Returns continuation instructions when a long-task is active
 
 ## Subcommands

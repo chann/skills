@@ -39,22 +39,9 @@ ln -s "$(pwd)/skills/long-task/skills/long-task" ~/.claude/skills/long-task
 
 ### Stop hook 설치
 
-Stop hook 이 자동 이어가기를 책임집니다. **첫 `/long-task` 실행 시 자동 설치** 되며, 이미 설치되어 있으면 skip 합니다.
+별도 설치 스크립트는 필요하지 않습니다. helper 는 설치 가능한 스킬 폴더 안에 포함되어 있으며, 첫 `/long-task` 실행 시 Stop hook 을 설치하거나 기존 경로를 갱신합니다.
 
-수동으로 관리할 수도 있습니다:
-
-```bash
-# 설치 (이미 있으면 skip)
-bash scripts/install.sh
-
-# 기존 항목 덮어쓰기 (예: 레포 위치 변경 후)
-bash scripts/install.sh --overwrite
-
-# hook 제거
-bash scripts/uninstall.sh
-```
-
-`~/.claude/settings.json` 을 안전하게 patch 합니다. hook 은 cwd 에 `.agent/state.md` 가 있고 `status: active` 일 때만 동작하므로 다른 Claude Code 세션은 영향받지 않습니다.
+helper 는 `~/.claude/settings.json` 을 안전하게 patch 하며 멱등적으로 동작합니다. hook 은 cwd 에 `.agent/state.md` 가 있고 `status: active` 일 때만 동작하므로 다른 Claude Code 세션은 영향받지 않습니다. 특정 프로젝트의 자동 이어가기를 끄려면 `/long-task pause`, `/long-task clear`, 또는 `/long-task complete` 를 실행하세요.
 
 ## 사용 방법
 
@@ -115,13 +102,11 @@ long-task/
 │   └── plugin.json                        # 플러그인 메타데이터
 ├── commands/
 │   └── long-task.md                       # /long-task 슬래시 커맨드
-├── scripts/
-│   ├── long_task.py                       # lifecycle helper + Stop hook
-│   ├── install.sh                         # 멱등성 Stop hook 설치
-│   └── uninstall.sh                       # Stop hook 제거
 └── skills/
     └── long-task/
         ├── SKILL.md                       # 스킬 정의 및 워크플로우
+        ├── scripts/
+        │   └── long_task.py               # lifecycle helper + Stop hook
         └── references/
             ├── project-templates.md       # `.agent/` 파일 템플릿
             └── completion-audit.md        # 완료 audit 가이드

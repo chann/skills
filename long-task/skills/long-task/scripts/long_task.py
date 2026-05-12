@@ -24,7 +24,6 @@ import json
 import os
 import re
 import shlex
-import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -206,7 +205,7 @@ def settings_path() -> Path:
 
 def hook_command() -> str:
     script = Path(__file__).resolve()
-    return f"python3 {script} stop-hook"
+    return f"python3 {shlex.quote(str(script))} stop-hook"
 
 
 def hook_installed() -> bool:
@@ -217,32 +216,55 @@ def hook_installed() -> bool:
         data = json.loads(path.read_text(encoding="utf-8") or "{}")
     except json.JSONDecodeError:
         return False
+    expected = hook_command()
     for item in data.get("hooks", {}).get("Stop", []) or []:
         for hook in item.get("hooks", []) or []:
-            if "long_task.py" in (hook.get("command") or ""):
+            if (hook.get("command") or "") == expected:
                 return True
     return False
 
 
 def auto_install_hook() -> str | None:
-    if hook_installed():
-        return None
-    installer = Path(__file__).resolve().parent / "install.sh"
-    if not installer.is_file():
-        return None
+    """Install or update the Claude Code Stop hook without a separate installer."""
+    path = settings_path()
     try:
-        result = subprocess.run(
-            ["bash", str(installer)],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        text = path.read_text(encoding="utf-8").strip() if path.exists() else ""
+        data = json.loads(text) if text else {}
+    except json.JSONDecodeError as exc:
+        return f"Auto-install of Stop hook failed: malformed JSON at {path}: {exc}"
     except OSError as exc:
-        return f"Could not auto-install Stop hook: {exc}"
-    if result.returncode != 0:
-        msg = (result.stderr or result.stdout or "").strip()
-        return f"Auto-install of Stop hook failed: {msg}"
-    return (result.stdout or "").strip()
+        return f"Auto-install of Stop hook failed: cannot read {path}: {exc}"
+
+    hooks = data.setdefault("hooks", {})
+    stop_hooks = hooks.setdefault("Stop", [])
+    command = hook_command()
+    existing: dict[str, Any] | None = None
+    for item in stop_hooks:
+        for hook in item.get("hooks", []) or []:
+            if "long_task.py" in (hook.get("command") or ""):
+                existing = hook
+                break
+        if existing:
+            break
+
+    if existing and existing.get("command") == command:
+        return None
+    if existing:
+        existing["command"] = command
+        action = "updated"
+    else:
+        stop_hooks.append({
+            "matcher": "",
+            "hooks": [{"type": "command", "command": command}],
+        })
+        action = "installed"
+
+    try:
+        _atomic_write_text(path, json.dumps(data, indent=2) + "\n")
+    except OSError as exc:
+        return f"Auto-install of Stop hook failed: cannot write {path}: {exc}"
+
+    return f"long-task Stop hook {action}.\n  Command:  {command}\n  Settings: {path}"
 
 
 # ---------------------------------------------------------------------------
@@ -344,6 +366,7 @@ def cmd_set(cwd: Path, objective: str) -> str:
     state = State({"status": "active", "phase": 1, "started_at": now_iso()})
     write_state(cwd, state)
     install_note = auto_install_hook()
+    helper_cmd = f"python3 {shlex.quote(str(Path(__file__).resolve()))} set-phase 2"
 
     body = [
         "Action: start",
@@ -362,7 +385,7 @@ def cmd_set(cwd: Path, objective: str) -> str:
         "3. Use the templates in `references/project-templates.md`.",
         "4. Get sign-off on the plan before going autonomous.",
         "5. After approval, update `state.md` phase to 2 by calling: "
-        "`python3 \"$LONG_TASK_SCRIPT\" set-phase 2` (or write phase: 2 directly).",
+        f"`{helper_cmd}` (or write phase: 2 directly).",
     ])
     if objective:
         body.extend([
@@ -702,7 +725,7 @@ def main(argv: list[str]) -> int:
                 note = auto_install_hook()
                 print(note or "Stop hook installation attempted.")
                 return 0 if hook_installed() else 1
-            print("Stop hook is NOT installed. Run scripts/install.sh.")
+            print("Stop hook is NOT installed. Run `/long-task` once to install it.")
             return 1
         else:
             parser.print_help()
