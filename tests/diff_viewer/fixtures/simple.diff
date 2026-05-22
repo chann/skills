@@ -1,0 +1,12 @@
+diff --git a/src/foo.py b/src/foo.py
+index 1111111..2222222 100644
+--- a/src/foo.py
++++ b/src/foo.py
+@@ -1,5 +1,6 @@
+ def greet(name):
+-    return "Hello, " + name
++    if not name:
++        return "Hello, world!"
++    return f"Hello, {name}!"
+ 
+ print(greet("Ada"))

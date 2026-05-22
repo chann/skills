@@ -1,0 +1,11 @@
+diff --git a/old.py b/new.py
+similarity index 85%
+rename from old.py
+rename to new.py
+index 1111111..2222222 100644
+--- a/old.py
++++ b/new.py
+@@ -1,3 +1,3 @@
+ def foo():
+-    return 1
++    return 2
