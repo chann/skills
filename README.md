@@ -8,7 +8,7 @@ A collection of practical agent skills for software engineering workflows.
 
 | Skill                                              | What it does                                                                                  |
 | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.md)**           | Automated code review from git diffs — markdown / HTML reports with severity ratings          |
+| **[code-review](code-review/README.md)**           | Automated code review from git diffs — markdown / HTML reports with severity ratings, plus an HTML diff viewer |
 | **[git-skill](git-skill/README.md)**               | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup     |
 | **[long-task](long-task/README.md)**               | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews  |
 
@@ -35,6 +35,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 | `/code-review`      | Show findings in conversation (no file)      |
 | `/code-review-md`   | Write markdown report to `.reviews/`         |
 | `/code-review-html` | Write markdown + HTML reports to `.reviews/` |
+| `/diff-viewer`      | Render the working-tree diff to `.diffs/`    |
 
 ### git-skill → [details](git-skill/README.md)
 
@@ -75,7 +76,7 @@ What is and isn't portable:
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
-- Python 3.10+ (for `code-review-html` and `git-commit-rewrite`)
+- Python 3.10+ (for `code-review-html`, `diff-viewer`, and `git-commit-rewrite`)
 
 ## License
 

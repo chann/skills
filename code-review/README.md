@@ -9,6 +9,7 @@ Automated code review that generates persistent **markdown and HTML report files
 - Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
 - Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
 - Optionally generates a styled, self-contained HTML report with severity badges, collapsible findings, and sidebar navigation
+- Includes `/diff-viewer` for a browser-readable HTML view of the current working-tree diff without review analysis
 - Supports multiple review scopes: staged changes, specific commits, commit ranges, branch comparisons, and PRs
 - Includes reference guides for Python and JavaScript/TypeScript best practices
 
@@ -42,6 +43,7 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 | `/code-review`      | `code-review`      | Findings shown in conversation; no file                    |
 | `/code-review-md`   | `code-review-md`   | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`  |
 | `/code-review-html` | `code-review-html` | Markdown + self-contained HTML report                      |
+| `/diff-viewer`      | `diff-viewer`      | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`       |
 
 **Examples:**
 
@@ -50,6 +52,7 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 > review the last commit
 > /code-review-html review staged changes
 > /code-review-md review branch feature-auth compared to main
+> /diff-viewer
 ```
 
 **Output structure:**
@@ -58,6 +61,8 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 .reviews/
 ├── 2026-04-08_a1b2c3d.md
 └── 2026-04-08_a1b2c3d.html
+.diffs/
+└── 2026-04-08_working.html
 ```
 
 ## How it works
@@ -67,6 +72,8 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 3. Analyze each changed file across the five dimensions
 4. Present findings in conversation, or write report files (depending on the command)
 5. Show a summary of findings
+
+`/diff-viewer` is separate: it captures `git diff HEAD`, renders unified and split diff views to HTML, opens the report, and does not analyze the code.
 
 ## Report format
 
@@ -96,7 +103,8 @@ code-review/
 ├── commands/
 │   ├── code-review.md                    # /code-review (conversation-only)
 │   ├── code-review-md.md                 # /code-review-md command
-│   └── code-review-html.md               # /code-review-html command
+│   ├── code-review-html.md               # /code-review-html command
+│   └── diff-viewer.md                    # /diff-viewer command
 ├── skills/
 │   ├── code-review/                      # Main skill — full workflow + shared assets
 │   │   ├── SKILL.md                      # Skill definition and workflow
@@ -112,8 +120,14 @@ code-review/
 │   │       └── report-template.html      # HTML report template
 │   ├── code-review-md/
 │   │   └── SKILL.md                      # Markdown variant skill
-│   └── code-review-html/
-│       └── SKILL.md                      # HTML variant skill
+│   ├── code-review-html/
+│   │   └── SKILL.md                      # HTML variant skill
+│   └── diff-viewer/
+│       ├── SKILL.md                      # HTML diff viewer workflow
+│       ├── scripts/
+│       │   └── generate_diff_report.py   # Git diff -> HTML converter
+│       └── assets/
+│           └── diff-template.html        # Diff viewer template
 └── .snyk                                 # SAST exclude policy for sample fixtures
 ```
 

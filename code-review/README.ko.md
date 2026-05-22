@@ -9,6 +9,7 @@ git diff를 분석하여 **마크다운 및 HTML 리포트 파일**을 생성하
 - 5가지 차원으로 코드 변경사항 분석: 정확성, 보안, 복잡도/일관성, 유지보수성, 언어별 베스트 프랙티스
 - `.reviews/` 디렉토리에 날짜+커밋SHA 기반 리포트 생성 (예: `2026-04-08_a1b2c3d.md`)
 - 심각도 배지, 접을 수 있는 항목, 사이드바 네비게이션이 포함된 스타일링된 HTML 리포트 옵션
+- 리뷰 분석 없이 현재 작업 트리 diff를 브라우저용 HTML로 보여주는 `/diff-viewer` 포함
 - 다양한 리뷰 범위 지원: 스테이징된 변경, 특정 커밋, 커밋 범위, 브랜치 비교, PR
 - Python, JavaScript/TypeScript 베스트 프랙티스 참조 가이드 포함
 
@@ -42,6 +43,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | `/code-review`      | `code-review`      | 대화에서 결과 표시 (파일 생성 안 함)                       |
 | `/code-review-md`   | `code-review-md`   | `.reviews/<YYYY-MM-DD>_<short-sha>.md` 에 마크다운 리포트  |
 | `/code-review-html` | `code-review-html` | 마크다운 + 자체 완결형 HTML 리포트                         |
+| `/diff-viewer`      | `diff-viewer`      | `.diffs/<YYYY-MM-DD>_<tag>.html` 에 HTML diff viewer 생성  |
 
 **예시:**
 
@@ -50,6 +52,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 > 마지막 커밋 리뷰
 > /code-review-html 스테이징된 변경사항 리뷰
 > /code-review-md feature-auth 브랜치를 main과 비교해서 리뷰
+> /diff-viewer
 ```
 
 **리포트 출력 예시:**
@@ -58,6 +61,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 .reviews/
 ├── 2026-04-08_a1b2c3d.md
 └── 2026-04-08_a1b2c3d.html
+.diffs/
+└── 2026-04-08_working.html
 ```
 
 ## 동작 순서
@@ -67,6 +72,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 3. 각 변경된 파일을 5가지 차원으로 분석
 4. 대화에서 결과 표시, 또는 리포트 파일 생성 (커맨드에 따라)
 5. 핵심 요약 제시
+
+`/diff-viewer`는 별도 동작입니다. `git diff HEAD`를 캡처해 unified/split HTML diff viewer를 만들고 브라우저로 열며, 코드 분석은 하지 않습니다.
 
 ## 리포트 구조
 
@@ -96,7 +103,8 @@ code-review/
 ├── commands/
 │   ├── code-review.md                    # /code-review (대화 전용)
 │   ├── code-review-md.md                 # /code-review-md 커맨드
-│   └── code-review-html.md               # /code-review-html 커맨드
+│   ├── code-review-html.md               # /code-review-html 커맨드
+│   └── diff-viewer.md                    # /diff-viewer 커맨드
 ├── skills/
 │   ├── code-review/                      # 메인 스킬 — 전체 워크플로우 + 공유 자산
 │   │   ├── SKILL.md                      # 스킬 정의 및 워크플로우
@@ -112,8 +120,14 @@ code-review/
 │   │       └── report-template.html      # HTML 리포트 템플릿
 │   ├── code-review-md/
 │   │   └── SKILL.md                      # 마크다운 변형 스킬
-│   └── code-review-html/
-│       └── SKILL.md                      # HTML 변형 스킬
+│   ├── code-review-html/
+│   │   └── SKILL.md                      # HTML 변형 스킬
+│   └── diff-viewer/
+│       ├── SKILL.md                      # HTML diff viewer 워크플로우
+│       ├── scripts/
+│       │   └── generate_diff_report.py   # Git diff -> HTML 변환기
+│       └── assets/
+│           └── diff-template.html        # Diff viewer 템플릿
 └── .snyk                                 # 샘플 fixture용 SAST exclude 정책
 ```
 

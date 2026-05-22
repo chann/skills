@@ -8,7 +8,7 @@
 
 | 스킬                                                | 설명                                                                                          |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트                       |
+| **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트, 추가로 HTML diff 뷰어 |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, push, 히스토리 재작성, main/dev 머지, 머지된 로컬 브랜치 정리            |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 
@@ -35,6 +35,7 @@ npx skills add -y -g chann/skills
 | `/code-review`      | 대화에서 결과 표시 (파일 생성 안 함)      |
 | `/code-review-md`   | `.reviews/`에 마크다운 리포트 파일 생성   |
 | `/code-review-html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
+| `/diff-viewer`      | 작업 트리 diff를 `.diffs/` HTML로 렌더링   |
 
 ### git-skill → [상세](git-skill/README.ko.md)
 
@@ -75,7 +76,7 @@ npx skills add -y -g chann/skills
 
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
-- Python 3.10+ (`code-review-html`, `git-commit-rewrite` 사용 시 필요)
+- Python 3.10+ (`code-review-html`, `diff-viewer`, `git-commit-rewrite` 사용 시 필요)
 
 ## 라이선스
 
