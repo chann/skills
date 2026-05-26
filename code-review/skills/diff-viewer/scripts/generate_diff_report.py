@@ -592,13 +592,13 @@ def gitignore_has_diffs(root: Path) -> bool:
 
 CODE_SCHEMES = (
     "github",
-    "ayu",
-    "one",
-    "flexoki",
-    "dracula",
+    "atom-one",
     "monokai",
-    "sublime",
-    "terminal",
+    "dracula",
+    "nord",
+    "tokyo-night",
+    "solarized",
+    "gruvbox",
 )
 
 

@@ -21,17 +21,23 @@
       --text: #1f2933;
       --muted: #667085;
       --accent: #2563eb;
-      --add-bg: #e8f6ee;
-      --add-line: #c6ead3;
+      /* Page-theme diff colors — used outside the code area (metric badges, button hover). */
       --add-text: #116329;
-      --del-bg: #fdebec;
-      --del-line: #f6c7ca;
+      --add-line: #c6ead3;
       --del-text: #a40e26;
-      --hunk-bg: #eef3ff;
-      --hunk-text: #3150a8;
+      --del-line: #f6c7ca;
+      /* Code area defaults — overridden per scheme in JS via applyHljsTheme(). */
       --code-bg: #ffffff;
       --code-fg: #1f2328;
       --code-muted: #8c959f;
+      /* Diff hues used by color-mix() so add/del/hunk overlays adapt to any --code-bg. */
+      --add-hue: #2da44e;
+      --del-hue: #cf222e;
+      --hunk-hue: #2563eb;
+      /* Text colors on diff lines — flipped by data-code-tone (light vs dark code area). */
+      --code-add-text: #116329;
+      --code-del-text: #a40e26;
+      --code-hunk-text: #3150a8;
       --selection-bg: rgba(37, 99, 235, 0.18);
       --selection-fg: var(--accent);
       --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
@@ -47,20 +53,19 @@
       --text: #e6e9ef;
       --muted: #9aa4b2;
       --accent: #7aa2ff;
-      --add-bg: #12321f;
-      --add-line: #1e5433;
       --add-text: #8fe3a7;
-      --del-bg: #3b151a;
-      --del-line: #64252d;
+      --add-line: #1e5433;
       --del-text: #ffb3ba;
-      --hunk-bg: #1d2946;
-      --hunk-text: #a9c2ff;
-      --code-bg: #0d1117;
-      --code-fg: #c9d1d9;
-      --code-muted: #6e7681;
+      --del-line: #64252d;
       --selection-bg: rgba(122, 162, 255, 0.28);
       --selection-fg: var(--accent);
       --shadow: none;
+    }
+
+    html[data-code-tone="dark"] {
+      --code-add-text: #8fe3a7;
+      --code-del-text: #ffb3ba;
+      --code-hunk-text: #a9c2ff;
     }
 
     html { scroll-behavior: smooth; }
@@ -395,8 +400,8 @@
     .divider-col { width: 10px; }
 
     .line-no {
-      background: var(--surface-muted);
-      border-right: 1px solid var(--border);
+      background: color-mix(in srgb, var(--code-bg) 92%, var(--code-fg));
+      border-right: 1px solid color-mix(in srgb, var(--code-bg) 78%, var(--code-fg));
       color: var(--code-muted);
       padding: 0 8px;
       text-align: right;
@@ -406,7 +411,7 @@
       cursor: pointer;
     }
 
-    .line-no:hover { background: var(--border); }
+    .line-no:hover { background: color-mix(in srgb, var(--code-bg) 80%, var(--code-fg)); }
 
     .line-no.selecting {
       background: var(--selection-bg) !important;
@@ -432,25 +437,31 @@
 
     .line-sign {
       display: inline-block;
-      color: var(--muted);
+      color: var(--code-muted);
       user-select: none;
       width: 18px;
     }
 
-    .line-add .line-no { background: var(--add-line); color: var(--add-text); }
-    .line-add .code-line { background: var(--add-bg); }
-    .line-del .line-no { background: var(--del-line); color: var(--del-text); }
-    .line-del .code-line { background: var(--del-bg); }
+    .line-add .line-no {
+      background: color-mix(in srgb, var(--code-bg) 60%, var(--add-hue));
+      color: var(--code-add-text);
+    }
+    .line-add .code-line { background: color-mix(in srgb, var(--code-bg) 82%, var(--add-hue)); }
+    .line-del .line-no {
+      background: color-mix(in srgb, var(--code-bg) 60%, var(--del-hue));
+      color: var(--code-del-text);
+    }
+    .line-del .code-line { background: color-mix(in srgb, var(--code-bg) 82%, var(--del-hue)); }
 
     .hunk-row td {
-      background: var(--hunk-bg);
-      color: var(--hunk-text);
+      background: color-mix(in srgb, var(--code-bg) 86%, var(--hunk-hue));
+      color: var(--code-hunk-text);
       font-weight: 600;
       padding: 5px 10px;
     }
 
-    .split-divider { background: var(--border); padding: 0; }
-    .empty { background: var(--surface-muted); }
+    .split-divider { background: color-mix(in srgb, var(--code-bg) 75%, var(--code-fg)); padding: 0; }
+    .empty { background: color-mix(in srgb, var(--code-bg) 90%, var(--code-fg)); }
 
     .empty-state {
       background: var(--surface);
@@ -633,13 +644,13 @@
             <span class="control-label">Code</span>
             <select data-code-scheme-select>
               <option value="github">GitHub</option>
-              <option value="ayu">Ayu</option>
-              <option value="one">One</option>
-              <option value="flexoki">Flexoki</option>
-              <option value="dracula">Dracula</option>
+              <option value="atom-one">Atom One</option>
               <option value="monokai">Monokai</option>
-              <option value="sublime">Sublime</option>
-              <option value="terminal">Terminal</option>
+              <option value="dracula">Dracula</option>
+              <option value="nord">Nord</option>
+              <option value="tokyo-night">Tokyo Night</option>
+              <option value="solarized">Solarized</option>
+              <option value="gruvbox">Gruvbox</option>
             </select>
           </label>
         </div>
@@ -665,15 +676,42 @@
     };
 
     const HLJS_BASE = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/";
+    // Each scheme defines a light and a dark variant. The variant controls both the
+    // highlight.js stylesheet (syntax tokens) and the code-area background/foreground —
+    // diff overlays (add/del/hunk) are derived from these via CSS color-mix().
     const CODE_SCHEMES = {
-      github:   { light: "github.min.css",              dark: "github-dark.min.css" },
-      ayu:      { light: "stackoverflow-light.min.css", dark: "atom-one-dark-reasonable.min.css" },
-      one:      { light: "atom-one-light.min.css",      dark: "atom-one-dark.min.css" },
-      flexoki:  { light: "kimbie-light.min.css",        dark: "kimbie-dark.min.css" },
-      dracula:  { light: "stackoverflow-light.min.css", dark: "dracula.min.css" },
-      monokai:  { light: "vs.min.css",                  dark: "monokai.min.css" },
-      sublime:  { light: "default.min.css",             dark: "monokai-sublime.min.css" },
-      terminal: { light: "nnfx-light.min.css",          dark: "nnfx-dark.min.css" }
+      github: {
+        light: { css: "github.min.css",                       bg: "#ffffff", fg: "#1f2328", muted: "#8c959f", tone: "light" },
+        dark:  { css: "github-dark.min.css",                  bg: "#0d1117", fg: "#c9d1d9", muted: "#6e7681", tone: "dark"  }
+      },
+      "atom-one": {
+        light: { css: "atom-one-light.min.css",               bg: "#fafafa", fg: "#383a42", muted: "#a0a1a7", tone: "light" },
+        dark:  { css: "atom-one-dark.min.css",                bg: "#282c34", fg: "#abb2bf", muted: "#5c6370", tone: "dark"  }
+      },
+      monokai: {
+        light: { css: "monokai-sublime.min.css",              bg: "#23241f", fg: "#f8f8f2", muted: "#75715e", tone: "dark"  },
+        dark:  { css: "monokai.min.css",                      bg: "#272822", fg: "#f8f8f2", muted: "#75715e", tone: "dark"  }
+      },
+      dracula: {
+        light: { css: "base16/dracula.min.css",               bg: "#282a36", fg: "#f8f8f2", muted: "#6272a4", tone: "dark"  },
+        dark:  { css: "base16/dracula.min.css",               bg: "#282a36", fg: "#f8f8f2", muted: "#6272a4", tone: "dark"  }
+      },
+      nord: {
+        light: { css: "nord.min.css",                         bg: "#2e3440", fg: "#d8dee9", muted: "#4c566a", tone: "dark"  },
+        dark:  { css: "nord.min.css",                         bg: "#2e3440", fg: "#d8dee9", muted: "#4c566a", tone: "dark"  }
+      },
+      "tokyo-night": {
+        light: { css: "tokyo-night-light.min.css",            bg: "#d5d6db", fg: "#343b58", muted: "#787c99", tone: "light" },
+        dark:  { css: "tokyo-night-dark.min.css",             bg: "#1a1b26", fg: "#a9b1d6", muted: "#565f89", tone: "dark"  }
+      },
+      solarized: {
+        light: { css: "base16/solarized-light.min.css",       bg: "#fdf6e3", fg: "#586e75", muted: "#93a1a1", tone: "light" },
+        dark:  { css: "base16/solarized-dark.min.css",        bg: "#002b36", fg: "#93a1a1", muted: "#586e75", tone: "dark"  }
+      },
+      gruvbox: {
+        light: { css: "base16/gruvbox-light-medium.min.css",  bg: "#fbf1c7", fg: "#3c3836", muted: "#928374", tone: "light" },
+        dark:  { css: "base16/gruvbox-dark-medium.min.css",   bg: "#282828", fg: "#ebdbb2", muted: "#928374", tone: "dark"  }
+      }
     };
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -685,10 +723,17 @@
     function applyHljsTheme() {
       const pageTheme = document.documentElement.dataset.pageTheme || "light";
       const schemeName = document.documentElement.dataset.codeScheme || "github";
-      const variants = CODE_SCHEMES[schemeName] || CODE_SCHEMES.github;
-      const filename = variants[pageTheme] || variants.light;
+      const scheme = CODE_SCHEMES[schemeName] || CODE_SCHEMES.github;
+      const variant = scheme[pageTheme] || scheme.light;
+
       const link = document.getElementById("hljs-theme");
-      if (link) link.href = HLJS_BASE + filename;
+      if (link) link.href = HLJS_BASE + variant.css;
+
+      const root = document.documentElement.style;
+      root.setProperty("--code-bg", variant.bg);
+      root.setProperty("--code-fg", variant.fg);
+      root.setProperty("--code-muted", variant.muted);
+      document.documentElement.dataset.codeTone = variant.tone;
     }
 
     function setView(view) {

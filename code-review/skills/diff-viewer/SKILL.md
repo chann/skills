@@ -32,7 +32,7 @@ python3 <skill-path>/scripts/generate_diff_report.py \
   -o .diffs/my-diff.html
 ```
 
-Valid `--view` values are `unified` and `split`. Valid `--theme` values are `auto`, `light`, and `dark`. Valid `--code-scheme` values are `github`, `ayu`, `one`, `flexoki`, `dracula`, `monokai`, `sublime`, `terminal` — each ships a light and a dark variant that follows the page theme automatically. The browser controls can change these later and persist choices in `localStorage`.
+Valid `--view` values are `unified` and `split`. Valid `--theme` values are `auto`, `light`, and `dark`. Valid `--code-scheme` values are `github`, `atom-one`, `monokai`, `dracula`, `nord`, `tokyo-night`, `solarized`, `gruvbox` — each ships a light and a dark variant that follows the page theme automatically and drives both the syntax-token colors and the code-area background. The browser controls can change these later and persist choices in `localStorage`.
 
 ## Browser features
 

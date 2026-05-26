@@ -1,6 +1,6 @@
 ---
 description: Render the current working-tree git diff as a browser-readable HTML report with unified/split views and light/dark themes.
-argument-hint: "[-o output.html] [--view unified|split] [--theme auto|light|dark] [--code-scheme github|ayu|one|flexoki|dracula|monokai|sublime|terminal]"
+argument-hint: "[-o output.html] [--view unified|split] [--theme auto|light|dark] [--code-scheme github|atom-one|monokai|dracula|nord|tokyo-night|solarized|gruvbox]"
 ---
 
 Use the **diff-viewer** skill to render the current working-tree diff as a browser-readable HTML report.
