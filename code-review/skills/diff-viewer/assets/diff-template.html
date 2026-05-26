@@ -122,6 +122,14 @@
 
     .nav-list a:hover { background: var(--border); color: var(--text); }
 
+    .nav-list a.active {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .nav-list a.active:hover { background: var(--accent); color: #ffffff; }
+
     main {
       min-width: 0;
       padding: 28px;
@@ -276,7 +284,34 @@
       text-align: right;
       user-select: none;
       vertical-align: top;
+      position: relative;
     }
+
+    .add-comment-btn {
+      position: absolute;
+      top: 50%;
+      left: 1px;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: #ffffff;
+      border: 0;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0;
+      display: none;
+      box-shadow: var(--shadow);
+      z-index: 1;
+    }
+
+    .diff-table tr:hover > .line-no .add-comment-btn { display: inline-flex; }
+    .add-comment-btn:hover { opacity: 0.9; }
 
     .code-line {
       background: var(--code-bg);
@@ -325,6 +360,131 @@
       padding: 22px;
     }
 
+    /* Inline review comments */
+    .comment-row > td,
+    .comment-input-row > td {
+      background: var(--surface-muted);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: normal;
+    }
+
+    .comment-thread { display: flex; flex-direction: column; gap: 8px; }
+
+    .comment {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .comment-meta { color: var(--muted); font-size: 11px; }
+    .comment-body { white-space: pre-wrap; word-break: break-word; }
+
+    .comment-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+      margin-top: 2px;
+    }
+
+    .comment-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .comment-input-meta { color: var(--muted); font-size: 11px; }
+
+    .comment-input textarea {
+      width: 100%;
+      min-height: 64px;
+      resize: vertical;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      box-sizing: border-box;
+    }
+
+    .comment-input-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .btn-comment {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      line-height: 1.4;
+    }
+
+    .btn-comment.btn-save {
+      background: var(--accent);
+      color: #ffffff;
+      border: 1px solid var(--accent);
+    }
+
+    .btn-comment.btn-cancel,
+    .btn-comment.btn-delete {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-comment.btn-delete:hover { color: var(--del-text); border-color: var(--del-line); }
+    .btn-comment.btn-save:hover { opacity: 0.9; }
+
+    /* Floating Copy Markdown button */
+    .floating-copy-md {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(16, 24, 40, 0.18);
+    }
+
+    .floating-copy-md:hover { opacity: 0.92; }
+    .floating-copy-md.copied { background: var(--add-text); }
+    .floating-copy-md .count {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     @media (max-width: 860px) {
       .layout { display: block; }
       aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
@@ -337,6 +497,14 @@
   </style>
 </head>
 <body>
+  <button class="floating-copy-md" type="button" data-copy-markdown aria-label="Copy review markdown">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+    </svg>
+    <span class="label">Copy Markdown</span>
+    <span class="count" data-comment-count hidden>0</span>
+  </button>
   <div class="layout">
     <aside>
       <div class="brand">Diff Viewer</div>
@@ -504,6 +672,432 @@
         if (line !== undefined) node.innerHTML = line || "&nbsp;";
       });
     }
+
+    // File nav scroll spy — highlight the file currently in view
+    (function () {
+      const sections = Array.from(document.querySelectorAll("section.file-diff"));
+      const links = Array.from(document.querySelectorAll(".nav-list a[href^='#']"));
+      if (!sections.length || !links.length) return;
+
+      const linkByAnchor = new Map();
+      links.forEach((link) => {
+        const id = link.getAttribute("href").slice(1);
+        if (id) linkByAnchor.set(id, link);
+      });
+
+      const aside = document.querySelector("aside");
+      const offset = 96; // px below viewport top considered "current"
+      let activeLink = null;
+
+      function ensureVisible(link) {
+        if (!aside) return;
+        const r = link.getBoundingClientRect();
+        const ar = aside.getBoundingClientRect();
+        if (r.top < ar.top || r.bottom > ar.bottom) {
+          link.scrollIntoView({ block: "nearest" });
+        }
+      }
+
+      function updateActive() {
+        let current = sections[0];
+        for (let i = 0; i < sections.length; i++) {
+          if (sections[i].getBoundingClientRect().top - offset <= 0) {
+            current = sections[i];
+          } else {
+            break;
+          }
+        }
+        const link = linkByAnchor.get(current.id);
+        if (link === activeLink) return;
+        if (activeLink) activeLink.classList.remove("active");
+        if (link) {
+          link.classList.add("active");
+          ensureVisible(link);
+        }
+        activeLink = link || null;
+      }
+
+      window.addEventListener("scroll", updateActive, { passive: true });
+      window.addEventListener("resize", updateActive);
+      updateActive();
+    })();
+
+    // Inline review comments — hover line number → "+" → textarea → save → localStorage
+    (function () {
+      const repoEl = document.querySelector(".repo");
+      const repoPath = repoEl ? repoEl.textContent.trim() : "";
+      const STORAGE_KEY = "diff-viewer:comments:" + (repoPath || "default");
+
+      const EXT_LANG = {
+        js: "js", mjs: "js", cjs: "js", jsx: "jsx",
+        ts: "ts", tsx: "tsx", py: "python", go: "go",
+        rs: "rust", java: "java", kt: "kotlin", rb: "ruby",
+        php: "php", c: "c", h: "c", cpp: "cpp", cc: "cpp",
+        cs: "csharp", swift: "swift", scala: "scala",
+        sh: "bash", bash: "bash", zsh: "bash",
+        html: "html", htm: "html", xml: "xml",
+        css: "css", scss: "scss", less: "less",
+        json: "json", jsonc: "json", yaml: "yaml", yml: "yaml",
+        toml: "toml", md: "markdown", sql: "sql", lua: "lua",
+        vue: "vue", svelte: "svelte"
+      };
+
+      function loadComments() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) { return []; }
+      }
+
+      function saveComments(list) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+        catch (e) { /* ignore quota errors */ }
+      }
+
+      function genId() {
+        return "c-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+      }
+
+      function getFilePath(section) {
+        const h2 = section.querySelector(".file-header h2");
+        if (!h2) return "";
+        const txt = h2.textContent.trim();
+        const m = txt.match(/^(.+?)\s*->\s*(.+)$/);
+        return m ? m[2].trim() : txt;
+      }
+
+      function readCellCode(cell) {
+        if (!cell) return "";
+        const codeEl = cell.querySelector("code");
+        const raw = (codeEl ? codeEl.textContent : cell.textContent) || "";
+        // Drop the leading line-sign character if it sneaks in via textContent
+        return raw;
+      }
+
+      function annotateCell(cell, file, side, codeCell) {
+        if (!cell.classList.contains("line-no")) return;
+        const text = (cell.textContent || "").trim();
+        if (!text) return;
+        const lineNum = parseInt(text, 10);
+        if (!Number.isFinite(lineNum)) return;
+
+        cell.dataset.file = file;
+        cell.dataset.line = String(lineNum);
+        cell.dataset.side = side;
+        cell.dataset.code = readCellCode(codeCell);
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "add-comment-btn";
+        btn.textContent = "+";
+        btn.title = "Add comment";
+        cell.appendChild(btn);
+      }
+
+      function annotateLines() {
+        document.querySelectorAll("section.file-diff").forEach((section) => {
+          const file = getFilePath(section);
+          section.querySelectorAll(".unified-table > tbody > tr").forEach((tr) => {
+            if (tr.classList.contains("hunk-row")) return;
+            const cells = tr.children;
+            if (cells.length < 3) return;
+            annotateCell(cells[0], file, "old", cells[2]);
+            annotateCell(cells[1], file, "new", cells[2]);
+          });
+          section.querySelectorAll(".split-table > tbody > tr").forEach((tr) => {
+            if (tr.classList.contains("hunk-row")) return;
+            const cells = tr.children;
+            if (cells.length < 5) return;
+            annotateCell(cells[0], file, "old", cells[1]);
+            annotateCell(cells[3], file, "new", cells[4]);
+          });
+        });
+      }
+
+      let activeInputRow = null;
+
+      function closeInput() {
+        if (activeInputRow) { activeInputRow.remove(); activeInputRow = null; }
+      }
+
+      function openInput(originRow, file, line, side, code) {
+        closeInput();
+        const tr = document.createElement("tr");
+        tr.className = "comment-input-row";
+        const td = document.createElement("td");
+        td.colSpan = originRow.children.length;
+
+        const wrap = document.createElement("div");
+        wrap.className = "comment-input";
+
+        const meta = document.createElement("div");
+        meta.className = "comment-input-meta";
+        meta.textContent = file + " · Line " + line + " (" + side + ")";
+
+        const ta = document.createElement("textarea");
+        ta.placeholder = "Write a review comment…";
+
+        const actions = document.createElement("div");
+        actions.className = "comment-input-actions";
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "btn-comment btn-cancel";
+        cancel.textContent = "Cancel";
+        cancel.addEventListener("click", closeInput);
+
+        const save = document.createElement("button");
+        save.type = "button";
+        save.className = "btn-comment btn-save";
+        save.textContent = "Save";
+        save.addEventListener("click", () => {
+          const text = ta.value.trim();
+          if (!text) { ta.focus(); return; }
+          const list = loadComments();
+          list.push({
+            id: genId(),
+            file: file,
+            line: line,
+            side: side,
+            code: code,
+            text: text,
+            createdAt: Date.now()
+          });
+          saveComments(list);
+          closeInput();
+          renderComments();
+        });
+
+        actions.appendChild(cancel);
+        actions.appendChild(save);
+        wrap.appendChild(meta);
+        wrap.appendChild(ta);
+        wrap.appendChild(actions);
+        td.appendChild(wrap);
+        tr.appendChild(td);
+        originRow.parentNode.insertBefore(tr, originRow.nextSibling);
+
+        ta.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") { e.preventDefault(); closeInput(); }
+          else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); save.click(); }
+        });
+        ta.focus();
+        activeInputRow = tr;
+      }
+
+      function clearCommentRows() {
+        document.querySelectorAll(".comment-row").forEach((tr) => tr.remove());
+      }
+
+      function findRow(table, file, line, side) {
+        const cells = table.querySelectorAll('td.line-no[data-file][data-line][data-side]');
+        for (let i = 0; i < cells.length; i++) {
+          const c = cells[i];
+          if (c.dataset.file === file && c.dataset.line === line && c.dataset.side === side) {
+            return c.parentElement;
+          }
+        }
+        return null;
+      }
+
+      function buildThread(file, line, side, group) {
+        const wrap = document.createElement("div");
+        wrap.className = "comment-thread";
+        group.forEach((c) => {
+          const item = document.createElement("div");
+          item.className = "comment";
+
+          const meta = document.createElement("div");
+          meta.className = "comment-meta";
+          const when = new Date(c.createdAt);
+          meta.textContent = "Line " + line + " (" + side + ") · " + when.toLocaleString();
+
+          const body = document.createElement("div");
+          body.className = "comment-body";
+          body.textContent = c.text;
+
+          const actions = document.createElement("div");
+          actions.className = "comment-actions";
+          const del = document.createElement("button");
+          del.type = "button";
+          del.className = "btn-comment btn-delete";
+          del.textContent = "Delete";
+          del.addEventListener("click", () => {
+            saveComments(loadComments().filter((x) => x.id !== c.id));
+            renderComments();
+          });
+          actions.appendChild(del);
+
+          item.appendChild(meta);
+          item.appendChild(body);
+          item.appendChild(actions);
+          wrap.appendChild(item);
+        });
+        return wrap;
+      }
+
+      function renderComments() {
+        clearCommentRows();
+        const all = loadComments();
+        updateCount(all.length);
+        if (!all.length) return;
+
+        document.querySelectorAll("section.file-diff").forEach((section) => {
+          const file = getFilePath(section);
+          const fileComments = all.filter((c) => c.file === file);
+          if (!fileComments.length) return;
+
+          const groups = new Map();
+          fileComments.forEach((c) => {
+            const key = c.line + ":" + c.side;
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(c);
+          });
+
+          [".unified-table", ".split-table"].forEach((sel) => {
+            const table = section.querySelector(sel);
+            if (!table) return;
+            groups.forEach((group, key) => {
+              const parts = key.split(":");
+              const line = parts[0];
+              const side = parts[1];
+              const row = findRow(table, file, line, side);
+              if (!row) return;
+              const tr = document.createElement("tr");
+              tr.className = "comment-row";
+              const td = document.createElement("td");
+              td.colSpan = row.children.length;
+              td.appendChild(buildThread(file, parseInt(line, 10), side, group));
+              tr.appendChild(td);
+              row.parentNode.insertBefore(tr, row.nextSibling);
+            });
+          });
+        });
+      }
+
+      function updateCount(n) {
+        const el = document.querySelector("[data-comment-count]");
+        if (!el) return;
+        el.textContent = String(n);
+        if (n > 0) el.removeAttribute("hidden");
+        else el.setAttribute("hidden", "");
+      }
+
+      // Click delegation for + buttons
+      document.addEventListener("click", (event) => {
+        const btn = event.target.closest(".add-comment-btn");
+        if (!btn) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const cell = btn.closest("td.line-no");
+        if (!cell) return;
+        openInput(
+          cell.parentElement,
+          cell.dataset.file || "",
+          parseInt(cell.dataset.line, 10),
+          cell.dataset.side || "new",
+          cell.dataset.code || ""
+        );
+      });
+
+      // Markdown export
+      function inferLang(file) {
+        const dot = file.lastIndexOf(".");
+        if (dot < 0) return "";
+        return EXT_LANG[file.slice(dot + 1).toLowerCase()] || "";
+      }
+
+      function escapeFence(code) {
+        // Bump fence length if code contains backticks
+        let max = 0, run = 0;
+        for (let i = 0; i < code.length; i++) {
+          if (code[i] === "`") { run += 1; if (run > max) max = run; }
+          else run = 0;
+        }
+        return "`".repeat(Math.max(3, max + 1));
+      }
+
+      function commentsToMarkdown() {
+        const all = loadComments();
+        const header =
+          "# Code Review Feedback\n\n" +
+          "The following review comments reference specific files and line numbers " +
+          "in the working-tree diff. Please address each item.\n\n" +
+          (repoPath ? "**Repository:** `" + repoPath + "`\n\n" : "") +
+          "**Generated:** " + new Date().toISOString() + "\n\n" +
+          "---\n\n";
+
+        if (!all.length) {
+          return header + "_No review comments recorded yet._\n";
+        }
+
+        const byFile = new Map();
+        all.forEach((c) => {
+          if (!byFile.has(c.file)) byFile.set(c.file, []);
+          byFile.get(c.file).push(c);
+        });
+
+        const files = Array.from(byFile.keys()).sort();
+        let md = header;
+        files.forEach((file) => {
+          md += "## `" + file + "`\n\n";
+          const list = byFile.get(file).slice().sort((a, b) => {
+            if (a.line !== b.line) return a.line - b.line;
+            return a.createdAt - b.createdAt;
+          });
+          const lang = inferLang(file);
+          list.forEach((c, idx) => {
+            md += "### Line " + c.line + " (" + c.side + ")\n\n";
+            const fence = escapeFence(c.code || "");
+            md += fence + lang + "\n" + (c.code || "") + "\n" + fence + "\n\n";
+            md += c.text + "\n\n";
+            if (idx < list.length - 1) md += "---\n\n";
+          });
+        });
+        return md;
+      }
+
+      function flashCopied(btn) {
+        const label = btn.querySelector(".label");
+        const orig = label ? label.textContent : "";
+        if (label) label.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          if (label) label.textContent = orig;
+          btn.classList.remove("copied");
+        }, 1500);
+      }
+
+      function copyText(text, btn) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => flashCopied(btn), () => fallbackCopy(text, btn));
+        } else {
+          fallbackCopy(text, btn);
+        }
+      }
+
+      function fallbackCopy(text, btn) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* ignore */ }
+        document.body.removeChild(ta);
+        flashCopied(btn);
+      }
+
+      const copyBtn = document.querySelector("[data-copy-markdown]");
+      if (copyBtn) {
+        copyBtn.addEventListener("click", () => copyText(commentsToMarkdown(), copyBtn));
+      }
+
+      annotateLines();
+      renderComments();
+    })();
   </script>
 </body>
 </html>
