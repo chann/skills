@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-diff-view="unified" data-page-theme="light" data-code-theme="light">
+<html lang="en"
+      data-diff-view="unified"
+      data-page-theme="light"
+      data-sidebar-collapsed="false"
+      data-code-scheme="github">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +13,7 @@
     *, *::before, *::after { box-sizing: border-box; }
 
     :root {
+      --sidebar-width: 240px;
       --bg: #f7f7f5;
       --surface: #ffffff;
       --surface-muted: #f0f2f4;
@@ -24,6 +29,11 @@
       --del-text: #a40e26;
       --hunk-bg: #eef3ff;
       --hunk-text: #3150a8;
+      --code-bg: #ffffff;
+      --code-fg: #1f2328;
+      --code-muted: #8c959f;
+      --selection-bg: rgba(37, 99, 235, 0.18);
+      --selection-fg: var(--accent);
       --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
@@ -45,19 +55,12 @@
       --del-text: #ffb3ba;
       --hunk-bg: #1d2946;
       --hunk-text: #a9c2ff;
-      --shadow: none;
-    }
-
-    html[data-code-theme="light"] {
-      --code-bg: #ffffff;
-      --code-fg: #1f2328;
-      --code-muted: #8c959f;
-    }
-
-    html[data-code-theme="dark"] {
       --code-bg: #0d1117;
       --code-fg: #c9d1d9;
       --code-muted: #6e7681;
+      --selection-bg: rgba(122, 162, 255, 0.28);
+      --selection-fg: var(--accent);
+      --shadow: none;
     }
 
     html { scroll-behavior: smooth; }
@@ -75,35 +78,77 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
       min-height: 100vh;
     }
+
+    html[data-sidebar-collapsed="true"] .layout {
+      grid-template-columns: 0 minmax(0, 1fr);
+    }
+
+    html[data-sidebar-collapsed="true"] aside { display: none; }
 
     aside {
       position: sticky;
       top: 0;
       height: 100vh;
-      overflow: auto;
       border-right: 1px solid var(--border);
       background: var(--surface-muted);
-      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
     }
 
-    .brand {
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      padding: 3px 6px;
+      cursor: pointer;
+      min-height: 0;
       font-size: 12px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover { color: var(--text); border-color: var(--muted); }
+
+    .brand {
+      font-size: 11px;
       font-weight: 700;
       color: var(--muted);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 14px;
+      margin: 0;
+    }
+
+    .sidebar-body {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding: 6px 8px 10px;
     }
 
     .repo {
       overflow-wrap: anywhere;
       color: var(--muted);
       font-family: var(--font-mono);
-      font-size: 11px;
-      margin-bottom: 18px;
+      font-size: 10px;
+      line-height: 1.35;
+      padding: 4px 4px 6px;
+      border-bottom: 1px dashed var(--border);
+      margin-bottom: 6px;
     }
 
     .nav-list {
@@ -114,9 +159,11 @@
 
     .nav-list a {
       display: block;
-      border-radius: 6px;
+      border-radius: 4px;
       color: var(--muted);
-      padding: 7px 8px;
+      padding: 2px 6px;
+      font-size: 12px;
+      line-height: 1.35;
       overflow-wrap: anywhere;
     }
 
@@ -129,6 +176,77 @@
     }
 
     .nav-list a.active:hover { background: var(--accent); color: #ffffff; }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding: 8px 10px;
+      flex: 0 0 auto;
+    }
+
+    .copy-md-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      border: 0;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      min-height: 0;
+    }
+
+    .copy-md-btn:hover { opacity: 0.92; }
+    .copy-md-btn.copied { background: var(--add-text); }
+    .copy-md-btn .count {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .sidebar-resizer {
+      position: absolute;
+      top: 0;
+      right: -3px;
+      width: 6px;
+      height: 100%;
+      cursor: col-resize;
+      z-index: 5;
+      background: transparent;
+    }
+
+    .sidebar-resizer:hover,
+    .sidebar-resizer.dragging {
+      background: var(--accent);
+      opacity: 0.45;
+    }
+
+    .sidebar-expand {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 999;
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1;
+      box-shadow: var(--shadow);
+    }
+
+    html[data-sidebar-collapsed="true"] .sidebar-expand { display: inline-flex; }
+    .sidebar-expand:hover { color: var(--accent); border-color: var(--accent); }
 
     main {
       min-width: 0;
@@ -285,33 +403,15 @@
       user-select: none;
       vertical-align: top;
       position: relative;
-    }
-
-    .add-comment-btn {
-      position: absolute;
-      top: 50%;
-      left: 1px;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      align-items: center;
-      justify-content: center;
-      background: var(--accent);
-      color: #ffffff;
-      border: 0;
-      border-radius: 3px;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1;
-      padding: 0;
-      display: none;
-      box-shadow: var(--shadow);
-      z-index: 1;
     }
 
-    .diff-table tr:hover > .line-no .add-comment-btn { display: inline-flex; }
-    .add-comment-btn:hover { opacity: 0.9; }
+    .line-no:hover { background: var(--border); }
+
+    .line-no.selecting {
+      background: var(--selection-bg) !important;
+      color: var(--selection-fg) !important;
+    }
 
     .code-line {
       background: var(--code-bg);
@@ -454,40 +554,24 @@
     .btn-comment.btn-delete:hover { color: var(--del-text); border-color: var(--del-line); }
     .btn-comment.btn-save:hover { opacity: 0.9; }
 
-    /* Floating Copy Markdown button */
-    .floating-copy-md {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 1000;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--accent);
-      color: #ffffff;
-      border: 0;
-      border-radius: 8px;
-      padding: 9px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: var(--font-sans);
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(16, 24, 40, 0.18);
+    body.resizing-sidebar,
+    body.selecting-lines {
+      user-select: none;
+      cursor: col-resize;
     }
 
-    .floating-copy-md:hover { opacity: 0.92; }
-    .floating-copy-md.copied { background: var(--add-text); }
-    .floating-copy-md .count {
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 999px;
-      padding: 1px 7px;
-      font-size: 11px;
-      font-weight: 700;
-    }
+    body.selecting-lines { cursor: row-resize; }
 
     @media (max-width: 860px) {
       .layout { display: block; }
-      aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+      aside {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+        max-height: 40vh;
+      }
+      .sidebar-resizer { display: none; }
       main { padding: 18px; }
       .topbar { display: block; }
       .controls { justify-content: flex-start; margin-top: 14px; }
@@ -497,23 +581,32 @@
   </style>
 </head>
 <body>
-  <button class="floating-copy-md" type="button" data-copy-markdown aria-label="Copy review markdown">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-    </svg>
-    <span class="label">Copy Markdown</span>
-    <span class="count" data-comment-count hidden>0</span>
-  </button>
+  <button class="sidebar-expand" type="button" data-sidebar-expand title="Show sidebar" aria-label="Show sidebar">&#9776;</button>
   <div class="layout">
-    <aside>
-      <div class="brand">Diff Viewer</div>
-      <div class="repo">__REPO_PATH__</div>
-      <nav aria-label="Changed files">
-        <ul class="nav-list">
-          __FILE_NAV__
-        </ul>
-      </nav>
+    <aside data-sidebar>
+      <div class="sidebar-header">
+        <button class="icon-btn" type="button" data-sidebar-toggle title="Collapse sidebar" aria-label="Collapse sidebar">&#x276E;</button>
+        <span class="brand">Diff Viewer</span>
+      </div>
+      <div class="sidebar-body">
+        <div class="repo">__REPO_PATH__</div>
+        <nav aria-label="Changed files">
+          <ul class="nav-list">
+            __FILE_NAV__
+          </ul>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <button class="copy-md-btn" type="button" data-copy-markdown aria-label="Copy review markdown">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span class="label">Copy Markdown</span>
+          <span class="count" data-comment-count hidden>0</span>
+        </button>
+      </div>
+      <div class="sidebar-resizer" data-sidebar-resizer></div>
     </aside>
 
     <main id="top">
@@ -529,7 +622,7 @@
             <button type="button" data-set-view="split">Split</button>
           </div>
           <label class="control">
-            <span class="control-label">Page</span>
+            <span class="control-label">Theme</span>
             <select data-theme-select>
               <option value="auto">Auto</option>
               <option value="light">Light</option>
@@ -538,10 +631,15 @@
           </label>
           <label class="control">
             <span class="control-label">Code</span>
-            <select data-code-theme-select>
-              <option value="auto">Auto</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+            <select data-code-scheme-select>
+              <option value="github">GitHub</option>
+              <option value="ayu">Ayu</option>
+              <option value="one">One</option>
+              <option value="flexoki">Flexoki</option>
+              <option value="dracula">Dracula</option>
+              <option value="monokai">Monokai</option>
+              <option value="sublime">Sublime</option>
+              <option value="terminal">Terminal</option>
             </select>
           </label>
         </div>
@@ -563,16 +661,34 @@
     const defaults = {
       view: __DEFAULT_VIEW__,
       theme: __DEFAULT_THEME__,
-      codeTheme: __DEFAULT_CODE_THEME__
+      codeScheme: __DEFAULT_CODE_SCHEME__
     };
-    const themeUrls = {
-      light: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css",
-      dark: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+
+    const HLJS_BASE = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/";
+    const CODE_SCHEMES = {
+      github:   { light: "github.min.css",              dark: "github-dark.min.css" },
+      ayu:      { light: "stackoverflow-light.min.css", dark: "atom-one-dark-reasonable.min.css" },
+      one:      { light: "atom-one-light.min.css",      dark: "atom-one-dark.min.css" },
+      flexoki:  { light: "kimbie-light.min.css",        dark: "kimbie-dark.min.css" },
+      dracula:  { light: "stackoverflow-light.min.css", dark: "dracula.min.css" },
+      monokai:  { light: "vs.min.css",                  dark: "monokai.min.css" },
+      sublime:  { light: "default.min.css",             dark: "monokai-sublime.min.css" },
+      terminal: { light: "nnfx-light.min.css",          dark: "nnfx-dark.min.css" }
     };
+
     const media = window.matchMedia("(prefers-color-scheme: dark)");
 
     function preferred(value) {
       return value === "auto" ? (media.matches ? "dark" : "light") : value;
+    }
+
+    function applyHljsTheme() {
+      const pageTheme = document.documentElement.dataset.pageTheme || "light";
+      const schemeName = document.documentElement.dataset.codeScheme || "github";
+      const variants = CODE_SCHEMES[schemeName] || CODE_SCHEMES.github;
+      const filename = variants[pageTheme] || variants.light;
+      const link = document.getElementById("hljs-theme");
+      if (link) link.href = HLJS_BASE + filename;
     }
 
     function setView(view) {
@@ -586,15 +702,18 @@
     function setTheme(value) {
       document.documentElement.dataset.pageTheme = preferred(value);
       localStorage.setItem("diff-viewer:theme", value);
-      document.querySelector("[data-theme-select]").value = value;
+      const sel = document.querySelector("[data-theme-select]");
+      if (sel) sel.value = value;
+      applyHljsTheme();
     }
 
-    function setCodeTheme(value) {
-      const resolved = preferred(value);
-      document.documentElement.dataset.codeTheme = resolved;
-      document.getElementById("hljs-theme").href = themeUrls[resolved];
-      localStorage.setItem("diff-viewer:code-theme", value);
-      document.querySelector("[data-code-theme-select]").value = value;
+    function setCodeScheme(value) {
+      const scheme = CODE_SCHEMES[value] ? value : "github";
+      document.documentElement.dataset.codeScheme = scheme;
+      localStorage.setItem("diff-viewer:code-scheme", scheme);
+      const sel = document.querySelector("[data-code-scheme-select]");
+      if (sel) sel.value = scheme;
+      applyHljsTheme();
     }
 
     document.querySelectorAll("[data-set-view]").forEach((button) => {
@@ -603,17 +722,80 @@
     document.querySelector("[data-theme-select]").addEventListener("change", (event) => {
       setTheme(event.target.value);
     });
-    document.querySelector("[data-code-theme-select]").addEventListener("change", (event) => {
-      setCodeTheme(event.target.value);
+    document.querySelector("[data-code-scheme-select]").addEventListener("change", (event) => {
+      setCodeScheme(event.target.value);
     });
     media.addEventListener("change", () => {
       setTheme(localStorage.getItem("diff-viewer:theme") || defaults.theme);
-      setCodeTheme(localStorage.getItem("diff-viewer:code-theme") || defaults.codeTheme);
     });
 
     setView(localStorage.getItem("diff-viewer:view") || defaults.view);
     setTheme(localStorage.getItem("diff-viewer:theme") || defaults.theme);
-    setCodeTheme(localStorage.getItem("diff-viewer:code-theme") || defaults.codeTheme);
+    setCodeScheme(localStorage.getItem("diff-viewer:code-scheme") || defaults.codeScheme);
+
+    // Sidebar collapse / expand / resize
+    (function () {
+      const aside = document.querySelector("aside[data-sidebar]");
+      const resizer = document.querySelector("[data-sidebar-resizer]");
+      const toggle = document.querySelector("[data-sidebar-toggle]");
+      const expand = document.querySelector("[data-sidebar-expand]");
+      const MIN_WIDTH = 100;
+      const DEFAULT_WIDTH = 240;
+      const COLLAPSE_THRESHOLD = 110;
+
+      function setWidth(px) {
+        const clamped = Math.max(MIN_WIDTH, Math.min(px, Math.floor(window.innerWidth * 0.6)));
+        document.documentElement.style.setProperty("--sidebar-width", clamped + "px");
+        localStorage.setItem("diff-viewer:sidebar:width", String(clamped));
+      }
+
+      function setCollapsed(collapsed) {
+        document.documentElement.dataset.sidebarCollapsed = String(Boolean(collapsed));
+        localStorage.setItem("diff-viewer:sidebar:collapsed", String(Boolean(collapsed)));
+      }
+
+      const storedWidth = parseInt(localStorage.getItem("diff-viewer:sidebar:width") || String(DEFAULT_WIDTH), 10);
+      if (Number.isFinite(storedWidth)) {
+        document.documentElement.style.setProperty(
+          "--sidebar-width",
+          Math.max(MIN_WIDTH, Math.min(storedWidth, Math.floor(window.innerWidth * 0.6))) + "px"
+        );
+      }
+      setCollapsed(localStorage.getItem("diff-viewer:sidebar:collapsed") === "true");
+
+      if (toggle) toggle.addEventListener("click", () => setCollapsed(true));
+      if (expand) expand.addEventListener("click", () => setCollapsed(false));
+
+      if (resizer && aside) {
+        let dragging = false;
+        resizer.addEventListener("mousedown", (event) => {
+          if (event.button !== 0) return;
+          event.preventDefault();
+          dragging = true;
+          resizer.classList.add("dragging");
+          document.body.classList.add("resizing-sidebar");
+        });
+        window.addEventListener("mousemove", (event) => {
+          if (!dragging) return;
+          const rect = aside.getBoundingClientRect();
+          const width = event.clientX - rect.left;
+          if (width < COLLAPSE_THRESHOLD) {
+            setCollapsed(true);
+            dragging = false;
+            resizer.classList.remove("dragging");
+            document.body.classList.remove("resizing-sidebar");
+            return;
+          }
+          setWidth(width);
+        });
+        window.addEventListener("mouseup", () => {
+          if (!dragging) return;
+          dragging = false;
+          resizer.classList.remove("dragging");
+          document.body.classList.remove("resizing-sidebar");
+        });
+      }
+    })();
 
     function splitHighlightedHtml(markup) {
       const lines = [""];
@@ -722,7 +904,7 @@
       updateActive();
     })();
 
-    // Inline review comments — hover line number → "+" → textarea → save → localStorage
+    // Inline review comments — drag line numbers to select a range, then leave a comment
     (function () {
       const repoEl = document.querySelector(".repo");
       const repoPath = repoEl ? repoEl.textContent.trim() : "";
@@ -747,8 +929,19 @@
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return [];
           const parsed = JSON.parse(raw);
-          return Array.isArray(parsed) ? parsed : [];
+          if (!Array.isArray(parsed)) return [];
+          return parsed.map(normalizeComment);
         } catch (e) { return []; }
+      }
+
+      function normalizeComment(c) {
+        // Backward compatible with the old single-line entry format
+        const obj = Object.assign({}, c);
+        if (obj.startLine == null) obj.startLine = obj.line;
+        if (obj.endLine == null) obj.endLine = obj.line;
+        obj.startLine = parseInt(obj.startLine, 10);
+        obj.endLine = parseInt(obj.endLine, 10);
+        return obj;
       }
 
       function saveComments(list) {
@@ -771,9 +964,7 @@
       function readCellCode(cell) {
         if (!cell) return "";
         const codeEl = cell.querySelector("code");
-        const raw = (codeEl ? codeEl.textContent : cell.textContent) || "";
-        // Drop the leading line-sign character if it sneaks in via textContent
-        return raw;
+        return (codeEl ? codeEl.textContent : cell.textContent) || "";
       }
 
       function annotateCell(cell, file, side, codeCell) {
@@ -782,18 +973,10 @@
         if (!text) return;
         const lineNum = parseInt(text, 10);
         if (!Number.isFinite(lineNum)) return;
-
         cell.dataset.file = file;
         cell.dataset.line = String(lineNum);
         cell.dataset.side = side;
         cell.dataset.code = readCellCode(codeCell);
-
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "add-comment-btn";
-        btn.textContent = "+";
-        btn.title = "Add comment";
-        cell.appendChild(btn);
       }
 
       function annotateLines() {
@@ -822,7 +1005,89 @@
         if (activeInputRow) { activeInputRow.remove(); activeInputRow = null; }
       }
 
-      function openInput(originRow, file, line, side, code) {
+      function activeTableSel() {
+        return (document.documentElement.dataset.diffView || "unified") === "split"
+          ? ".split-table"
+          : ".unified-table";
+      }
+
+      function selectCellsInRange(file, side, lo, hi) {
+        const cells = document.querySelectorAll(
+          activeTableSel() + " td.line-no[data-file][data-line][data-side]"
+        );
+        const result = [];
+        cells.forEach((c) => {
+          if (c.dataset.file !== file || c.dataset.side !== side) return;
+          const n = parseInt(c.dataset.line, 10);
+          if (n >= lo && n <= hi) result.push({ n: n, cell: c });
+        });
+        result.sort((a, b) => a.n - b.n);
+        return result;
+      }
+
+      function clearSelectionStyle() {
+        document.querySelectorAll(".line-no.selecting").forEach((c) => c.classList.remove("selecting"));
+      }
+
+      function paintSelection(file, side, lo, hi) {
+        clearSelectionStyle();
+        selectCellsInRange(file, side, lo, hi).forEach((entry) => entry.cell.classList.add("selecting"));
+      }
+
+      function collectRangeCode(file, side, lo, hi) {
+        return selectCellsInRange(file, side, lo, hi)
+          .map((entry) => entry.cell.dataset.code || "")
+          .join("\n");
+      }
+
+      let drag = null;
+      const SUPPRESS_CLOSEST = ".comment-input, .comment, .comment-thread, .sidebar-resizer, button, select, textarea, input, a";
+
+      document.addEventListener("mousedown", (event) => {
+        if (event.button !== 0) return;
+        if (event.target.closest(SUPPRESS_CLOSEST)) return;
+        const cell = event.target.closest("td.line-no");
+        if (!cell || !cell.dataset.line) return;
+        event.preventDefault();
+        drag = {
+          file: cell.dataset.file,
+          side: cell.dataset.side,
+          startLine: parseInt(cell.dataset.line, 10),
+          endLine: parseInt(cell.dataset.line, 10),
+          originRow: cell.parentElement
+        };
+        document.body.classList.add("selecting-lines");
+        paintSelection(drag.file, drag.side, drag.startLine, drag.endLine);
+      });
+
+      document.addEventListener("mousemove", (event) => {
+        if (!drag) return;
+        const cell = event.target.closest("td.line-no");
+        if (!cell || !cell.dataset.line) return;
+        if (cell.dataset.file !== drag.file || cell.dataset.side !== drag.side) return;
+        drag.endLine = parseInt(cell.dataset.line, 10);
+        const lo = Math.min(drag.startLine, drag.endLine);
+        const hi = Math.max(drag.startLine, drag.endLine);
+        paintSelection(drag.file, drag.side, lo, hi);
+      });
+
+      document.addEventListener("mouseup", () => {
+        if (!drag) return;
+        const lo = Math.min(drag.startLine, drag.endLine);
+        const hi = Math.max(drag.startLine, drag.endLine);
+        const file = drag.file;
+        const side = drag.side;
+        drag = null;
+        document.body.classList.remove("selecting-lines");
+        clearSelectionStyle();
+        const range = selectCellsInRange(file, side, lo, hi);
+        if (!range.length) return;
+        const anchorRow = range[range.length - 1].cell.parentElement;
+        const code = range.map((entry) => entry.cell.dataset.code || "").join("\n");
+        openInput(anchorRow, file, lo, hi, side, code);
+      });
+
+      function openInput(originRow, file, startLine, endLine, side, code) {
         closeInput();
         const tr = document.createElement("tr");
         tr.className = "comment-input-row";
@@ -834,7 +1099,8 @@
 
         const meta = document.createElement("div");
         meta.className = "comment-input-meta";
-        meta.textContent = file + " · Line " + line + " (" + side + ")";
+        const range = startLine === endLine ? "Line " + startLine : "Lines " + startLine + "-" + endLine;
+        meta.textContent = file + " · " + range + " (" + side + ")";
 
         const ta = document.createElement("textarea");
         ta.placeholder = "Write a review comment…";
@@ -859,7 +1125,8 @@
           list.push({
             id: genId(),
             file: file,
-            line: line,
+            startLine: startLine,
+            endLine: endLine,
             side: side,
             code: code,
             text: text,
@@ -895,16 +1162,17 @@
         const cells = table.querySelectorAll('td.line-no[data-file][data-line][data-side]');
         for (let i = 0; i < cells.length; i++) {
           const c = cells[i];
-          if (c.dataset.file === file && c.dataset.line === line && c.dataset.side === side) {
+          if (c.dataset.file === file && c.dataset.line === String(line) && c.dataset.side === side) {
             return c.parentElement;
           }
         }
         return null;
       }
 
-      function buildThread(file, line, side, group) {
+      function buildThread(file, startLine, endLine, side, group) {
         const wrap = document.createElement("div");
         wrap.className = "comment-thread";
+        const rangeLabel = startLine === endLine ? "Line " + startLine : "Lines " + startLine + "-" + endLine;
         group.forEach((c) => {
           const item = document.createElement("div");
           item.className = "comment";
@@ -912,7 +1180,7 @@
           const meta = document.createElement("div");
           meta.className = "comment-meta";
           const when = new Date(c.createdAt);
-          meta.textContent = "Line " + line + " (" + side + ") · " + when.toLocaleString();
+          meta.textContent = rangeLabel + " (" + side + ") · " + when.toLocaleString();
 
           const body = document.createElement("div");
           body.className = "comment-body";
@@ -951,7 +1219,7 @@
 
           const groups = new Map();
           fileComments.forEach((c) => {
-            const key = c.line + ":" + c.side;
+            const key = c.startLine + ":" + c.endLine + ":" + c.side;
             if (!groups.has(key)) groups.set(key, []);
             groups.get(key).push(c);
           });
@@ -961,15 +1229,16 @@
             if (!table) return;
             groups.forEach((group, key) => {
               const parts = key.split(":");
-              const line = parts[0];
-              const side = parts[1];
-              const row = findRow(table, file, line, side);
+              const startLine = parseInt(parts[0], 10);
+              const endLine = parseInt(parts[1], 10);
+              const side = parts[2];
+              const row = findRow(table, file, endLine, side);
               if (!row) return;
               const tr = document.createElement("tr");
               tr.className = "comment-row";
               const td = document.createElement("td");
               td.colSpan = row.children.length;
-              td.appendChild(buildThread(file, parseInt(line, 10), side, group));
+              td.appendChild(buildThread(file, startLine, endLine, side, group));
               tr.appendChild(td);
               row.parentNode.insertBefore(tr, row.nextSibling);
             });
@@ -985,23 +1254,6 @@
         else el.setAttribute("hidden", "");
       }
 
-      // Click delegation for + buttons
-      document.addEventListener("click", (event) => {
-        const btn = event.target.closest(".add-comment-btn");
-        if (!btn) return;
-        event.preventDefault();
-        event.stopPropagation();
-        const cell = btn.closest("td.line-no");
-        if (!cell) return;
-        openInput(
-          cell.parentElement,
-          cell.dataset.file || "",
-          parseInt(cell.dataset.line, 10),
-          cell.dataset.side || "new",
-          cell.dataset.code || ""
-        );
-      });
-
       // Markdown export
       function inferLang(file) {
         const dot = file.lastIndexOf(".");
@@ -1010,7 +1262,6 @@
       }
 
       function escapeFence(code) {
-        // Bump fence length if code contains backticks
         let max = 0, run = 0;
         for (let i = 0; i < code.length; i++) {
           if (code[i] === "`") { run += 1; if (run > max) max = run; }
@@ -1044,12 +1295,14 @@
         files.forEach((file) => {
           md += "## `" + file + "`\n\n";
           const list = byFile.get(file).slice().sort((a, b) => {
-            if (a.line !== b.line) return a.line - b.line;
+            if (a.startLine !== b.startLine) return a.startLine - b.startLine;
+            if (a.endLine !== b.endLine) return a.endLine - b.endLine;
             return a.createdAt - b.createdAt;
           });
           const lang = inferLang(file);
           list.forEach((c, idx) => {
-            md += "### Line " + c.line + " (" + c.side + ")\n\n";
+            const range = c.startLine === c.endLine ? "Line " + c.startLine : "Lines " + c.startLine + "-" + c.endLine;
+            md += "### " + range + " (" + c.side + ")\n\n";
             const fence = escapeFence(c.code || "");
             md += fence + lang + "\n" + (c.code || "") + "\n" + fence + "\n\n";
             md += c.text + "\n\n";

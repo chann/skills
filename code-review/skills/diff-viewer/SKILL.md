@@ -28,11 +28,17 @@ Render the current working-tree diff as an HTML report. This is a viewer only: i
 python3 <skill-path>/scripts/generate_diff_report.py \
   --view unified \
   --theme auto \
-  --code-theme auto \
+  --code-scheme github \
   -o .diffs/my-diff.html
 ```
 
-Valid `--view` values are `unified` and `split`. Valid page and code themes are `auto`, `light`, and `dark`. The browser controls can change these later and persist choices in `localStorage`.
+Valid `--view` values are `unified` and `split`. Valid `--theme` values are `auto`, `light`, and `dark`. Valid `--code-scheme` values are `github`, `ayu`, `one`, `flexoki`, `dracula`, `monokai`, `sublime`, `terminal` — each ships a light and a dark variant that follows the page theme automatically. The browser controls can change these later and persist choices in `localStorage`.
+
+## Browser features
+
+- **Drag line numbers** to select a range, then leave a single review comment that spans those lines.
+- **Sidebar** can be collapsed via the `<` button, expanded via the floating menu icon, and resized by dragging its right edge. Drag below the threshold to auto-collapse. Width and state persist in `localStorage`.
+- **Copy Markdown** lives at the bottom of the sidebar and copies the current review thread as a markdown report.
 
 ## Boundaries
 

@@ -590,12 +590,24 @@ def gitignore_has_diffs(root: Path) -> bool:
     return ".diffs" in ignored or ".diffs/" in ignored
 
 
+CODE_SCHEMES = (
+    "github",
+    "ayu",
+    "one",
+    "flexoki",
+    "dracula",
+    "monokai",
+    "sublime",
+    "terminal",
+)
+
+
 def assemble_html(
     files: List[FileDiff],
     root: Path,
     default_view: str = "unified",
     default_theme: str = "auto",
-    default_code_theme: str = "auto",
+    default_code_scheme: str = "github",
 ) -> str:
     summary = render_summary(files)
     created_at = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
@@ -611,7 +623,7 @@ def assemble_html(
         "__HIGHLIGHT_SEEDS__": render_highlight_seeds(files),
         "__DEFAULT_VIEW__": json.dumps(default_view),
         "__DEFAULT_THEME__": json.dumps(default_theme),
-        "__DEFAULT_CODE_THEME__": json.dumps(default_code_theme),
+        "__DEFAULT_CODE_SCHEME__": json.dumps(default_code_scheme),
     }
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     for key, value in replacements.items():
@@ -630,7 +642,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     parser.add_argument("-o", "--output", type=Path, help="Output HTML path")
     parser.add_argument("--view", choices=("unified", "split"), default="unified")
     parser.add_argument("--theme", choices=("auto", "light", "dark"), default="auto")
-    parser.add_argument("--code-theme", choices=("auto", "light", "dark"), default="auto")
+    parser.add_argument("--code-scheme", choices=CODE_SCHEMES, default="github")
     return parser.parse_args(argv)
 
 
@@ -644,7 +656,7 @@ def main(argv: List[str]) -> int:
         output_path = args.output if args.output else default_output_path(root, summary)
         if not output_path.is_absolute():
             output_path = root / output_path
-        html_text = assemble_html(files, root, args.view, args.theme, args.code_theme)
+        html_text = assemble_html(files, root, args.view, args.theme, args.code_scheme)
         write_report(html_text, output_path)
     except Exception as exc:  # noqa: BLE001 - CLI should report concise errors.
         print("diff-viewer: {}".format(exc), file=sys.stderr)
