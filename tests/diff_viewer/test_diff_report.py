@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -9,6 +10,7 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 from generate_diff_report import (  # noqa: E402
     FileDiff,
     assemble_html,
+    build_comment_storage_scope,
     build_highlight_seeds,
     detect_language,
     parse_git_diff,
@@ -114,3 +116,56 @@ def test_assemble_html_embeds_highlight_seeds(load_fixture, tmp_path):
     assert 'id="highlight-seeds"' in html
     assert 'data-highlight-file="0"' in html
     assert "splitHighlightedHtml" in html
+
+
+def test_assemble_html_scopes_comments_to_generated_report(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+    output_path = tmp_path / ".diffs" / "review.html"
+
+    html = assemble_html(files, tmp_path, report_path=output_path)
+
+    assert str(output_path) in html
+    assert "commentScope:" in html
+    assert 'const STORAGE_KEY = "diff-viewer:comments:" + commentStorageScope;' in html
+    assert 'const STORAGE_KEY = "diff-viewer:comments:" + (repoPath || "default");' not in html
+
+
+def test_comment_storage_scope_changes_by_generated_report_path(tmp_path):
+    created_at = datetime(2026, 5, 28, 1, 2, 3, tzinfo=timezone.utc)
+    first = build_comment_storage_scope(tmp_path, tmp_path / ".diffs" / "first.html", created_at)
+    second = build_comment_storage_scope(tmp_path, tmp_path / ".diffs" / "second.html", created_at)
+
+    assert str(tmp_path / ".diffs" / "first.html") in first
+    assert str(tmp_path / ".diffs" / "second.html") in second
+    assert "2026-05-28T01:02:03" in first
+    assert first != second
+
+
+def test_assemble_html_preserves_template_tokens_inside_diff_content(tmp_path):
+    diff_text = """diff --git a/example.txt b/example.txt
+index 1111111..2222222 100644
+--- a/example.txt
++++ b/example.txt
+@@ -1 +1 @@
+-old
++__COMMENT_STORAGE_SCOPE__ __DEFAULT_VIEW__
+"""
+    files = parse_git_diff(diff_text)
+
+    html = assemble_html(files, tmp_path, report_path=tmp_path / ".diffs" / "tokens.html")
+
+    assert "__COMMENT_STORAGE_SCOPE__ __DEFAULT_VIEW__" in html
+
+
+def test_assemble_html_exposes_comment_management_controls(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path, report_path=tmp_path / ".diffs" / "comments.html")
+
+    assert 'data-clear-comments' in html
+    assert 'data-comment-list' in html
+    assert 'function updateCommentList(all)' in html
+    assert 'function jumpToComment(commentId)' in html
+    assert 'function editComment(comment)' in html
+    assert 'localStorage.removeItem(STORAGE_KEY)' in html
+    assert 'btn-comment btn-edit' in html

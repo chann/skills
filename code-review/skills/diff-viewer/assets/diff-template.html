@@ -182,6 +182,55 @@
 
     .nav-list a.active:hover { background: var(--accent); color: #ffffff; }
 
+    .comment-panel {
+      border-top: 1px dashed var(--border);
+      margin-top: 8px;
+      padding-top: 8px;
+    }
+
+    .comment-panel-title {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      text-transform: uppercase;
+    }
+
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .comment-list button {
+      width: 100%;
+      border-radius: 4px;
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      line-height: 1.3;
+      min-height: 0;
+      overflow-wrap: anywhere;
+      padding: 4px 6px;
+      text-align: left;
+    }
+
+    .comment-list button:hover,
+    .comment-list button:focus-visible {
+      background: var(--border);
+      color: var(--text);
+      outline: none;
+    }
+
+    .comment-list .comment-empty {
+      color: var(--muted);
+      font-size: 11px;
+      padding: 4px 6px;
+    }
+
     .sidebar-footer {
       border-top: 1px solid var(--border);
       padding: 8px 10px;
@@ -338,6 +387,22 @@
     button[aria-pressed="true"] {
       background: var(--accent);
       color: #ffffff;
+    }
+
+    .clear-comments-btn {
+      border: 1px solid var(--border);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .clear-comments-btn:hover:not(:disabled) {
+      border-color: var(--del-line);
+      color: var(--del-text);
+    }
+
+    .clear-comments-btn:disabled {
+      cursor: default;
+      opacity: 0.45;
     }
 
     select { border-left: 1px solid var(--border); }
@@ -499,6 +564,11 @@
     .comment-meta { color: var(--muted); font-size: 11px; }
     .comment-body { white-space: pre-wrap; word-break: break-word; }
 
+    .comment.comment-focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--selection-bg);
+    }
+
     .comment-actions {
       display: flex;
       gap: 6px;
@@ -519,6 +589,27 @@
     .comment-input-meta { color: var(--muted); font-size: 11px; }
 
     .comment-input textarea {
+      width: 100%;
+      min-height: 64px;
+      resize: vertical;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.45;
+      box-sizing: border-box;
+    }
+
+    .comment-edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .comment-edit-form textarea {
       width: 100%;
       min-height: 64px;
       resize: vertical;
@@ -556,12 +647,14 @@
     }
 
     .btn-comment.btn-cancel,
+    .btn-comment.btn-edit,
     .btn-comment.btn-delete {
       background: transparent;
       color: var(--muted);
       border: 1px solid var(--border);
     }
 
+    .btn-comment.btn-edit:hover { color: var(--accent); border-color: var(--accent); }
     .btn-comment.btn-delete:hover { color: var(--del-text); border-color: var(--del-line); }
     .btn-comment.btn-save:hover { opacity: 0.9; }
 
@@ -606,6 +699,12 @@
             __FILE_NAV__
           </ul>
         </nav>
+        <div class="comment-panel" aria-label="Review comments">
+          <p class="comment-panel-title">Comments</p>
+          <ul class="comment-list" data-comment-list>
+            <li class="comment-empty">No comments</li>
+          </ul>
+        </div>
       </div>
       <div class="sidebar-footer">
         <button class="copy-md-btn" type="button" data-copy-markdown aria-label="Copy review markdown">
@@ -653,6 +752,7 @@
               <option value="gruvbox">Gruvbox</option>
             </select>
           </label>
+          <button class="clear-comments-btn" type="button" data-clear-comments disabled>Clear comments</button>
         </div>
       </div>
 
@@ -672,7 +772,8 @@
     const defaults = {
       view: __DEFAULT_VIEW__,
       theme: __DEFAULT_THEME__,
-      codeScheme: __DEFAULT_CODE_SCHEME__
+      codeScheme: __DEFAULT_CODE_SCHEME__,
+      commentScope: __COMMENT_STORAGE_SCOPE__
     };
 
     const HLJS_BASE = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/";
@@ -953,7 +1054,9 @@
     (function () {
       const repoEl = document.querySelector(".repo");
       const repoPath = repoEl ? repoEl.textContent.trim() : "";
-      const STORAGE_KEY = "diff-viewer:comments:" + (repoPath || "default");
+      const fallbackScope = (window.location && window.location.pathname) || repoPath || "default";
+      const commentStorageScope = defaults.commentScope || fallbackScope;
+      const STORAGE_KEY = "diff-viewer:comments:" + commentStorageScope;
 
       const EXT_LANG = {
         js: "js", mjs: "js", cjs: "js", jsx: "jsx",
@@ -982,15 +1085,20 @@
       function normalizeComment(c) {
         // Backward compatible with the old single-line entry format
         const obj = Object.assign({}, c);
+        if (!obj.id) obj.id = genId();
         if (obj.startLine == null) obj.startLine = obj.line;
         if (obj.endLine == null) obj.endLine = obj.line;
         obj.startLine = parseInt(obj.startLine, 10);
         obj.endLine = parseInt(obj.endLine, 10);
+        if (!obj.createdAt) obj.createdAt = Date.now();
         return obj;
       }
 
       function saveComments(list) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+        try {
+          if (!list.length) localStorage.removeItem(STORAGE_KEY);
+          else localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        }
         catch (e) { /* ignore quota errors */ }
       }
 
@@ -1085,6 +1193,48 @@
           .join("\n");
       }
 
+      function formatRange(startLine, endLine) {
+        return startLine === endLine ? "Line " + startLine : "Lines " + startLine + "-" + endLine;
+      }
+
+      function sortedComments(list) {
+        return list.slice().sort((a, b) => {
+          if (a.file !== b.file) return a.file.localeCompare(b.file);
+          if (a.startLine !== b.startLine) return a.startLine - b.startLine;
+          if (a.endLine !== b.endLine) return a.endLine - b.endLine;
+          return a.createdAt - b.createdAt;
+        });
+      }
+
+      function isVisible(el) {
+        return Boolean(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+      }
+
+      function findRenderedComment(commentId) {
+        const items = Array.from(document.querySelectorAll("[data-comment-id]"));
+        return items.find((item) => item.dataset.commentId === commentId && isVisible(item))
+          || items.find((item) => item.dataset.commentId === commentId)
+          || null;
+      }
+
+      function focusCommentElement(item) {
+        if (!item) return;
+        item.scrollIntoView({ block: "center", behavior: "smooth" });
+        item.classList.add("comment-focus");
+        item.setAttribute("tabindex", "-1");
+        item.focus({ preventScroll: true });
+        setTimeout(() => item.classList.remove("comment-focus"), 1400);
+      }
+
+      function jumpToComment(commentId) {
+        let item = findRenderedComment(commentId);
+        if (!item) {
+          renderComments();
+          item = findRenderedComment(commentId);
+        }
+        focusCommentElement(item);
+      }
+
       let drag = null;
       const SUPPRESS_CLOSEST = ".comment-input, .comment, .comment-thread, .sidebar-resizer, button, select, textarea, input, a";
 
@@ -1144,7 +1294,7 @@
 
         const meta = document.createElement("div");
         meta.className = "comment-input-meta";
-        const range = startLine === endLine ? "Line " + startLine : "Lines " + startLine + "-" + endLine;
+        const range = formatRange(startLine, endLine);
         meta.textContent = file + " · " + range + " (" + side + ")";
 
         const ta = document.createElement("textarea");
@@ -1214,13 +1364,68 @@
         return null;
       }
 
+      function editComment(comment) {
+        const item = findRenderedComment(comment.id);
+        if (!item || item.querySelector(".comment-edit-form")) return;
+
+        const body = item.querySelector(".comment-body");
+        const actions = item.querySelector(".comment-actions");
+        if (!body || !actions) return;
+
+        body.hidden = true;
+        actions.hidden = true;
+
+        const form = document.createElement("div");
+        form.className = "comment-edit-form";
+
+        const textarea = document.createElement("textarea");
+        textarea.value = comment.text || "";
+
+        const editActions = document.createElement("div");
+        editActions.className = "comment-input-actions";
+
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "btn-comment btn-cancel";
+        cancel.textContent = "Cancel";
+        cancel.addEventListener("click", () => {
+          form.remove();
+          body.hidden = false;
+          actions.hidden = false;
+        });
+
+        const save = document.createElement("button");
+        save.type = "button";
+        save.className = "btn-comment btn-save";
+        save.textContent = "Save";
+        save.addEventListener("click", () => {
+          const text = textarea.value.trim();
+          if (!text) { textarea.focus(); return; }
+          saveComments(loadComments().map((entry) => {
+            if (entry.id !== comment.id) return entry;
+            return Object.assign({}, entry, { text: text, updatedAt: Date.now() });
+          }));
+          renderComments();
+          jumpToComment(comment.id);
+        });
+
+        editActions.appendChild(cancel);
+        editActions.appendChild(save);
+        form.appendChild(textarea);
+        form.appendChild(editActions);
+        item.appendChild(form);
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      }
+
       function buildThread(file, startLine, endLine, side, group) {
         const wrap = document.createElement("div");
         wrap.className = "comment-thread";
-        const rangeLabel = startLine === endLine ? "Line " + startLine : "Lines " + startLine + "-" + endLine;
+        const rangeLabel = formatRange(startLine, endLine);
         group.forEach((c) => {
           const item = document.createElement("div");
           item.className = "comment";
+          item.dataset.commentId = c.id;
 
           const meta = document.createElement("div");
           meta.className = "comment-meta";
@@ -1233,6 +1438,12 @@
 
           const actions = document.createElement("div");
           actions.className = "comment-actions";
+          const edit = document.createElement("button");
+          edit.type = "button";
+          edit.className = "btn-comment btn-edit";
+          edit.textContent = "Edit";
+          edit.addEventListener("click", () => editComment(c));
+
           const del = document.createElement("button");
           del.type = "button";
           del.className = "btn-comment btn-delete";
@@ -1241,6 +1452,7 @@
             saveComments(loadComments().filter((x) => x.id !== c.id));
             renderComments();
           });
+          actions.appendChild(edit);
           actions.appendChild(del);
 
           item.appendChild(meta);
@@ -1251,10 +1463,36 @@
         return wrap;
       }
 
+      function updateCommentList(all) {
+        const list = document.querySelector("[data-comment-list]");
+        if (!list) return;
+        list.innerHTML = "";
+        if (!all.length) {
+          const empty = document.createElement("li");
+          empty.className = "comment-empty";
+          empty.textContent = "No comments";
+          list.appendChild(empty);
+          return;
+        }
+
+        sortedComments(all).forEach((c) => {
+          const item = document.createElement("li");
+          const button = document.createElement("button");
+          button.type = "button";
+          button.dataset.jumpComment = c.id;
+          button.textContent = formatRange(c.startLine, c.endLine) + " (" + c.side + ") · " + c.file;
+          button.title = c.text || "";
+          button.addEventListener("click", () => jumpToComment(c.id));
+          item.appendChild(button);
+          list.appendChild(item);
+        });
+      }
+
       function renderComments() {
         clearCommentRows();
         const all = loadComments();
         updateCount(all.length);
+        updateCommentList(all);
         if (!all.length) return;
 
         document.querySelectorAll("section.file-diff").forEach((section) => {
@@ -1293,10 +1531,13 @@
 
       function updateCount(n) {
         const el = document.querySelector("[data-comment-count]");
-        if (!el) return;
-        el.textContent = String(n);
-        if (n > 0) el.removeAttribute("hidden");
-        else el.setAttribute("hidden", "");
+        if (el) {
+          el.textContent = String(n);
+          if (n > 0) el.removeAttribute("hidden");
+          else el.setAttribute("hidden", "");
+        }
+        const clearBtn = document.querySelector("[data-clear-comments]");
+        if (clearBtn) clearBtn.disabled = n === 0;
       }
 
       // Markdown export
@@ -1391,6 +1632,18 @@
       const copyBtn = document.querySelector("[data-copy-markdown]");
       if (copyBtn) {
         copyBtn.addEventListener("click", () => copyText(commentsToMarkdown(), copyBtn));
+      }
+
+      const clearBtn = document.querySelector("[data-clear-comments]");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          const count = loadComments().length;
+          if (!count) return;
+          if (!window.confirm("Clear all comments for this report?")) return;
+          saveComments([]);
+          closeInput();
+          renderComments();
+        });
       }
 
       annotateLines();

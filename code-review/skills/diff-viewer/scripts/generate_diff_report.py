@@ -504,6 +504,20 @@ def render_highlight_seeds(files: List[FileDiff]) -> str:
     return json.dumps(build_highlight_seeds(files), ensure_ascii=False).replace("</", "<\\/")
 
 
+def json_for_script(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False).replace("</", "<\\/")
+
+
+def build_comment_storage_scope(root: Path, report_path: Optional[Path], created_at: datetime) -> str:
+    report = str(report_path) if report_path else "unspecified-report"
+    return "{}::{}::{}".format(root, report, created_at.isoformat(timespec="microseconds"))
+
+
+def fill_template(template: str, replacements: Dict[str, str]) -> str:
+    pattern = re.compile("|".join(re.escape(key) for key in replacements))
+    return pattern.sub(lambda match: replacements[match.group(0)], template)
+
+
 def render_nav(files: List[FileDiff]) -> str:
     if not files:
         return '<li><a href="#top">No changes</a></li>'
@@ -608,27 +622,29 @@ def assemble_html(
     default_view: str = "unified",
     default_theme: str = "auto",
     default_code_scheme: str = "github",
+    report_path: Optional[Path] = None,
 ) -> str:
     summary = render_summary(files)
-    created_at = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+    created_at = datetime.now().astimezone()
     replacements = {
         "__REPORT_TITLE__": "Working Tree Diff",
         "__REPO_PATH__": escape(str(root)),
-        "__CREATED_AT__": escape(created_at),
+        "__CREATED_AT__": escape(created_at.strftime("%Y-%m-%d %H:%M:%S %Z")),
         "__SUMMARY_FILES__": str(summary["files"]),
         "__SUMMARY_ADDITIONS__": str(summary["additions"]),
         "__SUMMARY_DELETIONS__": str(summary["deletions"]),
         "__FILE_NAV__": render_nav(files),
         "__REPORT_BODY__": render_body(files),
         "__HIGHLIGHT_SEEDS__": render_highlight_seeds(files),
-        "__DEFAULT_VIEW__": json.dumps(default_view),
-        "__DEFAULT_THEME__": json.dumps(default_theme),
-        "__DEFAULT_CODE_SCHEME__": json.dumps(default_code_scheme),
+        "__DEFAULT_VIEW__": json_for_script(default_view),
+        "__DEFAULT_THEME__": json_for_script(default_theme),
+        "__DEFAULT_CODE_SCHEME__": json_for_script(default_code_scheme),
+        "__COMMENT_STORAGE_SCOPE__": json_for_script(
+            build_comment_storage_scope(root, report_path, created_at)
+        ),
     }
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
-    for key, value in replacements.items():
-        template = template.replace(key, value)
-    return template
+    return fill_template(template, replacements)
 
 
 def write_report(html_text: str, output_path: Path) -> Path:
@@ -656,7 +672,7 @@ def main(argv: List[str]) -> int:
         output_path = args.output if args.output else default_output_path(root, summary)
         if not output_path.is_absolute():
             output_path = root / output_path
-        html_text = assemble_html(files, root, args.view, args.theme, args.code_scheme)
+        html_text = assemble_html(files, root, args.view, args.theme, args.code_scheme, output_path)
         write_report(html_text, output_path)
     except Exception as exc:  # noqa: BLE001 - CLI should report concise errors.
         print("diff-viewer: {}".format(exc), file=sys.stderr)
