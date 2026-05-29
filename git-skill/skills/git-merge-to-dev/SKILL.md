@@ -1,15 +1,15 @@
 ---
 name: git-merge-to-dev
-description: Use when the user asks to merge the current branch into the dev branch (`dev`, falling back to `develop`) and delete the merged source branch. Trigger on phrases like "merge to dev", "dev에 머지", "develop에 합쳐줘", "merge this into dev and delete it", "/git-merge-to-dev". Switches to dev/develop, merges the source branch, then runs `git branch -d` on the source. For `main` use `git-merge-to-main`; to bulk-clean already-merged branches use `git-branch-cleanup`.
+description: Use when the user asks to merge the current branch into the dev branch (`dev`, falling back to `develop`) and delete the merged source branch unless the source is protected. Trigger on phrases like "merge to dev", "dev에 머지", "develop에 합쳐줘", "merge this into dev and delete it", "/git-merge-to-dev". For `main` use `git-merge-to-main`; to bulk-clean already-merged branches use `git-branch-cleanup`.
 ---
 
 # Git Merge to Dev
 
 ## Overview
 
-Variant of `git-merge-to-main` with target = `dev` (preferred) or `develop` (fallback). Merges the **current branch** into the dev branch, then safely deletes the source branch.
+Variant of `git-merge-to-main` with target = `dev` (preferred) or `develop` (fallback). Merges the **current branch** into the dev branch, then safely deletes the source branch unless the source is protected.
 
-**Announce at start:** "I'm using the git-merge-to-dev skill to merge `<source-branch>` into `<target>` and delete it."
+**Announce at start:** "I'm using the git-merge-to-dev skill to merge `<source-branch>` into `<target>` and delete it unless it is protected."
 
 ## Target Branch Resolution
 
@@ -34,7 +34,9 @@ State the resolved target out loud before proceeding so the user can correct you
 
 ## Workflow
 
-**Before starting, Read the main `git-merge-to-main` SKILL.md** at `<plugin-root>/skills/git-merge-to-main/SKILL.md`. Follow that workflow exactly, **substituting the resolved `$target`** wherever it says `main`. The preconditions, plan/confirm step, conflict handling, safe-delete rule (`git branch -d`, never `-D`), and post-merge summary all apply identically.
+**Before starting, Read the main `git-merge-to-main` SKILL.md** at `<plugin-root>/skills/git-merge-to-main/SKILL.md`. Follow that workflow exactly, **substituting the resolved `$target`** wherever it says `main`. The preconditions, plan/confirm step, protected source branch handling, conflict handling, safe-delete rule (`git branch -d`, never `-D`), and post-merge summary all apply identically.
+
+Protected source branches are: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. If `src` is a protected source branch, merge after confirmation but skip the local delete instead of running `git branch -d "$src"`.
 
 Key substitutions:
 
@@ -47,6 +49,12 @@ Key substitutions:
 | `git fetch origin main` (divergence check) | `git fetch origin "$target"` (divergence check) |
 
 The merge-conflict rule, `-d`-not-`-D` rule, no-auto-push rule, and Red Flags list are identical.
+
+When showing the plan, include the delete step only for non-protected source branches. For a protected source branch, show:
+
+```
+  3. skip the local delete for protected source branch $src
+```
 
 ## Worked Example
 
@@ -66,15 +74,35 @@ User confirms.
 → Remind user to push dev when ready.
 ```
 
+Protected source branch example:
+
+```
+User: staging을 dev에 머지해줘
+
+Resolution: dev exists → target = dev
+Source: staging (protected)
+
+Plan:
+  1. git checkout dev
+  2. git merge staging
+  3. skip the local delete for protected source branch staging
+
+User confirms.
+→ checkout dev, merge succeeds, keep staging locally.
+→ Remind user to push dev when ready.
+```
+
 ## Red Flags
 
 Same Never/Always lists as `git-merge-to-main`. In particular:
 
 - **Never** `-D` (force delete) — only `-d` (safe delete)
+- **Never** delete a protected source branch (`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`)
 - **Never** auto-resolve merge conflicts
 - **Never** auto-push or auto-pull the target branch
 - **Always** state which target was resolved (`dev` vs `develop`) before merging
 - **Always** show the plan and wait for confirmation
+- **Always** identify protected source branches and skip the local delete
 
 ## Integration
 

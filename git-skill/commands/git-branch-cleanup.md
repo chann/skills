@@ -1,10 +1,10 @@
 ---
-description: Delete local branches already merged into a protected branch (main/master/dev/develop/stage/staging/stg). Uses git branch -d only — never -D.
+description: Delete local branches already merged into a protected branch (main/master/dev/develop/development/stg/stage/staging/root). Uses git branch -d only — never -D.
 ---
 
 Use the **git-branch-cleanup** skill to delete local branches whose tip is reachable from at least one protected branch.
 
-Protected (never deleted): `main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`. The current branch is also kept.
+Protected (never deleted): `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. The current branch is also kept.
 
 Follow the workflow in `git-skill/skills/git-branch-cleanup/SKILL.md` exactly:
 

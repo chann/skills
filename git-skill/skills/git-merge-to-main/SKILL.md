@@ -1,15 +1,23 @@
 ---
 name: git-merge-to-main
-description: Use when the user asks to merge the current branch into `main` and delete the merged source branch. Trigger on phrases like "merge to main", "main에 머지", "main 브랜치에 합쳐줘", "merge this branch into main and delete it", "/git-merge-to-main". Switches to `main`, merges the source branch, then runs `git branch -d` on the source. Refuses to force-delete or to operate on a dirty working tree. For `dev` use `git-merge-to-dev`; to bulk-clean already-merged branches use `git-branch-cleanup`.
+description: Use when the user asks to merge the current branch into `main` and delete the merged source branch unless the source is protected. Trigger on phrases like "merge to main", "main에 머지", "main 브랜치에 합쳐줘", "merge this branch into main and delete it", "/git-merge-to-main". Refuses to force-delete or to operate on a dirty working tree. For `dev` use `git-merge-to-dev`; to bulk-clean already-merged branches use `git-branch-cleanup`.
 ---
 
 # Git Merge to Main
 
 ## Overview
 
-Merge the **current branch** into `main`, then delete the source branch locally because it's now fully merged. Safe by design — never `--force`, never `-D` (only `-d`), never auto-resolves conflicts, never auto-pushes.
+Merge the **current branch** into `main`, then delete the source branch locally because it's now fully merged, unless the source is protected. Safe by design — never `--force`, never `-D` (only `-d`), never auto-resolves conflicts, never auto-pushes.
 
-**Announce at start:** "I'm using the git-merge-to-main skill to merge `<source-branch>` into main and delete it."
+**Announce at start:** "I'm using the git-merge-to-main skill to merge `<source-branch>` into main and delete it unless it is protected."
+
+## Protected Source Branches
+
+The following source branch names are protected and must be kept locally after the merge:
+
+`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
+
+If `src` is a protected source branch, still show the merge plan and proceed after confirmation, but skip the local delete step. Do **not** run `git branch -d "$src"` for protected branches, and do not suggest remote deletion for them.
 
 ## Preconditions
 
@@ -35,6 +43,16 @@ git log --oneline "main..$src" | head -20      # what will be merged
 
 If `main..$src` is empty → tell the user "`$src` has no new commits beyond main; nothing to merge" and stop.
 
+Determine whether the source branch is protected before showing the plan:
+
+```bash
+protected=(main master dev develop development stg stage staging root)
+delete_src=1
+case " ${protected[*]} " in
+  *" $src "*) delete_src=0 ;;
+esac
+```
+
 ### Step 2: Show the plan and confirm
 
 ```
@@ -45,6 +63,12 @@ Plan:
   4. (you stay on main; push manually when ready)
 
 N commits will be merged. Proceed? (y/N)
+```
+
+If `delete_src=0`, replace step 3 with:
+
+```
+  3. skip the local delete for protected source branch $src
 ```
 
 Wait for explicit confirmation. Default is **no**.
@@ -78,15 +102,19 @@ If merge produces conflicts:
 3. Tell the user to resolve and either `git commit` (to finish the merge) or `git merge --abort` (to roll back).
 4. Do **not** delete the source branch.
 
-### Step 5: Delete the source branch
+### Step 5: Delete or keep the source branch
 
 After the merge succeeds and the working tree is clean:
 
 ```bash
-git branch -d "$src"
+if [ "$delete_src" -eq 0 ]; then
+  echo "Source branch $src is a protected source branch; skip the local delete."
+else
+  git branch -d "$src"
+fi
 ```
 
-Use `-d` (lowercase). Git will refuse if the branch isn't fully merged — that's the safety net. **Never** use `-D` (force) here. If `-d` refuses:
+For non-protected source branches, use `-d` (lowercase). Git will refuse if the branch isn't fully merged — that's the safety net. **Never** use `-D` (force) here. If `-d` refuses:
 
 - Most likely cause: the merge didn't actually include all of `$src`'s commits (e.g. the user picked `--ff-only` and it became a no-op, or a hook rewrote the merge). Report and stop; do not escalate to `-D`.
 
@@ -95,15 +123,21 @@ Use `-d` (lowercase). Git will refuse if the branch isn't fully merged — that'
 ```bash
 git log --oneline -5
 git branch --show-current
-echo "Merged $src into main and deleted $src locally. Push when ready: git push"
+if [ "$delete_src" -eq 0 ]; then
+  echo "Merged $src into main and kept protected source branch $src locally. Push when ready: git push"
+else
+  echo "Merged $src into main and deleted $src locally. Push when ready: git push"
+fi
 ```
 
-If a remote-tracking branch `origin/$src` exists, mention it but do **not** auto-delete:
+If a remote-tracking branch `origin/$src` exists and `src` is not protected, mention it but do **not** auto-delete:
 
 ```
 Note: origin/$src still exists. Delete the remote branch with:
   git push origin --delete $src
 ```
+
+For protected source branches, do not suggest deleting the remote branch.
 
 ## Worked Example
 
@@ -129,6 +163,22 @@ Step 5: git branch -d feature/oauth-login → "Deleted branch feature/oauth-logi
 Step 6: Show git log -5; remind user to push.
 ```
 
+Protected source branch example:
+
+```
+User: dev를 main에 머지해줘
+
+Source: dev (protected)
+Plan:
+  1. git checkout main
+  2. git merge dev
+  3. skip the local delete for protected source branch dev
+
+User confirms.
+→ checkout main, merge succeeds, keep dev locally.
+→ Remind user to push main when ready.
+```
+
 ## Red Flags
 
 **Never:**
@@ -137,13 +187,15 @@ Step 6: Show git log -5; remind user to push.
 - Auto-push after the merge — the user pushes when ready
 - Run `git pull` / `git pull --rebase` without explicit user consent
 - Delete the remote branch (`git push origin --delete`) without explicit user consent
+- Delete a protected source branch: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 - Use `--force` anywhere
 - Operate when the working tree is dirty
 
 **Always:**
 - Show the plan and wait for confirmation before merging
 - Report conflicts and stop without auto-fixing
-- Use `git branch -d` (safe) for source-branch deletion
+- Use `git branch -d` (safe) for non-protected source-branch deletion
+- Identify protected source branches and skip the local delete
 - Run `git status --short` after the merge to verify the tree
 
 ## Common Mistakes
@@ -151,6 +203,10 @@ Step 6: Show git log -5; remind user to push.
 **Force-deleting when `-d` refuses**
 - **Problem:** "branch was not fully merged" → reaching for `-D`
 - **Fix:** Investigate why the merge was incomplete; never escalate to `-D` automatically
+
+**Deleting a long-lived branch after release merge**
+- **Problem:** `dev` / `staging` / `master` was merged into `main`, then deleted as if it were a feature branch
+- **Fix:** Treat protected source branches as keep-after-merge; skip the local delete
 
 **Auto-pushing after merge**
 - **Problem:** Surprises the user; may break collaborator workflows if main was behind

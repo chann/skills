@@ -1,13 +1,13 @@
 ---
 name: git-branch-cleanup
-description: Use when the user asks to clean up, prune, or delete local branches that have already been merged. Trigger on phrases like "clean up local branches", "merged 브랜치 정리", "이미 머지된 브랜치 삭제", "prune merged branches", "/git-branch-cleanup". Deletes local branches whose tip is reachable from at least one protected branch (`main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`), excluding the protected list and the current branch. Uses `git branch -d` (safe delete) only — never `-D`.
+description: Use when the user asks to clean up, prune, or delete local branches that have already been merged. Trigger on phrases like "clean up local branches", "merged 브랜치 정리", "이미 머지된 브랜치 삭제", "prune merged branches", "/git-branch-cleanup". Deletes local branches whose tip is reachable from at least one protected branch (`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`), excluding the protected list and the current branch. Uses `git branch -d` (safe delete) only — never `-D`.
 ---
 
 # Git Branch Cleanup
 
 ## Overview
 
-Find and delete local branches that have been fully merged into one of the protected branches, then are safe to remove. Protected names — `main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg` — and the current branch are always kept.
+Find and delete local branches that have been fully merged into one of the protected branches, then are safe to remove. Protected names — `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root` — and the current branch are always kept.
 
 **Announce at start:** "I'm using the git-branch-cleanup skill to delete local branches already merged into a protected branch."
 
@@ -15,9 +15,7 @@ Find and delete local branches that have been fully merged into one of the prote
 
 The following branch names are **never** deleted, regardless of merge status:
 
-```
-main, master, dev, develop, stage, staging, stg
-```
+`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 
 The **current branch** is also never deleted.
 
@@ -31,7 +29,7 @@ git fetch --prune 2>/dev/null || true   # informational; keeps refs honest, don'
 current=$(git branch --show-current)
 [ -n "$current" ] || { echo "Detached HEAD; checkout a branch first." >&2; exit 1; }
 
-protected=(main master dev develop stage staging stg)
+protected=(main master dev develop development stg stage staging root)
 
 # All local branch names
 all=$(git for-each-ref --format='%(refname:short)' refs/heads/)
@@ -48,7 +46,7 @@ for p in "${protected[@]}"; do
 done
 
 if [ "${#anchors[@]}" -eq 0 ]; then
-  echo "No protected branches (main/master/dev/develop/stage/staging/stg) found locally; nothing to anchor against." >&2
+  echo "No protected branches (main/master/dev/develop/development/stg/stage/staging/root) found locally; nothing to anchor against." >&2
   exit 1
 fi
 ```
@@ -152,7 +150,7 @@ User confirms.
 
 **Never:**
 - Use `git branch -D` (force delete) — only `-d` (safe delete) is allowed here
-- Delete any branch in the protected list (`main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`)
+- Delete any branch in the protected list (`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`)
 - Delete the current branch
 - Delete remote branches (`git push origin --delete ...`) — this skill is local-only
 - Skip the confirmation prompt
