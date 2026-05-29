@@ -2,7 +2,7 @@
 
 [English](README.md) · [← 메인으로](../README.ko.md)
 
-Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 분리해 커밋하고, 푸시 / 비순응 히스토리 재작성 / `main` 또는 `dev` 브랜치로 머지 후 소스 브랜치 삭제 / 이미 머지된 로컬 브랜치 일괄 정리까지 지원합니다.
+Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 분리해 커밋하고, 푸시 / 비순응 히스토리 재작성 / `main` 또는 `dev` 브랜치로 머지 후 보호 브랜치가 아닌 소스 브랜치 삭제 / 이미 머지된 로컬 브랜치 일괄 정리까지 지원합니다.
 
 ## 주요 기능
 
@@ -11,7 +11,7 @@ Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고
 - `git filter-branch` 로 비순응 커밋 subject 만 재작성, 기존 body는 보존
 - 이미 원격에 푸시된 커밋의 rewrite는 기본 거부 (대신 3-option 메뉴 표시)
-- **Merge / Cleanup** — `main` (또는 `dev`/`develop`) 으로 머지 후 소스 브랜치를 `git branch -d` 로 삭제, 보호 브랜치에 이미 머지된 모든 로컬 브랜치를 일괄 삭제
+- **Merge / Cleanup** — `main` (또는 `dev`/`develop`) 으로 머지 후 보호 브랜치가 아닌 소스 브랜치를 `git branch -d` 로 삭제, 보호 브랜치에 이미 머지된 모든 로컬 브랜치를 일괄 삭제
 - force push / hook 우회(`--no-verify`) / `git branch -D` 자동 실행 안 함
 
 ## 설치 방법
@@ -44,8 +44,8 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 | `/git-commit`           | `git-commit`          | staged + unstaged 변경을 의미 단위로 분리해 unit 마다 Conventional Commit 생성 |
 | `/git-commit-push`      | `git-commit-push`     | 위 작업 후 `git push` 까지 진행 (force 안 함)                                  |
 | `/git-commit-rewrite`   | `git-commit-rewrite`  | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                       |
-| `/git-merge-to-main`    | `git-merge-to-main`   | 현재 브랜치를 `main` 으로 머지 후 소스 브랜치를 `git branch -d` 로 삭제        |
-| `/git-merge-to-dev`     | `git-merge-to-dev`    | 현재 브랜치를 `dev` (없으면 `develop`) 으로 머지 후 소스 브랜치 삭제           |
+| `/git-merge-to-main`    | `git-merge-to-main`   | 현재 브랜치를 `main` 으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제        |
+| `/git-merge-to-dev`     | `git-merge-to-dev`    | 현재 브랜치를 `dev` (없으면 `develop`) 으로 머지 후 보호 브랜치가 아니면 삭제  |
 | `/git-branch-cleanup`   | `git-branch-cleanup`  | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                |
 
 **예시:**
@@ -90,8 +90,10 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 2. 플랜 출력 (`main..$src` 로그 + 삭제 단계) 후 명시적 확인 대기
 3. (선택) `origin/main` fetch 후 로컬 `main` 이 뒤처져 있으면 경고 (자동 pull 안 함)
 4. `git checkout main` 후 `git merge "$src"` — 가능하면 fast-forward. 충돌 시 즉시 중단, 자동 해결 안 함
-5. `git branch -d "$src"` (안전 삭제, 절대 `-D` 사용 안 함). git 이 거부하면 즉시 중단하고 보고
+5. 소스 브랜치 삭제 또는 유지: 보호 브랜치가 아니면 `git branch -d "$src"` 실행, 보호 브랜치이면 로컬 삭제 스킵
 6. `git log --oneline -5` 출력. push 는 사용자가 수동으로
+
+보호 소스 브랜치: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`.
 
 ### `/git-merge-to-dev`
 
@@ -99,7 +101,7 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 
 ### `/git-branch-cleanup`
 
-1. 로컬에 존재하는 보호 브랜치(앵커) 확인: `main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`
+1. 로컬에 존재하는 보호 브랜치(앵커) 확인: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 2. 후보 식별 — 보호/현재 브랜치를 제외한 모든 로컬 브랜치 중 적어도 하나의 앵커에 대해 `git merge-base --is-ancestor` 가 참인 브랜치
 3. 후보별 "어느 앵커에 머지되어 있는지" 와 함께 플랜 출력, 유지되는 브랜치도 같이 표시. 명시적 확인 대기 (기본: no)
 4. 각 후보를 `git branch -d` (안전) 로 삭제. 거부되면 스킵 + 보고, 절대 `-D` 로 강제하지 않음
@@ -146,7 +148,7 @@ BREAKING CHANGE: email service is now required at boot
 - 재작성 시 티켓 참조 누락 안 함 (`Refs:` 푸터로 이동)
 - `git branch -D` (강제 삭제) 사용 안 함 — 항상 `git branch -d` (안전 삭제)
 - 머지 충돌 자동 해결, 머지 후 자동 push, 원격 브랜치 자동 삭제 안 함
-- 보호 브랜치 삭제 안 함: `main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`
+- 보호 브랜치 삭제 안 함: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 
 ## 프로젝트 구조
 

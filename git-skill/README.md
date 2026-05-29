@@ -2,7 +2,7 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-A bundle of Git workflow skills: split working-tree changes into [Conventional Commits](https://www.conventionalcommits.org/), push, rewrite messy commit history, merge a branch into `main` or `dev` (and delete the source), and bulk-delete local branches that are already merged.
+A bundle of Git workflow skills: split working-tree changes into [Conventional Commits](https://www.conventionalcommits.org/), push, rewrite messy commit history, merge a branch into `main` or `dev` (and delete the source unless protected), and bulk-delete local branches that are already merged.
 
 ## What it does
 
@@ -11,7 +11,7 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 - Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...)
 - Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
 - Refuses to rewrite commits already pushed to a remote (3-option menu instead)
-- **Merge / Cleanup** — merge into `main` (or `dev`/`develop`) then `git branch -d` the source; bulk-delete every local branch already merged into a protected branch
+- **Merge / Cleanup** — merge into `main` (or `dev`/`develop`) then `git branch -d` the source unless it is protected; bulk-delete every local branch already merged into a protected branch
 - Never force-pushes, never bypasses hooks, never `git branch -D`
 
 ## Installation
@@ -44,8 +44,8 @@ Triggers when you ask Claude Code to commit / merge / clean up your branches, or
 | `/git-commit`              | `git-commit`           | Group staged + unstaged changes into logical units; create one Conventional Commit per unit |
 | `/git-commit-push`         | `git-commit-push`      | Same as above, then `git push` (no force)                                                   |
 | `/git-commit-rewrite`      | `git-commit-rewrite`   | Rewrite recent non-conformant commit subjects to Conventional format                        |
-| `/git-merge-to-main`       | `git-merge-to-main`    | Merge current branch into `main`, then `git branch -d` the source                           |
-| `/git-merge-to-dev`        | `git-merge-to-dev`     | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source       |
+| `/git-merge-to-main`       | `git-merge-to-main`    | Merge current branch into `main`, then delete the source unless protected                   |
+| `/git-merge-to-dev`        | `git-merge-to-dev`     | Merge current branch into `dev` (fallback `develop`), then delete the source unless protected |
 | `/git-branch-cleanup`      | `git-branch-cleanup`   | Delete every local branch already merged into a protected branch                            |
 
 **Examples:**
@@ -90,8 +90,10 @@ Runs the default workflow, then `git push`. Never `--force` or `--force-with-lea
 2. Show plan (`main..$src` log + delete step) and wait for confirmation
 3. Optional fetch + warn if local `main` is behind `origin/main` (no auto-pull)
 4. Checkout `main` and `git merge "$src"` — fast-forward when possible. On conflict: stop; do NOT auto-resolve
-5. `git branch -d "$src"` (safe; never `-D`). If git refuses, stop and report
+5. Delete or keep source: run `git branch -d "$src"` for non-protected sources; for protected sources, skip the local delete
 6. Show `git log --oneline -5`. User pushes manually
+
+Protected source branches: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`.
 
 ### `/git-merge-to-dev`
 
@@ -99,7 +101,7 @@ Same as `/git-merge-to-main`, but the target is resolved as: `dev` if it exists 
 
 ### `/git-branch-cleanup`
 
-1. Find which protected branches exist locally (anchors): `main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`
+1. Find which protected branches exist locally (anchors): `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 2. Identify candidates — every non-protected, non-current branch whose tip is `git merge-base --is-ancestor` of at least one anchor
 3. Show the plan with the proving anchor per candidate, plus what's kept and why; wait for confirmation (default: no)
 4. Delete each candidate with `git branch -d` (safe). On refusal: skip + report; never `-D`
@@ -146,7 +148,7 @@ The skills **never**:
 - Drop ticket references during rewrite (moves them to a `Refs:` footer)
 - Use `git branch -D` (force delete) — only `git branch -d` (safe delete)
 - Auto-resolve merge conflicts; auto-push after merging; auto-delete remote branches
-- Delete protected branches: `main`, `master`, `dev`, `develop`, `stage`, `staging`, `stg`
+- Delete protected branches: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 
 ## Project structure
 
