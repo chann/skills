@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import html
 import json
 import re
@@ -12,7 +13,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -25,6 +26,7 @@ HUNK_HEADER_RE = re.compile(
 )
 ID_TOKEN_RE = re.compile(r"[^A-Za-z0-9_-]+")
 LANG_TOKEN_RE = re.compile(r"[^A-Za-z0-9_.+-]+")
+WORD_DIFF_TOKEN_RE = re.compile(r"\w+|\s+|[^\w\s]+", re.UNICODE)
 
 
 @dataclass
@@ -33,6 +35,7 @@ class Line:
     content: str
     old_no: Optional[int] = None
     new_no: Optional[int] = None
+    inline_ranges: List[Tuple[int, int]] = field(default_factory=list)
 
 
 @dataclass
@@ -251,6 +254,10 @@ def escape(text: str) -> str:
     return html.escape(text, quote=True)
 
 
+def escape_json_attr(value: object) -> str:
+    return escape(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+
+
 def safe_lang(lang: str) -> str:
     return LANG_TOKEN_RE.sub("", lang)[:32] or "plaintext"
 
@@ -284,16 +291,24 @@ def _line_code(
     file_index: int,
     highlight_side: str,
     highlight_line: int,
+    inline_kind: Optional[str] = None,
+    inline_ranges: Optional[Sequence[Tuple[int, int]]] = None,
 ) -> str:
     escaped = escape(content) or "&nbsp;"
+    inline_attrs = ""
+    if inline_kind in {"add", "del"} and inline_ranges:
+        inline_attrs = (
+            ' data-inline-diff-kind="{}" data-inline-diff-ranges="{}"'
+        ).format(escape(inline_kind), escape_json_attr(list(inline_ranges)))
     return (
         '<code class="language-{}" data-highlight-file="{}" '
-        'data-highlight-side="{}" data-highlight-line="{}">{}</code>'
+        'data-highlight-side="{}" data-highlight-line="{}"{}>{}</code>'
     ).format(
         safe_lang(language),
         file_index,
         escape(highlight_side),
         highlight_line,
+        inline_attrs,
         escaped,
     )
 
@@ -304,6 +319,70 @@ def _row_class(kind: str) -> str:
 
 def _sign(kind: str) -> str:
     return {"add": "+", "del": "-", "ctx": " "}.get(kind, " ")
+
+
+def _token_spans(text: str) -> List[Tuple[str, int, int]]:
+    return [(match.group(0), match.start(), match.end()) for match in WORD_DIFF_TOKEN_RE.finditer(text)]
+
+
+def _merge_ranges(ranges: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+    merged: List[Tuple[int, int]] = []
+    for start, end in sorted(ranges):
+        if start >= end:
+            continue
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
+def _word_diff_ranges(old: str, new: str) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]]]:
+    old_tokens = _token_spans(old)
+    new_tokens = _token_spans(new)
+    matcher = difflib.SequenceMatcher(
+        a=[token for token, _, _ in old_tokens],
+        b=[token for token, _, _ in new_tokens],
+        autojunk=False,
+    )
+    old_ranges: List[Tuple[int, int]] = []
+    new_ranges: List[Tuple[int, int]] = []
+
+    for tag, old_start, old_end, new_start, new_end in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        if old_start < old_end:
+            old_ranges.append((old_tokens[old_start][1], old_tokens[old_end - 1][2]))
+        if new_start < new_end:
+            new_ranges.append((new_tokens[new_start][1], new_tokens[new_end - 1][2]))
+
+    return _merge_ranges(old_ranges), _merge_ranges(new_ranges)
+
+
+def _annotate_inline_diffs(file_diff: FileDiff) -> None:
+    for hunk in file_diff.hunks:
+        for line in hunk.lines:
+            line.inline_ranges = []
+
+        i = 0
+        while i < len(hunk.lines):
+            if hunk.lines[i].kind == "ctx":
+                i += 1
+                continue
+
+            deleted: List[Line] = []
+            added: List[Line] = []
+            while i < len(hunk.lines) and hunk.lines[i].kind == "del":
+                deleted.append(hunk.lines[i])
+                i += 1
+            while i < len(hunk.lines) and hunk.lines[i].kind == "add":
+                added.append(hunk.lines[i])
+                i += 1
+
+            for old_line, new_line in zip(deleted, added):
+                old_ranges, new_ranges = _word_diff_ranges(old_line.content, new_line.content)
+                old_line.inline_ranges = old_ranges
+                new_line.inline_ranges = new_ranges
 
 
 def _highlight_refs(file_diff: FileDiff) -> Dict[Tuple[int, str], Tuple[str, int]]:
@@ -335,6 +414,7 @@ def render_unified_table(
     file_index: int = 0,
 ) -> str:
     language = language or detect_language(file_diff.new_path)
+    _annotate_inline_diffs(file_diff)
     refs = _highlight_refs(file_diff)
     rows: List[str] = []
     for hunk in file_diff.hunks:
@@ -355,6 +435,8 @@ def render_unified_table(
                         file_index,
                         highlight_side,
                         highlight_line,
+                        line.kind,
+                        line.inline_ranges,
                     ),
                 )
                 + "</tr>"
@@ -416,6 +498,8 @@ def _split_cell(
                 file_index,
                 highlight_side,
                 highlight_line,
+                line.kind,
+                line.inline_ranges,
             ),
         )
     )
@@ -427,6 +511,7 @@ def render_split_table(
     file_index: int = 0,
 ) -> str:
     language = language or detect_language(file_diff.new_path)
+    _annotate_inline_diffs(file_diff)
     refs = _highlight_refs(file_diff)
     rows: List[str] = []
     for hunk in file_diff.hunks:

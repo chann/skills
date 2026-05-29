@@ -531,6 +531,15 @@
     .line-del .line-sign,
     .code-line.line-del .line-sign { color: var(--code-del-text); }
 
+    .inline-diff {
+      border-radius: 2px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      padding: 0 1px;
+    }
+    .inline-diff-add { background: color-mix(in srgb, var(--code-bg) 46%, var(--add-hue)); }
+    .inline-diff-del { background: color-mix(in srgb, var(--code-bg) 46%, var(--del-hue)); }
+
     .hunk-row td {
       background: color-mix(in srgb, var(--code-bg) 86%, var(--hunk-hue));
       color: var(--code-hunk-text);
@@ -987,12 +996,78 @@
       return lines;
     }
 
+    function escapeHtmlText(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
     function highlightedLines(text, language) {
-      if (!window.hljs) return text.split("\n").map((line) => line || "&nbsp;");
+      if (!window.hljs) return text.split("\n").map((line) => escapeHtmlText(line) || "&nbsp;");
       const highlighted = language && hljs.getLanguage(language)
         ? hljs.highlight(text, { language, ignoreIllegals: true }).value
         : hljs.highlightAuto(text).value;
       return splitHighlightedHtml(highlighted);
+    }
+
+    function parseInlineRanges(raw) {
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+          .map((range) => Array.isArray(range) ? [Number(range[0]), Number(range[1])] : null)
+          .filter((range) => range && Number.isFinite(range[0]) && Number.isFinite(range[1]) && range[1] > range[0])
+          .sort((a, b) => a[0] - b[0]);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function applyInlineDiff(root, ranges, kind) {
+      if (!ranges.length) return;
+      const className = kind === "del" ? "inline-diff inline-diff-del" : "inline-diff inline-diff-add";
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      let offset = 0;
+      let current = walker.nextNode();
+
+      while (current) {
+        const length = current.nodeValue.length;
+        textNodes.push({ node: current, start: offset, end: offset + length });
+        offset += length;
+        current = walker.nextNode();
+      }
+
+      textNodes.forEach((entry) => {
+        const clipped = ranges
+          .map((range) => [Math.max(range[0], entry.start), Math.min(range[1], entry.end)])
+          .filter((range) => range[1] > range[0]);
+        if (!clipped.length) return;
+
+        const text = entry.node.nodeValue;
+        const fragment = document.createDocumentFragment();
+        let cursor = 0;
+
+        clipped.forEach((range) => {
+          const localStart = range[0] - entry.start;
+          const localEnd = range[1] - entry.start;
+          if (localStart > cursor) {
+            fragment.appendChild(document.createTextNode(text.slice(cursor, localStart)));
+          }
+          const span = document.createElement("span");
+          span.className = className;
+          span.textContent = text.slice(localStart, localEnd);
+          fragment.appendChild(span);
+          cursor = localEnd;
+        });
+
+        if (cursor < text.length) {
+          fragment.appendChild(document.createTextNode(text.slice(cursor)));
+        }
+        entry.node.parentNode.replaceChild(fragment, entry.node);
+      });
     }
 
     const seedElement = document.getElementById("highlight-seeds");
@@ -1010,7 +1085,11 @@
         if (!file) return;
         const side = file[node.dataset.highlightSide];
         const line = side && side[Number(node.dataset.highlightLine)];
-        if (line !== undefined) node.innerHTML = line || "&nbsp;";
+        if (line !== undefined) {
+          node.innerHTML = line || "&nbsp;";
+          const ranges = parseInlineRanges(node.dataset.inlineDiffRanges);
+          applyInlineDiff(node, ranges, node.dataset.inlineDiffKind);
+        }
       });
     }
 

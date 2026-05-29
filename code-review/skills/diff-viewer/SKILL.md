@@ -36,6 +36,7 @@ Valid `--view` values are `unified` and `split`. Valid `--theme` values are `aut
 
 ## Browser features
 
+- **Within-line word diff highlighting** marks changed tokens inside modified lines in both unified and split views.
 - **Drag line numbers** to select a range, then leave a single review comment that spans those lines.
 - **Review comments are scoped to the generated HTML report**, so comments from an older report should not reappear when a new report is generated for the same repository.
 - **Clear comments** in the top-right controls removes comments for the current report, and the sidebar comment list can jump back to each comment so it can be edited or deleted individually.

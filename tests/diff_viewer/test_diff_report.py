@@ -93,6 +93,24 @@ def test_render_file_diff_contains_unified_and_split_views(load_fixture):
     assert "return &quot;Hello, &quot; + name" in html
 
 
+def test_render_file_diff_marks_inline_word_diff_ranges_in_both_views():
+    diff_text = """diff --git a/src/hello.py b/src/hello.py
+index 1111111..2222222 100644
+--- a/src/hello.py
++++ b/src/hello.py
+@@ -1 +1 @@
+-return "Hello, " + name
++return f"Hello, {name}"
+"""
+    files = parse_git_diff(diff_text)
+
+    html = render_file_diff(files[0], index=0)
+
+    assert html.count('data-inline-diff-kind="del"') == 2
+    assert html.count('data-inline-diff-kind="add"') == 2
+    assert html.count("data-inline-diff-ranges=") == 4
+
+
 def test_split_table_styles_additions_and_deletions_per_cell():
     diff_text = """diff --git a/src/hello.py b/src/hello.py
 index 1111111..2222222 100644
@@ -135,6 +153,9 @@ def test_assemble_html_embeds_highlight_seeds(load_fixture, tmp_path):
     assert 'id="highlight-seeds"' in html
     assert 'data-highlight-file="0"' in html
     assert "splitHighlightedHtml" in html
+    assert "function applyInlineDiff" in html
+    assert ".inline-diff-add" in html
+    assert ".inline-diff-del" in html
 
 
 def test_assemble_html_scopes_comments_to_generated_report(load_fixture, tmp_path):
