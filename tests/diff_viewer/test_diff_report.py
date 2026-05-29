@@ -16,6 +16,7 @@ from generate_diff_report import (  # noqa: E402
     parse_git_diff,
     render_highlight_seeds,
     render_file_diff,
+    render_split_table,
     render_summary,
 )
 
@@ -90,6 +91,24 @@ def test_render_file_diff_contains_unified_and_split_views(load_fixture):
     assert 'data-highlight-side="before"' in html
     assert 'data-highlight-side="after"' in html
     assert "return &quot;Hello, &quot; + name" in html
+
+
+def test_split_table_styles_additions_and_deletions_per_cell():
+    diff_text = """diff --git a/src/hello.py b/src/hello.py
+index 1111111..2222222 100644
+--- a/src/hello.py
++++ b/src/hello.py
+@@ -1 +1 @@
+-return "Hello, " + name
++return f"Hello, {name}"
+"""
+    files = parse_git_diff(diff_text)
+
+    html = render_split_table(files[0], language="python", file_index=0)
+
+    assert '<tr class="split-row line-del line-add">' not in html
+    assert '<td class="line-no line-del">1</td><td class="code-line line-del">' in html
+    assert '<td class="line-no line-add">1</td><td class="code-line line-add">' in html
 
 
 def test_highlight_seeds_reconstruct_before_and_after_files(load_fixture):

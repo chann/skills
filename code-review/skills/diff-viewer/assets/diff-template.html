@@ -507,16 +507,29 @@
       width: 18px;
     }
 
-    .line-add .line-no {
+    .line-add .line-no,
+    .line-no.line-add {
       background: color-mix(in srgb, var(--code-bg) 60%, var(--add-hue));
       color: var(--code-add-text);
     }
-    .line-add .code-line { background: color-mix(in srgb, var(--code-bg) 82%, var(--add-hue)); }
-    .line-del .line-no {
+    .line-add .code-line,
+    .code-line.line-add {
+      background: color-mix(in srgb, var(--code-bg) 82%, var(--add-hue));
+    }
+    .line-del .line-no,
+    .line-no.line-del {
       background: color-mix(in srgb, var(--code-bg) 60%, var(--del-hue));
       color: var(--code-del-text);
     }
-    .line-del .code-line { background: color-mix(in srgb, var(--code-bg) 82%, var(--del-hue)); }
+    .line-del .code-line,
+    .code-line.line-del {
+      background: color-mix(in srgb, var(--code-bg) 82%, var(--del-hue));
+    }
+
+    .line-add .line-sign,
+    .code-line.line-add .line-sign { color: var(--code-add-text); }
+    .line-del .line-sign,
+    .code-line.line-del .line-sign { color: var(--code-del-text); }
 
     .hunk-row td {
       background: color-mix(in srgb, var(--code-bg) 86%, var(--hunk-hue));

@@ -404,9 +404,11 @@ def _split_cell(
         return '<td class="line-no empty"></td><td class="code-line empty"></td>'
     line_no = line.old_no if side == "old" else line.new_no
     highlight_side, highlight_line = refs[(id(line), side)]
+    kind_class = _row_class(line.kind)
     return (
-        '<td class="line-no">{}</td>'.format("" if line_no is None else line_no)
-        + '<td class="code-line"><span class="line-sign">{}</span>{}</td>'.format(
+        '<td class="line-no {}">{}</td>'.format(kind_class, "" if line_no is None else line_no)
+        + '<td class="code-line {}"><span class="line-sign">{}</span>{}</td>'.format(
+            kind_class,
             escape(_sign(line.kind)),
             _line_code(
                 line.content,
@@ -433,10 +435,6 @@ def render_split_table(
         )
         for _, left, right in _split_pairs(hunk.lines):
             classes = ["split-row"]
-            if left is not None:
-                classes.append(_row_class(left.kind))
-            if right is not None and right is not left:
-                classes.append(_row_class(right.kind))
             rows.append(
                 '<tr class="{}">'.format(" ".join(classes))
                 + _split_cell(left, language, "old", refs, file_index)
