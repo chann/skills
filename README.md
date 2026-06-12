@@ -1,16 +1,18 @@
 # skills
 
-[한국어](README.ko.md)
+[🇰🇷 Korean](README.ko.md)
 
 A collection of practical agent skills for software engineering workflows.
 
 ## Skills
 
-| Skill                                              | What it does                                                                                  |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.md)**           | Automated code review from git diffs — markdown / HTML reports with severity ratings, plus an HTML diff viewer |
-| **[git-skill](git-skill/README.md)**               | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup     |
-| **[long-task](long-task/README.md)**               | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews  |
+
+| Skill                                    | What it does                                                                                                   |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **[code-review](code-review/README.md)** | Automated code review from git diffs — markdown / HTML reports with severity ratings, plus an HTML diff viewer |
+| **[git-skill](git-skill/README.md)**     | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup                      |
+| **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
+
 
 ## Installation
 
@@ -30,6 +32,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 ### code-review → [details](code-review/README.md)
 
+
 | Command             | Output                                       |
 | ------------------- | -------------------------------------------- |
 | `/code-review`      | Show findings in conversation (no file)      |
@@ -37,22 +40,27 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 | `/code-review-html` | Write markdown + HTML reports to `.reviews/` |
 | `/diff-viewer`      | Render the working-tree diff to `.diffs/`    |
 
+
 ### git-skill → [details](git-skill/README.md)
 
-| Command                | Action                                                                                |
-| ---------------------- | ------------------------------------------------------------------------------------- |
-| `/git-commit`          | Group working-tree changes into Conventional Commits                                  |
-| `/git-commit-push`     | Same, then `git push` (no `--force`)                                                  |
-| `/git-commit-rewrite`  | Rewrite recent non-Conventional commit subjects                                       |
-| `/git-merge-to-main`   | Merge current branch into `main`, then `git branch -d` the source                     |
-| `/git-merge-to-dev`    | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
-| `/git-branch-cleanup`  | Delete every local branch already merged into a protected branch                      |
+
+| Command               | Action                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| `/git-commit`         | Group working-tree changes into Conventional Commits                                  |
+| `/git-commit-push`    | Same, then `git push` (no `--force`)                                                  |
+| `/git-commit-rewrite` | Rewrite recent non-Conventional commit subjects                                       |
+| `/git-merge-to-main`  | Merge current branch into `main`, then `git branch -d` the source                     |
+| `/git-merge-to-dev`   | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
+| `/git-branch-cleanup` | Delete every local branch already merged into a protected branch                      |
+
 
 ### long-task → [details](long-task/README.md)
 
-| Command       | Action                                                                                       |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `/long-task`  | Autonomously build a project end-to-end with parallel worktree subagents + milestone reviews |
+
+| Command      | Action                                                                                       |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| `/long-task` | Autonomously build a project end-to-end with parallel worktree subagents + milestone reviews |
+
 
 Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
 
@@ -60,12 +68,14 @@ Also triggers on phrases like *"build this whole project"*, *"do this autonomous
 
 All `SKILL.md` files in this repo follow the standard skill format and reference no Claude-Code-only tools, so they run on any agent platform that supports skills:
 
-| Platform                                                | How to install                                                                                 |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **[Claude Code](https://code.claude.com)**              | `npx skills add chann/skills` — installs the full plugin (skill + slash commands)              |
-| **[Codex](https://github.com/openai/codex)**            | Symlink `<plugin>/skills/<name>/` into your Codex skills directory (e.g. `~/.agents/skills/`)  |
-| **[opencode](https://github.com/sst/opencode)**         | Drop the skill directory into your opencode skills path                                        |
-| **Copilot CLI / Gemini CLI / others**                   | Point your platform's skill loader at `<plugin>/skills/<name>/SKILL.md` per its docs           |
+
+| Platform                                        | How to install                                                                                |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **[Claude Code](https://code.claude.com)**      | `npx skills add chann/skills` — installs the full plugin (skill + slash commands)             |
+| **[Codex](https://github.com/openai/codex)**    | Symlink `<plugin>/skills/<name>/` into your Codex skills directory (e.g. `~/.agents/skills/`) |
+| **[opencode](https://github.com/sst/opencode)** | Drop the skill directory into your opencode skills path                                       |
+| **Copilot CLI / Gemini CLI / others**           | Point your platform's skill loader at `<plugin>/skills/<name>/SKILL.md` per its docs          |
+
 
 What is and isn't portable:
 
