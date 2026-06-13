@@ -59,9 +59,10 @@ User: /code-review-html review PR #42
 → diff_stats.py reports has_security_sensitive_files: true
 → Load python.md + common-vulnerabilities.md
 → Analyze; find SQL injection (CRITICAL)
-→ Write .reviews/2026-05-03_a1b2c3d.md
+→ Write .reviews/2026-05-03_a1b2c3d.md      (Korean, **Language:** ko)
+→ Write .reviews/2026-05-03_a1b2c3d.en.md   (English, same IDs/structure)
 → python <skill-path>/scripts/generate_html_report.py .reviews/2026-05-03_a1b2c3d.md
-→ open .reviews/2026-05-03_a1b2c3d.html
+→ open .reviews/2026-05-03_a1b2c3d.html     (Korean shown by default; toggle to English)
 → Print summary in conversation
 ```
 
@@ -135,6 +136,10 @@ For each finding, assign a severity:
 | **INFO** | Positive observation or contextual note | No action needed |
 
 Every finding must reference a specific file and line range. Show the problematic code and a suggested fix. If uncertain about something, use INFO severity and frame it as a question rather than asserting a problem that may not exist.
+
+**Every finding needs a stable ID** in its title: `#### [CR-001] ...`, `[CR-002]`, and so on. The HTML report keys per-finding comments to this ID, so the **same ID must mark the same finding in both language files** (see Report Language). IDs stay in English; never renumber them between languages.
+
+**Writing style:** Be concise and lead with the point. One or two sentences of "why it matters", then the fix — no preamble, no restating the code in prose, no hedging filler. Professional and direct, the way a senior engineer leaves a review comment. Avoid padding a trivial finding to look substantial; if it's a one-liner, write one line.
 
 ### 4. Present findings or write the markdown report
 
@@ -216,17 +221,25 @@ Save to: `.reviews/<YYYY-MM-DD>_<short-sha>.md`
 
 ### 5. Generate HTML (`/code-review-html` only)
 
-Only when invoked via the `code-review-html` skill / `/code-review-html`. Run:
+Only when invoked via the `code-review-html` skill / `/code-review-html`. The HTML report is **bilingual**: write a Korean report and an English report (see Report Language), then merge them into one HTML file.
+
+Filenames — primary Korean report plus an `.en.md` sibling with identical structure (same finding IDs, same code blocks):
+
+```
+.reviews/<YYYY-MM-DD>_<short-sha>.md      # Korean (main)
+.reviews/<YYYY-MM-DD>_<short-sha>.en.md   # English
+```
+
+Run the generator on the primary file; it auto-detects the `.en.md` sibling and emits one self-contained HTML:
 
 ```bash
 python <skill-path>/scripts/generate_html_report.py .reviews/<report>.md
-```
-
-This produces a self-contained `.html` file next to the markdown, with severity badges, collapsible sections, and a sidebar navigation. Then open it:
-
-```bash
 open .reviews/<report>.html
 ```
+
+The HTML includes: a full-page language toggle (Korean shown by default), light/dark/auto theme + code syntax scheme selector, a compact collapsible sidebar, per-finding "Copy MD", per-finding comments (stored in the browser), and a "Copy feedback" button that produces a regeneration payload — paste it back into a new `/code-review-html` run to revise the review against the reviewer's comments.
+
+If only one language file exists, the generator still works and the language toggle is hidden (single-language fallback). Pass `--alt <path>` to point at a translation explicitly, or `--theme`/`--code-scheme` to change the defaults.
 
 ### 6. Present summary
 
@@ -258,6 +271,17 @@ Add a `**Language:**` field in the report metadata header so the HTML generator 
 ```
 
 Use the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag): `en`, `ko`, `ja`, `zh`, etc.
+
+### Bilingual HTML reports (`/code-review-html`)
+
+The HTML variant is **bilingual by default**: produce a Korean report and an English report so the reader can toggle languages. Korean is the default displayed language.
+
+- Write both files with **identical structure** — same headings, same finding IDs (`[CR-001]`), same code blocks. Only the prose (titles, descriptions, summaries, table labels) is translated; code, IDs, file paths, and severity labels are shared verbatim.
+- Set the `**Language:**` header in each file (`ko` in the primary, `en` in the `.en.md`).
+- The primary file carries the `<YYYY-MM-DD>_<short-sha>.md` name; the translation adds the language suffix (`.en.md`).
+- Per-finding comments in the HTML are keyed by finding ID, so keeping IDs aligned across both files is what lets a comment stay attached when the reader switches language.
+
+If the user explicitly asks for a single language, write just that one file — the generator falls back to a single-language report with no toggle.
 
 ## Quick Reference
 
