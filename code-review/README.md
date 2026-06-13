@@ -8,7 +8,7 @@ Automated code review that generates persistent **markdown and HTML report files
 
 - Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
 - Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
-- Optionally generates a styled, self-contained HTML report with severity badges, collapsible findings, and sidebar navigation
+- Optionally generates a styled, self-contained **bilingual** HTML report (Korean + English with a full-page language toggle) featuring severity badges, light/dark/auto themes with a code syntax scheme selector, a compact collapsible sidebar, per-finding markdown copy, in-browser per-finding comments, and a "Copy feedback" payload to regenerate the review against reviewer comments
 - Includes `/diff-viewer` for a browser-readable HTML view of the current working-tree diff without review analysis
 - Supports multiple review scopes: staged changes, specific commits, commit ranges, branch comparisons, and PRs
 - Includes reference guides for Python and JavaScript/TypeScript best practices
@@ -59,8 +59,9 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 
 ```
 .reviews/
-├── 2026-04-08_a1b2c3d.md
-└── 2026-04-08_a1b2c3d.html
+├── 2026-04-08_a1b2c3d.md       # Korean report (primary)
+├── 2026-04-08_a1b2c3d.en.md    # English report (translation, HTML only)
+└── 2026-04-08_a1b2c3d.html     # merged bilingual HTML
 .diffs/
 └── 2026-04-08_working.html
 ```
@@ -83,6 +84,17 @@ Each report includes:
 - **Findings** — grouped by severity (CRITICAL / HIGH / MEDIUM / LOW), each with file reference, code snippet, and suggested fix
 - **Positive Observations** — things the code does well
 - **File-by-File Summary** — quick reference table of all changed files and their risk level
+
+## HTML report
+
+`/code-review-html` merges a Korean report and its English translation into one self-contained HTML file with:
+
+- **Language toggle** — Korean shown by default, switch to English for the whole page. Falls back to a single language (toggle hidden) when no translation exists.
+- **Theme & code scheme** — light/dark/auto page theme plus an 8-option syntax highlight scheme (GitHub, Monokai, Dracula, Nord, …). Diff and code blocks adapt automatically.
+- **Compact sidebar** — collapsible and drag-resizable, with section nav and a comments panel.
+- **Per-finding "Copy MD"** — copy any single finding's markdown.
+- **Per-finding comments** — leave review comments on individual findings (stored in the browser, keyed by finding ID so they survive language switches).
+- **"Copy feedback"** — emits a regeneration payload (original finding markdown + your comments). Paste it into a fresh `/code-review-html` run to revise the review against the feedback.
 
 ## Severity levels
 
