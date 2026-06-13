@@ -2,9 +2,15 @@
 """Convert a code review markdown report into a styled, self-contained HTML file.
 
 Usage:
-    python generate_html_report.py path/to/report.md [-o output.html]
+    python generate_html_report.py path/to/report.md [--alt path/to/report.en.md] [-o output.html]
 
-If -o is not specified, output goes to the same path with .html extension.
+The report is bilingual when a translation file is supplied (or auto-detected):
+both languages are rendered into one HTML document with a full-page language
+toggle. Korean is shown by default when available. With no translation the report
+falls back to a single language (backward compatible).
+
+If -o is not specified, output goes to the primary report path with .html extension
+(language suffix stripped, e.g. `2026-06-14_a1b2c3d.ko.md` -> `2026-06-14_a1b2c3d.html`).
 Reads the HTML template from ../assets/report-template.html (relative to this script).
 """
 
@@ -18,6 +24,21 @@ from pathlib import Path
 SEVERITY_LEVELS = ("CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO")
 SEVERITY_LOWER = {s: s.lower() for s in SEVERITY_LEVELS}
 LANG_TOKEN_RE = re.compile(r"[^\w.+-]")
+FINDING_ID_RE = re.compile(r"\[([A-Za-z]+-\d+)\]")
+# Recognized language suffixes for auto-detecting the translation sibling.
+KNOWN_LANGS = ("ko", "en", "ja", "zh", "es", "fr", "de", "pt", "ru", "it")
+LANG_LABELS = {
+    "ko": "한국어",
+    "en": "English",
+    "ja": "日本語",
+    "zh": "中文",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português",
+    "ru": "Русский",
+    "it": "Italiano",
+}
 
 
 def escape(text: str) -> str:
@@ -45,6 +66,15 @@ def slugify(text: str) -> str:
     text = re.sub(r'<[^>]+>', '', text)
     text = re.sub(r'[^\w\s-]', '', text.lower())
     return re.sub(r'[\s]+', '-', text).strip('-')
+
+
+def finding_key(title: str) -> str:
+    """Stable, language-independent key for a finding (e.g. `CR-001`).
+
+    Falls back to the title slug when no `[XX-000]` id is present.
+    """
+    match = FINDING_ID_RE.search(title)
+    return match.group(1) if match else slugify(title)
 
 
 def parse_table(lines: list[str]) -> str:
@@ -312,8 +342,12 @@ def detect_severity(heading_text: str) -> str | None:
     return None
 
 
-def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
-    """Parse the markdown report and return (html_content, metadata, sidebar_entries)."""
+def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadata, list[SidebarEntry]]:
+    """Parse the markdown report and return (html_content, metadata, sidebar_entries).
+
+    ``anchor_prefix`` namespaces every generated element id so two language bodies
+    can coexist in one document without duplicate ids.
+    """
     lines = md.split('\n')
     meta = ReportMetadata()
     sidebar: list[SidebarEntry] = []
@@ -322,6 +356,9 @@ def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
     current_severity: str | None = None
     in_finding_body = False
     list_items: list[str] = []
+
+    def aid(anchor: str) -> str:
+        return f"{anchor_prefix}{anchor}"
 
     def close_finding() -> None:
         nonlocal in_finding_body
@@ -370,6 +407,7 @@ def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
         # Horizontal rule
         if re.match(r'^-{3,}$', stripped):
             flush_list(list_items)
+            close_finding()
             out.append('<hr>')
             i += 1
             continue
@@ -389,7 +427,7 @@ def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
             close_finding()
             current_severity = None
             text = stripped[3:].strip()
-            anchor = slugify(text)
+            anchor = aid(slugify(text))
             sidebar.append(SidebarEntry(text, anchor))
             out.append(f'<h2 id="{anchor}">{escape(text)}</h2>')
             i += 1
@@ -401,7 +439,7 @@ def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
             close_finding()
             text = stripped[4:].strip()
             sev = detect_severity(text)
-            anchor = slugify(text)
+            anchor = aid(slugify(text))
             if sev:
                 current_severity = sev
                 sl = SEVERITY_LOWER[sev]
@@ -421,15 +459,24 @@ def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
             flush_list(list_items)
             close_finding()
             text = stripped[5:].strip()
-            anchor = slugify(text)
+            anchor = aid(slugify(text))
+            fid = finding_key(text)
             sl = SEVERITY_LOWER.get(current_severity, "") if current_severity else ""
             finding_cls = f" finding-{sl}" if sl else ""
             open_attr = " open" if current_severity in ("CRITICAL", "HIGH") else ""
             badge = f'<span class="badge badge-{sl}">{current_severity}</span>' if sl else ""
             out.append(
-                f'<details class="finding{finding_cls}"{open_attr} id="{anchor}">'
-                f'<summary>{badge}{escape(text)}</summary>'
+                f'<details class="finding{finding_cls}"{open_attr} id="{anchor}"'
+                f' data-finding-id="{escape(fid)}">'
+                f'<summary><span class="finding-summary-text">{badge}{escape(text)}</span>'
+                f'<span class="finding-comment-chip" data-comment-chip hidden></span></summary>'
                 f'<div class="finding-body">'
+                f'<div class="finding-toolbar">'
+                f'<button class="finding-tool-btn" type="button" data-copy-finding>'
+                f'<span data-i18n="copyMd">Copy MD</span></button>'
+                f'<button class="finding-tool-btn" type="button" data-add-comment>'
+                f'<span data-i18n="comment">Comment</span></button>'
+                f'</div>'
             )
             in_finding_body = True
             i += 1
@@ -479,6 +526,51 @@ def parse_markdown(md: str) -> tuple[str, ReportMetadata, list[SidebarEntry]]:
     return '\n'.join(out), meta, sidebar
 
 
+def extract_findings(md: str) -> list[dict]:
+    """Pull each finding (`#### ...`) out as a structured record.
+
+    Returns dicts with ``id`` (e.g. CR-001), ``title``, ``severity`` and the raw
+    ``markdown`` slice for that finding — used for per-item copy and the
+    regeneration payload.
+    """
+    lines = md.split('\n')
+    findings: list[dict] = []
+    current_severity: str | None = None
+    cur: dict | None = None
+
+    def flush() -> None:
+        nonlocal cur
+        if cur is not None:
+            cur['markdown'] = '\n'.join(cur.pop('_lines')).strip('\n')
+            findings.append(cur)
+            cur = None
+
+    for raw in lines:
+        stripped = raw.strip()
+        if stripped.startswith('#### '):
+            flush()
+            title = stripped[5:].strip()
+            cur = {
+                'id': finding_key(title),
+                'title': title,
+                'severity': current_severity,
+                '_lines': [raw],
+            }
+        elif stripped.startswith('### '):
+            flush()
+            current_severity = detect_severity(stripped[4:].strip())
+        elif stripped.startswith('## '):
+            flush()
+            current_severity = None
+        elif re.match(r'^-{3,}$', stripped):
+            flush()
+        elif cur is not None:
+            cur['_lines'].append(raw)
+
+    flush()
+    return findings
+
+
 def build_sidebar_html(entries: list[SidebarEntry]) -> str:
     if not entries:
         return '<ul></ul>'
@@ -488,6 +580,58 @@ def build_sidebar_html(entries: list[SidebarEntry]) -> str:
         parts.append(f'<li{css}><a href="#{entry.anchor}">{escape(entry.text)}</a></li>')
     parts.append('</ul>')
     return '\n'.join(parts)
+
+
+def lang_label(code: str) -> str:
+    return LANG_LABELS.get(code, code.upper())
+
+
+def detect_alt_path(primary: Path) -> Path | None:
+    """Find a sibling translation file for ``primary``.
+
+    `2026-06-14_abc.ko.md` -> look for `2026-06-14_abc.<lang>.md`.
+    `2026-06-14_abc.md`     -> look for `2026-06-14_abc.<lang>.md`.
+    Returns the first existing sibling whose language differs.
+    """
+    name = primary.name
+    if not name.endswith('.md'):
+        return None
+    stem = name[:-len('.md')]
+    base, _, suffix = stem.rpartition('.')
+    primary_lang = suffix if suffix in KNOWN_LANGS else None
+    base_stem = base if primary_lang else stem
+    for lang in KNOWN_LANGS:
+        if lang == primary_lang:
+            continue
+        candidate = primary.with_name(f"{base_stem}.{lang}.md")
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def base_stem(path: Path) -> str:
+    """Filename stem with any known language suffix stripped (for stable scope/output)."""
+    name = path.name
+    if name.endswith('.md'):
+        name = name[:-len('.md')]
+    base, _, suffix = name.rpartition('.')
+    return base if suffix in KNOWN_LANGS else name
+
+
+def render_document(md: str, lang: str) -> dict:
+    """Parse one language's markdown into everything the template needs."""
+    prefix = f"{lang}--"
+    content_html, meta, sidebar = parse_markdown(md, prefix)
+    findings = extract_findings(md)
+    return {
+        'lang': lang,
+        'content': content_html,
+        'meta': meta,
+        'raw': md,
+        'sidebar_html': build_sidebar_html(sidebar),
+        'findings': {f['id']: {'title': f['title'], 'severity': f['severity'],
+                               'md': f['markdown']} for f in findings},
+    }
 
 
 def load_template() -> str:
@@ -500,18 +644,64 @@ def load_template() -> str:
     return template_path.read_text(encoding="utf-8")
 
 
-def assemble(template: str, content: str, meta: ReportMetadata,
-             sidebar_html: str, raw_markdown: str = "") -> str:
+def json_attr(value: object) -> str:
+    """JSON for safe embedding inside an inline <script> block."""
+    return json.dumps(value, ensure_ascii=False).replace('</', '<\\/')
+
+
+def assemble(template: str, docs: list[dict], default_lang: str,
+             comment_scope: str, default_theme: str, default_scheme: str) -> str:
     """Replace placeholders in the template with generated content."""
+    primary = docs[0]['meta']
+    multi = len(docs) > 1
+
+    bodies = []
+    navs = []
+    findings_map: dict[str, dict] = {}
+    raw_map: dict[str, str] = {}
+    lang_codes = [d['lang'] for d in docs]
+    for d in docs:
+        bodies.append(
+            f'<div class="lang-body" data-lang="{escape(d["lang"])}">{d["content"]}</div>'
+        )
+        navs.append(
+            f'<div class="nav-lang" data-lang="{escape(d["lang"])}">{d["sidebar_html"]}</div>'
+        )
+        findings_map[d['lang']] = d['findings']
+        raw_map[d['lang']] = d['raw']
+
+    if multi:
+        toggle_buttons = ''.join(
+            f'<button type="button" data-set-lang="{escape(d["lang"])}">'
+            f'{escape(lang_label(d["lang"]))}</button>'
+            for d in docs
+        )
+        lang_control = (
+            '<div class="control" role="group" aria-label="Language">'
+            '<span class="control-label" data-i18n="language">Lang</span>'
+            f'{toggle_buttons}</div>'
+        )
+    else:
+        lang_control = ''
+
+    replacements = {
+        "__REPORT_TITLE__": escape(primary.title),
+        "__REPORT_LANG__": escape(default_lang),
+        "__REPO_PATH__": escape(primary.repository),
+        "__REPORT_BODIES__": '\n'.join(bodies),
+        "__SIDEBAR_NAVS__": '\n'.join(navs),
+        "__LANG_CONTROL__": lang_control,
+        "__FINDINGS_JSON__": json_attr(findings_map),
+        "__RAW_MD_JSON__": json_attr(raw_map),
+        "__LANG_CODES__": json_attr(lang_codes),
+        "__DEFAULT_LANG__": json_attr(default_lang),
+        "__COMMENT_SCOPE__": json_attr(comment_scope),
+        "__DEFAULT_THEME__": json_attr(default_theme),
+        "__DEFAULT_CODE_SCHEME__": json_attr(default_scheme),
+    }
     result = template
-    result = result.replace("__REPORT_TITLE__", escape(meta.title))
-    result = result.replace("__REPORT_DATE__", escape(meta.date))
-    result = result.replace("__REPORT_LANG__", escape(meta.language))
-    result = result.replace("__REPORT_CONTENT__", content)
-    result = result.replace("__SIDEBAR_CONTENT__", sidebar_html)
-    # Embed raw markdown for the Copy Markdown button (JSON-encoded, safe for inline script)
-    raw_json = json.dumps(raw_markdown).replace('</','<\\/')
-    result = result.replace("__RAW_MARKDOWN__", raw_json)
+    for key, value in replacements.items():
+        result = result.replace(key, value)
     return result
 
 
@@ -519,10 +709,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Convert a code review markdown report to a self-contained HTML file."
     )
-    parser.add_argument("input", help="Path to the markdown report file")
+    parser.add_argument("input", help="Path to the primary markdown report file")
+    parser.add_argument(
+        "--alt", help="Path to the translation markdown file (auto-detected if omitted)"
+    )
     parser.add_argument(
         "-o", "--output",
-        help="Output HTML file path (default: same name with .html extension)",
+        help="Output HTML file path (default: report path with .html, language suffix stripped)",
+    )
+    parser.add_argument("--theme", choices=("auto", "light", "dark"), default="auto")
+    parser.add_argument(
+        "--code-scheme", default="github",
+        help="Default syntax highlight scheme (github, atom-one, monokai, dracula, "
+             "nord, tokyo-night, solarized, gruvbox)",
     )
     args = parser.parse_args()
 
@@ -531,16 +730,43 @@ def main() -> None:
         print(f"Error: input file not found: {input_path}", file=sys.stderr)
         sys.exit(1)
 
-    output_path = Path(args.output) if args.output else input_path.with_suffix(".html")
-    md_text = input_path.read_text(encoding="utf-8")
+    alt_path = Path(args.alt) if args.alt else detect_alt_path(input_path)
+    if alt_path and not alt_path.exists():
+        print(f"Error: translation file not found: {alt_path}", file=sys.stderr)
+        sys.exit(1)
+
     template = load_template()
 
-    content_html, meta, sidebar_entries = parse_markdown(md_text)
-    sidebar_html = build_sidebar_html(sidebar_entries)
-    final_html = assemble(template, content_html, meta, sidebar_html, md_text)
+    primary_md = input_path.read_text(encoding="utf-8")
+    _, primary_meta, _ = parse_markdown(primary_md)
+    primary_lang = (primary_meta.language or "en").strip().lower()
 
+    docs = [render_document(primary_md, primary_lang)]
+    if alt_path:
+        alt_md = alt_path.read_text(encoding="utf-8")
+        _, alt_meta, _ = parse_markdown(alt_md)
+        alt_lang = (alt_meta.language or "en").strip().lower()
+        if alt_lang != primary_lang:
+            docs.append(render_document(alt_md, alt_lang))
+
+    lang_codes = [d['lang'] for d in docs]
+    # Korean is the default display language when present (per skill spec).
+    default_lang = "ko" if "ko" in lang_codes else lang_codes[0]
+
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        output_path = input_path.with_name(base_stem(input_path) + ".html")
+
+    repo = primary_meta.repository or "unknown-repo"
+    comment_scope = f"{repo}::{base_stem(input_path)}"
+
+    final_html = assemble(template, docs, default_lang, comment_scope,
+                          args.theme, args.code_scheme)
     output_path.write_text(final_html, encoding="utf-8")
-    print(f"Report written to {output_path}")
+
+    langs_note = "+".join(lang_codes)
+    print(f"Report written to {output_path} ({langs_note})")
 
 
 if __name__ == "__main__":
