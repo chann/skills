@@ -18,7 +18,7 @@ Manual installation for agents that load raw skill folders:
 
 ```bash
 git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/doc-skill/skills/doc-gen" ~/.claude/skills/doc-gen
+ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 ```
 
 ## Quick start
@@ -82,7 +82,7 @@ Create the full doc set for a small CLI:
 Refresh only after reviewing diffs:
 
 ```text
-> Update this repo's docs with doc-gen, but preserve custom roadmap prose.
+> Update this repo's docs with gendoc, but preserve custom roadmap prose.
 ```
 
 Freeze a section:

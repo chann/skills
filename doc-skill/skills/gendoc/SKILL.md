@@ -1,5 +1,5 @@
 ---
-name: doc-gen
+name: gendoc
 description: Use when a software project needs README, README.ko, ARCHITECTURE, or USAGE documentation created, refreshed, reorganized, translated, or kept in sync without clobbering existing prose
 ---
 

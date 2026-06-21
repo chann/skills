@@ -2,24 +2,24 @@
 
 ## Overview
 
-`doc-skill` is a Claude Code plugin wrapper around one portable skill, `doc-gen`. The skill does not ship a generator binary in v1. It gives an agent a deterministic process for analyzing a project, building a documentation model, rendering four standard Markdown files, and merging them without clobbering human prose.
+`doc-skill` is a Claude Code plugin wrapper around one portable skill, `gendoc`. The skill does not ship a generator binary in v1. It gives an agent a deterministic process for analyzing a project, building a documentation model, rendering four standard Markdown files, and merging them without clobbering human prose.
 
 ## Components
 
 | Component | Responsibility |
 |---|---|
 | `.claude-plugin/plugin.json` | Declares the installable plugin name, description, and version |
-| `commands/gen-docs.md` | Routes `/gen-docs` invocations to the `doc-gen` skill and resolves the target root |
-| `skills/doc-gen/SKILL.md` | Defines the workflow, document contracts, update-in-place merge rules, and safety boundaries |
-| `skills/doc-gen/templates/` | Stores canonical section order for the four target documents |
+| `commands/gen-docs.md` | Routes `/gen-docs` invocations to the `gendoc` skill and resolves the target root |
+| `skills/gendoc/SKILL.md` | Defines the workflow, document contracts, update-in-place merge rules, and safety boundaries |
+| `skills/gendoc/templates/` | Stores canonical section order for the four target documents |
 | `README.md` / `README.ko.md` | Front-door docs for the plugin itself |
 | `ARCHITECTURE.md` / `USAGE.md` | Dogfooded deeper docs for this plugin |
 
 ## Data flow
 
 1. The user invokes `/gen-docs` with an optional project root.
-2. The command activates `doc-gen`.
-3. `doc-gen` reads project manifests, existing docs, top-level structure, license, CI files, and remote metadata.
+2. The command activates `gendoc`.
+3. `gendoc` reads project manifests, existing docs, top-level structure, license, CI files, and remote metadata.
 4. For larger projects, the main agent dispatches parallel Explore subagents for components, entrypoints, configuration, and examples. For small projects it performs the same probes inline.
 5. The agent synthesizes one project model.
 6. Templates produce candidate `README.md`, `README.ko.md`, `ARCHITECTURE.md`, and `USAGE.md`.
@@ -35,7 +35,7 @@ doc-skill/
 ├── commands/
 │   └── gen-docs.md
 ├── skills/
-│   └── doc-gen/
+│   └── gendoc/
 │       ├── SKILL.md
 │       └── templates/
 │           ├── ARCHITECTURE.md.tmpl

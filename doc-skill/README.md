@@ -31,7 +31,7 @@ npx skills add chann/skills@doc-skill
 
 ```bash
 git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/doc-skill/skills/doc-gen" ~/.claude/skills/doc-gen
+ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 ```
 
 ## Quick start
