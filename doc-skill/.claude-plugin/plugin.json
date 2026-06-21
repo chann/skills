@@ -1,0 +1,5 @@
+{
+  "name": "doc-skill",
+  "description": "Project documentation skill for generating or updating README, README.ko, ARCHITECTURE, and USAGE markdown while preserving hand-written content.",
+  "version": "0.1.0"
+}

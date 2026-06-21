@@ -10,6 +10,7 @@ A collection of practical agent skills for software engineering workflows.
 | Skill                                    | What it does                                                                                                   |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.md)** | Automated code review from git diffs — markdown / HTML reports with severity ratings, plus an HTML diff viewer |
+| **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs without clobbering prose                |
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup                      |
 | **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
 
@@ -25,6 +26,7 @@ npx skills add -y -g chann/skills
 Per-skill or non-global installs (and manual setup) are documented in each skill's README:
 
 - [code-review installation](code-review/README.md#installation)
+- [doc-skill installation](doc-skill/README.md#installation)
 - [git-skill installation](git-skill/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
 
@@ -39,6 +41,14 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 | `/code-review-md`   | Write markdown report to `.reviews/`         |
 | `/code-review-html` | Write markdown + HTML reports to `.reviews/` |
 | `/diff-viewer`      | Render the working-tree diff to `.diffs/`    |
+
+
+### doc-skill → [details](doc-skill/README.md)
+
+
+| Command     | Action                                                                    |
+| ----------- | ------------------------------------------------------------------------- |
+| `/gen-docs` | Generate or update README, Korean README, architecture, and usage docs    |
 
 
 ### git-skill → [details](git-skill/README.md)

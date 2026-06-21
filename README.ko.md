@@ -9,6 +9,7 @@
 | 스킬                                                | 설명                                                                                          |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트, 추가로 HTML diff 뷰어 |
+| **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 prose 보존하며 생성 또는 갱신              |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, push, 히스토리 재작성, main/dev 머지, 머지된 로컬 브랜치 정리            |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 
@@ -23,6 +24,7 @@ npx skills add -y -g chann/skills
 스킬별 설치 또는 비전역 / 수동 설치는 각 스킬 README 참조:
 
 - [code-review 설치](code-review/README.ko.md#설치-방법)
+- [doc-skill 설치](doc-skill/README.ko.md#설치)
 - [git-skill 설치](git-skill/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
 
@@ -36,6 +38,12 @@ npx skills add -y -g chann/skills
 | `/code-review-md`   | `.reviews/`에 마크다운 리포트 파일 생성   |
 | `/code-review-html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
 | `/diff-viewer`      | 작업 트리 diff를 `.diffs/` HTML로 렌더링   |
+
+### doc-skill → [상세](doc-skill/README.ko.md)
+
+| 커맨드      | 동작                                                                        |
+| ----------- | --------------------------------------------------------------------------- |
+| `/gen-docs` | README, 한국어 README, 아키텍처, 사용법 문서를 생성 또는 갱신               |
 
 ### git-skill → [상세](git-skill/README.ko.md)
 
