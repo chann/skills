@@ -9,6 +9,8 @@ description: Use when the user asks to rewrite recent non-Conventional commit su
 
 Rewrites non-Conformant commit subjects in recent history into Conventional Commits format. **Destructive** — changes commit SHAs. Refuses to silently rewrite already-pushed commits; instead presents a 3-option menu (Cancel / Force-push / Branch-based).
 
+**Force mode:** if the invocation contains the token `force` or `--force`, that menu and every other interactive gate are skipped and the rewrite is force-pushed — see "Force mode" in the main `git-commit/SKILL.md`.
+
 **Announce at start:** "I'm using the git-commit-rewrite skill to rewrite these commit messages."
 
 ## Workflow
@@ -28,14 +30,16 @@ Then follow `## Workflow: /git-commit-rewrite` in the main SKILL.md exactly. Ste
    - Option 3 (branch-based): create `${branch}-cc` off the base, cherry-pick + `--amend` each commit with the new message, push the new branch.
 8. **Post-rewrite**: show `git log --oneline <base>..HEAD`; tell the user how to drop the `refs/original/` backup; clean `/tmp/cc-rewrite-map.tsv`.
 
+**Force mode (`force` keyword):** if the invocation contains the standalone token `force` or `--force` (case-insensitive), the user has pre-consented — skip the safety checks in step 2, skip the step 3 menu (auto in-place rewrite even if pushed), and in step 6 show the plan but do **not** wait. After applying, if any rewritten commit was already on the remote, finish with `git push --force` (bare — the only place it's allowed). Git's own `filter-branch` constraints still apply. Full rules: `## Workflow: /git-commit-rewrite` → "Force mode" in the main `git-commit/SKILL.md`.
+
 The script lives at `<plugin-root>/skills/git-commit/scripts/rewrite_msg.py` (in the main skill — variants share it).
 
 ## Red Flags
 
 Same Never/Always lists as the main `<plugin-root>/skills/git-commit/SKILL.md`. In particular:
 
-- **Never** `--force` push (only `--force-with-lease` after explicit user consent).
-- **Never** rewrite pushed commits without showing the 3-option menu first.
+- **Never** `--force` push — **except** in force mode (the `force` keyword), where bare `--force` is the user's opted-in choice; otherwise only `--force-with-lease` after explicit user consent.
+- **Never** rewrite pushed commits without showing the 3-option menu first — **except** in force mode, where the keyword is the pre-consent.
 - **Never** use `git filter-branch --root`.
 - **Never** drop ticket references — move them to a `Refs:` footer.
 - **Never** rewrite merge commits — use `--no-merges`.

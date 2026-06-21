@@ -9,7 +9,7 @@ description: Use when the user asks to commit changes, organize commits, write c
 
 Group working-tree changes into [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) units (one commit per logical unit), or rewrite recent non-conformant commit subjects in place.
 
-**Core principle:** Match user intent to the right workflow — new commits vs. history rewrite — and never bypass safety with destructive flags.
+**Core principle:** Match user intent to the right workflow — new commits vs. history rewrite — and never bypass safety with destructive flags unless the user explicitly opts in (e.g. the `/git-commit-rewrite` `force` keyword).
 
 **Announce at start:** "I'm using the git-commit skill to <commit / push / rewrite> these changes."
 
@@ -223,6 +223,18 @@ User: /git-commit-push
 
 Rewrites non-Conformant commit messages in recent history. **This is destructive** — it changes commit SHAs. The default policy refuses to touch any commit that already exists on a remote.
 
+### Force mode (`force` keyword)
+
+If the invocation contains the standalone token `force` or `--force` (case-insensitive) — e.g. `/git-commit-rewrite force`, "force rewrite these commits", "force로 다시 써줘" — run in **force mode**. The keyword is explicit, pre-granted consent for a destructive in-place rewrite, so skip every interactive gate and apply directly. (The trigger is the English token `force`/`--force`; the Korean word `강제로` by itself does not trigger it.)
+
+- **Skip safety Checks A & B** (dirty tree / detached HEAD) — do not pre-emptively stop. Git still enforces its own rules: `git filter-branch` refuses a genuinely dirty tree ("Cannot rewrite branches: You have unstaged changes"). If git errors, surface it verbatim — do not work around it.
+- **Skip the Step 2 pushed-commits menu** — auto-select the in-place rewrite even if commits already exist on a remote. Do not prompt.
+- **Skip the Step 5 wait** — still *show* the old → new plan for transparency, then apply immediately without waiting.
+- **Push:** after the rewrite, if any rewritten commit was already on the remote, finish with `git push --force` (bare). This is the *only* place bare `--force` is permitted, and only because the user opted in with the keyword. If nothing was pushed, the rewrite stays local — do not push.
+- **Cleanup is unchanged** — keep the `refs/original/` backup ref and report it (Step 8).
+
+Without the `force` keyword, follow the full cautious workflow below.
+
 ### Step 1: Determine the rewrite range
 
 Default base:
@@ -244,6 +256,8 @@ fi
 If the user specifies a count (e.g. "rewrite last 5"), use `HEAD~5` as the base instead. Never use `--root`.
 
 ### Step 2: Safety checks
+
+**Force mode skips this entire step** (see "Force mode" above) — go straight to Step 3.
 
 Three checks must pass before rewriting in place:
 
@@ -328,7 +342,7 @@ ghi9012  WIP
        → chore: work-in-progress checkpoint
 ```
 
-Wait for explicit confirmation before applying.
+Wait for explicit confirmation before applying. (Force mode shows this plan but does **not** wait — it applies immediately.)
 
 ### Step 6: Apply the rewrites (in-place)
 
@@ -521,10 +535,10 @@ Use these translations when generating new subjects in Step 4.
 **Never:**
 - `git add .` or `git add -A` (use explicit paths)
 - `--no-verify`, `--no-gpg-sign`, `--amend` without explicit user consent
-- `--force` push (`--force-with-lease` only after explicit consent)
+- `--force` push — **except** `/git-commit-rewrite` force mode (the `force` keyword is explicit consent); otherwise `--force-with-lease` only after explicit consent
 - Commit `.env*`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12` without explicit user override
 - Combine `feat` and `fix` in one commit
-- Rewrite pushed commits without showing the 3-option menu first
+- Rewrite pushed commits without showing the 3-option menu first — **except** in force mode, where the `force` keyword is the pre-consent
 - Use `git filter-branch --root`
 - Drop ticket references during rewrite (move them to `Refs:` footer)
 
@@ -546,9 +560,9 @@ Use these translations when generating new subjects in Step 4.
 
 **Don't over-explain in bodies.** A body should add context the subject can't carry (the *why*, a tricky tradeoff, related issue). If the subject is self-explanatory, no body.
 
-**Refuse, don't bypass.** If a safety check fails (pushed commits without consent, dirty tree, detached HEAD, suspected secret), report and stop. Do not work around with destructive flags.
+**Refuse, don't bypass.** If a safety check fails (pushed commits without consent, dirty tree, detached HEAD, suspected secret), report and stop. Do not work around with destructive flags. **Exception:** `/git-commit-rewrite` force mode, which the user opts into explicitly with the `force` keyword (see Force mode).
 
-**Trust explicit user override.** "Force push", "yes I know it's pushed, rewrite anyway", "include the .env this time" → proceed, but state the risk in one line first.
+**Trust explicit user override.** "Force push", "yes I know it's pushed, rewrite anyway", "include the .env this time" → proceed, but state the risk in one line first. For `/git-commit-rewrite`, the `force` keyword is the formalized form of this (see Force mode).
 
 ## Integration
 

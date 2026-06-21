@@ -1,5 +1,5 @@
 ---
-description: Rewrite recent non-Conventional commit subjects in place (safety checks; never --force)
+description: Rewrite recent non-Conventional commit subjects in place (safety checks; the `force` keyword skips all confirmations and force-pushes)
 ---
 
 Use the **git-commit-rewrite** skill to rewrite recent non-Conventional commit subjects. Follow the rewrite workflow in `git-skill/skills/git-commit/SKILL.md` (`## Workflow: /git-commit-rewrite`) exactly:
@@ -14,3 +14,5 @@ Use the **git-commit-rewrite** skill to rewrite recent non-Conventional commit s
    - Option 2 (in-place): `git filter-branch --msg-filter` using `scripts/rewrite_msg.py` and the mapping at `/tmp/cc-rewrite-map.tsv`, then `git push --force-with-lease` (never `--force`).
    - Option 3 (branch-based): create `${branch}-cc` off the base, cherry-pick + `--amend` each commit with the new message, push the new branch.
 8. **Post-rewrite**: show `git log --oneline <base>..HEAD`; tell the user how to drop the `refs/original/` backup; clean `/tmp/cc-rewrite-map.tsv`.
+
+**Force mode:** if the invocation contains the token `force` or `--force` (e.g. `/git-commit-rewrite force`), skip steps 2–3 and the wait in step 6 — the keyword is explicit consent. Show the plan, apply the in-place rewrite immediately, and if any rewritten commit was already pushed, finish with `git push --force` (bare). See "Force mode" in `git-skill/skills/git-commit/SKILL.md`.
