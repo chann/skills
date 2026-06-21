@@ -10,9 +10,9 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 - Creates each commit with explicit `git add <paths>` — never `git add .`
 - Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...)
 - Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
-- Refuses to rewrite commits already pushed to a remote (3-option menu instead)
+- Refuses to rewrite commits already pushed to a remote (3-option menu instead) — unless you opt in with the `force` keyword
 - **Merge / Cleanup** — merge into `main` (or `dev`/`develop`) then `git branch -d` the source unless it is protected; bulk-delete every local branch already merged into a protected branch
-- Never force-pushes, never bypasses hooks, never `git branch -D`
+- Never force-pushes (except the explicit `/git-commit-rewrite` `force` opt-in), never bypasses hooks, never `git branch -D`
 
 ## Installation
 

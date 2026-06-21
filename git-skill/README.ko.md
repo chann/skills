@@ -10,9 +10,9 @@ Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 
 - 절대 `git add .` 사용 안 함, 항상 명시 경로로 staging
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고
 - `git filter-branch` 로 비순응 커밋 subject 만 재작성, 기존 body는 보존
-- 이미 원격에 푸시된 커밋의 rewrite는 기본 거부 (대신 3-option 메뉴 표시)
+- 이미 원격에 푸시된 커밋의 rewrite는 기본 거부 (대신 3-option 메뉴 표시) — 단, `force` 키워드로 명시 동의 시 강제 진행
 - **Merge / Cleanup** — `main` (또는 `dev`/`develop`) 으로 머지 후 보호 브랜치가 아닌 소스 브랜치를 `git branch -d` 로 삭제, 보호 브랜치에 이미 머지된 모든 로컬 브랜치를 일괄 삭제
-- force push / hook 우회(`--no-verify`) / `git branch -D` 자동 실행 안 함
+- force push / hook 우회(`--no-verify`) / `git branch -D` 자동 실행 안 함 (단, `/git-commit-rewrite` `force` 키워드로 명시 동의 시 force push)
 
 ## 설치 방법
 
