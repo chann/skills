@@ -48,7 +48,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 | Command     | Action                                                                    |
 | ----------- | ------------------------------------------------------------------------- |
-| `/gen-docs` | Generate or update README, Korean README, architecture, and usage docs    |
+| `/gendoc`   | Generate or update README, Korean README, architecture, and usage docs    |
 
 
 ### git-skill → [details](git-skill/README.md)
@@ -73,6 +73,11 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 
 Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
+
+## Documentation
+
+- [Usage](USAGE.md) — install, full command reference, configuration, examples, and troubleshooting
+- [Architecture](ARCHITECTURE.md) — components, data flow, directory map, and design decisions
 
 ## Use on other agent platforms
 
