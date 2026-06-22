@@ -31,7 +31,7 @@ class DocSkillPackageTests(unittest.TestCase):
 
     def test_doc_skill_plugin_shape_is_packaged(self) -> None:
         self.assertTrue((DOC_SKILL / ".claude-plugin" / "plugin.json").is_file())
-        self.assertTrue((DOC_SKILL / "commands" / "gen-docs.md").is_file())
+        self.assertTrue((DOC_SKILL / "commands" / "gendoc.md").is_file())
         self.assertTrue(SKILL.is_file())
 
         for name in [
@@ -49,7 +49,7 @@ class DocSkillPackageTests(unittest.TestCase):
 
     def test_doc_skill_metadata_and_command_route_to_gendoc(self) -> None:
         metadata = json.loads((DOC_SKILL / ".claude-plugin" / "plugin.json").read_text())
-        command = (DOC_SKILL / "commands" / "gen-docs.md").read_text(encoding="utf-8")
+        command = (DOC_SKILL / "commands" / "gendoc.md").read_text(encoding="utf-8")
 
         self.assertEqual(metadata["name"], "doc-skill")
         self.assertEqual(metadata["version"], "0.1.0")

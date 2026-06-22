@@ -9,7 +9,7 @@
 | Component | Responsibility |
 |---|---|
 | `.claude-plugin/plugin.json` | Declares the installable plugin name, description, and version |
-| `commands/gen-docs.md` | Routes `/gen-docs` invocations to the `gendoc` skill and resolves the target root |
+| `commands/gendoc.md` | Routes `/gendoc` invocations to the `gendoc` skill and resolves the target root |
 | `skills/gendoc/SKILL.md` | Defines the workflow, document contracts, update-in-place merge rules, and safety boundaries |
 | `skills/gendoc/templates/` | Stores canonical section order for the four target documents |
 | `README.md` / `README.ko.md` | Front-door docs for the plugin itself |
@@ -17,7 +17,7 @@
 
 ## Data flow
 
-1. The user invokes `/gen-docs` with an optional project root.
+1. The user invokes `/gendoc` with an optional project root.
 2. The command activates `gendoc`.
 3. `gendoc` reads project manifests, existing docs, top-level structure, license, CI files, and remote metadata.
 4. For larger projects, the main agent dispatches parallel Explore subagents for components, entrypoints, configuration, and examples. For small projects it performs the same probes inline.
@@ -33,7 +33,7 @@ doc-skill/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   └── gen-docs.md
+│   └── gendoc.md
 ├── skills/
 │   └── gendoc/
 │       ├── SKILL.md

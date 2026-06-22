@@ -39,13 +39,13 @@ ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 프로젝트 루트에서:
 
 ```text
-> /gen-docs
+> /gendoc
 ```
 
 다른 프로젝트를 대상으로 할 때:
 
 ```text
-> /gen-docs ../my-project
+> /gendoc ../my-project
 ```
 
 스킬은 프로젝트를 분석하고 후보 문서를 렌더링한 뒤 diff를 보여주며, 확인을 받은 파일만 작성합니다.

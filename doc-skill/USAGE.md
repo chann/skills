@@ -26,21 +26,21 @@ ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 Generate or update docs for the current project:
 
 ```text
-> /gen-docs
+> /gendoc
 ```
 
 Generate or update docs for a different project:
 
 ```text
-> /gen-docs ../my-project
+> /gendoc ../my-project
 ```
 
 ## Command reference
 
 | Command | Effect |
 |---|---|
-| `/gen-docs` | Use the current working directory as the target project root |
-| `/gen-docs <project-root>` | Use `<project-root>` as the target project root |
+| `/gendoc` | Use the current working directory as the target project root |
+| `/gendoc <project-root>` | Use `<project-root>` as the target project root |
 
 The command always targets this documentation set:
 
@@ -76,7 +76,7 @@ The command always targets this documentation set:
 Create the full doc set for a small CLI:
 
 ```text
-> /gen-docs ~/src/my-cli
+> /gendoc ~/src/my-cli
 ```
 
 Refresh only after reviewing diffs:

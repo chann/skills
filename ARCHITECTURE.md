@@ -87,7 +87,7 @@ skills/
 │   └── .snyk
 ├── doc-skill/                        # plugin (v0.1.0)
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/gen-docs.md          # legacy Claude Code plugin command file
+│   ├── commands/gendoc.md            # /gendoc command → gendoc skill
 │   ├── skills/gendoc/                # skill "gendoc" — invoked as /gendoc
 │   │   ├── SKILL.md
 │   │   └── templates/                # README.md.tmpl, README.ko.md.tmpl, ARCHITECTURE.md.tmpl, USAGE.md.tmpl

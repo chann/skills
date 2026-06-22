@@ -39,13 +39,13 @@ ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 From a project root:
 
 ```text
-> /gen-docs
+> /gendoc
 ```
 
 For another project:
 
 ```text
-> /gen-docs ../my-project
+> /gendoc ../my-project
 ```
 
 The skill analyzes the project, renders candidate docs, shows the diffs, and writes only after confirmation.
