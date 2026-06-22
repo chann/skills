@@ -48,7 +48,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 | Command     | Action                                                                    |
 | ----------- | ------------------------------------------------------------------------- |
-| `/gendoc`   | Generate or update README, Korean README, architecture, and usage docs    |
+| `/gen-docs`   | Generate or update README, Korean README, architecture, and usage docs    |
 
 
 ### git-skill → [details](git-skill/README.md)

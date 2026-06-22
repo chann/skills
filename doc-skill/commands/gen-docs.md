@@ -3,7 +3,7 @@ description: Generate or update README.md, README.ko.md, ARCHITECTURE.md, and US
 argument-hint: "[project-root]"
 ---
 
-Use the **gendoc** skill to generate or update the project documentation set.
+Use the **gen-docs** skill to generate or update the project documentation set.
 
 Target root:
 - If `$ARGUMENTS` is non-empty, use it as the project root.

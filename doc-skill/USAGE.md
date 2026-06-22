@@ -18,7 +18,7 @@ Manual installation for agents that load raw skill folders:
 
 ```bash
 git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
+ln -s "$(pwd)/skills/doc-skill/skills/gen-docs" ~/.claude/skills/gen-docs
 ```
 
 ## Quick start
@@ -26,21 +26,21 @@ ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 Generate or update docs for the current project:
 
 ```text
-> /gendoc
+> /gen-docs
 ```
 
 Generate or update docs for a different project:
 
 ```text
-> /gendoc ../my-project
+> /gen-docs ../my-project
 ```
 
 ## Command reference
 
 | Command | Effect |
 |---|---|
-| `/gendoc` | Use the current working directory as the target project root |
-| `/gendoc <project-root>` | Use `<project-root>` as the target project root |
+| `/gen-docs` | Use the current working directory as the target project root |
+| `/gen-docs <project-root>` | Use `<project-root>` as the target project root |
 
 The command always targets this documentation set:
 
@@ -76,13 +76,13 @@ The command always targets this documentation set:
 Create the full doc set for a small CLI:
 
 ```text
-> /gendoc ~/src/my-cli
+> /gen-docs ~/src/my-cli
 ```
 
 Refresh only after reviewing diffs:
 
 ```text
-> Update this repo's docs with gendoc, but preserve custom roadmap prose.
+> Update this repo's docs with gen-docs, but preserve custom roadmap prose.
 ```
 
 Freeze a section:

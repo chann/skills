@@ -39,7 +39,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > review my changes                         # code-review
 > /code-review-html review staged changes
 > /git-commit                               # group changes into Conventional Commits
-> /gendoc                                   # generate/update project docs
+> /gen-docs                                   # generate/update project docs
 > /long-task build a CLI todo app end to end
 ```
 
@@ -80,9 +80,9 @@ Protected branches — never deleted, never force-anything — are `main`, `mast
 
 | Command | Action |
 |---|---|
-| `/gendoc [project-root]` | Generate or update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` |
+| `/gen-docs [project-root]` | Generate or update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` |
 
-Invoked as `/gendoc` (the skill name; some platforms use `$gendoc`). It merges by heading, preserves unknown prose (and any section marked `<!-- doc-skill:keep -->`), shows per-file diffs, and writes only after you confirm. With no argument it targets the current working directory.
+Invoked as `/gen-docs` (the skill name; some platforms use `$gen-docs`). It merges by heading, preserves unknown prose (and any section marked `<!-- doc-skill:keep -->`), shows per-file diffs, and writes only after you confirm. With no argument it targets the current working directory.
 
 ### long-task
 
@@ -126,8 +126,8 @@ Invoked as `/gendoc` (the skill name; some platforms use `$gendoc`). It merges b
 > /git-commit-push
 
 # Refresh this repo's docs (root from cwd, or pass a path)
-> /gendoc
-> /gendoc ../my-other-project
+> /gen-docs
+> /gen-docs ../my-other-project
 
 # Kick off an autonomous build, then check on it later
 > /long-task build a REST API for a URL shortener with tests

@@ -13,7 +13,7 @@ Each skill is authored as a portable `SKILL.md` document plus optional `referenc
 | Plugin | Version | Skills | Responsibility |
 |---|---|---|---|
 | `code-review` | 2.2.0 | `code-review`, `code-review-md`, `code-review-html`, `diff-viewer` | Review git diffs for correctness, security, complexity, maintainability, and language best practices; emit conversation, markdown, or bilingual HTML reports; render standalone HTML diffs |
-| `doc-skill` | 0.1.0 | `gendoc` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
+| `doc-skill` | 0.1.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
 | `git-skill` | 0.3.0 | `git-commit`, `git-commit-push`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, push, history rewrite, guarded merges, and merged-branch cleanup |
 | `long-task` | 0.2.1 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 
@@ -36,7 +36,7 @@ Every plugin shares the same layout:
 - **`code-review`** centralizes the work in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` and `code-review-html` variants are thin skills that reuse that workflow and only choose an output format. `diff-viewer` is standalone — `generate_diff_report.py` plus `diff-template.html` — and does no analysis.
 - **`git-skill`** keeps its single Python helper, `rewrite_msg.py`, under `git-commit/scripts/`; the `git-commit-rewrite` workflow shares it.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
-- **`doc-skill`** carries four output templates under `gendoc/templates/`.
+- **`doc-skill`** carries four output templates under `gen-docs/templates/`.
 
 ### Supporting files
 
@@ -87,8 +87,8 @@ skills/
 │   └── .snyk
 ├── doc-skill/                        # plugin (v0.1.0)
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/gendoc.md            # /gendoc command → gendoc skill
-│   ├── skills/gendoc/                # skill "gendoc" — invoked as /gendoc
+│   ├── commands/gen-docs.md            # /gen-docs command → gen-docs skill
+│   ├── skills/gen-docs/                # skill "gen-docs" — invoked as /gen-docs
 │   │   ├── SKILL.md
 │   │   └── templates/                # README.md.tmpl, README.ko.md.tmpl, ARCHITECTURE.md.tmpl, USAGE.md.tmpl
 │   └── README.md · README.ko.md

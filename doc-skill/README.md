@@ -31,7 +31,7 @@ npx skills add chann/skills@doc-skill
 
 ```bash
 git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
+ln -s "$(pwd)/skills/doc-skill/skills/gen-docs" ~/.claude/skills/gen-docs
 ```
 
 ## Quick start
@@ -39,13 +39,13 @@ ln -s "$(pwd)/skills/doc-skill/skills/gendoc" ~/.claude/skills/gendoc
 From a project root:
 
 ```text
-> /gendoc
+> /gen-docs
 ```
 
 For another project:
 
 ```text
-> /gendoc ../my-project
+> /gen-docs ../my-project
 ```
 
 The skill analyzes the project, renders candidate docs, shows the diffs, and writes only after confirmation.

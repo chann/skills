@@ -43,7 +43,7 @@ npx skills add -y -g chann/skills
 
 | 커맨드      | 동작                                                                        |
 | ----------- | --------------------------------------------------------------------------- |
-| `/gendoc`   | README, 한국어 README, 아키텍처, 사용법 문서를 생성 또는 갱신               |
+| `/gen-docs`   | README, 한국어 README, 아키텍처, 사용법 문서를 생성 또는 갱신               |
 
 ### git-skill → [상세](git-skill/README.ko.md)
 
