@@ -18,14 +18,16 @@ Generate or update a clean four-file documentation set for any software project:
 **Recommended (global, one shot):**
 
 ```bash
-npx skills add -y -g chann/skills@doc-skill
+npx skills add -y -g chann/skills --skill gen-docs
 ```
 
 **Project-local:**
 
 ```bash
-npx skills add chann/skills@doc-skill
+npx skills add chann/skills --skill gen-docs
 ```
+
+The install selector is the skill name, `gen-docs`; `doc-skill` is only the plugin directory that packages it.
 
 **Manual:**
 

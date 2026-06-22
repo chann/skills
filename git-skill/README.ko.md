@@ -19,14 +19,28 @@ Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 
 **권장 (전역 + 자동 승인, 한 방):**
 
 ```bash
-npx skills add -y -g chann/skills@git-skill
+npx skills add -y -g chann/skills \
+  --skill git-commit \
+  --skill git-commit-push \
+  --skill git-commit-rewrite \
+  --skill git-merge-to-main \
+  --skill git-merge-to-dev \
+  --skill git-branch-cleanup
 ```
 
 **프로젝트 로컬:**
 
 ```bash
-npx skills add chann/skills@git-skill
+npx skills add chann/skills \
+  --skill git-commit \
+  --skill git-commit-push \
+  --skill git-commit-rewrite \
+  --skill git-merge-to-main \
+  --skill git-merge-to-dev \
+  --skill git-branch-cleanup
 ```
+
+설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. `git-skill`은 이 Git 워크플로우들을 패키징하는 플러그인 디렉터리 이름입니다.
 
 **수동 설치:**
 

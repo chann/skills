@@ -18,14 +18,24 @@ git diff를 분석하여 **마크다운 및 HTML 리포트 파일**을 생성하
 **권장 (전역 + 자동 승인, 한 방):**
 
 ```bash
-npx skills add -y -g chann/skills@code-review
+npx skills add -y -g chann/skills \
+  --skill code-review \
+  --skill code-review-md \
+  --skill code-review-html \
+  --skill diff-viewer
 ```
 
 **프로젝트 로컬:**
 
 ```bash
-npx skills add chann/skills@code-review
+npx skills add chann/skills \
+  --skill code-review \
+  --skill code-review-md \
+  --skill code-review-html \
+  --skill diff-viewer
 ```
+
+설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. 이 플러그인은 review 스킬들과 diff-viewer 스킬을 함께 패키징합니다.
 
 **수동 설치:**
 

@@ -19,14 +19,28 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 **Recommended (global, one shot):**
 
 ```bash
-npx skills add -y -g chann/skills@git-skill
+npx skills add -y -g chann/skills \
+  --skill git-commit \
+  --skill git-commit-push \
+  --skill git-commit-rewrite \
+  --skill git-merge-to-main \
+  --skill git-merge-to-dev \
+  --skill git-branch-cleanup
 ```
 
 **Project-local:**
 
 ```bash
-npx skills add chann/skills@git-skill
+npx skills add chann/skills \
+  --skill git-commit \
+  --skill git-commit-push \
+  --skill git-commit-rewrite \
+  --skill git-merge-to-main \
+  --skill git-merge-to-dev \
+  --skill git-branch-cleanup
 ```
+
+Use the actual skill names with `--skill`; `git-skill` is the plugin directory that packages these Git workflows.
 
 **Manual:**
 

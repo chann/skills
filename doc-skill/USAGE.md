@@ -2,17 +2,19 @@
 
 ## Installation
 
-Install the plugin globally:
+Install the `gen-docs` skill globally:
 
 ```bash
-npx skills add -y -g chann/skills@doc-skill
+npx skills add -y -g chann/skills --skill gen-docs
 ```
 
 Install into the current project:
 
 ```bash
-npx skills add chann/skills@doc-skill
+npx skills add chann/skills --skill gen-docs
 ```
+
+Use the skill name with `--skill`; `doc-skill` is the plugin directory name, not an install selector.
 
 Manual installation for agents that load raw skill folders:
 

@@ -59,6 +59,20 @@ class DocSkillPackageTests(unittest.TestCase):
         self.assertIn("ARCHITECTURE.md", command)
         self.assertIn("USAGE.md", command)
 
+    def test_installation_docs_use_gen_docs_skill_selector(self) -> None:
+        docs = [
+            ROOT / "USAGE.md",
+            DOC_SKILL / "README.md",
+            DOC_SKILL / "README.ko.md",
+            DOC_SKILL / "USAGE.md",
+        ]
+
+        for path in docs:
+            with self.subTest(doc=path.relative_to(ROOT)):
+                text = path.read_text(encoding="utf-8")
+                self.assertNotIn("chann/skills@doc-skill", text)
+                self.assertIn("chann/skills --skill gen-docs", text)
+
     def test_gen_docs_skill_enforces_document_contracts_and_safety(self) -> None:
         text = SKILL.read_text(encoding="utf-8")
 

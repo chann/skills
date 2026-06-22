@@ -21,14 +21,16 @@
 **권장 (전역 + 자동 승인, 한 방):**
 
 ```bash
-npx skills add -y -g chann/skills@long-task
+npx skills add -y -g chann/skills --skill long-task
 ```
 
 **프로젝트 로컬:**
 
 ```bash
-npx skills add chann/skills@long-task
+npx skills add chann/skills --skill long-task
 ```
+
+설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. 이 플러그인은 `long-task` 스킬을 패키징합니다.
 
 **수동 설치:**
 

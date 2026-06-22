@@ -18,14 +18,24 @@ Automated code review that generates persistent **markdown and HTML report files
 **Recommended (global, one shot):**
 
 ```bash
-npx skills add -y -g chann/skills@code-review
+npx skills add -y -g chann/skills \
+  --skill code-review \
+  --skill code-review-md \
+  --skill code-review-html \
+  --skill diff-viewer
 ```
 
 **Project-local:**
 
 ```bash
-npx skills add chann/skills@code-review
+npx skills add chann/skills \
+  --skill code-review \
+  --skill code-review-md \
+  --skill code-review-html \
+  --skill diff-viewer
 ```
+
+Use the actual skill names with `--skill`; this plugin packages the review and diff-viewer skills together.
 
 **Manual:**
 

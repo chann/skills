@@ -21,14 +21,16 @@ Autonomous orchestrator for **long-running, multi-milestone projects** that run 
 **Recommended (global, one shot):**
 
 ```bash
-npx skills add -y -g chann/skills@long-task
+npx skills add -y -g chann/skills --skill long-task
 ```
 
 **Project-local:**
 
 ```bash
-npx skills add chann/skills@long-task
+npx skills add chann/skills --skill long-task
 ```
+
+Use the actual skill name with `--skill`; this plugin packages the `long-task` skill.
 
 **Manual:**
 

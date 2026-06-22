@@ -10,11 +10,13 @@ npx skills add -y -g chann/skills
 
 `-g` installs globally for your user; `-y` skips prompts. Drop both for an interactive, project-local install.
 
-### A single plugin
+### A single skill
 
 ```bash
-npx skills add -y -g chann/skills@code-review   # or @doc-skill, @git-skill, @long-task
+npx skills add -y -g chann/skills --skill gen-docs
 ```
+
+Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, or `git-commit-push`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
