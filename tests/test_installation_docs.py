@@ -14,6 +14,8 @@ INSTALL_DOCS = [
     ROOT / "doc-skill" / "USAGE.md",
     ROOT / "git-skill" / "README.md",
     ROOT / "git-skill" / "README.ko.md",
+    ROOT / "handoff" / "README.md",
+    ROOT / "handoff" / "README.ko.md",
     ROOT / "long-task" / "README.md",
     ROOT / "long-task" / "README.ko.md",
 ]

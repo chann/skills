@@ -11,6 +11,7 @@
 | **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트, 추가로 HTML diff 뷰어 |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 prose 보존하며 생성 또는 갱신              |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, push, 히스토리 재작성, main/dev 머지, 머지된 로컬 브랜치 정리            |
+| **[handoff](handoff/README.ko.md)**                 | git diff, 범위, 세션 컨텍스트에서 프론트엔드/백엔드 핸드오프 문서 생성                         |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 
 ## 설치 방법
@@ -26,7 +27,11 @@ npx skills add -y -g chann/skills
 - [code-review 설치](code-review/README.ko.md#설치-방법)
 - [doc-skill 설치](doc-skill/README.ko.md#설치)
 - [git-skill 설치](git-skill/README.ko.md#설치-방법)
+- [handoff 설치](handoff/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
+
+handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
+백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
 
 ## 빠른 참조
 
@@ -63,6 +68,13 @@ npx skills add -y -g chann/skills
 | `/long-task` | 병렬 worktree 서브에이전트 + 마일스톤 리뷰로 프로젝트를 처음부터 끝까지 자율적으로 구현       |
 
 *"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 문구에도 자동 트리거됩니다.
+
+### handoff → [상세](handoff/README.ko.md)
+
+| 커맨드                    | 동작                                                                                 |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `/gen-frontend-handoff`   | 백엔드 API diff, 범위, 세션 컨텍스트에서 프론트엔드/클라이언트 핸드오프 작성        |
+| `/gen-backend-handoff`    | 코드, API, DB, job, rollout 변경사항에서 백엔드/서버 핸드오프 작성                  |
 
 ## 문서
 

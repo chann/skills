@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Frontend Handoff"
+  short_description: "Backend API handoffs for frontend clients"
+  default_prompt: "Use $gen-frontend-handoff to write a frontend/client handoff from the current backend API changes."

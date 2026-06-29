@@ -12,6 +12,7 @@ A collection of practical agent skills for software engineering workflows.
 | **[code-review](code-review/README.md)** | Automated code review from git diffs — markdown / HTML reports with severity ratings, plus an HTML diff viewer |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs without clobbering prose                |
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup                      |
+| **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
 | **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
 
 
@@ -28,7 +29,11 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [code-review installation](code-review/README.md#installation)
 - [doc-skill installation](doc-skill/README.md#installation)
 - [git-skill installation](git-skill/README.md#installation)
+- [handoff installation](handoff/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
+
+Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
+Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
 
 ## Quick reference
 
@@ -73,6 +78,14 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 
 Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
+
+### handoff → [details](handoff/README.md)
+
+
+| Command                   | Action                                                                            |
+| ------------------------- | --------------------------------------------------------------------------------- |
+| `/gen-frontend-handoff`   | Write a frontend/client handoff from backend API diffs, ranges, or session context |
+| `/gen-backend-handoff`    | Write a backend/server handoff from code, API, DB, job, or rollout changes         |
 
 ## Documentation
 

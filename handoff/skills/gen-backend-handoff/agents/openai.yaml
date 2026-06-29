@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Backend Handoff"
+  short_description: "Server handoffs for backend developers"
+  default_prompt: "Use $gen-backend-handoff to write a backend handoff from the current code and git context."

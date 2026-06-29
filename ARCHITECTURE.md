@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles four independent plugins — `code-review`, `doc-skill`, `git-skill`, and `long-task` — that together expose 12 skills.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles five independent plugins — `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 14 skills.
 
 Each skill is authored as a portable `SKILL.md` document plus optional `references/`, `templates/`, `assets/`, and `scripts/`. A thin Claude Code wrapper (`.claude-plugin/plugin.json` + `commands/*.md`) adds slash-command ergonomics on top, but the skill bodies reference no Claude-Code-only tooling, so the same skills run on any agent platform that loads skills (Codex, opencode, Copilot CLI, Gemini CLI, …).
 
@@ -15,6 +15,7 @@ Each skill is authored as a portable `SKILL.md` document plus optional `referenc
 | `code-review` | 2.2.0 | `code-review`, `code-review-md`, `code-review-html`, `diff-viewer` | Review git diffs for correctness, security, complexity, maintainability, and language best practices; emit conversation, markdown, or bilingual HTML reports; render standalone HTML diffs |
 | `doc-skill` | 0.1.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
 | `git-skill` | 0.3.0 | `git-commit`, `git-commit-push`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, push, history rewrite, guarded merges, and merged-branch cleanup |
+| `handoff` | 0.1.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
 | `long-task` | 0.2.1 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 
 ### Skill internals
@@ -35,12 +36,13 @@ Every plugin shares the same layout:
 
 - **`code-review`** centralizes the work in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` and `code-review-html` variants are thin skills that reuse that workflow and only choose an output format. `diff-viewer` is standalone — `generate_diff_report.py` plus `diff-template.html` — and does no analysis.
 - **`git-skill`** keeps its single Python helper, `rewrite_msg.py`, under `git-commit/scripts/`; the `git-commit-rewrite` workflow shares it.
+- **`handoff`** keeps both handoff generators as self-contained `SKILL.md` files. `gen-frontend-handoff` focuses on client-visible API contract changes, type/rendering/error-state work, and `client action 없음` for DB-only changes. `gen-backend-handoff` focuses on API contracts, database migrations, jobs/queues, rollout, verification, and backend continuation prompts.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
 - **`doc-skill`** carries four output templates under `gen-docs/templates/`.
 
 ### Supporting files
 
-- **`.agents/skills/`** — a committed, flattened mirror of all 12 skill directories, for platforms that load skills from a single flat folder (e.g. Codex's `~/.agents/skills/`).
+- **`.agents/skills/`** — optional local flattened mirror of skill directories for platforms that load skills from a single flat folder (e.g. Codex's `~/.agents/skills/`).
 - **`samples/code-review/`** — intentionally vulnerable fixtures (`go-api`, `python-auth`, `react-dashboard`) used to demo the reviewer. Kept outside the plugin folders so they never ship in a published plugin.
 - **`tests/`** — pytest suite: per-plugin package tests plus `diff_viewer/` unit tests with `.diff` fixtures.
 - **`skills-lock.json`** — lockfile pinning each skill's `source`, `sourceType`, `skillPath`, and `computedHash`.
@@ -103,6 +105,13 @@ skills/
 │   │   ├── git-merge-to-dev/SKILL.md
 │   │   └── git-branch-cleanup/SKILL.md
 │   └── README.md · README.ko.md
+├── handoff/                          # plugin (v0.1.0)
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/                     # gen-frontend-handoff, gen-backend-handoff
+│   ├── skills/
+│   │   ├── gen-frontend-handoff/SKILL.md
+│   │   └── gen-backend-handoff/SKILL.md
+│   └── README.md · README.ko.md
 ├── long-task/                        # plugin (v0.2.1)
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/long-task.md         # /long-task
@@ -111,7 +120,7 @@ skills/
 │   │   ├── scripts/long_task.py      # lifecycle + Stop hook
 │   │   └── references/               # completion-audit.md, project-templates.md
 │   └── README.md · README.ko.md
-├── .agents/skills/                   # flattened committed mirror of all 12 skills
+├── .agents/skills/                   # optional local flat skill mirror
 ├── samples/code-review/              # intentionally vulnerable demo fixtures (outside plugin artifacts)
 ├── tests/                            # pytest: package tests + diff_viewer/ unit tests + fixtures
 ├── docs/                             # design / planning notes
@@ -126,7 +135,7 @@ skills/
 ## Design decisions
 
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
-- **One plugin per workflow domain.** `code-review`, `doc-skill`, `git-skill`, and `long-task` are versioned and installable independently, so users adopt only what they need.
+- **One plugin per workflow domain.** `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` are versioned and installable independently, so users adopt only what they need.
 - **Shared logic centralized, variants kept thin.** The `code-review` skill owns the workflow, references, and scripts; the `-md`/`-html` variants add only an output format. `git-commit` owns `rewrite_msg.py` for the whole git family.
 - **Sample vulnerabilities live outside the plugins.** Demo fixtures sit in repo-root `samples/` and are excluded via `.snyk`, so a published plugin neither ships exploitable code nor trips SAST scanners.
 - **Self-contained stdlib Python.** Helper scripts import only the Python 3.10+ standard library, so there is no dependency install step.
