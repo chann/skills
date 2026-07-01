@@ -476,7 +476,9 @@
     .finding-toolbar {
       display: flex;
       gap: 6px;
-      margin-bottom: 10px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
     }
 
     .finding-tool-btn {
@@ -813,7 +815,7 @@
 
     const I18N = {
       ko: {
-        comments: "코멘트", noComments: "코멘트 없음", copyMd: "MD 복사", comment: "코멘트 달기",
+        comments: "코멘트", noComments: "코멘트 없음", copyMd: "마크다운 복사", comment: "코멘트 달기",
         copyFeedback: "피드백 복사", copyReport: "리포트 복사", clearComments: "코멘트 비우기",
         theme: "테마", code: "코드", language: "언어",
         placeholder: "리뷰 코멘트를 입력하세요…", save: "저장", cancel: "취소", edit: "수정", delete: "삭제",
@@ -824,7 +826,7 @@
         feedbackEmpty: "기록된 코멘트가 없습니다."
       },
       en: {
-        comments: "Comments", noComments: "No comments", copyMd: "Copy MD", comment: "Comment",
+        comments: "Comments", noComments: "No comments", copyMd: "Copy Markdown", comment: "Comment",
         copyFeedback: "Copy feedback", copyReport: "Copy report", clearComments: "Clear comments",
         theme: "Theme", code: "Code", language: "Lang",
         placeholder: "Write a review comment…", save: "Save", cancel: "Cancel", edit: "Edit", delete: "Delete",
@@ -1115,6 +1117,12 @@
       if (activeInput) { activeInput.remove(); activeInput = null; }
     }
 
+    function insertBeforeFindingToolbar(bodyEl, node) {
+      const toolbar = bodyEl.querySelector(".finding-toolbar");
+      if (toolbar) bodyEl.insertBefore(node, toolbar);
+      else bodyEl.appendChild(node);
+    }
+
     function openInput(findingEl, fid) {
       closeInput();
       const bodyEl = findingEl.querySelector(".finding-body");
@@ -1141,7 +1149,7 @@
       });
       actions.appendChild(cancel); actions.appendChild(save);
       wrap.appendChild(ta); wrap.appendChild(actions);
-      bodyEl.appendChild(wrap);
+      insertBeforeFindingToolbar(bodyEl, wrap);
       ta.addEventListener("keydown", (e) => {
         if (e.key === "Escape") { e.preventDefault(); closeInput(); }
         else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); save.click(); }
@@ -1227,7 +1235,7 @@
         const thread = document.createElement("div");
         thread.className = "finding-comments";
         group.slice().sort((a, b) => a.createdAt - b.createdAt).forEach((c) => thread.appendChild(buildCommentEl(c)));
-        bodyEl.appendChild(thread);
+        insertBeforeFindingToolbar(bodyEl, thread);
       });
 
       updateCommentList(all, byFinding);
@@ -1356,7 +1364,7 @@
         });
       });
 
-      // Per-finding: Copy MD + Add comment
+      // Per-finding: Copy Markdown + Add comment
       document.querySelectorAll("details.finding").forEach((det) => {
         const fid = det.dataset.findingId;
         const copyBtn = det.querySelector("[data-copy-finding]");

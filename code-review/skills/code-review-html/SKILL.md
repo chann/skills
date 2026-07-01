@@ -9,7 +9,7 @@ description: Use when the user asks for a styled HTML code review report, a brow
 
 Variant of the `code-review` skill that produces markdown reports **and** a self-contained, interactive HTML report.
 
-The HTML report is **bilingual** (Korean + English with a full-page language toggle, Korean shown by default) and includes: severity badges, syntax highlighting with a light/dark/auto theme and an 8-option code scheme selector, a compact collapsible/resizable sidebar, per-finding "Copy MD", per-finding comments stored in the browser, and a "Copy feedback" button that emits a regeneration payload to refine the review.
+The HTML report is **bilingual** (Korean + English with a full-page language toggle, Korean shown by default) and includes: severity badges, syntax highlighting with a light/dark/auto theme and an 8-option code scheme selector, a compact collapsible/resizable sidebar, per-finding "Copy Markdown", per-finding comments stored in the browser, and a "Copy feedback" button that emits a regeneration payload to refine the review.
 
 **Announce at start:** "I'm using the code-review-html skill to generate a bilingual markdown + HTML review report."
 

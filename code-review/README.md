@@ -102,7 +102,7 @@ Each report includes:
 - **Language toggle** — Korean shown by default, switch to English for the whole page. Falls back to a single language (toggle hidden) when no translation exists.
 - **Theme & code scheme** — light/dark/auto page theme plus an 8-option syntax highlight scheme (GitHub, Monokai, Dracula, Nord, …). Diff and code blocks adapt automatically.
 - **Compact sidebar** — collapsible and drag-resizable, with section nav and a comments panel.
-- **Per-finding "Copy MD"** — copy any single finding's markdown.
+- **Per-finding "Copy Markdown"** — copy any single finding's markdown.
 - **Per-finding comments** — leave review comments on individual findings (stored in the browser, keyed by finding ID so they survive language switches).
 - **"Copy feedback"** — emits a regeneration payload (original finding markdown + your comments). Paste it into a fresh `/code-review-html` run to revise the review against the feedback.
 

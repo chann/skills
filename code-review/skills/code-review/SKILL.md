@@ -237,7 +237,7 @@ python <skill-path>/scripts/generate_html_report.py .reviews/<report>.md
 open .reviews/<report>.html
 ```
 
-The HTML includes: a full-page language toggle (Korean shown by default), light/dark/auto theme + code syntax scheme selector, a compact collapsible sidebar, per-finding "Copy MD", per-finding comments (stored in the browser), and a "Copy feedback" button that produces a regeneration payload — paste it back into a new `/code-review-html` run to revise the review against the reviewer's comments.
+The HTML includes: a full-page language toggle (Korean shown by default), light/dark/auto theme + code syntax scheme selector, a compact collapsible sidebar, per-finding "Copy Markdown", per-finding comments (stored in the browser), and a "Copy feedback" button that produces a regeneration payload — paste it back into a new `/code-review-html` run to revise the review against the reviewer's comments.
 
 If only one language file exists, the generator still works and the language toggle is hidden (single-language fallback). Pass `--alt <path>` to point at a translation explicitly, or `--theme`/`--code-scheme` to change the defaults.
 

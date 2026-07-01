@@ -342,6 +342,18 @@ def detect_severity(heading_text: str) -> str | None:
     return None
 
 
+def finding_toolbar_html() -> str:
+    """Render the per-finding action controls."""
+    return (
+        '<div class="finding-toolbar">'
+        '<button class="finding-tool-btn" type="button" data-copy-finding>'
+        '<span data-i18n="copyMd">Copy Markdown</span></button>'
+        '<button class="finding-tool-btn" type="button" data-add-comment>'
+        '<span data-i18n="comment">Comment</span></button>'
+        '</div>'
+    )
+
+
 def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadata, list[SidebarEntry]]:
     """Parse the markdown report and return (html_content, metadata, sidebar_entries).
 
@@ -363,6 +375,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
     def close_finding() -> None:
         nonlocal in_finding_body
         if in_finding_body:
+            out.append(finding_toolbar_html())
             out.append('</div></details>')
             in_finding_body = False
 
@@ -471,12 +484,6 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
                 f'<summary><span class="finding-summary-text">{badge}{escape(text)}</span>'
                 f'<span class="finding-comment-chip" data-comment-chip hidden></span></summary>'
                 f'<div class="finding-body">'
-                f'<div class="finding-toolbar">'
-                f'<button class="finding-tool-btn" type="button" data-copy-finding>'
-                f'<span data-i18n="copyMd">Copy MD</span></button>'
-                f'<button class="finding-tool-btn" type="button" data-add-comment>'
-                f'<span data-i18n="comment">Comment</span></button>'
-                f'</div>'
             )
             in_finding_body = True
             i += 1
