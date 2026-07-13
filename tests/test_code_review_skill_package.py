@@ -44,8 +44,9 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
         self.assertIn("Use the **diff-viewer** skill", command_text)
         self.assertIn("scripts/generate_diff_report.py", skill_text)
 
-    def test_code_review_plugin_metadata_mentions_diff_viewer(self) -> None:
+    def test_code_review_plugin_metadata_mentions_diff_viewer_and_diff_summary(self) -> None:
         metadata = json.loads((CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text())
 
-        self.assertEqual(metadata["version"], "2.2.0")
+        self.assertEqual(metadata["version"], "2.3.0")
         self.assertIn("diff-viewer", metadata["description"])
+        self.assertIn("diff-summary", metadata["description"])

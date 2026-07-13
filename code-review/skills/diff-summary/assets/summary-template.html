@@ -1,0 +1,2527 @@
+<!doctype html>
+<html lang="__REPORT_LANGUAGE__">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>__REPORT_TITLE__</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      --paper: #f3eddf;
+      --paper-raised: #fffaf0;
+      --paper-muted: #e7decb;
+      --ink: #18202a;
+      --ink-muted: #62645f;
+      --line: #bcb19b;
+      --line-strong: #766e61;
+      --cobalt: #194fbf;
+      --cobalt-soft: #dce6ff;
+      --amber: #c27716;
+      --amber-soft: #f4dfb8;
+      --positive: #216849;
+      --positive-soft: #d9eee3;
+      --negative: #a33b31;
+      --negative-soft: #f6ddd7;
+      --shadow: rgba(38, 33, 24, 0.13);
+      min-width: 18rem;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    body[data-default-theme="dark"]:not([data-theme]),
+    body[data-theme="dark"] {
+      --paper: #111820;
+      --paper-raised: #18222b;
+      --paper-muted: #202d37;
+      --ink: #edf0e8;
+      --ink-muted: #aeb7b6;
+      --line: #3b4b55;
+      --line-strong: #788791;
+      --cobalt: #75a2ff;
+      --cobalt-soft: #213c69;
+      --amber: #edaa45;
+      --amber-soft: #59401d;
+      --positive: #7ecba7;
+      --positive-soft: #193b30;
+      --negative: #f19487;
+      --negative-soft: #4d2727;
+      --shadow: rgba(0, 0, 0, 0.26);
+      color-scheme: dark;
+    }
+
+    body[data-default-theme="light"]:not([data-theme]),
+    body[data-theme="light"] {
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body[data-default-theme="auto"]:not([data-theme]) {
+        --paper: #111820;
+        --paper-raised: #18222b;
+        --paper-muted: #202d37;
+        --ink: #edf0e8;
+        --ink-muted: #aeb7b6;
+        --line: #3b4b55;
+        --line-strong: #788791;
+        --cobalt: #75a2ff;
+        --cobalt-soft: #213c69;
+        --amber: #edaa45;
+        --amber-soft: #59401d;
+        --positive: #7ecba7;
+        --positive-soft: #193b30;
+        --negative: #f19487;
+        --negative-soft: #4d2727;
+        --shadow: rgba(0, 0, 0, 0.26);
+        color-scheme: dark;
+      }
+    }
+
+    a {
+      color: var(--cobalt);
+      text-underline-offset: 0.18em;
+    }
+
+    button,
+    summary {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 20;
+      top: 0.75rem;
+      left: 0.75rem;
+      padding: 0.55rem 0.8rem;
+      transform: translateY(-200%);
+      border: 1px solid var(--ink);
+      background: var(--paper-raised);
+      color: var(--ink);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .atlas-shell {
+      --sidebar-width: 19rem;
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(14rem, var(--sidebar-width)) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .atlas-shell[data-sidebar-collapsed="true"] {
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+    }
+
+    .atlas-rail {
+      position: sticky;
+      z-index: 3;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 1.25rem 1rem 1rem;
+      overflow: auto;
+      border-right: 1px solid var(--line-strong);
+      background-color: var(--paper-muted);
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 2.5rem 2.5rem;
+      background-position: -1px -1px;
+    }
+
+    .atlas-rail.is-collapsed {
+      padding-inline: 0.6rem;
+      overflow: hidden;
+    }
+
+    .atlas-rail.is-collapsed .rail-registration,
+    .atlas-rail.is-collapsed .rail-brand,
+    .atlas-rail.is-collapsed .atlas-sidebar,
+    .atlas-rail.is-collapsed .comment-panel,
+    .atlas-rail.is-collapsed .rail-actions,
+    .atlas-rail.is-collapsed .rail-legend {
+      display: none;
+    }
+
+    .atlas-rail.is-collapsed .rail-controls {
+      grid-template-columns: 1fr;
+      margin-top: 0;
+    }
+
+    .sidebar-resizer {
+      position: fixed;
+      z-index: 8;
+      top: 0;
+      left: calc(var(--sidebar-width) - 0.3rem);
+      width: 0.6rem;
+      height: 100vh;
+      border: 0;
+      background: transparent;
+      cursor: col-resize;
+      touch-action: none;
+    }
+
+    .sidebar-resizer::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(50% - 1px);
+      width: 2px;
+      content: "";
+      background: var(--cobalt);
+      opacity: 0;
+      transition: opacity 140ms ease;
+    }
+
+    .sidebar-resizer:hover::after,
+    .sidebar-resizer:focus-visible::after,
+    .is-resizing .sidebar-resizer::after {
+      opacity: 1;
+    }
+
+    .atlas-shell[data-sidebar-collapsed="true"] .sidebar-resizer {
+      display: none;
+    }
+
+    .rail-registration {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 2.3rem;
+      color: var(--ink-muted);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .rail-registration::before,
+    .rail-registration::after {
+      width: 0.58rem;
+      height: 0.58rem;
+      content: "";
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      background:
+        linear-gradient(currentColor, currentColor) 50% 50% / 1px 100% no-repeat,
+        linear-gradient(90deg, currentColor, currentColor) 50% 50% / 100% 1px no-repeat;
+    }
+
+    .rail-brand {
+      padding: 0.85rem 0 1.15rem;
+      border-top: 4px solid var(--ink);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .rail-brand-kicker {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--cobalt);
+      font-size: 0.68rem;
+      font-weight: 750;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .rail-brand strong {
+      display: block;
+      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: clamp(1.35rem, 2vw, 1.9rem);
+      font-weight: 650;
+      letter-spacing: -0.035em;
+      line-height: 0.95;
+    }
+
+    .rail-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      margin: 0.8rem 0 1.25rem;
+    }
+
+    .rail-control,
+    .card-action {
+      min-height: 2.45rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      background: var(--paper-raised);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background-color 140ms ease, color 140ms ease, transform 140ms ease;
+    }
+
+    .rail-control:hover,
+    .card-action:hover {
+      background: var(--ink);
+      color: var(--paper-raised);
+      transform: translateY(-1px);
+    }
+
+    .atlas-sidebar {
+      margin-bottom: 1.25rem;
+    }
+
+    .atlas-sidebar-label {
+      display: block;
+      margin-bottom: 0.6rem;
+      color: var(--ink-muted);
+      font-size: 0.67rem;
+      font-weight: 750;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .section-index {
+      display: grid;
+      gap: 0.15rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .section-index-item a {
+      display: grid;
+      grid-template-columns: 1.2rem 1fr;
+      gap: 0.2rem;
+      align-items: baseline;
+      padding: 0.36rem 0.3rem;
+      color: var(--ink);
+      font-size: 0.78rem;
+      line-height: 1.25;
+      text-decoration: none;
+    }
+
+    .section-index-item a:hover {
+      background: var(--paper-raised);
+      color: var(--cobalt);
+    }
+
+    .section-index-item--h3 a {
+      padding-left: 0.85rem;
+      color: var(--ink-muted);
+      font-size: 0.72rem;
+    }
+
+    .comment-panel {
+      margin: 0.2rem 0 1rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .comment-panel-title,
+    .rail-actions-label {
+      margin: 0 0 0.55rem;
+      color: var(--ink-muted);
+      font-size: 0.67rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .comment-empty {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+    }
+
+    .comment-list {
+      display: grid;
+      gap: 0.35rem;
+      max-height: 13rem;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      list-style: none;
+    }
+
+    .comment-list li {
+      margin: 0;
+    }
+
+    .comment-jump {
+      width: 100%;
+      padding: 0.5rem 0.55rem;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper-raised);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 0.69rem;
+      line-height: 1.35;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .comment-jump:hover {
+      border-color: var(--cobalt);
+      color: var(--cobalt);
+    }
+
+    .rail-actions {
+      display: grid;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .rail-actions .rail-control {
+      width: 100%;
+      padding-inline: 0.55rem;
+    }
+
+    .rail-action--danger:hover {
+      background: var(--negative);
+      color: #fff;
+    }
+
+    .index-mark {
+      color: var(--amber);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      text-align: center;
+    }
+
+    .rail-legend {
+      display: grid;
+      gap: 0.4rem;
+      margin-top: auto;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line-strong);
+      color: var(--ink-muted);
+      font-size: 0.68rem;
+    }
+
+    .rail-legend span::before {
+      display: inline-block;
+      width: 0.6rem;
+      height: 0.6rem;
+      margin-right: 0.45rem;
+      content: "";
+      border: 1px solid currentColor;
+      background: var(--cobalt-soft);
+    }
+
+    .rail-legend span:last-child::before {
+      background: var(--amber-soft);
+    }
+
+    .atlas-canvas {
+      position: relative;
+      min-width: 0;
+      padding: clamp(1rem, 3vw, 3.5rem) clamp(1rem, 5vw, 6.5rem) 5rem;
+      overflow: hidden;
+    }
+
+    .atlas-canvas::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      opacity: 0.28;
+      background-image:
+        linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), var(--line) calc(100% - 1px)),
+        linear-gradient(transparent 0, transparent calc(100% - 1px), var(--line) calc(100% - 1px));
+      background-size: 7.5rem 7.5rem;
+    }
+
+    .report-stage {
+      width: min(100%, 76rem);
+      margin-inline: auto;
+    }
+
+    .report-header {
+      position: relative;
+      margin: 0 0 clamp(2.5rem, 6vw, 5rem);
+      padding: clamp(1.4rem, 4vw, 3.25rem) clamp(1.25rem, 4vw, 3.5rem) 1.4rem;
+      border: 1px solid var(--line-strong);
+      border-top: 8px solid var(--ink);
+      border-radius: 2px;
+      background: var(--paper-raised);
+      box-shadow: 0.65rem 0.65rem 0 var(--shadow);
+    }
+
+    .report-header::after {
+      position: absolute;
+      top: -0.6rem;
+      right: 2rem;
+      width: 4.5rem;
+      height: 1.05rem;
+      content: "";
+      border-inline: 1px solid var(--amber);
+      background: var(--amber-soft);
+      opacity: 0.85;
+    }
+
+    .report-overline {
+      margin-bottom: 0.9rem;
+      color: var(--cobalt);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    #report-title {
+      max-width: 20ch;
+      margin: 0 0 2.5rem;
+      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: clamp(2.55rem, 7vw, 6.6rem);
+      font-weight: 620;
+      letter-spacing: -0.055em;
+      line-height: 0.9;
+      text-wrap: balance;
+    }
+
+    .report-metadata {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 0;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .metadata-cell {
+      min-width: 0;
+      padding: 0.75rem;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metadata-cell--wide {
+      grid-column: span 2;
+    }
+
+    .metadata-cell dt {
+      margin-bottom: 0.22rem;
+      color: var(--ink-muted);
+      font-size: 0.61rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .metadata-cell dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+      font-size: 0.78rem;
+      font-weight: 620;
+    }
+
+    #report-main {
+      max-width: 70rem;
+      margin-inline: auto;
+    }
+
+    #report-main > h2 {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      margin: 4.6rem 0 1.6rem;
+      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: clamp(1.9rem, 4vw, 3.55rem);
+      font-weight: 620;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+
+    #report-main > h2::after {
+      height: 1px;
+      content: "";
+      background: var(--line-strong);
+    }
+
+    #report-main > h3 {
+      margin: 2.8rem 0 1rem;
+      color: var(--cobalt);
+      font-size: 0.78rem;
+      font-weight: 820;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    #report-main > p,
+    .card-content > p {
+      max-width: 72ch;
+      margin: 0 0 1.1rem;
+    }
+
+    #report-main > ul,
+    #report-main > ol,
+    .card-content > ul,
+    .card-content > ol {
+      max-width: 70ch;
+      margin: 0.4rem 0 1.25rem;
+      padding-left: 1.35rem;
+    }
+
+    li + li {
+      margin-top: 0.28rem;
+    }
+
+    p code,
+    li code,
+    dd code {
+      padding: 0.1em 0.32em;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper-muted);
+      overflow-wrap: anywhere;
+    }
+
+    .table-scroll {
+      margin: 1.2rem 0 2rem;
+      overflow-x: auto;
+      border: 1px solid var(--line-strong);
+      background: var(--paper-raised);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    th,
+    td {
+      padding: 0.7rem 0.8rem;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: 0;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th {
+      background: var(--ink);
+      color: var(--paper-raised);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .align-center {
+      text-align: center;
+    }
+
+    .align-right {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .summary-card {
+      margin: 0 0 1.1rem;
+      border: 1px solid var(--line-strong);
+      border-left: 5px solid var(--cobalt);
+      border-radius: 2px;
+      background: var(--paper-raised);
+      box-shadow: 0.3rem 0.3rem 0 var(--shadow);
+    }
+
+    .summary-card.impact-high {
+      border-left-color: var(--amber);
+    }
+
+    .card-summary {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: center;
+      min-height: 5rem;
+      padding: 1rem 1.15rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .card-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .card-summary::before {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+      width: 0.65rem;
+      height: 0.65rem;
+      margin-top: 0.42rem;
+      content: "+";
+      color: var(--cobalt);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.95rem;
+      font-weight: 800;
+      line-height: 0.65rem;
+    }
+
+    .summary-card[open] .card-summary::before {
+      content: "−";
+    }
+
+    .card-heading {
+      display: grid;
+      grid-column: 2;
+      grid-row: 1;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.7rem;
+      align-items: baseline;
+    }
+
+    .summary-id {
+      color: var(--cobalt);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .summary-title {
+      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: clamp(1.12rem, 2.2vw, 1.55rem);
+      font-weight: 650;
+      line-height: 1.1;
+    }
+
+    .card-badges {
+      display: flex;
+      grid-column: 3;
+      grid-row: 1;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      justify-content: flex-end;
+    }
+
+    .badge,
+    .comment-count {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.55rem;
+      padding: 0.18rem 0.48rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      font-size: 0.61rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .badge--category {
+      background: var(--cobalt-soft);
+    }
+
+    .badge--impact {
+      background: var(--amber-soft);
+    }
+
+    .comment-count {
+      min-width: 1.55rem;
+      justify-content: center;
+      background: var(--paper-muted);
+    }
+
+    .card-panel {
+      padding: 0 1.15rem 1.15rem;
+      border-top: 1px solid var(--line);
+      animation: atlas-reveal 160ms ease-out;
+    }
+
+    @keyframes atlas-reveal {
+      from {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-content {
+      padding-top: 1.2rem;
+    }
+
+    .code-block {
+      margin: 1rem 0 1.35rem;
+      padding: 1rem;
+      overflow: auto;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      background: #151c22;
+      color: #e9eee8;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      tab-size: 2;
+    }
+
+    .code-block code {
+      display: block;
+      min-width: max-content;
+      font-size: inherit;
+    }
+
+    .diff-line {
+      display: block;
+      min-height: 1.55em;
+      padding-inline: 0.45rem;
+      white-space: pre;
+    }
+
+    .diff-line--add {
+      background: rgba(66, 164, 112, 0.2);
+      color: #b4ebcd;
+    }
+
+    .diff-line--delete {
+      background: rgba(218, 87, 71, 0.2);
+      color: #ffc1b7;
+    }
+
+    .diff-line--hunk {
+      background: rgba(83, 126, 221, 0.22);
+      color: #b9ccff;
+    }
+
+    .diff-line--meta {
+      color: #efbd6d;
+    }
+
+    .card-files {
+      display: grid;
+      grid-template-columns: 6rem minmax(0, 1fr);
+      gap: 1rem;
+      margin-top: 1.2rem;
+      padding: 0.9rem 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .card-files-title {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .comment-thread {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--amber);
+      background: color-mix(in srgb, var(--paper-muted) 68%, transparent);
+    }
+
+    .comment-thread[hidden] {
+      display: none;
+    }
+
+    .comment-thread-title {
+      margin: 0 0 0.7rem;
+      color: var(--ink-muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .comment-thread-list {
+      display: grid;
+      gap: 0.65rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .comment-thread-list li {
+      margin: 0;
+    }
+
+    .review-comment {
+      padding: 0.75rem;
+      border: 1px solid var(--line);
+      background: var(--paper-raised);
+    }
+
+    .review-comment.is-targeted {
+      border-color: var(--cobalt);
+      box-shadow: 0 0 0 3px var(--cobalt-soft);
+    }
+
+    .comment-meta {
+      margin: 0 0 0.45rem;
+      color: var(--ink-muted);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.64rem;
+    }
+
+    .comment-text {
+      margin: 0;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 0.35rem;
+      justify-content: flex-end;
+      margin-top: 0.65rem;
+    }
+
+    .comment-edit,
+    .comment-delete,
+    .comment-editor-action {
+      min-height: 2rem;
+      padding: 0.3rem 0.6rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      background: var(--paper-raised);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 0.68rem;
+      font-weight: 750;
+    }
+
+    .comment-delete:hover {
+      border-color: var(--negative);
+      background: var(--negative);
+      color: #fff;
+    }
+
+    .comment-editor {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--cobalt);
+      background: var(--cobalt-soft);
+    }
+
+    .comment-editor-label {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .comment-editor textarea {
+      display: block;
+      width: 100%;
+      min-height: 7rem;
+      resize: vertical;
+      padding: 0.7rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 2px;
+      background: var(--paper-raised);
+      color: var(--ink);
+      font: inherit;
+      line-height: 1.5;
+    }
+
+    .comment-editor-help {
+      margin: 0.45rem 0 0;
+      color: var(--ink-muted);
+      font-size: 0.67rem;
+    }
+
+    .comment-editor-actions {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: flex-end;
+      margin-top: 0.7rem;
+    }
+
+    .comment-editor-action--save {
+      border-color: var(--cobalt);
+      background: var(--cobalt);
+      color: #fff;
+    }
+
+    .file-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.55rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .file-list li {
+      min-width: 0;
+      margin: 0;
+    }
+
+    .file-list code {
+      display: inline-block;
+      max-width: 100%;
+      padding: 0.2rem 0.38rem;
+      overflow-wrap: anywhere;
+      border: 1px solid var(--line);
+      background: var(--paper-muted);
+      font-size: 0.68rem;
+    }
+
+    .card-toolbar {
+      display: flex;
+      gap: 0.45rem;
+      justify-content: flex-end;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .card-action {
+      min-height: 2.25rem;
+      padding-inline: 0.75rem;
+    }
+
+    .card-action--accent {
+      border-color: var(--cobalt);
+      background: var(--cobalt);
+      color: #fff;
+    }
+
+    .report-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line-strong);
+      color: var(--ink-muted);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-region {
+      position: fixed;
+      z-index: 10;
+      right: 1rem;
+      bottom: 1rem;
+      max-width: min(28rem, calc(100vw - 2rem));
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      pointer-events: none;
+    }
+
+    .status-region:not(:empty) {
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--line-strong);
+      background: var(--paper-raised);
+      box-shadow: 0.25rem 0.25rem 0 var(--shadow);
+    }
+
+    .manual-copy-backdrop {
+      position: fixed;
+      z-index: 30;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(10, 15, 20, 0.72);
+    }
+
+    .manual-copy-dialog {
+      width: min(42rem, 100%);
+      max-height: calc(100vh - 2rem);
+      padding: 1.1rem;
+      overflow: auto;
+      border: 1px solid var(--line-strong);
+      border-top: 6px solid var(--amber);
+      background: var(--paper-raised);
+      box-shadow: 0.55rem 0.55rem 0 var(--shadow);
+    }
+
+    .manual-copy-title {
+      margin: 0 0 0.35rem;
+      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-size: 1.45rem;
+      line-height: 1.15;
+    }
+
+    .manual-copy-instructions {
+      margin: 0 0 0.8rem;
+      color: var(--ink-muted);
+      font-size: 0.78rem;
+    }
+
+    .manual-copy-text {
+      display: block;
+      width: 100%;
+      min-height: min(18rem, 48vh);
+      resize: vertical;
+      padding: 0.75rem;
+      border: 1px solid var(--line-strong);
+      background: var(--paper);
+      color: var(--ink);
+      font: 0.76rem/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .manual-copy-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.8rem;
+    }
+
+    @media (max-width: 68rem) {
+      .atlas-shell {
+        grid-template-columns: minmax(13.5rem, var(--sidebar-width)) minmax(0, 1fr);
+      }
+
+      .atlas-canvas {
+        padding-inline: clamp(1rem, 3vw, 2.5rem);
+      }
+
+      .report-metadata {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 46rem) {
+      .atlas-shell {
+        display: block;
+      }
+
+      .sidebar-resizer {
+        display: none;
+      }
+
+      .atlas-rail {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem 1rem;
+        height: auto;
+        max-height: none;
+        padding: 0.85rem 1rem;
+        border-right: 0;
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .rail-registration,
+      .rail-legend {
+        display: none;
+      }
+
+      .rail-brand {
+        padding: 0.45rem 0;
+        border-block: 0;
+      }
+
+      .rail-brand strong {
+        font-size: 1.25rem;
+      }
+
+      .rail-controls {
+        align-self: center;
+        margin: 0;
+      }
+
+      .atlas-sidebar {
+        grid-column: 1 / -1;
+        margin: 0;
+      }
+
+      .comment-panel,
+      .rail-actions {
+        grid-column: 1 / -1;
+      }
+
+      .comment-list {
+        max-height: 10rem;
+      }
+
+      .section-index {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .atlas-canvas {
+        padding-top: 1.25rem;
+      }
+
+      .report-header {
+        margin-bottom: 2.5rem;
+        padding-inline: 1rem;
+      }
+
+      #report-title {
+        margin-bottom: 1.75rem;
+      }
+
+      .card-summary {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .card-badges {
+        grid-column: 2;
+        grid-row: 2;
+        justify-content: flex-start;
+      }
+
+      .card-files {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 30rem) {
+      .report-metadata,
+      .section-index {
+        grid-template-columns: 1fr;
+      }
+
+      .metadata-cell--wide {
+        grid-column: auto;
+      }
+
+      .card-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .comment-actions,
+      .comment-editor-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .report-footer {
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media print {
+      @page {
+        margin: 16mm;
+      }
+
+      body {
+        --paper: #fff;
+        --paper-raised: #fff;
+        --paper-muted: #f2f2f2;
+        --ink: #111;
+        --ink-muted: #444;
+        --line: #bbb;
+        --line-strong: #555;
+        --shadow: transparent;
+        background: #fff;
+        color: #111;
+        font-size: 10pt;
+      }
+
+      .atlas-shell {
+        display: block;
+      }
+
+      .atlas-rail,
+      .sidebar-resizer,
+      .skip-link,
+      .card-toolbar,
+      .comment-thread,
+      .comment-editor,
+      .comment-panel,
+      .rail-actions,
+      .comment-count,
+      .manual-copy-backdrop,
+      .status-region {
+        display: none !important;
+      }
+
+      .atlas-canvas {
+        padding: 0;
+        overflow: visible;
+      }
+
+      .atlas-canvas::before,
+      .report-header::after {
+        display: none;
+      }
+
+      .report-header {
+        margin-bottom: 12mm;
+        padding: 8mm;
+        box-shadow: none;
+      }
+
+      #report-title {
+        font-size: 32pt;
+      }
+
+      #report-main > h2 {
+        margin-top: 12mm;
+        break-after: avoid;
+      }
+
+      .summary-card {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+
+      .summary-card:not([open]) > :not(summary) {
+        display: block;
+      }
+
+      .code-block {
+        overflow: visible;
+        white-space: pre-wrap;
+      }
+
+      .code-block code,
+      .diff-line {
+        min-width: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+    }
+  </style>
+</head>
+<body data-default-theme="__DEFAULT_THEME__">
+  <a class="skip-link" href="#report-main">Skip to report</a>
+  <div class="atlas-shell">
+    <aside class="atlas-rail" aria-label="Report atlas controls">
+      <div class="rail-registration">Offline review plate</div>
+      <div class="rail-brand">
+        <span class="rail-brand-kicker">Engineering change atlas</span>
+        <strong>Diff / Summary</strong>
+      </div>
+      <div class="rail-controls" aria-label="Display controls">
+        <button type="button" class="rail-control" data-sidebar-toggle aria-controls="report-sections" aria-expanded="true" aria-label="Toggle report index">Index</button>
+        <button type="button" class="rail-control" data-theme-toggle aria-label="Change color theme">Theme</button>
+      </div>
+      <nav id="report-sections" class="atlas-sidebar" aria-label="Report sections">
+        <div class="atlas-sidebar-label" data-atlas-index>Atlas index</div>
+        __SIDEBAR_NAV__
+      </nav>
+      <section class="comment-panel" aria-label="Review comments">
+        <h2 class="comment-panel-title" data-comment-panel-title>Review comments</h2>
+        <p class="comment-empty" data-comment-empty>No comments yet.</p>
+        <ol class="comment-list" data-comment-list></ol>
+      </section>
+      <section class="rail-actions" aria-label="Review actions">
+        <h2 class="rail-actions-label" data-rail-actions-title>Review actions</h2>
+        <button type="button" class="rail-control" data-copy-feedback aria-label="Copy reviewer feedback">Copy feedback</button>
+        <button type="button" class="rail-control" data-copy-report aria-label="Copy complete report Markdown">Copy report</button>
+        <button type="button" class="rail-control rail-action--danger" data-clear-comments aria-label="Clear all reviewer comments">Clear comments</button>
+      </section>
+      <div class="rail-legend" aria-label="Visual legend">
+        <span>Cobalt marks structure</span>
+        <span>Amber marks impact</span>
+      </div>
+    </aside>
+
+    <div class="sidebar-resizer" data-sidebar-resizer role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize report sidebar" aria-valuemin="224" aria-valuemax="480" aria-valuenow="304"></div>
+
+    <div class="atlas-canvas">
+      <div class="report-stage">
+        __REPORT_METADATA__
+        <main id="report-main" tabindex="-1">
+          __REPORT_BODY__
+        </main>
+        <footer class="report-footer">
+          <span>Portable review artifact</span>
+          <span>No network required</span>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <div id="report-status" class="status-region" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script id="summary-data" type="application/json">__SUMMARY_DATA__</script>
+  <script id="raw-markdown" type="application/json">__RAW_MARKDOWN__</script>
+  <script id="comment-scope" type="application/json">__COMMENT_SCOPE__</script>
+  <script data-diff-summary-runtime>
+    (() => {
+      "use strict";
+
+      const body = document.body;
+      const shell = document.querySelector(".atlas-shell");
+      const rail = document.querySelector(".atlas-rail");
+      const statusRegion = document.getElementById("report-status");
+      const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
+      const themeToggle = document.querySelector("[data-theme-toggle]");
+      const sidebarResizer = document.querySelector("[data-sidebar-resizer]");
+      const language = (document.documentElement.lang || "").toLowerCase().startsWith("ko")
+        ? "ko"
+        : "en";
+      const messages = {
+        en: {
+          dataError: "Some embedded report data could not be read. The report remains available.",
+          storageUnavailable: "Browser storage is unavailable. Changes will remain in this tab only.",
+          commentsReset: "Invalid saved comments were reset.",
+          index: "Index",
+          collapseSidebar: "Collapse report sidebar",
+          expandSidebar: "Expand report sidebar",
+          atlasIndex: "Atlas index",
+          displayControls: "Display controls",
+          commentsHeading: "Review comments",
+          noComments: "No comments yet.",
+          reviewActions: "Review actions",
+          copyFeedback: "Copy feedback",
+          copyFeedbackLabel: "Copy reviewer feedback",
+          copyReport: "Copy report",
+          copyReportLabel: "Copy complete report Markdown",
+          clearComments: "Clear comments",
+          clearCommentsLabel: "Clear all reviewer comments",
+          resizeSidebar: "Resize report sidebar",
+          addComment: "Add comment",
+          addCommentLabel: (summaryId) => `Add comment to ${summaryId}`,
+          copyMarkdown: "Copy Markdown",
+          copyMarkdownLabel: (summaryId) => `Copy ${summaryId} Markdown`,
+          files: "Files",
+          comments: "Comments",
+          commentCount: (count) => `${count} ${count === 1 ? "comment" : "comments"}`,
+          commentEditor: (summaryId, editing) =>
+            `${editing ? "Edit" : "Add"} comment for ${summaryId}`,
+          editorHelp: "Escape cancels. Command or Control + Enter saves.",
+          save: "Save comment",
+          cancel: "Cancel",
+          edit: "Edit",
+          editLabel: (summaryId) => `Edit comment on ${summaryId}`,
+          delete: "Delete",
+          deleteLabel: (summaryId) => `Delete comment on ${summaryId}`,
+          commentSaved: "Comment saved.",
+          commentEmpty: "Enter a comment before saving.",
+          commentDeleted: "Comment deleted.",
+          deleteConfirm: "Delete this reviewer comment?",
+          clearConfirm: "Clear all reviewer comments for this report?",
+          commentsCleared: "All reviewer comments were cleared.",
+          nothingToClear: "There are no reviewer comments to clear.",
+          copiedSummary: "Card Markdown copied.",
+          copiedReport: "Report Markdown copied.",
+          copiedFeedback: "Reviewer feedback copied.",
+          copiedNoComments: "Regeneration request copied with a no-comments note.",
+          copyFailed: "Copy failed. Select and copy the text manually.",
+          manualCopyTitle: "Copy manually",
+          manualCopyInstructions:
+            "Automatic copy was blocked. The complete text is selected below; copy it with your keyboard, then dismiss this dialog.",
+          manualCopyTextLabel: "Text to copy manually",
+          manualCopyDismiss: "Dismiss",
+          feedbackIntro: "Regenerate this diff summary using the reviewer feedback below.",
+          feedbackInstruction:
+            "Preserve the requested Git scope and update only what the feedback requires.",
+          reportContext: "Report context",
+          noCommentsPayload:
+            "No reviewer comments were recorded. Regenerate the diff summary without comment-driven changes.",
+          originalCard: "Exact original card Markdown",
+          reviewerComments: "Reviewer comments",
+          reviewerComment: "Reviewer comment",
+          jumpLabel: (summaryId, text) => `Jump to ${summaryId} comment: ${text}`,
+          theme: {
+            auto: "Theme: Auto",
+            light: "Theme: Light",
+            dark: "Theme: Dark",
+          },
+          themeLabel: {
+            auto: "Color theme is automatic. Activate for light theme.",
+            light: "Color theme is light. Activate for dark theme.",
+            dark: "Color theme is dark. Activate for automatic theme.",
+          },
+        },
+        ko: {
+          dataError: "보고서 내장 데이터 일부를 읽지 못했습니다. 보고서 내용은 계속 볼 수 있습니다.",
+          storageUnavailable: "브라우저 저장소를 사용할 수 없어 변경 사항이 현재 탭에만 유지됩니다.",
+          commentsReset: "잘못 저장된 댓글을 초기화했습니다.",
+          index: "목차",
+          collapseSidebar: "보고서 사이드바 접기",
+          expandSidebar: "보고서 사이드바 펼치기",
+          atlasIndex: "보고서 목차",
+          displayControls: "화면 설정",
+          commentsHeading: "검토 댓글",
+          noComments: "아직 댓글이 없습니다.",
+          reviewActions: "검토 작업",
+          copyFeedback: "피드백 복사",
+          copyFeedbackLabel: "검토자 피드백 복사",
+          copyReport: "보고서 복사",
+          copyReportLabel: "전체 보고서 Markdown 복사",
+          clearComments: "댓글 모두 삭제",
+          clearCommentsLabel: "검토 댓글 모두 삭제",
+          resizeSidebar: "보고서 사이드바 너비 조절",
+          addComment: "댓글 추가",
+          addCommentLabel: (summaryId) => `${summaryId}에 댓글 추가`,
+          copyMarkdown: "Markdown 복사",
+          copyMarkdownLabel: (summaryId) => `${summaryId} Markdown 복사`,
+          files: "파일",
+          comments: "댓글",
+          commentCount: (count) => `댓글 ${count}개`,
+          commentEditor: (summaryId, editing) =>
+            `${summaryId} 댓글 ${editing ? "수정" : "추가"}`,
+          editorHelp: "Escape로 취소하고 Command 또는 Control + Enter로 저장합니다.",
+          save: "댓글 저장",
+          cancel: "취소",
+          edit: "수정",
+          editLabel: (summaryId) => `${summaryId} 댓글 수정`,
+          delete: "삭제",
+          deleteLabel: (summaryId) => `${summaryId} 댓글 삭제`,
+          commentSaved: "댓글을 저장했습니다.",
+          commentEmpty: "저장할 댓글을 입력하세요.",
+          commentDeleted: "댓글을 삭제했습니다.",
+          deleteConfirm: "이 검토 댓글을 삭제할까요?",
+          clearConfirm: "이 보고서의 검토 댓글을 모두 삭제할까요?",
+          commentsCleared: "검토 댓글을 모두 삭제했습니다.",
+          nothingToClear: "삭제할 검토 댓글이 없습니다.",
+          copiedSummary: "카드 Markdown을 복사했습니다.",
+          copiedReport: "보고서 Markdown을 복사했습니다.",
+          copiedFeedback: "검토자 피드백을 복사했습니다.",
+          copiedNoComments: "댓글 없음 안내를 포함한 재생성 요청을 복사했습니다.",
+          copyFailed: "복사하지 못했습니다. 텍스트를 직접 선택해 복사하세요.",
+          manualCopyTitle: "직접 복사",
+          manualCopyInstructions:
+            "자동 복사가 차단되었습니다. 아래 전체 텍스트가 선택되어 있으니 키보드로 복사한 뒤 이 대화상자를 닫으세요.",
+          manualCopyTextLabel: "직접 복사할 텍스트",
+          manualCopyDismiss: "닫기",
+          feedbackIntro: "아래 검토자 피드백을 반영하여 diff summary를 다시 생성해주세요.",
+          feedbackInstruction: "요청된 Git 범위를 유지하고 피드백에 필요한 내용만 변경해주세요.",
+          reportContext: "보고서 범위 정보",
+          noCommentsPayload:
+            "기록된 검토자 댓글이 없습니다. 댓글로 인한 변경 없이 diff summary를 다시 생성해주세요.",
+          originalCard: "원본 카드 Markdown 원문",
+          reviewerComments: "검토자 댓글",
+          reviewerComment: "검토자 댓글",
+          jumpLabel: (summaryId, text) => `${summaryId} 댓글로 이동: ${text}`,
+          theme: {
+            auto: "테마: 자동",
+            light: "테마: 밝게",
+            dark: "테마: 어둡게",
+          },
+          themeLabel: {
+            auto: "자동 테마입니다. 밝은 테마로 바꾸려면 누르세요.",
+            light: "밝은 테마입니다. 어두운 테마로 바꾸려면 누르세요.",
+            dark: "어두운 테마입니다. 자동 테마로 바꾸려면 누르세요.",
+          },
+        },
+      };
+      const strings = messages[language] || messages.en;
+
+      let storageFailureAnnounced = false;
+      let comments = [];
+      let activeEditor = null;
+      let manualCopyDialog = null;
+      let manualCopyTextarea = null;
+      let manualCopyPreviousFocus = null;
+      let currentTheme = "auto";
+      let currentSidebarCollapsed = false;
+      let currentSidebarWidth = 304;
+
+      function announce(message, tone = "info") {
+        if (!statusRegion) {
+          return;
+        }
+        statusRegion.textContent = message;
+        statusRegion.dataset.tone = tone;
+      }
+
+      function readJsonPayload(elementId) {
+        try {
+          const element = document.getElementById(elementId);
+          if (!element) {
+            throw new Error(`Missing embedded payload: ${elementId}`);
+          }
+          return { ok: true, value: JSON.parse(element.textContent || "") };
+        } catch (error) {
+          announce(strings.dataError, "error");
+          return { ok: false, value: null };
+        }
+      }
+
+      function safeStorageGet(key) {
+        try {
+          return localStorage.getItem(key);
+        } catch (error) {
+          if (!storageFailureAnnounced) {
+            announce(strings.storageUnavailable, "warning");
+            storageFailureAnnounced = true;
+          }
+          return null;
+        }
+      }
+
+      function safeStorageSet(key, value) {
+        try {
+          localStorage.setItem(key, value);
+          return true;
+        } catch (error) {
+          if (!storageFailureAnnounced) {
+            announce(strings.storageUnavailable, "warning");
+            storageFailureAnnounced = true;
+          }
+          return false;
+        }
+      }
+
+      function safeStorageRemove(key) {
+        try {
+          localStorage.removeItem(key);
+          return true;
+        } catch (error) {
+          if (!storageFailureAnnounced) {
+            announce(strings.storageUnavailable, "warning");
+            storageFailureAnnounced = true;
+          }
+          return false;
+        }
+      }
+
+      const summaryPayload = readJsonPayload("summary-data");
+      const rawMarkdownPayload = readJsonPayload("raw-markdown");
+      const commentScopePayload = readJsonPayload("comment-scope");
+      const embeddedSummaryData = summaryPayload.value;
+      const embeddedRawMarkdown = rawMarkdownPayload.value;
+      const embeddedCommentScope = commentScopePayload.value;
+      const summaryPayloadValid =
+        summaryPayload.ok &&
+        Array.isArray(embeddedSummaryData) &&
+        embeddedSummaryData.every(
+          (card) =>
+            card &&
+            typeof card === "object" &&
+            typeof card.id === "string" &&
+            typeof card.title === "string" &&
+            typeof card.markdown === "string",
+        );
+      const rawMarkdown =
+        rawMarkdownPayload.ok && typeof embeddedRawMarkdown === "string"
+          ? embeddedRawMarkdown
+          : null;
+      const commentScope =
+        commentScopePayload.ok &&
+        typeof embeddedCommentScope === "string" &&
+        embeddedCommentScope.trim()
+          ? embeddedCommentScope
+          : null;
+      const summaryData = summaryPayloadValid ? embeddedSummaryData : [];
+      const cardsById = new Map(summaryData.map((card) => [card.id, card]));
+      const cardElements = Array.from(
+        document.querySelectorAll(".summary-card[data-summary-id]"),
+      );
+      const cardElementsById = new Map(
+        cardElements.map((card) => [
+          card.dataset.summaryId,
+          card,
+        ]),
+      );
+      const payloadCardIds = summaryData.map((card) => card.id);
+      const domCardIds = cardElements.map((card) => card.dataset.summaryId);
+      const payloadCardIdSet = new Set(payloadCardIds);
+      const domCardIdSet = new Set(domCardIds);
+      const interactionsReady =
+        summaryPayloadValid &&
+        commentScope !== null &&
+        payloadCardIds.length === domCardIds.length &&
+        payloadCardIdSet.size === payloadCardIds.length &&
+        domCardIdSet.size === domCardIds.length &&
+        payloadCardIds.every((summaryId) => domCardIdSet.has(summaryId));
+      if (!interactionsReady || rawMarkdown === null) {
+        announce(strings.dataError, "error");
+      }
+      body.dataset.interactionsReady = String(interactionsReady);
+      const commentStorageKey =
+        interactionsReady ? "diff-summary:comments:" + commentScope : null;
+      const metadataValues = new Map(
+        Array.from(document.querySelectorAll(".metadata-cell"), (cell) => [
+          (cell.querySelector("dt") || {}).textContent || "",
+          (cell.querySelector("dd") || {}).textContent || "",
+        ]),
+      );
+      const reportHeader = document.querySelector(".report-header");
+      const reportContext = {
+        repository: reportHeader ? reportHeader.dataset.repository || "" : "",
+        scope: reportHeader ? reportHeader.dataset.scope || "" : "",
+        command: metadataValues.get("Command") || "",
+        head: metadataValues.get("HEAD") || "",
+      };
+      const THEME_KEY = "diff-summary:theme";
+      const SIDEBAR_COLLAPSED_KEY = "diff-summary:sidebar:collapsed";
+      const SIDEBAR_WIDTH_KEY = "diff-summary:sidebar:width";
+      const SIDEBAR_MIN = 224;
+      const SIDEBAR_MAX = 480;
+      const THEME_ORDER = ["auto", "light", "dark"];
+
+      function normalizeComment(record) {
+        if (!record || typeof record !== "object") {
+          return null;
+        }
+        if (
+          typeof record.id !== "string" ||
+          !record.id.trim() ||
+          typeof record.summaryId !== "string" ||
+          !cardsById.has(record.summaryId) ||
+          typeof record.text !== "string" ||
+          !record.text.trim() ||
+          !Number.isFinite(record.createdAt) ||
+          !Number.isFinite(record.updatedAt) ||
+          !Number.isFinite(new Date(record.createdAt).getTime()) ||
+          !Number.isFinite(new Date(record.updatedAt).getTime())
+        ) {
+          return null;
+        }
+        return {
+          id: record.id.trim(),
+          summaryId: record.summaryId,
+          text: record.text.trim(),
+          createdAt: record.createdAt,
+          updatedAt: record.updatedAt,
+        };
+      }
+
+      function loadComments() {
+        if (!commentStorageKey) {
+          return [];
+        }
+        const serialized = safeStorageGet(commentStorageKey);
+        if (serialized === null) {
+          return [];
+        }
+        try {
+          const parsed = JSON.parse(serialized);
+          if (!Array.isArray(parsed)) {
+            throw new Error("Saved comments must be an array");
+          }
+          const seenIds = new Set();
+          const validComments = [];
+          parsed.forEach((record) => {
+            const comment = normalizeComment(record);
+            if (comment && !seenIds.has(comment.id)) {
+              seenIds.add(comment.id);
+              validComments.push(comment);
+            }
+          });
+          return validComments;
+        } catch (error) {
+          if (safeStorageRemove(commentStorageKey)) {
+            announce(strings.commentsReset, "warning");
+          }
+          return [];
+        }
+      }
+
+      function saveComments() {
+        renderComments();
+        if (!commentStorageKey) {
+          return false;
+        }
+        return safeStorageSet(commentStorageKey, JSON.stringify(comments));
+      }
+
+      function createButton(className, text, label) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.textContent = text;
+        button.setAttribute("aria-label", label);
+        return button;
+      }
+
+      function setInteractionControlsEnabled(enabled) {
+        ("[data-add-comment],[data-copy-feedback],[data-clear-comments]")
+          .split(",")
+          .forEach((selector) => {
+            document.querySelectorAll(selector).forEach((control) => {
+              control.disabled = !enabled;
+              control.setAttribute("aria-disabled", String(!enabled));
+            });
+          });
+      }
+
+      function formatCommentDate(timestamp) {
+        try {
+          return new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }).format(new Date(timestamp));
+        } catch (error) {
+          return String(timestamp);
+        }
+      }
+
+      function renderComments() {
+        if (!interactionsReady) {
+          return;
+        }
+        summaryData.forEach((card) => {
+          const cardElement = cardElementsById.get(card.id);
+          if (!cardElement) {
+            return;
+          }
+          const previousThread = cardElement.querySelector(".comment-thread");
+          if (previousThread) {
+            previousThread.remove();
+          }
+
+          const cardComments = comments.filter((comment) => comment.summaryId === card.id);
+          const toolbar = cardElement.querySelector(".card-toolbar");
+          const panel = toolbar ? toolbar.parentNode : null;
+          if (toolbar && panel) {
+            const thread = document.createElement("section");
+            const heading = document.createElement("h4");
+            const list = document.createElement("ol");
+            const headingId = `comment-thread-title-${card.id}`;
+            thread.className = "comment-thread";
+            thread.hidden = cardComments.length === 0;
+            thread.setAttribute("aria-labelledby", headingId);
+            heading.id = headingId;
+            heading.className = "comment-thread-title";
+            heading.textContent = `${strings.comments} · ${cardComments.length}`;
+            list.className = "comment-thread-list";
+
+            cardComments.forEach((comment) => {
+              const item = document.createElement("li");
+              const article = document.createElement("article");
+              const meta = document.createElement("p");
+              const text = document.createElement("p");
+              const actions = document.createElement("div");
+              const editButton = createButton(
+                "comment-edit",
+                strings.edit,
+                strings.editLabel(card.id),
+              );
+              const deleteButton = createButton(
+                "comment-delete",
+                strings.delete,
+                strings.deleteLabel(card.id),
+              );
+              article.className = "review-comment";
+              article.dataset.commentId = comment.id;
+              article.tabIndex = -1;
+              meta.className = "comment-meta";
+              meta.textContent = formatCommentDate(comment.updatedAt);
+              text.className = "comment-text";
+              text.textContent = comment.text;
+              actions.className = "comment-actions";
+              editButton.addEventListener("click", () => editComment(comment.id, editButton));
+              deleteButton.addEventListener("click", () => deleteComment(comment.id));
+              actions.append(editButton, deleteButton);
+              article.append(meta, text, actions);
+              item.append(article);
+              list.append(item);
+            });
+            thread.append(heading, list);
+            panel.insertBefore(thread, toolbar);
+          }
+
+          const count = cardElement.querySelector("[data-comment-count]");
+          if (count) {
+            count.textContent = String(cardComments.length);
+            count.setAttribute("aria-label", strings.commentCount(cardComments.length));
+          }
+        });
+
+        const sidebarList = document.querySelector("[data-comment-list]");
+        const emptyState = document.querySelector("[data-comment-empty]");
+        if (sidebarList) {
+          sidebarList.replaceChildren();
+          comments.forEach((comment) => {
+            const card = cardsById.get(comment.summaryId);
+            if (!card) {
+              return;
+            }
+            const item = document.createElement("li");
+            const preview = comment.text.replace(/\s+/g, " ").slice(0, 80);
+            const jumpButton = createButton(
+              "comment-jump",
+              `${card.id} · ${preview}`,
+              strings.jumpLabel(card.id, preview),
+            );
+            jumpButton.addEventListener("click", () => jumpToComment(comment.id));
+            item.append(jumpButton);
+            sidebarList.append(item);
+          });
+        }
+        if (emptyState) {
+          emptyState.hidden = comments.length !== 0;
+          emptyState.textContent = strings.noComments;
+        }
+      }
+
+      function closeCommentEditor(restoreFocus = true) {
+        const trigger = activeEditor ? activeEditor.trigger : null;
+        if (activeEditor && activeEditor.element.isConnected) {
+          activeEditor.element.remove();
+        }
+        activeEditor = null;
+        if (
+          restoreFocus &&
+          trigger &&
+          trigger.isConnected &&
+          typeof trigger.focus === "function"
+        ) {
+          trigger.focus({ preventScroll: true });
+        }
+      }
+
+      function createCommentId() {
+        let candidate = "";
+        if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+          candidate = crypto.randomUUID();
+        } else {
+          candidate = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+        }
+        while (comments.some((comment) => comment.id === candidate)) {
+          candidate = `${candidate}-${Math.random().toString(36).slice(2, 8)}`;
+        }
+        return candidate;
+      }
+
+      function openCommentEditor(summaryId, commentId = null, trigger = document.activeElement) {
+        if (!interactionsReady) {
+          return;
+        }
+        const cardElement = cardElementsById.get(summaryId);
+        const existing = commentId
+          ? comments.find((comment) => comment.id === commentId) || null
+          : null;
+        if (!cardElement || (commentId && !existing)) {
+          return;
+        }
+        closeCommentEditor(false);
+        cardElement.open = true;
+        const toolbar = cardElement.querySelector(".card-toolbar");
+        if (!toolbar || !toolbar.parentNode) {
+          return;
+        }
+
+        const editor = document.createElement("div");
+        const label = document.createElement("label");
+        const textarea = document.createElement("textarea");
+        const help = document.createElement("p");
+        const actions = document.createElement("div");
+        const saveButton = createButton(
+          "comment-editor-action comment-editor-action--save",
+          strings.save,
+          strings.save,
+        );
+        const cancelButton = createButton(
+          "comment-editor-action",
+          strings.cancel,
+          strings.cancel,
+        );
+        const editorId = `comment-editor-${summaryId}`;
+        editor.className = "comment-editor";
+        label.className = "comment-editor-label";
+        label.htmlFor = editorId;
+        label.textContent = strings.commentEditor(summaryId, Boolean(existing));
+        textarea.id = editorId;
+        textarea.value = existing ? existing.text : "";
+        textarea.rows = 5;
+        help.className = "comment-editor-help";
+        help.textContent = strings.editorHelp;
+        actions.className = "comment-editor-actions";
+        actions.append(cancelButton, saveButton);
+        editor.append(label, textarea, help, actions);
+        toolbar.parentNode.insertBefore(editor, toolbar);
+        activeEditor = { element: editor, summaryId, commentId, trigger };
+
+        const commit = () => {
+          const text = textarea.value.trim();
+          if (!text) {
+            announce(strings.commentEmpty, "warning");
+            return;
+          }
+          const now = Date.now();
+          if (existing) {
+            const index = comments.findIndex((comment) => comment.id === existing.id);
+            if (index === -1) {
+              return;
+            }
+            comments[index] = {
+              id: existing.id,
+              summaryId: existing.summaryId,
+              text,
+              createdAt: existing.createdAt,
+              updatedAt: Math.max(now, existing.updatedAt + 1),
+            };
+          } else {
+            comments.push({
+              id: createCommentId(),
+              summaryId,
+              text,
+              createdAt: now,
+              updatedAt: now,
+            });
+          }
+          const addCommentTrigger = cardElement.querySelector("[data-add-comment]");
+          closeCommentEditor(false);
+          const saved = saveComments();
+          const focusTarget =
+            addCommentTrigger && addCommentTrigger.isConnected
+              ? addCommentTrigger
+              : trigger;
+          if (
+            focusTarget &&
+            focusTarget.isConnected &&
+            typeof focusTarget.focus === "function"
+          ) {
+            focusTarget.focus({ preventScroll: true });
+          }
+          if (saved) {
+            announce(strings.commentSaved, "success");
+          }
+        };
+        activeEditor.textarea = textarea;
+        activeEditor.commit = commit;
+
+        cancelButton.addEventListener("click", () => closeCommentEditor());
+        saveButton.addEventListener("click", commit);
+        textarea.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            closeCommentEditor();
+          } else if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+            event.preventDefault();
+            commit();
+          }
+        });
+        textarea.focus();
+      }
+
+      function editComment(commentId, trigger = document.activeElement) {
+        const comment = comments.find((candidate) => candidate.id === commentId);
+        if (comment) {
+          openCommentEditor(comment.summaryId, comment.id, trigger);
+        }
+      }
+
+      function deleteComment(commentId) {
+        if (!interactionsReady) {
+          return;
+        }
+        const comment = comments.find((candidate) => candidate.id === commentId);
+        if (!comment || !window.confirm(strings.deleteConfirm)) {
+          return;
+        }
+        if (activeEditor && activeEditor.commentId === commentId) {
+          closeCommentEditor(false);
+        }
+        comments = comments.filter((candidate) => candidate.id !== commentId);
+        if (saveComments()) {
+          announce(strings.commentDeleted, "success");
+        }
+      }
+
+      function clearComments() {
+        if (!interactionsReady) {
+          return;
+        }
+        if (comments.length === 0) {
+          renderComments();
+          if (!commentStorageKey) {
+            return;
+          }
+          if (safeStorageRemove(commentStorageKey)) {
+            announce(strings.nothingToClear, "info");
+          }
+          return;
+        }
+        if (!window.confirm(strings.clearConfirm)) {
+          return;
+        }
+        closeCommentEditor(false);
+        comments = [];
+        renderComments();
+        if (commentStorageKey && safeStorageRemove(commentStorageKey)) {
+          announce(strings.commentsCleared, "success");
+        }
+      }
+
+      function jumpToComment(commentId) {
+        if (!interactionsReady) {
+          return;
+        }
+        const comment = comments.find((candidate) => candidate.id === commentId);
+        if (!comment) {
+          return;
+        }
+        const cardElement = cardElementsById.get(comment.summaryId);
+        if (!cardElement) {
+          return;
+        }
+        cardElement.open = true;
+        cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        const cardSummary = cardElement.querySelector(".card-summary");
+        const targetComment = Array.from(
+          cardElement.querySelectorAll(".review-comment[data-comment-id]"),
+        ).find((element) => element.dataset.commentId === commentId);
+        if (targetComment) {
+          targetComment.classList.add("is-targeted");
+          targetComment.scrollIntoView({ behavior: "smooth", block: "center" });
+          targetComment.focus({ preventScroll: true });
+          setTimeout(() => targetComment.classList.remove("is-targeted"), 1400);
+        } else if (cardSummary) {
+          cardSummary.focus({ preventScroll: true });
+        }
+      }
+
+      function buildFeedbackMarkdown() {
+        if (!interactionsReady) {
+          return "";
+        }
+        const context = [
+          `## ${strings.reportContext}`,
+          `- Repository: ${reportContext.repository}`,
+          `- Scope: ${reportContext.scope}`,
+          `- Command: ${reportContext.command}`,
+          `- HEAD: ${reportContext.head}`,
+        ].join("\n");
+        const commentedCards = summaryData.filter((card) =>
+          comments.some((comment) => comment.summaryId === card.id),
+        );
+        if (commentedCards.length === 0) {
+          return [strings.feedbackIntro, strings.noCommentsPayload, context].join("\n\n");
+        }
+        const sections = [strings.feedbackIntro, strings.feedbackInstruction, context];
+        commentedCards.forEach((card) => {
+          const cardComments = comments.filter((comment) => comment.summaryId === card.id);
+          sections.push(`## ${card.id} — ${card.title}`);
+          sections.push(`### ${strings.originalCard}`);
+          sections.push(card.markdown);
+          sections.push(`### ${strings.reviewerComments}`);
+          cardComments.forEach((comment, index) => {
+            sections.push(`#### ${strings.reviewerComment} ${index + 1}\n\n${comment.text}`);
+          });
+        });
+        return sections.join("\n\n");
+      }
+
+      function dismissManualCopy(restoreFocus = true) {
+        const previousFocus = manualCopyPreviousFocus;
+        if (manualCopyDialog) {
+          manualCopyDialog.remove();
+        }
+        manualCopyDialog = null;
+        manualCopyTextarea = null;
+        manualCopyPreviousFocus = null;
+        if (
+          restoreFocus &&
+          previousFocus &&
+          previousFocus.isConnected &&
+          typeof previousFocus.focus === "function"
+        ) {
+          previousFocus.focus({ preventScroll: true });
+        }
+      }
+
+      function showManualCopy(text, previousFocus) {
+        dismissManualCopy(false);
+        const backdrop = document.createElement("div");
+        const dialog = document.createElement("section");
+        const title = document.createElement("h2");
+        const instructions = document.createElement("p");
+        const textarea = document.createElement("textarea");
+        const actions = document.createElement("div");
+        const dismissButton = createButton(
+          "card-action",
+          strings.manualCopyDismiss,
+          strings.manualCopyDismiss,
+        );
+        backdrop.className = "manual-copy-backdrop";
+        backdrop.dataset.manualCopyDialog = "";
+        dialog.className = "manual-copy-dialog";
+        dialog.setAttribute("role", "dialog");
+        dialog.setAttribute("aria-modal", "true");
+        dialog.setAttribute("aria-label", strings.manualCopyTitle);
+        title.className = "manual-copy-title";
+        title.textContent = strings.manualCopyTitle;
+        instructions.className = "manual-copy-instructions";
+        instructions.textContent = strings.manualCopyInstructions;
+        textarea.className = "manual-copy-text";
+        textarea.dataset.manualCopyText = "";
+        textarea.value = text;
+        textarea.readOnly = true;
+        textarea.setAttribute("readonly", "");
+        textarea.setAttribute("aria-label", strings.manualCopyTextLabel);
+        actions.className = "manual-copy-actions";
+        dismissButton.dataset.manualCopyDismiss = "";
+        dismissButton.addEventListener("click", () => dismissManualCopy());
+        dialog.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            dismissManualCopy();
+          }
+        });
+        actions.append(dismissButton);
+        dialog.append(title, instructions, textarea, actions);
+        backdrop.append(dialog);
+        body.append(backdrop);
+        manualCopyDialog = backdrop;
+        manualCopyTextarea = textarea;
+        manualCopyPreviousFocus = previousFocus;
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(0, textarea.value.length);
+      }
+
+      function fallbackCopy(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.setAttribute("aria-hidden", "true");
+        textarea.style.position = "fixed";
+        textarea.style.inset = "0 auto auto -9999px";
+        body.append(textarea);
+        let copied = false;
+        try {
+          textarea.focus();
+          textarea.select();
+          textarea.setSelectionRange(0, textarea.value.length);
+          copied = document.execCommand("copy") === true;
+        } catch (error) {
+          copied = false;
+        } finally {
+          textarea.remove();
+        }
+        return copied;
+      }
+
+      async function copyText(text, successMessage, failureMessage) {
+        const copyOrigin = document.activeElement;
+        let copied = false;
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          try {
+            await navigator.clipboard.writeText(text);
+            copied = true;
+          } catch (error) {
+            copied = false;
+          }
+        }
+        if (!copied) {
+          copied = fallbackCopy(text);
+        }
+        if (copied) {
+          if (
+            copyOrigin &&
+            copyOrigin.isConnected &&
+            typeof copyOrigin.focus === "function"
+          ) {
+            copyOrigin.focus({ preventScroll: true });
+          }
+          announce(successMessage, "success");
+        } else {
+          showManualCopy(text, copyOrigin);
+          announce(failureMessage, "error");
+        }
+        return copied;
+      }
+
+      function applyTheme(theme) {
+        if (!THEME_ORDER.includes(theme)) {
+          theme = "auto";
+        }
+        currentTheme = theme;
+        if (theme === "auto") {
+          body.dataset.defaultTheme = "auto";
+          body.removeAttribute("data-theme");
+        } else {
+          body.dataset.theme = theme;
+        }
+        if (themeToggle) {
+          themeToggle.textContent = strings.theme[theme];
+          themeToggle.setAttribute("aria-label", strings.themeLabel[theme]);
+        }
+      }
+
+      function setSidebarCollapsed(collapsed, persist = true) {
+        collapsed = Boolean(collapsed);
+        currentSidebarCollapsed = collapsed;
+        if (shell) {
+          shell.dataset.sidebarCollapsed = String(collapsed);
+        }
+        if (rail) {
+          rail.classList.toggle("is-collapsed", collapsed);
+        }
+        if (sidebarToggle) {
+          sidebarToggle.textContent = strings.index;
+          sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+          sidebarToggle.setAttribute(
+            "aria-label",
+            collapsed ? strings.expandSidebar : strings.collapseSidebar,
+          );
+        }
+        if (sidebarResizer) {
+          sidebarResizer.hidden = collapsed;
+        }
+        if (persist) {
+          safeStorageSet(SIDEBAR_COLLAPSED_KEY, String(collapsed));
+        }
+      }
+
+      function setSidebarWidth(value, persist = true) {
+        const numericValue = Number(value);
+        const finiteValue = Number.isFinite(numericValue) ? numericValue : 304;
+        const width = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(finiteValue)));
+        currentSidebarWidth = width;
+        if (shell) {
+          shell.style.setProperty("--sidebar-width", `${width}px`);
+        }
+        if (sidebarResizer) {
+          sidebarResizer.setAttribute("aria-valuenow", String(width));
+        }
+        if (persist) {
+          safeStorageSet(SIDEBAR_WIDTH_KEY, String(width));
+        }
+      }
+
+      function applyLocalizedInterface() {
+        const controls = document.querySelector(".rail-controls");
+        const navigation = document.getElementById("report-sections");
+        const navigationLabel = document.querySelector("[data-atlas-index]");
+        const commentPanel = document.querySelector(".comment-panel");
+        const commentPanelTitle = document.querySelector("[data-comment-panel-title]");
+        const actionsPanel = document.querySelector(".rail-actions");
+        const actionsTitle = document.querySelector("[data-rail-actions-title]");
+        const feedbackButton = document.querySelector("[data-copy-feedback]");
+        const reportButton = document.querySelector("[data-copy-report]");
+        const clearButton = document.querySelector("[data-clear-comments]");
+        if (controls) {
+          controls.setAttribute("aria-label", strings.displayControls);
+        }
+        if (navigationLabel) {
+          navigationLabel.textContent = strings.atlasIndex;
+        }
+        if (navigation) {
+          navigation.setAttribute("aria-label", strings.atlasIndex);
+        }
+        if (commentPanel) {
+          commentPanel.setAttribute("aria-label", strings.commentsHeading);
+        }
+        if (commentPanelTitle) {
+          commentPanelTitle.textContent = strings.commentsHeading;
+        }
+        if (actionsPanel) {
+          actionsPanel.setAttribute("aria-label", strings.reviewActions);
+        }
+        if (actionsTitle) {
+          actionsTitle.textContent = strings.reviewActions;
+        }
+        if (feedbackButton) {
+          feedbackButton.textContent = strings.copyFeedback;
+          feedbackButton.setAttribute("aria-label", strings.copyFeedbackLabel);
+        }
+        if (reportButton) {
+          reportButton.textContent = strings.copyReport;
+          reportButton.setAttribute("aria-label", strings.copyReportLabel);
+        }
+        if (clearButton) {
+          clearButton.textContent = strings.clearComments;
+          clearButton.setAttribute("aria-label", strings.clearCommentsLabel);
+        }
+        if (sidebarResizer) {
+          sidebarResizer.setAttribute("aria-label", strings.resizeSidebar);
+        }
+        document.querySelectorAll("[data-add-comment]").forEach((button) => {
+          const summaryId = button.dataset.addComment;
+          button.textContent = strings.addComment;
+          button.setAttribute("aria-label", strings.addCommentLabel(summaryId));
+        });
+        document.querySelectorAll("[data-copy-summary]").forEach((button) => {
+          const summaryId = button.dataset.copySummary;
+          button.textContent = strings.copyMarkdown;
+          button.setAttribute("aria-label", strings.copyMarkdownLabel(summaryId));
+        });
+        document.querySelectorAll(".card-files-title").forEach((heading) => {
+          heading.textContent = strings.files;
+        });
+      }
+
+      document.addEventListener("click", (event) => {
+        const target = event.target instanceof Element ? event.target.closest("button") : null;
+        if (!target) {
+          return;
+        }
+        if (target.matches("[data-add-comment]")) {
+          if (!interactionsReady) {
+            announce(strings.dataError, "error");
+            return;
+          }
+          openCommentEditor(target.dataset.addComment);
+        } else if (target.matches("[data-copy-summary]")) {
+          const card = cardsById.get(target.dataset.copySummary);
+          if (card) {
+            void copyText(card.markdown, strings.copiedSummary, strings.copyFailed);
+          } else {
+            announce(strings.copyFailed, "error");
+          }
+        } else if (target.matches("[data-copy-report]")) {
+          if (rawMarkdown !== null) {
+            void copyText(rawMarkdown, strings.copiedReport, strings.copyFailed);
+          } else {
+            announce(strings.dataError, "error");
+          }
+        } else if (target.matches("[data-copy-feedback]")) {
+          if (!interactionsReady) {
+            announce(strings.dataError, "error");
+            return;
+          }
+          const successMessage =
+            comments.length === 0 ? strings.copiedNoComments : strings.copiedFeedback;
+          void copyText(buildFeedbackMarkdown(), successMessage, strings.copyFailed);
+        } else if (target.matches("[data-clear-comments]")) {
+          clearComments();
+        } else if (target.matches("[data-theme-toggle]")) {
+          const nextIndex = (THEME_ORDER.indexOf(currentTheme) + 1) % THEME_ORDER.length;
+          applyTheme(THEME_ORDER[nextIndex]);
+          safeStorageSet(THEME_KEY, currentTheme);
+        } else if (target.matches("[data-sidebar-toggle]")) {
+          setSidebarCollapsed(!currentSidebarCollapsed);
+        }
+      });
+
+      if (sidebarResizer) {
+        let resizing = false;
+        sidebarResizer.addEventListener("pointerdown", (event) => {
+          if (currentSidebarCollapsed) {
+            return;
+          }
+          resizing = true;
+          document.documentElement.classList.add("is-resizing");
+          sidebarResizer.setPointerCapture(event.pointerId);
+          event.preventDefault();
+        });
+        sidebarResizer.addEventListener("pointermove", (event) => {
+          if (resizing) {
+            setSidebarWidth(event.clientX, false);
+          }
+        });
+        const finishResize = (event) => {
+          if (!resizing) {
+            return;
+          }
+          resizing = false;
+          document.documentElement.classList.remove("is-resizing");
+          if (sidebarResizer.hasPointerCapture(event.pointerId)) {
+            sidebarResizer.releasePointerCapture(event.pointerId);
+          }
+          setSidebarWidth(currentSidebarWidth);
+        };
+        sidebarResizer.addEventListener("pointerup", finishResize);
+        sidebarResizer.addEventListener("pointercancel", finishResize);
+        sidebarResizer.addEventListener("keydown", (event) => {
+          let nextWidth = currentSidebarWidth;
+          if (event.key === "ArrowLeft") {
+            nextWidth -= 16;
+          } else if (event.key === "ArrowRight") {
+            nextWidth += 16;
+          } else if (event.key === "Home") {
+            nextWidth = SIDEBAR_MIN;
+          } else if (event.key === "End") {
+            nextWidth = SIDEBAR_MAX;
+          } else {
+            return;
+          }
+          event.preventDefault();
+          setSidebarWidth(nextWidth);
+        });
+      }
+
+      applyLocalizedInterface();
+      setInteractionControlsEnabled(interactionsReady);
+      const storedTheme = safeStorageGet(THEME_KEY);
+      const defaultTheme = body.dataset.defaultTheme;
+      applyTheme(THEME_ORDER.includes(storedTheme) ? storedTheme : defaultTheme);
+      const storedWidth = safeStorageGet(SIDEBAR_WIDTH_KEY);
+      setSidebarWidth(storedWidth === null ? 304 : storedWidth, false);
+      const storedCollapsed = safeStorageGet(SIDEBAR_COLLAPSED_KEY);
+      setSidebarCollapsed(storedCollapsed === "true", false);
+      comments = loadComments();
+      renderComments();
+      const runtimeTestBridge = globalThis.__DIFF_SUMMARY_RUNTIME_TEST__;
+      if (runtimeTestBridge && typeof runtimeTestBridge === "object") {
+        Object.assign(runtimeTestBridge, {
+          copyText,
+          dismissManualCopy,
+          applyTheme,
+          openCommentEditor,
+          commitActiveComment: (text) => {
+            if (
+              !activeEditor ||
+              !activeEditor.textarea ||
+              typeof activeEditor.commit !== "function"
+            ) {
+              return false;
+            }
+            activeEditor.textarea.value = String(text);
+            activeEditor.commit();
+            return true;
+          },
+          getState: () => ({
+            interactionsReady,
+            commentStorageKey,
+            editorOpen: Boolean(activeEditor),
+            currentTheme,
+            bodyTheme: body.dataset.theme || null,
+            defaultTheme: body.dataset.defaultTheme || null,
+            bodyInteractionsReady: body.dataset.interactionsReady,
+            manualCopyOpen: Boolean(manualCopyDialog),
+            manualCopyText: manualCopyTextarea ? manualCopyTextarea.value : null,
+            manualCopySelection: manualCopyTextarea
+              ? [manualCopyTextarea.selectionStart, manualCopyTextarea.selectionEnd]
+              : null,
+            activeFocus:
+              document.activeElement === manualCopyTextarea
+                ? "manual-copy-text"
+                : document.activeElement && document.activeElement.dataset
+                  ? document.activeElement.dataset.testFocus || null
+                  : null,
+          }),
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
