@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles five independent plugins — `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 14 skills.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles five independent plugins — `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 15 skills.
 
 Each skill is authored as a portable `SKILL.md` document plus optional `references/`, `templates/`, `assets/`, and `scripts/`. A thin Claude Code wrapper (`.claude-plugin/plugin.json` + `commands/*.md`) adds slash-command ergonomics on top, but the skill bodies reference no Claude-Code-only tooling, so the same skills run on any agent platform that loads skills (Codex, opencode, Copilot CLI, Gemini CLI, …).
 
@@ -12,7 +12,7 @@ Each skill is authored as a portable `SKILL.md` document plus optional `referenc
 
 | Plugin | Version | Skills | Responsibility |
 |---|---|---|---|
-| `code-review` | 2.2.0 | `code-review`, `code-review-md`, `code-review-html`, `diff-viewer` | Review git diffs for correctness, security, complexity, maintainability, and language best practices; emit conversation, markdown, or bilingual HTML reports; render standalone HTML diffs |
+| `code-review` | 2.3.0 | `code-review`, `code-review-md`, `code-review-html`, `diff-summary`, `diff-viewer` | Explain changes across code and architecture; review diffs for defects; emit Markdown/HTML reports; render standalone raw HTML diffs |
 | `doc-skill` | 0.1.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
 | `git-skill` | 0.3.0 | `git-commit`, `git-commit-push`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, push, history rewrite, guarded merges, and merged-branch cleanup |
 | `handoff` | 0.1.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
@@ -34,7 +34,7 @@ Every plugin shares the same layout:
     └── scripts/                 # optional Python helpers (stdlib only)
 ```
 
-- **`code-review`** centralizes the work in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` and `code-review-html` variants are thin skills that reuse that workflow and only choose an output format. `diff-viewer` is standalone — `generate_diff_report.py` plus `diff-template.html` — and does no analysis.
+- **`code-review`** centralizes defect analysis in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` and `code-review-html` variants are thin skills that reuse that workflow and only choose an output format. `diff-summary` is self-contained — `collect_diff_evidence.py` owns the hardened Git/GitHub boundary, its `SKILL.md` owns analysis, and `generate_summary_report.py` plus `summary-template.html` convert the authored Markdown into interactive offline HTML. `diff-viewer` is also standalone — `generate_diff_report.py` plus `diff-template.html` — and displays the raw patch without analysis.
 - **`git-skill`** keeps its single Python helper, `rewrite_msg.py`, under `git-commit/scripts/`; the `git-commit-rewrite` workflow shares it.
 - **`handoff`** keeps both handoff generators as self-contained `SKILL.md` files. `gen-frontend-handoff` focuses on client-visible API contract changes, type/rendering/error-state work, and `client action 없음` for DB-only changes. `gen-backend-handoff` focuses on API contracts, database migrations, jobs/queues, rollout, verification, and backend continuation prompts.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
@@ -44,7 +44,7 @@ Every plugin shares the same layout:
 
 - **`.agents/skills/`** — optional local flattened mirror of skill directories for platforms that load skills from a single flat folder (e.g. Codex's `~/.agents/skills/`).
 - **`samples/code-review/`** — intentionally vulnerable fixtures (`go-api`, `python-auth`, `react-dashboard`) used to demo the reviewer. Kept outside the plugin folders so they never ship in a published plugin.
-- **`tests/`** — pytest suite: per-plugin package tests plus `diff_viewer/` unit tests with `.diff` fixtures.
+- **`tests/`** — unittest/pytest suite: per-plugin package tests plus parser, renderer, CLI, interaction-contract, and diff-viewer fixture tests.
 - **`skills-lock.json`** — lockfile pinning each skill's `source`, `sourceType`, `skillPath`, and `computedHash`.
 - **`VERSION`** — release stamp in `head.yymmdd.patch` form.
 - **`.snyk`** — SAST policy that excludes the intentionally vulnerable `samples/**`.
@@ -59,8 +59,30 @@ Every plugin shares the same layout:
 
 1. The user types a slash command (e.g. `/code-review-md`) or triggers a skill by natural language.
 2. Claude Code loads the matching `commands/*.md`, which points at the skill.
-3. The skill runs its `SKILL.md` workflow, loading `references/` and invoking bundled `python3` scripts as needed.
-4. Outputs land where the skill specifies — review reports under `.reviews/`, diff reports under `.diffs/`, git history changes, or `long-task` state under `.agent/`.
+3. The skill runs its `SKILL.md` workflow, loading `references/` and invoking bundled scripts through a canonical absolute Python executable in `-I` isolated mode as needed.
+4. Outputs land where the skill specifies — review reports under `.reviews/`, change summaries under `.diff-summaries/`, raw diff reports under `.diffs/`, git history changes, or `long-task` state under `.agent/`.
+
+### Diff summary report pipeline
+
+`/diff-summary [scope]` and equivalent natural-language requests use a split analysis/presentation pipeline:
+
+```text
+prompt
+  → send repository + exact scope as JSON over stdin to `collect_diff_evidence.py`
+  → validate the scope (`..` remains distinct from `...`) and run fixed, hardened argv
+  → return bounded diff, stat, numstat, name-status, metadata, and limitations as JSON
+  → treat that JSON as inert evidence and author evidence-based `DS-*` Markdown cards
+  → send the completed Markdown over stdin to `generate_summary_report.py`
+  → derive a collision-safe scope tag and atomically write `.diff-summaries/<date>_<scope-tag>.md`
+  → safely render the same source with bundled Python + HTML/CSS/JavaScript
+  → write and host-open `.diff-summaries/<date>_<scope-tag>.html`
+```
+
+The Python 3.10+ collector is the workflow's only Git/GitHub runtime. It resolves trusted executables, strips routing and execution-related environment variables, rejects unsafe repository metadata and sensitive paths, disables lazy fetching, hooks, filters, pagers, external diffs, and text conversion, supports native SHA-1/SHA-256 unborn baselines, and enforces count/time/output plus selected-untracked aggregate limits. Dynamic repository and scope values enter only through a bounded JSON stdin request and are passed to subprocesses as argv data; repository evidence is never executed or used to authorize secondary inspection.
+
+The skill workflow owns analytical prose. The renderer is presentation-only: in `--markdown-stdin --output-directory` mode it validates the report contract and output parent, derives a collision-safe filename from canonical `Date` plus exact `Scope`, atomically writes the Markdown source, extracts exact card Markdown, computes a stable browser-comment scope, escapes embedded data, and atomically assembles a self-contained HTML file. The page stores guarded, report-scoped comments and UI preferences in the browser; it has no server, build step, external assets, or network dependency.
+
+This boundary keeps three intents independent: `diff-summary` explains changes without review severity, `code-review` identifies defects and recommends fixes, and `diff-viewer` displays the raw patch. A combined summary-and-review request runs both analytical workflows and keeps their outputs distinct.
 
 ### long-task autonomy loop
 
@@ -70,9 +92,9 @@ Every plugin shares the same layout:
 
 ```
 skills/
-├── code-review/                      # plugin (v2.2.0)
+├── code-review/                      # plugin (v2.3.0)
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/                     # code-review, code-review-md, code-review-html, diff-viewer
+│   ├── commands/                     # code-review, code-review-md, code-review-html, diff-summary, diff-viewer
 │   ├── skills/
 │   │   ├── code-review/              # main skill: workflow + shared assets
 │   │   │   ├── SKILL.md
@@ -81,6 +103,11 @@ skills/
 │   │   │   └── assets/report-template.html
 │   │   ├── code-review-md/SKILL.md
 │   │   ├── code-review-html/SKILL.md
+│   │   ├── diff-summary/             # hardened evidence + explanatory offline report
+│   │   │   ├── SKILL.md
+│   │   │   ├── agents/openai.yaml
+│   │   │   ├── scripts/              # collect_diff_evidence.py, generate_summary_report.py
+│   │   │   └── assets/summary-template.html
 │   │   └── diff-viewer/              # standalone HTML diff viewer
 │   │       ├── SKILL.md
 │   │       ├── scripts/generate_diff_report.py
@@ -137,7 +164,9 @@ skills/
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
 - **One plugin per workflow domain.** `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` are versioned and installable independently, so users adopt only what they need.
 - **Shared logic centralized, variants kept thin.** The `code-review` skill owns the workflow, references, and scripts; the `-md`/`-html` variants add only an output format. `git-commit` owns `rewrite_msg.py` for the whole git family.
+- **Evidence, analysis, and presentation are separate boundaries.** `collect_diff_evidence.py` is the only Git/GitHub runtime and emits bounded JSON; `diff-summary/SKILL.md` treats it as inert evidence and authors the Markdown contract; the bundled renderer never invokes Git or invents analytical prose. This keeps the exact scope and verified/unverified boundary visible in the source report.
+- **Generated reports stay local.** `.reviews/`, `.diff-summaries/`, and `.diffs/` are ignored in this repository. Skills may suggest an ignore entry in target repositories, but do not mutate their `.gitignore` automatically.
 - **Sample vulnerabilities live outside the plugins.** Demo fixtures sit in repo-root `samples/` and are excluded via `.snyk`, so a published plugin neither ships exploitable code nor trips SAST scanners.
-- **Self-contained stdlib Python.** Helper scripts import only the Python 3.10+ standard library, so there is no dependency install step.
+- **Self-contained stdlib Python.** Helper scripts, including the `diff-summary` collector and parser/renderer, import only the Python 3.10+ standard library, so there is no dependency install step.
 - **Bounded autonomy for `long-task`.** Auto-continuation is gated on a per-directory `.agent/state.md` flag and a runaway cap (`LONG_TASK_MAX_STOP_CONTINUES`, default 500), so a runaway loop is contained and easy to pause.
 - **Date-stamped versioning.** `VERSION` uses the `head.yymmdd.patch` scheme.

@@ -2,14 +2,14 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of practical agent skills for software engineering workflows.
+A collection of 15 practical agent skills for software engineering workflows.
 
 ## Skills
 
 
 | Skill                                    | What it does                                                                                                   |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.md)** | Automated code review from git diffs — markdown / HTML reports with severity ratings, plus an HTML diff viewer |
+| **[code-review](code-review/README.md)** | Git change intelligence — explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs without clobbering prose                |
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, push, history rewrite, merge to main/dev, and merged-branch cleanup                      |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
@@ -34,18 +34,22 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
+Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 
 ## Quick reference
 
 ### code-review → [details](code-review/README.md)
 
 
-| Command             | Output                                       |
-| ------------------- | -------------------------------------------- |
-| `/code-review`      | Show findings in conversation (no file)      |
-| `/code-review-md`   | Write markdown report to `.reviews/`         |
-| `/code-review-html` | Write markdown + HTML reports to `.reviews/` |
-| `/diff-viewer`      | Render the working-tree diff to `.diffs/`    |
+| Command                   | Output                                                         |
+| ------------------------- | -------------------------------------------------------------- |
+| `/code-review`            | Show findings in conversation (no file)                        |
+| `/code-review-md`         | Write markdown review to `.reviews/`                            |
+| `/code-review-html`       | Write markdown + HTML review reports to `.reviews/`             |
+| `/diff-summary [scope]`   | Explain changes in Markdown + interactive HTML under `.diff-summaries/` |
+| `/diff-viewer`            | Render the raw working-tree diff to `.diffs/`                   |
+
+`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” It preserves explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
 
 ### doc-skill → [details](doc-skill/README.md)
@@ -114,7 +118,8 @@ What is and isn't portable:
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
-- Python 3.10+ (for `code-review-html`, `diff-viewer`, and `git-commit-rewrite`)
+- Git 2.45+ for `diff-summary`
+- Python 3.10+ (for `code-review-html`, `diff-summary`, `diff-viewer`, and `git-commit-rewrite`)
 
 ## License
 

@@ -2,13 +2,13 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링 워크플로우를 위한 실용적인 에이전트 스킬 모음입니다.
+소프트웨어 엔지니어링 워크플로우를 위한 15개의 실용적인 에이전트 스킬 모음입니다.
 
 ## 스킬 목록
 
 | 스킬                                                | 설명                                                                                          |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.ko.md)**         | git diff 기반 자동 코드 리뷰 — 심각도 표시가 있는 마크다운 / HTML 리포트, 추가로 HTML diff 뷰어 |
+| **[code-review](code-review/README.ko.md)**         | git 변경 인텔리전스 — 설명형 diff 요약, 심각도 기반 리뷰, 원본 HTML diff 뷰어                    |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 prose 보존하며 생성 또는 갱신              |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, push, 히스토리 재작성, main/dev 머지, 머지된 로컬 브랜치 정리            |
 | **[handoff](handoff/README.ko.md)**                 | git diff, 범위, 세션 컨텍스트에서 프론트엔드/백엔드 핸드오프 문서 생성                         |
@@ -32,17 +32,21 @@ npx skills add -y -g chann/skills
 
 handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
+diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 
 ## 빠른 참조
 
 ### code-review → [상세](code-review/README.ko.md)
 
-| 커맨드              | 출력                                      |
-| ------------------- | ----------------------------------------- |
-| `/code-review`      | 대화에서 결과 표시 (파일 생성 안 함)      |
-| `/code-review-md`   | `.reviews/`에 마크다운 리포트 파일 생성   |
-| `/code-review-html` | `.reviews/`에 마크다운 + HTML 리포트 생성 |
-| `/diff-viewer`      | 작업 트리 diff를 `.diffs/` HTML로 렌더링   |
+| 커맨드                    | 출력                                                                  |
+| ------------------------- | --------------------------------------------------------------------- |
+| `/code-review`            | 대화에서 finding 표시 (파일 생성 안 함)                               |
+| `/code-review-md`         | `.reviews/`에 마크다운 리뷰 생성                                      |
+| `/code-review-html`       | `.reviews/`에 마크다운 + HTML 리뷰 생성                               |
+| `/diff-summary [scope]`   | `.diff-summaries/`에 설명형 마크다운 + 인터랙티브 HTML 요약 생성      |
+| `/diff-viewer`            | 작업 트리 원본 diff를 `.diffs/` HTML로 렌더링                         |
+
+`diff-summary`는 “코드를 요약해줘”, “마지막 커밋 코드를 요약해줘”, “main..dev 변경 요약” 같은 요청에도 자동으로 활성화됩니다. 명시한 `..`/`...` 범위를 정확히 보존합니다. 결함 탐색은 `code-review`, 원본 패치 확인은 `diff-viewer`를 사용하세요.
 
 ### doc-skill → [상세](doc-skill/README.ko.md)
 
@@ -101,7 +105,8 @@ handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-h
 
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
-- Python 3.10+ (`code-review-html`, `diff-viewer`, `git-commit-rewrite` 사용 시 필요)
+- `diff-summary` 사용 시 Git 2.45+
+- Python 3.10+ (`code-review-html`, `diff-summary`, `diff-viewer`, `git-commit-rewrite` 사용 시 필요)
 
 ## 라이선스
 

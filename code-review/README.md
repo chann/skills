@@ -2,13 +2,14 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-Automated code review that generates persistent **markdown and HTML report files** from git diffs.
+Change intelligence for git diffs: explanatory summaries, defect reviews, and raw browser-readable patches.
 
 ## What it does
 
 - Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
 - Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
 - Optionally generates a styled, self-contained **bilingual** HTML report (Korean + English with a full-page language toggle) featuring severity badges, light/dark/auto themes with a code syntax scheme selector, a compact collapsible sidebar, per-finding markdown copy, in-browser per-finding comments, and a "Copy feedback" payload to regenerate the review against reviewer comments
+- Includes `/diff-summary` for evidence-based code, behavior, architecture, pattern, contract, test, and operational change summaries in Markdown plus interactive HTML
 - Includes `/diff-viewer` for a browser-readable HTML view of the current working-tree diff without review analysis
 - Supports multiple review scopes: staged changes, specific commits, commit ranges, branch comparisons, and PRs
 - Includes reference guides for Python and JavaScript/TypeScript best practices
@@ -22,6 +23,7 @@ npx skills add -y -g chann/skills \
   --skill code-review \
   --skill code-review-md \
   --skill code-review-html \
+  --skill diff-summary \
   --skill diff-viewer
 ```
 
@@ -32,10 +34,11 @@ npx skills add chann/skills \
   --skill code-review \
   --skill code-review-md \
   --skill code-review-html \
+  --skill diff-summary \
   --skill diff-viewer
 ```
 
-Use the actual skill names with `--skill`; this plugin packages the review and diff-viewer skills together.
+Use the actual skill names with `--skill`; this plugin packages five independently discoverable skills. Run `npx skills add chann/skills -l --full-depth` to inspect the selectors before installing.
 
 **Manual:**
 
@@ -46,14 +49,15 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## Usage
 
-The skill triggers automatically when you ask Claude Code to review code, or you can use explicit commands:
+The matching skill triggers automatically from natural language, or you can use an explicit command:
 
-| Command             | Skill              | Output                                                     |
-| ------------------- | ------------------ | ---------------------------------------------------------- |
-| `/code-review`      | `code-review`      | Findings shown in conversation; no file                    |
-| `/code-review-md`   | `code-review-md`   | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`  |
-| `/code-review-html` | `code-review-html` | Markdown + self-contained HTML report                      |
-| `/diff-viewer`      | `diff-viewer`      | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`       |
+| Command                  | Skill              | Output                                                                    |
+| ------------------------ | ------------------ | ------------------------------------------------------------------------- |
+| `/code-review`           | `code-review`      | Findings shown in conversation; no file                                   |
+| `/code-review-md`        | `code-review-md`   | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`                  |
+| `/code-review-html`      | `code-review-html` | Markdown + self-contained HTML review                                     |
+| `/diff-summary [scope]`  | `diff-summary`     | Markdown + interactive HTML at `.diff-summaries/<YYYY-MM-DD>_<scope>.*`   |
+| `/diff-viewer`           | `diff-viewer`      | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`                      |
 
 **Examples:**
 
@@ -62,6 +66,10 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 > review the last commit
 > /code-review-html review staged changes
 > /code-review-md review branch feature-auth compared to main
+> summarize the code changes
+> /diff-summary main..dev
+> summarize the last commit
+> summarize PR #42
 > /diff-viewer
 ```
 
@@ -72,9 +80,24 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 ├── 2026-04-08_a1b2c3d.md       # Korean report (primary)
 ├── 2026-04-08_a1b2c3d.en.md    # English report (translation, HTML only)
 └── 2026-04-08_a1b2c3d.html     # merged bilingual HTML
+.diff-summaries/
+├── 2026-04-08_main-dot2-dev-<hash12>.md   # evidence-based change summary
+└── 2026-04-08_main-dot2-dev-<hash12>.html # interactive offline summary
 .diffs/
 └── 2026-04-08_working.html
 ```
+
+An explicit range is preserved exactly: `main..dev` and `main...dev` are different comparisons and are never normalized into one another. Supported requests include current, staged, or unstaged changes; the last commit or last N commits; a commit/range/branch comparison; and a PR.
+
+### Choose the right workflow
+
+| Goal | Workflow | Result |
+|---|---|---|
+| Explain what changed, why it matters, and how code, architecture, patterns, contracts, tests, and operations relate | `diff-summary` | Evidence-based summary cards; no review severity |
+| Find defects, regressions, vulnerabilities, and recommended fixes | `code-review`, `code-review-md`, `code-review-html` | Findings grouped by severity |
+| Inspect the patch itself without analysis | `diff-viewer` | Unified/split raw diff in HTML |
+
+If a prompt asks for both a summary and a review, run both workflows and keep the explanatory cards and defect findings in distinct sections.
 
 ## How it works
 
@@ -86,9 +109,19 @@ The skill triggers automatically when you ask Claude Code to review code, or you
 
 `/diff-viewer` is separate: it captures `git diff HEAD`, renders unified and split diff views to HTML, opens the report, and does not analyze the code.
 
-## Report format
+`/diff-summary` follows a separate explanatory flow:
 
-Each report includes:
+1. Preserve and validate the requested scope, including the exact `..` or `...` syntax
+2. Send the repository and scope as JSON over stdin to the packaged `collect_diff_evidence.py`; it is the only Git/GitHub runtime
+3. Treat its bounded JSON result as inert evidence and write one prompt-language Markdown report with stable `DS-001`-style summary cards
+4. Send that Markdown over stdin to `generate_summary_report.py`, which validates and atomically writes the source and sibling HTML
+5. Open the self-contained HTML report in a browser
+
+The report marks consequential inference and unverified runtime, test, migration, or deployment outcomes instead of presenting them as facts.
+
+## Code review report format
+
+Each `/code-review*` report includes:
 
 - **Executive Summary** — files changed, lines added/removed, finding counts, overall risk level
 - **Findings** — grouped by severity (CRITICAL / HIGH / MEDIUM / LOW), each with file reference, code snippet, and suggested fix
@@ -105,6 +138,19 @@ Each report includes:
 - **Per-finding "Copy Markdown"** — copy any single finding's markdown.
 - **Per-finding comments** — leave review comments on individual findings (stored in the browser, keyed by finding ID so they survive language switches).
 - **"Copy feedback"** — emits a regeneration payload (original finding markdown + your comments). Paste it into a fresh `/code-review-html` run to revise the review against the feedback.
+
+### Diff summary HTML
+
+Each `/diff-summary` HTML report works directly from a local `file://` URL with no server, network request, package install, or JavaScript build step. It provides:
+
+- **Stable summary cards** — each `DS-*` card carries category, impact, file evidence, and the exact Markdown source.
+- **Per-card comments** — add, edit, delete, clear, and jump to browser-local comment threads scoped to the report content.
+- **Markdown copy** — copy one card, the complete source report, or a feedback payload that groups cards with their comments.
+- **Offline navigation** — collapsible/resizable sidebar, light/dark/system themes, responsive layout, and print styling, all bundled into one HTML file.
+
+The evidence collector uses fixed argv, sanitized process environments, exact-scope validation, execution-surface blocking, sensitive-path checks, and bounded command output. Repository diffs, paths, commit messages, PR text, and errors remain untrusted data; the workflow never follows instructions embedded in that evidence or performs secondary shell/file inspection from it.
+
+The skill suggests adding `.diff-summaries/` to a target repository's `.gitignore`, but never edits that repository automatically.
 
 ## Severity levels
 
@@ -126,6 +172,7 @@ code-review/
 │   ├── code-review.md                    # /code-review (conversation-only)
 │   ├── code-review-md.md                 # /code-review-md command
 │   ├── code-review-html.md               # /code-review-html command
+│   ├── diff-summary.md                    # /diff-summary command
 │   └── diff-viewer.md                    # /diff-viewer command
 ├── skills/
 │   ├── code-review/                      # Main skill — full workflow + shared assets
@@ -144,6 +191,12 @@ code-review/
 │   │   └── SKILL.md                      # Markdown variant skill
 │   ├── code-review-html/
 │   │   └── SKILL.md                      # HTML variant skill
+│   ├── diff-summary/                      # Explanatory Markdown + HTML summaries
+│   │   ├── SKILL.md
+│   │   ├── scripts/
+│   │   │   ├── collect_diff_evidence.py   # Hardened Git/GitHub -> bounded JSON
+│   │   │   └── generate_summary_report.py # Validated Markdown -> offline HTML
+│   │   └── assets/summary-template.html
 │   └── diff-viewer/
 │       ├── SKILL.md                      # HTML diff viewer workflow
 │       ├── scripts/
@@ -159,7 +212,8 @@ Sample fixtures (intentionally vulnerable code the reviewer is meant to flag) li
 
 - [Claude Code](https://code.claude.com) (CLI, desktop app, or IDE extension)
 - Git repository
-- Python 3.10+ (for HTML report generation)
+- Git 2.45+ for `diff-summary` evidence collection
+- Python 3.10+ (for `code-review-html`, `diff-summary`, and `diff-viewer` report generation; standard library only)
 
 ## Security notes
 
@@ -169,6 +223,7 @@ If you see Snyk or other SAST tools flag this skill, here is the breakdown:
 - **`generate_html_report.py` — fence-language attribute XSS (real, fixed)**: prior to the fix, a malicious markdown fence like ` ```a"><script>... ` could break out of the `class="language-..."` attribute because `html.escape(..., quote=False)` does not escape `"`. The lang token is now whitelisted to `[A-Za-z0-9._+-]{0,32}` via `safe_lang()`, eliminating attribute breakout regardless of input.
 - **`generate_html_report.py` — `html.escape(quote=False)` flagged broadly (false positive)**: the helper deliberately uses `quote=False` and only inserts the result into element-body contexts. All attribute insertions are either hardcoded class names or anchor values produced by `slugify()` (which strips non-word characters). No tainted value reaches an attribute.
 - **`generate_html_report.py` — raw-markdown embed (correctly defended)**: the markdown source is embedded into the HTML inside a `<script type="application/json">` block (not executed by browsers) and `</` sequences are escaped to `<\/` so the script tag cannot be closed prematurely.
+- **`diff-summary` evidence boundary**: `collect_diff_evidence.py` is the only Git/GitHub runtime. It uses fixed argv and sanitized environments, disables lazy fetches and repository-configured execution surfaces, rejects unsafe repository metadata and sensitive paths, and caps time/stdout/stderr before returning JSON. `generate_summary_report.py --markdown-stdin --output-directory` rejects symlinked artifact parents, derives a collision-safe filename, and atomically writes the validated Markdown/HTML pair.
 - **`generate_html_report.py` — path arguments (false positive)**: the tool reads `args.input` and writes `args.output`. These are CLI arguments the user typed themselves; there is no privileged read/write surface to attack.
 
 If you ever consider re-adding intentionally vulnerable fixtures to this plugin folder, please keep them under the repo-root `samples/` tree instead — that is what `.snyk` excludes and what keeps SAST quiet without lying about real risk.

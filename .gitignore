@@ -5,6 +5,7 @@ __pycache__/
 
 # Test
 .reviews/
+.diff-summaries/
 .diffs/
 workspace/
 .gstack/

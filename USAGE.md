@@ -1,5 +1,7 @@
 # skills — Usage
 
+This repository exposes 15 independently discoverable skills across five workflow plugins.
+
 ## Installation
 
 ### All skills at once (recommended)
@@ -16,7 +18,7 @@ npx skills add -y -g chann/skills
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `git-commit-push`, `gen-frontend-handoff`, or `gen-backend-handoff`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `git-commit-push`, `gen-frontend-handoff`, or `gen-backend-handoff`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -40,6 +42,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 ```
 > review my changes                         # code-review
 > /code-review-html review staged changes
+> /diff-summary main..dev                  # explanatory Markdown + interactive HTML
 > /git-commit                               # group changes into Conventional Commits
 > /gen-docs                                   # generate/update project docs
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
@@ -56,9 +59,51 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 | `/code-review` | Findings in conversation; no file |
 | `/code-review-md` | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md` |
 | `/code-review-html` | Markdown + self-contained bilingual HTML report under `.reviews/` |
+| `/diff-summary [scope]` | Prompt-language Markdown + interactive offline HTML under `.diff-summaries/` |
 | `/diff-viewer` | HTML diff at `.diffs/<YYYY-MM-DD>_<tag>.html` (view only — no analysis) |
 
-Review scopes include the working tree, staged changes, a specific commit, a commit range, a branch comparison, and PRs. `/diff-viewer` runs `generate_diff_report.py` and accepts:
+Review and summary scopes include the working tree, staged or unstaged changes, the last commit or last N commits, a specific commit, an exact commit range, a branch comparison, and PRs. `diff-summary` validates and preserves an explicit range verbatim: `main..dev` and `main...dev` retain their different Git semantics.
+
+Choose the workflow by the result you need:
+
+| Goal | Workflow | Output contract |
+|---|---|---|
+| Explain purpose, behavior, architecture, patterns, contracts, tests, and operational implications supported by the diff | `diff-summary` | Descriptive `DS-*` cards without defect severity |
+| Find correctness, security, or maintainability problems and recommend fixes | `code-review`, `code-review-md`, `code-review-html` | Findings grouped by review severity |
+| Inspect changed lines without analysis | `diff-viewer` | Unified/split raw patch |
+
+Natural-language requests such as `summarize the code changes`, `코드를 요약해줘`, `main..dev 코드를 요약해줘`, `summarize the last commit`, and `summarize PR #42` automatically select `diff-summary`. When summary and review are both requested, the explanatory cards and review findings remain separate.
+
+`/diff-summary` uses `collect_diff_evidence.py` as its only Git/GitHub runtime. Before entering the target repository, the agent resolves a canonical absolute Python 3.10+ executable outside that repository and launches both packaged scripts with `-I`; bare `python3`, script shebangs, repository virtual environments, and Python startup injection are not allowed. The collector's fixed argv is `/absolute/trusted/python3 -I <skill-path>/scripts/collect_diff_evidence.py`. The agent sends the repository and scope as a bounded JSON request over standard input and treats the returned JSON as inert data. The collector preserves exact ranges, disables repository-configured execution surfaces, rejects unsafe repository metadata and sensitive paths, and caps command time, output, and filesystem enumeration. It never falls back to a different scope.
+
+Representative request bodies are:
+
+```json
+{"repository": ".", "scope": {"kind": "current"}}
+```
+
+```json
+{"repository": ".", "scope": {"kind": "range", "value": "main..dev"}}
+```
+
+Supported scope kinds are `current`, `staged`, `unstaged`, `last_commit`, `last_n`, `range`, `commit`, and `pr`. Current/unstaged collection lists untracked paths without content by default; an explicit second request may name up to 32 safe untracked files, with 256 KiB per-file and 2 MiB aggregate content limits. Unborn SHA-1 and SHA-256 repositories use their native empty-tree ID. Git 2.45+ is required so the collector can fail closed with the global no-lazy-fetch option.
+
+The skill then sends its completed Markdown report to `generate_summary_report.py --markdown-stdin --output-directory .diff-summaries`. The generator validates the output parent and report contract, derives the filename from the report's `Date` and exact `Scope`, and atomically writes `.diff-summaries/<YYYY-MM-DD>_<scope-tag>.md` plus a sibling `.html`; the host agent opens the printed absolute HTML file URI. Arbitrary scope tags encode `..` as `dot2` and `...` as `dot3`, cap the readable part, and append a 12-hex SHA-256 suffix over the exact scope so sanitized names cannot overwrite one another. Every `DS-*` card supports comments and exact Markdown copy; report-level controls copy the whole report or a feedback payload containing cards plus comments. The self-contained page also provides light/dark/system themes, a collapsible/resizable sidebar, responsive and print layouts, and guarded browser-local persistence. It works without a web server or network connection.
+
+The bundled presentation-only renderer can also render an existing Markdown file directly:
+
+```text
+/absolute/trusted/python3 -I code-review/skills/diff-summary/scripts/generate_summary_report.py \
+  .diff-summaries/2026-07-13_main-dot2-dev-<hash12>.md \
+  -o .diff-summaries/2026-07-13_main-dot2-dev-<hash12>.html \
+  --theme auto
+```
+
+`--theme` accepts `auto`, `light`, or `dark`. The renderer does not collect a diff or write analytical prose; the skill workflow owns evidence collection and Markdown authoring. Optional `--open` uses a fixed system launcher with ambient `BROWSER` and Python startup variables removed, but host-controlled opening is preferred.
+
+For the skill's write path, invoke the same script with `--markdown-stdin --output-directory .diff-summaries`, then provide the report through the process's standard-input API. This mode creates only the direct output directory, refuses a symlinked parent, derives collision-safe names itself, and writes both Markdown and HTML without a shell redirection or repository-created helper.
+
+`/diff-viewer` runs `generate_diff_report.py` and accepts:
 
 | Flag | Values | Default |
 |---|---|---|
@@ -123,18 +168,25 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | Path | Written by | Notes |
 |---|---|---|
 | `.reviews/` | `code-review-md`, `code-review-html` | Markdown / HTML reports; gitignored |
+| `.diff-summaries/` | `diff-summary` | Markdown source + interactive self-contained HTML; gitignored |
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
 | `.agent/` | `long-task` | Working-memory and lifecycle state for a run |
 | `~/.claude/settings.json` | `long-task` | Stop hook installed under `hooks.Stop` on first run |
 
-`.reviews/` and `.diffs/` are already in `.gitignore`. The skills suggest, but never modify, your `.gitignore`.
+`.reviews/`, `.diff-summaries/`, and `.diffs/` are already in this repository's `.gitignore`. In another repository the skills may suggest the matching ignore entry, but never edit `.gitignore` automatically.
 
 ## Examples
 
 ```
 # Review and persist a bilingual HTML report for staged changes
 > /code-review-html review staged changes
+
+# Summarize current changes, an exact branch range, the last commit, or a PR
+> summarize the code changes
+> /diff-summary main..dev
+> summarize the last commit
+> summarize PR #42
 
 # Turn a messy working tree into clean Conventional Commits, then push
 > /git-commit-push
@@ -163,6 +215,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | Commit rejected by a hook | a pre-commit hook failed | fix the root cause — the skills won't `--no-verify` |
 | `/git-commit-rewrite` stops on pushed commits | rewriting published history | pick the branch-based option, or pass `force` to accept `--force-with-lease` |
 | No HTML report generated | Python 3.10+ missing | install Python 3.10 or newer |
+| `/diff-summary` reports an invalid or empty scope | The requested ref/range is unresolved or contains no changes | Correct the exact scope; the skill will not silently fall back to the working tree |
 | `/code-review` wrote no file | `/code-review` is conversation-only | use `/code-review-md` or `/code-review-html` |
 | long-task won't auto-continue | `.agent/state.md` missing or not `active` | run `/long-task` to start, or `/long-task resume` |
 | long-task stopped early | hit `LONG_TASK_MAX_STOP_CONTINUES` | raise it, e.g. `export LONG_TASK_MAX_STOP_CONTINUES=1000` |
@@ -171,4 +224,5 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
 - A Git repository
-- Python 3.10+ for `code-review-html`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)
+- Git 2.45+ for `diff-summary`
+- Python 3.10+ for `code-review-html`, `diff-summary`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)
