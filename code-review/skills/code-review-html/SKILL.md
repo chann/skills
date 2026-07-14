@@ -11,11 +11,11 @@ Variant of the `code-review` skill that produces markdown reports **and** a self
 
 The HTML report is **bilingual** (Korean + English with a full-page language toggle, Korean shown by default) and includes: severity badges, syntax highlighting with a light/dark/auto theme and an 8-option code scheme selector, a compact collapsible/resizable sidebar, per-finding "Copy Markdown", per-finding comments stored in the browser, and a "Copy feedback" button that emits a regeneration payload to refine the review.
 
-**Announce at start:** "I'm using the code-review-html skill to generate a bilingual markdown + HTML review report."
-
 ## Workflow
 
 **Before starting, Read the main `code-review` SKILL.md** at `<plugin-root>/skills/code-review/SKILL.md` — the Review Process steps, severity table, language reference mapping, and report markdown template all live there. The variant relies on those sections.
+
+The main skill's **Evidence-first writing contract** and conditional-section rules are authoritative. Do not restate or weaken them here.
 
 Then follow the **Review Process** in the main SKILL.md exactly — steps 1–6 all apply, including HTML generation.
 
@@ -28,9 +28,9 @@ In short:
    - `.reviews/<YYYY-MM-DD>_<short-sha>.md` — Korean, `**Language:** ko` (the main report).
    - `.reviews/<YYYY-MM-DD>_<short-sha>.en.md` — English, `**Language:** en`.
 
-   Keep prose concise and professional (see "Writing style" in the main SKILL.md). Suggest adding `.reviews/` to `.gitignore` if absent — never modify `.gitignore` automatically.
+   Follow the main skill's **Evidence-first writing contract**. Suggest adding `.reviews/` to `.gitignore` if absent — never modify `.gitignore` automatically.
 5. Run `python <skill-path>/scripts/generate_html_report.py .reviews/<report>.md` (it auto-detects the `.en.md` sibling and merges both into one HTML), then `open` it.
-6. Print a brief conversation summary.
+6. In the conversation, report only finding counts by severity, overall risk, the Markdown and HTML artifact paths, fresh verification, and the browser-open fact. Do not repeat report prose or promise a fixed finding count; mention at most one urgent finding inline only when immediate action is necessary.
 
 The script lives at `<plugin-root>/skills/code-review/scripts/generate_html_report.py` (in the main skill — variants share it).
 

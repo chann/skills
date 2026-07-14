@@ -212,6 +212,43 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self.assertIn("--open", skill_text)
         self.assertNotIn("renderer is not implemented", skill_text)
 
+    def test_skill_enforces_evidence_first_summary_writing(self) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+        required_contract = (
+            "## Evidence-first summary writing",
+            "**observed change**",
+            "**practical consequence**",
+            "exact `**Evidence:**`",
+            "`Inference:`",
+            "proportional to the evidence",
+            "generic praise",
+            "throat-clearing",
+            "code restatement",
+            "fixed card count",
+            "repeated conclusion",
+            "Mechanical diffs can use one compact card.",
+            "Do not repeat card prose in the conversation handoff.",
+            "[Verified result and the most decision-relevant consequence, without "
+            "repeating card prose.]",
+        )
+        for fragment in required_contract:
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, skill_text)
+
+        verified_claims = skill_text.index("## Verified And Unverified Claims")
+        writing_contract = skill_text.index("## Evidence-first summary writing")
+        report_contract = skill_text.index("## Stable Report Contract")
+        self.assertLess(verified_claims, writing_contract)
+        self.assertLess(writing_contract, report_contract)
+
+        for stale_fragment in (
+            "**Announce at start:**",
+            "[Two or three evidence-based sentences about the change set.]",
+            "The key `DS-*` summaries",
+        ):
+            with self.subTest(stale_fragment=stale_fragment):
+                self.assertNotIn(stale_fragment, skill_text)
+
     def test_openai_interface_contains_only_generated_fields(self) -> None:
         interface_path = DIFF_SUMMARY / "agents" / "openai.yaml"
         self.assertTrue(
@@ -1009,12 +1046,14 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         command_text = command_path.read_text(encoding="utf-8")
 
         self.assertIn('argument-hint: "[scope]"', command_text)
-        self.assertIn("Use the **diff-summary** skill", command_text)
+        self.assertIn("Follow the evidence-first summary contract", command_text)
+        self.assertNotIn("Use the **diff-summary** skill", command_text)
         self.assertIn("packaged evidence collector", command_text)
         self.assertIn("Preserve the exact user-specified scope", command_text)
         self.assertIn("Markdown", command_text)
         self.assertIn("HTML", command_text)
         self.assertIn("open", command_text.lower())
+        self.assertIn("Do not repeat card prose", command_text)
 
     def test_skills_cli_discovers_exact_diff_summary_name(self) -> None:
         env = os.environ.copy()

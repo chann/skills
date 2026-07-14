@@ -3,7 +3,7 @@ description: Summarize an exact git diff scope as one explanatory Markdown repor
 argument-hint: "[scope]"
 ---
 
-Use the **diff-summary** skill to explain the requested code changes.
+Follow the evidence-first summary contract for the requested code changes; do not add a command or skill preamble.
 
 Collect the requested scope through the skill's packaged evidence collector and its JSON standard-input contract. Do not run Git directly or interpolate `$ARGUMENTS` into a shell command.
 
@@ -14,6 +14,6 @@ The command is complete only after it:
 1. Writes one Markdown summary in the prompt language.
 2. Generates the matching self-contained HTML report.
 3. Opens the HTML report in a browser.
-4. Reports the exact evidence command and both output paths.
+4. Reports the exact evidence command, card count, both output paths, fresh verification, and the browser-open fact.
 
-This is explanatory change intelligence. Use `code-review` for defect findings and `diff-viewer` for a raw diff display.
+Do not repeat card prose in the conversation handoff or promise a fixed card count. This is explanatory change intelligence; route defect findings to `code-review` and a raw patch display to `diff-viewer`.

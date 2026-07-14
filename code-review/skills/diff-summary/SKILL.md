@@ -9,8 +9,6 @@ description: Use when the user wants an explanatory code, diff, branch, commit, 
 
 Turn a precisely scoped git diff into one evidence-based explanatory report in Markdown and self-contained HTML. Explain what changed, why it matters, and how the changed pieces relate without turning the summary into a defect review.
 
-**Announce at start:** "I'm using the diff-summary skill to summarize the requested code changes."
-
 ## Choose The Right Workflow
 
 | User intent | Workflow |
@@ -160,6 +158,14 @@ Do not fabricate dimensions to make a report look complete. An absent signal is 
 - Never say tests, builds, deployments, migrations, or runtime behavior passed unless fresh output proves it.
 - If Markdown and HTML cannot be checked, report which artifact is missing instead of claiming delivery.
 
+## Evidence-first summary writing
+
+- Each material card follows **observed change** → **practical consequence** → exact `**Evidence:**` order.
+- State verified facts directly. Prefix every consequential inference with `Inference:` and tie it to a path, symbol, range, command, or limitation in the collector JSON.
+- Keep prose proportional to the evidence. Do not add generic praise, throat-clearing, code restatement, a fixed card count, or a repeated conclusion.
+- Omit unsupported or decorative dimensions. Mechanical diffs can use one compact card.
+- Do not repeat card prose in the conversation handoff.
+
 ## Stable Report Contract
 
 Write one report in the language of the user's prompt. Markdown and HTML are two formats of that same report, not separate language reports. Produce another language only when explicitly requested.
@@ -178,7 +184,7 @@ Use this top-level structure:
 
 ## Executive Summary
 
-[Two or three evidence-based sentences about the change set.]
+[Verified result and the most decision-relevant consequence, without repeating card prose.]
 
 | Metric | Value |
 |---|---|
@@ -196,11 +202,11 @@ Use this top-level structure:
 **Impact:** High
 **Files:** `src/report.py`, `src/evidence.py`
 
-The report builder now consumes captured evidence instead of invoking Git directly.
+**Observed change:** The report builder now consumes captured evidence instead of invoking Git directly.
+
+**Practical consequence:** Report construction can be tested without a repository process.
 
 **Evidence:** `ReportBuilder` accepts `DiffContext`, and Git execution moved to `collect_diff_context`.
-
-**Implications:** Report construction can be tested without a repository process.
 
 ## Change Map
 
@@ -223,7 +229,7 @@ Every card must contain exactly one `Category`, `Impact`, and `Files` field befo
 - `Impact` is descriptive, not a review severity: `High`, `Medium`, `Low`, or `Informational`.
 - `Files` is a non-empty, comma-separated list of unique backtick-wrapped paths, such as `` `src/report.py`, `tests/test_report.py` ``.
 
-Use Markdown headings, tables, lists, inline code, and fenced code or diff blocks supported by the packaged renderer. Keep evidence and implications in the prose body, with file paths, symbols, configuration keys, or exact command facts. The renderer extracts each card's exact Markdown slice for its per-card **Copy Markdown** action and uses its stable identity for comments.
+Use Markdown headings, tables, lists, inline code, and fenced code or diff blocks supported by the packaged renderer. Keep the observed change, practical consequence, and evidence in the prose body, with file paths, symbols, configuration keys, or exact command facts. The renderer extracts each card's exact Markdown slice for its per-card **Copy Markdown** action and uses its stable identity for comments.
 
 ## Write, Render, And Open
 
@@ -250,14 +256,15 @@ If `.diff-summaries/` is not ignored by the target repository, suggest adding it
 
 ## Conversation Handoff
 
-Lead with the primary purpose and observable impact, then report:
+Lead with the verified result and its most decision-relevant consequence, then report:
 
 - The exact requested scope and exact evidence command.
-- The key `DS-*` summaries with supporting files, symbols, and line references when stable line evidence is available.
 - The generated card count and report language.
 - The absolute Markdown and HTML output paths.
 - The browser-open result or retained-file warning.
 - Fresh verification performed and material unknowns that remain unverified.
+
+Do not repeat card prose in the conversation handoff.
 
 ## Empty Or Invalid Scope
 

@@ -9,13 +9,13 @@ description: Use when the user asks to save a code review to a file, write a mar
 
 Variant of the `code-review` skill that persists findings to `.reviews/<YYYY-MM-DD>_<short-sha>.md`.
 
-**Announce at start:** "I'm using the code-review-md skill to write a markdown review report."
-
 ## Workflow
 
 **Before starting, Read the main `code-review` SKILL.md** at `<plugin-root>/skills/code-review/SKILL.md` — the Review Process steps, severity table, language reference mapping, and report markdown template all live there. The variant relies on those sections.
 
-Then follow the **Review Process** in the main SKILL.md exactly — steps 1–3 (gather context, load references, analyze) and step 6 (conversation summary). For step 4, **always write the markdown report** to `.reviews/`. Skip step 5 (HTML).
+The main skill's **Evidence-first writing contract** and conditional-section rules are authoritative. Do not restate or weaken them here.
+
+Then follow the **Review Process** in the main SKILL.md exactly — steps 1–4 (gather context, load references, analyze, write the report) and step 6 (handoff). Skip step 5 (HTML).
 
 In short:
 
@@ -23,7 +23,7 @@ In short:
 2. Run `diff_stats.py`, load language-relevant references, and `common-vulnerabilities.md` if security-sensitive.
 3. Analyze the diff against the five dimensions and assign severities.
 4. Create `.reviews/` if missing and write the report using the markdown template in the main SKILL.md ("Present findings or write the markdown report"). Suggest adding `.reviews/` to `.gitignore` if absent — never modify `.gitignore` automatically.
-5. Print a brief conversation summary: total findings by severity, overall risk, file path, top 1–3 findings.
+5. In the conversation, report only finding counts by severity, overall risk, the Markdown artifact path, and fresh verification. Do not repeat report prose or promise a fixed finding count; mention at most one urgent finding inline only when immediate action is necessary.
 
 ## Filename
 
@@ -35,7 +35,7 @@ Match the user's prompt language; see "Report Language" in the main SKILL.md. Ad
 
 ## Red Flags
 
-Same Never/Always lists as the main `<plugin-root>/skills/code-review/SKILL.md`. In particular: never modify `.gitignore` automatically (suggest only); never comment on code outside the diff; default to INFO severity when uncertain.
+Same Never/Always lists as the main `<plugin-root>/skills/code-review/SKILL.md`. In particular: never modify `.gitignore` automatically (suggest only), never comment on code outside the diff, and never use INFO for uncertainty or praise.
 
 ## Integration
 

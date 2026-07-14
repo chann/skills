@@ -11,8 +11,6 @@ Structured code review from git diffs. Analyzes changes for correctness, securit
 
 **Core principle:** Diff in → severity-tagged findings out, scoped strictly to what changed.
 
-**Announce at start:** "I'm using the code-review skill to review the requested changes."
-
 ## Commands
 
 | Command | Skill | Output | When to use |
@@ -47,7 +45,7 @@ User: /code-review-md review staged changes
 → Analyze
 → mkdir -p .reviews/
 → Write .reviews/2026-05-03_staged.md
-→ Print 1-3 top findings + path to report
+→ Report finding counts, risk, report path, and fresh verification
 → Suggest adding `.reviews/` to .gitignore (do NOT modify it)
 ```
 
@@ -63,7 +61,7 @@ User: /code-review-html review PR #42
 → Write .reviews/2026-05-03_a1b2c3d.en.md   (English, same IDs/structure)
 → python <skill-path>/scripts/generate_html_report.py .reviews/2026-05-03_a1b2c3d.md
 → open .reviews/2026-05-03_a1b2c3d.html     (Korean shown by default; toggle to English)
-→ Print summary in conversation
+→ Report finding counts, risk, artifact paths, fresh verification, and browser-open result
 ```
 
 ## Determining Review Scope
@@ -133,89 +131,65 @@ For each finding, assign a severity:
 | **HIGH** | Bug, vulnerability, or serious design flaw | Should fix before merge |
 | **MEDIUM** | Code smell, inconsistency, moderate risk | Recommended fix |
 | **LOW** | Style, naming, minor improvement | Nice to have |
-| **INFO** | Positive observation or contextual note | No action needed |
+| **INFO** | Verified context that materially affects a review decision but requires no code change | No action needed |
 
-Every finding must reference a specific file and line range. Show the problematic code and a suggested fix. If uncertain about something, use INFO severity and frame it as a question rather than asserting a problem that may not exist.
+Never use INFO solely for uncertainty or praise. Missing evidence belongs under one specific **Open Questions** item only when it changes severity or action; otherwise omit it.
 
 **Every finding needs a stable ID** in its title: `#### [CR-001] ...`, `[CR-002]`, and so on. The HTML report keys per-finding comments to this ID, so the **same ID must mark the same finding in both language files** (see Report Language). IDs stay in English; never renumber them between languages.
 
-**Writing style:** Be concise and lead with the point. One or two sentences of "why it matters", then the fix — no preamble, no restating the code in prose, no hedging filler. Professional and direct, the way a senior engineer leaves a review comment. Avoid padding a trivial finding to look substantial; if it's a one-liner, write one line.
+### Evidence-first writing contract
+
+This contract is authoritative for interactive, Markdown, and HTML reviews.
+
+- Start with the first actionable finding or the verified result. Do not add an announcement, generic preface, congratulations, or an overall-quality claim.
+- For every actionable finding, write in this order: **observed behavior** → **practical consequence** → **smallest justified correction**.
+- Cite the changed path and line before making the claim, and quote only the smallest excerpt needed to establish the evidence.
+- State verified facts directly. Prefix a consequential inference with `Inference:` and tie it to the cited evidence.
+- Keep prose proportional to the evidence. Do not restate code, repeat a conclusion, manufacture INFO items, or add generic praise such as "solid", "robust", "clean", or "well-structured".
+- When there are no actionable findings, state that directly and include only material residual risks or verification gaps.
 
 ### 4. Present findings or write the markdown report
 
-**Default (bare `/code-review` or implicit trigger):** Present the review using the template format below directly in the conversation. Do NOT write any files.
+**Default (bare `/code-review` or implicit trigger):** Present the review using the contract and finding shape below directly in the conversation. Do NOT write any files.
 
-**When invoked via the `code-review-md` or `code-review-html` skill (`/code-review-md` / `/code-review-html`):** Create the `.reviews/` directory in the repository root if it doesn't exist. Write the report file following this exact template:
+**When invoked via the `code-review-md` or `code-review-html` skill (`/code-review-md` / `/code-review-html`):** Create the `.reviews/` directory in the repository root if it doesn't exist. Use this minimal report shape, omitting zero-finding severity headings:
 
 ```markdown
 # Code Review Report
 
 **Date:** YYYY-MM-DD
-**Reviewer:** Claude (automated)
 **Scope:** [e.g., "Staged changes", "Commits a1b2c3d..f4e5d6a on branch feature-auth"]
 **Repository:** [repo name]
-
----
-
-## Executive Summary
-
-| Metric | Value |
-|--------|-------|
-| Files changed | N |
-| Lines added | +N |
-| Lines removed | -N |
-| Languages | Python, TypeScript |
-| Findings | N critical, N high, N medium, N low |
-| Overall risk | LOW / MEDIUM / HIGH / CRITICAL |
-
-[2-3 sentence summary of the overall quality and the most important observations.]
-
----
+**Language:** en
+**Risk:** LOW / MEDIUM / HIGH / CRITICAL
+**Findings:** N critical, N high, N medium, N low, N info
 
 ## Findings
 
-### CRITICAL
+### HIGH
 
 #### [CR-001] Short title describing the finding
 **File:** `path/to/file.py` (lines 42-58)
 **Category:** Security | Correctness | Complexity | Maintainability | Best Practice
 
-[Description of the issue, why it matters, and what the risk is.]
-
-**Current code:**
+**Evidence excerpt:**
 \```python
-# the problematic code
+# smallest excerpt needed to support the claim
 \```
 
-**Suggested fix:**
-\```python
-# the recommended approach
-\```
-
----
-
-[Continue with HIGH, MEDIUM, LOW sections using the same structure.
-Omit any severity section that has zero findings.]
-
----
-
-## Positive Observations
-
-- [Things the code does well — good patterns, clean abstractions, thorough testing, etc.]
-
----
-
-## File-by-File Summary
-
-| File | Status | Findings | Risk |
-|------|--------|----------|------|
-| `src/auth.py` | Modified | CR-001 (CRITICAL), CR-003 (MEDIUM) | HIGH |
-| `tests/test_auth.py` | Modified | None | LOW |
-
----
-
-_Generated by code-review skill · YYYY-MM-DD HH:MM UTC_
+**Observed behavior:** [What the changed code demonstrably does.]
+**Practical consequence:** [The concrete failure mode, risk, or maintenance cost.]
+**Smallest justified correction:** [The narrowest change supported by the evidence.]
 ```
+
+### Conditional sections
+
+- **Decision Summary:** Include only when a cross-cutting risk needs one non-repeated decision statement.
+- **Positive Observations:** Include only when a concrete, evidenced pattern lowers risk or review effort.
+- **Open Questions:** Include only when missing evidence changes severity or action; keep it to one specific item for that gap.
+- **File Summary:** Include only when multi-file navigation helps the reader without repeating findings.
+
+Omit filler, empty headings, and any conclusion already stated in a finding.
 
 Save to: `.reviews/<YYYY-MM-DD>_<short-sha>.md`
 
@@ -241,21 +215,17 @@ The HTML includes: a full-page language toggle (Korean shown by default), light/
 
 If only one language file exists, the generator still works and the language toggle is hidden (single-language fallback). Pass `--alt <path>` to point at a translation explicitly, or `--theme`/`--code-scheme` to change the defaults.
 
-### 6. Present summary
+### 6. Complete the handoff
 
-After completing the review, show the user a brief conversation summary:
-- Total findings by severity
-- Overall risk assessment
-- Path to the report file(s) (if files were generated)
-- The top 1-3 most important findings inline (so they get the critical stuff without opening the file)
+Report only the finding counts by severity, overall risk, generated artifact paths, fresh verification, and the browser-open result when HTML was requested. Do not repeat report prose or promise a fixed number of findings. Mention at most one urgent finding inline only when the user needs it before opening an artifact.
 
 ## Report Language
 
 Write the report in the same language as the user's prompt. If the user writes in Korean, the report should be in Korean. If in English, write in English. Default to English when the language is ambiguous.
 
 What to translate:
-- Section headings (e.g., "Executive Summary" → "요약", "Findings" → "발견 사항")
-- Finding descriptions, summaries, and the overall narrative
+- Section headings (e.g., "Decision Summary" → "결정 요약", "Findings" → "발견 사항")
+- Finding descriptions and any conditional narrative
 - Table headers and metadata labels
 
 What stays in English always:
@@ -306,7 +276,7 @@ If the user explicitly asks for a single language, write just that one file — 
 
 **Manufactured findings on trivial diffs**
 - **Problem:** Inventing issues for whitespace/version-bump-only diffs
-- **Fix:** Call it trivial in 2-3 lines. Don't pad.
+- **Fix:** State the verified no-findings result directly. Don't pad.
 
 **Loading every reference file**
 - **Problem:** Reading `python.md` when the diff is JS-only
@@ -314,11 +284,11 @@ If the user explicitly asks for a single language, write just that one file — 
 
 **False positives stated as facts**
 - **Problem:** "This is a bug" when you cannot verify
-- **Fix:** Use INFO + a question: "This might cause X under Y conditions — worth verifying?"
+- **Fix:** If the missing evidence changes severity or action, ask one specific question under **Open Questions**; otherwise omit the claim.
 
-**Missing positive observations**
-- **Problem:** Only listing issues; reviewers tune out
-- **Fix:** Always include the Positive Observations section, even on small diffs
+**Generic praise as a finding**
+- **Problem:** Praise consumes attention without changing a review decision
+- **Fix:** Omit it unless a concrete pattern demonstrably lowers risk or review effort.
 
 ## Red Flags
 
@@ -326,13 +296,12 @@ If the user explicitly asks for a single language, write just that one file — 
 - Write files for bare `/code-review` (conversation only)
 - Modify `.gitignore` automatically (suggest, don't apply)
 - Comment on code outside the diff
-- Skip the Positive Observations section
 - Manufacture findings to fill space
+- Use INFO as a substitute for evidence
 
 **Always:**
 - Cite file + line range in every finding
-- Show before/after code
-- Default to INFO severity when uncertain
+- Quote only the smallest evidence excerpt and propose the smallest justified correction
 - Match the user's prompt language for narrative
 - Suggest adding `.reviews/` to `.gitignore` if absent
 
