@@ -711,7 +711,7 @@ def _render_metadata(metadata: ReportMetadata) -> str:
     return (
         f'<header class="report-header" data-repository="{repository_attribute}" '
         f'data-scope="{scope_attribute}">\n'
-        '<div class="report-overline">Engineering change atlas</div>\n'
+        '<div class="report-overline">Diff Summary</div>\n'
         f'<h1 id="report-title">{escape(metadata.title, quote=True)}</h1>\n'
         '<dl class="report-metadata">\n'
         '<div class="metadata-cell"><dt>Date</dt>'

@@ -1219,6 +1219,24 @@ class MarkdownRenderingTests(unittest.TestCase):
 
 
 class HtmlAssemblyTests(unittest.TestCase):
+    def test_generated_report_has_plain_product_copy_without_editorial_atlas_chrome(
+        self,
+    ) -> None:
+        rendered = renderer.assemble_html(
+            parse_report(REPORT), renderer.load_template()
+        )
+
+        for editorial_copy in (
+            "Engineering change atlas",
+            "Offline review plate",
+            "Atlas index",
+            "Portable review artifact",
+            "Cobalt marks structure",
+            "Amber marks impact",
+        ):
+            with self.subTest(editorial_copy=editorial_copy):
+                self.assertNotIn(editorial_copy, rendered)
+
     def test_card_header_grid_assigns_each_element_to_an_explicit_column(self) -> None:
         template = renderer.load_template()
 

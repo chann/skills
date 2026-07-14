@@ -8,7 +8,10 @@
   <style>
     :root {
       color-scheme: light dark;
-      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      --radius: 0.5rem;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: var(--font-sans);
       font-synthesis: none;
       text-rendering: optimizeLegibility;
     }
@@ -20,49 +23,60 @@
     }
 
     body {
-      --paper: #f3eddf;
-      --paper-raised: #fffaf0;
-      --paper-muted: #e7decb;
-      --ink: #18202a;
-      --ink-muted: #62645f;
-      --line: #bcb19b;
-      --line-strong: #766e61;
-      --cobalt: #194fbf;
-      --cobalt-soft: #dce6ff;
-      --amber: #c27716;
-      --amber-soft: #f4dfb8;
+      --background: #ffffff;
+      --foreground: #09090b;
+      --card: #ffffff;
+      --card-foreground: #09090b;
+      --popover: #ffffff;
+      --popover-foreground: #09090b;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --primary: #18181b;
+      --primary-foreground: #fafafa;
+      --secondary: #f4f4f5;
+      --secondary-foreground: #18181b;
+      --accent: #f4f4f5;
+      --accent-foreground: #18181b;
+      --destructive: #dc2626;
+      --destructive-foreground: #fafafa;
+      --border: #e4e4e7;
+      --input: #e4e4e7;
+      --ring: #18181b;
       --positive: #216849;
       --positive-soft: #d9eee3;
-      --negative: #a33b31;
-      --negative-soft: #f6ddd7;
-      --shadow: rgba(38, 33, 24, 0.13);
+      --destructive-soft: color-mix(in srgb, var(--destructive) 14%, var(--card));
       min-width: 18rem;
       min-height: 100vh;
       margin: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: var(--font-sans);
       line-height: 1.6;
     }
 
     body[data-default-theme="dark"]:not([data-theme]),
     body[data-theme="dark"] {
-      --paper: #111820;
-      --paper-raised: #18222b;
-      --paper-muted: #202d37;
-      --ink: #edf0e8;
-      --ink-muted: #aeb7b6;
-      --line: #3b4b55;
-      --line-strong: #788791;
-      --cobalt: #75a2ff;
-      --cobalt-soft: #213c69;
-      --amber: #edaa45;
-      --amber-soft: #59401d;
+      --background: #09090b;
+      --foreground: #fafafa;
+      --card: #09090b;
+      --card-foreground: #fafafa;
+      --popover: #18181b;
+      --popover-foreground: #fafafa;
+      --muted: #27272a;
+      --muted-foreground: #a1a1aa;
+      --primary: #fafafa;
+      --primary-foreground: #18181b;
+      --secondary: #27272a;
+      --secondary-foreground: #fafafa;
+      --accent: #27272a;
+      --accent-foreground: #fafafa;
+      --destructive: #7f1d1d;
+      --destructive-foreground: #fafafa;
+      --border: #27272a;
+      --input: #27272a;
+      --ring: #d4d4d8;
       --positive: #7ecba7;
       --positive-soft: #193b30;
-      --negative: #f19487;
-      --negative-soft: #4d2727;
-      --shadow: rgba(0, 0, 0, 0.26);
       color-scheme: dark;
     }
 
@@ -73,28 +87,33 @@
 
     @media (prefers-color-scheme: dark) {
       body[data-default-theme="auto"]:not([data-theme]) {
-        --paper: #111820;
-        --paper-raised: #18222b;
-        --paper-muted: #202d37;
-        --ink: #edf0e8;
-        --ink-muted: #aeb7b6;
-        --line: #3b4b55;
-        --line-strong: #788791;
-        --cobalt: #75a2ff;
-        --cobalt-soft: #213c69;
-        --amber: #edaa45;
-        --amber-soft: #59401d;
+        --background: #09090b;
+        --foreground: #fafafa;
+        --card: #09090b;
+        --card-foreground: #fafafa;
+        --popover: #18181b;
+        --popover-foreground: #fafafa;
+        --muted: #27272a;
+        --muted-foreground: #a1a1aa;
+        --primary: #fafafa;
+        --primary-foreground: #18181b;
+        --secondary: #27272a;
+        --secondary-foreground: #fafafa;
+        --accent: #27272a;
+        --accent-foreground: #fafafa;
+        --destructive: #7f1d1d;
+        --destructive-foreground: #fafafa;
+        --border: #27272a;
+        --input: #27272a;
+        --ring: #d4d4d8;
         --positive: #7ecba7;
         --positive-soft: #193b30;
-        --negative: #f19487;
-        --negative-soft: #4d2727;
-        --shadow: rgba(0, 0, 0, 0.26);
         color-scheme: dark;
       }
     }
 
     a {
-      color: var(--cobalt);
+      color: var(--primary);
       text-underline-offset: 0.18em;
     }
 
@@ -107,14 +126,20 @@
       color: inherit;
     }
 
+    :disabled,
+    [aria-disabled="true"] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     code {
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-family: var(--font-mono);
       font-size: 0.9em;
     }
 
     :focus-visible {
-      outline: 3px solid var(--amber);
-      outline-offset: 3px;
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
     }
 
     .skip-link {
@@ -124,9 +149,9 @@
       left: 0.75rem;
       padding: 0.55rem 0.8rem;
       transform: translateY(-200%);
-      border: 1px solid var(--ink);
-      background: var(--paper-raised);
-      color: var(--ink);
+      border: 1px solid var(--foreground);
+      background: var(--card);
+      color: var(--foreground);
     }
 
     .skip-link:focus {
@@ -154,13 +179,8 @@
       height: 100vh;
       padding: 1.25rem 1rem 1rem;
       overflow: auto;
-      border-right: 1px solid var(--line-strong);
-      background-color: var(--paper-muted);
-      background-image:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 2.5rem 2.5rem;
-      background-position: -1px -1px;
+      border-right: 1px solid var(--input);
+      background: var(--muted);
     }
 
     .atlas-rail.is-collapsed {
@@ -172,8 +192,7 @@
     .atlas-rail.is-collapsed .rail-brand,
     .atlas-rail.is-collapsed .atlas-sidebar,
     .atlas-rail.is-collapsed .comment-panel,
-    .atlas-rail.is-collapsed .rail-actions,
-    .atlas-rail.is-collapsed .rail-legend {
+    .atlas-rail.is-collapsed .rail-actions {
       display: none;
     }
 
@@ -202,7 +221,7 @@
       left: calc(50% - 1px);
       width: 2px;
       content: "";
-      background: var(--cobalt);
+      background: var(--primary);
       opacity: 0;
       transition: opacity 140ms ease;
     }
@@ -218,40 +237,23 @@
     }
 
     .rail-registration {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 0.55rem;
-      margin-bottom: 2.3rem;
-      color: var(--ink-muted);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      margin-bottom: 1.5rem;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
     }
 
-    .rail-registration::before,
-    .rail-registration::after {
-      width: 0.58rem;
-      height: 0.58rem;
-      content: "";
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      background:
-        linear-gradient(currentColor, currentColor) 50% 50% / 1px 100% no-repeat,
-        linear-gradient(90deg, currentColor, currentColor) 50% 50% / 100% 1px no-repeat;
-    }
-
     .rail-brand {
       padding: 0.85rem 0 1.15rem;
-      border-top: 4px solid var(--ink);
-      border-bottom: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--input);
     }
 
     .rail-brand-kicker {
       display: block;
       margin-bottom: 0.4rem;
-      color: var(--cobalt);
+      color: var(--primary);
       font-size: 0.68rem;
       font-weight: 750;
       letter-spacing: 0.16em;
@@ -260,7 +262,7 @@
 
     .rail-brand strong {
       display: block;
-      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-family: var(--font-sans);
       font-size: clamp(1.35rem, 2vw, 1.9rem);
       font-weight: 650;
       letter-spacing: -0.035em;
@@ -277,9 +279,10 @@
     .rail-control,
     .card-action {
       min-height: 2.45rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 2px;
-      background: var(--paper-raised);
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
       cursor: pointer;
       font-size: 0.72rem;
       font-weight: 700;
@@ -290,8 +293,8 @@
 
     .rail-control:hover,
     .card-action:hover {
-      background: var(--ink);
-      color: var(--paper-raised);
+      background: var(--primary);
+      color: var(--primary-foreground);
       transform: translateY(-1px);
     }
 
@@ -302,7 +305,7 @@
     .atlas-sidebar-label {
       display: block;
       margin-bottom: 0.6rem;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.67rem;
       font-weight: 750;
       letter-spacing: 0.16em;
@@ -323,33 +326,33 @@
       gap: 0.2rem;
       align-items: baseline;
       padding: 0.36rem 0.3rem;
-      color: var(--ink);
+      color: var(--foreground);
       font-size: 0.78rem;
       line-height: 1.25;
       text-decoration: none;
     }
 
     .section-index-item a:hover {
-      background: var(--paper-raised);
-      color: var(--cobalt);
+      background: var(--card);
+      color: var(--primary);
     }
 
     .section-index-item--h3 a {
       padding-left: 0.85rem;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.72rem;
     }
 
     .comment-panel {
       margin: 0.2rem 0 1rem;
       padding-top: 0.9rem;
-      border-top: 1px solid var(--line-strong);
+      border-top: 1px solid var(--input);
     }
 
     .comment-panel-title,
     .rail-actions-label {
       margin: 0 0 0.55rem;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.67rem;
       font-weight: 800;
       letter-spacing: 0.14em;
@@ -358,7 +361,7 @@
 
     .comment-empty {
       margin: 0;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.72rem;
       line-height: 1.4;
     }
@@ -381,10 +384,10 @@
       width: 100%;
       padding: 0.5rem 0.55rem;
       overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      background: var(--paper-raised);
-      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--foreground);
       cursor: pointer;
       font-size: 0.69rem;
       line-height: 1.35;
@@ -394,8 +397,8 @@
     }
 
     .comment-jump:hover {
-      border-color: var(--cobalt);
-      color: var(--cobalt);
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     .rail-actions {
@@ -403,7 +406,7 @@
       gap: 0.35rem;
       margin-bottom: 1rem;
       padding-top: 0.9rem;
-      border-top: 1px solid var(--line-strong);
+      border-top: 1px solid var(--input);
     }
 
     .rail-actions .rail-control {
@@ -412,38 +415,14 @@
     }
 
     .rail-action--danger:hover {
-      background: var(--negative);
-      color: #fff;
+      background: var(--destructive);
+      color: var(--destructive-foreground);
     }
 
     .index-mark {
-      color: var(--amber);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      color: var(--ring);
+      font-family: var(--font-mono);
       text-align: center;
-    }
-
-    .rail-legend {
-      display: grid;
-      gap: 0.4rem;
-      margin-top: auto;
-      padding-top: 0.9rem;
-      border-top: 1px solid var(--line-strong);
-      color: var(--ink-muted);
-      font-size: 0.68rem;
-    }
-
-    .rail-legend span::before {
-      display: inline-block;
-      width: 0.6rem;
-      height: 0.6rem;
-      margin-right: 0.45rem;
-      content: "";
-      border: 1px solid currentColor;
-      background: var(--cobalt-soft);
-    }
-
-    .rail-legend span:last-child::before {
-      background: var(--amber-soft);
     }
 
     .atlas-canvas {
@@ -453,49 +432,23 @@
       overflow: hidden;
     }
 
-    .atlas-canvas::before {
-      position: absolute;
-      z-index: -1;
-      inset: 0;
-      content: "";
-      opacity: 0.28;
-      background-image:
-        linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), var(--line) calc(100% - 1px)),
-        linear-gradient(transparent 0, transparent calc(100% - 1px), var(--line) calc(100% - 1px));
-      background-size: 7.5rem 7.5rem;
-    }
-
     .report-stage {
       width: min(100%, 76rem);
       margin-inline: auto;
     }
 
     .report-header {
-      position: relative;
       margin: 0 0 clamp(2.5rem, 6vw, 5rem);
       padding: clamp(1.4rem, 4vw, 3.25rem) clamp(1.25rem, 4vw, 3.5rem) 1.4rem;
-      border: 1px solid var(--line-strong);
-      border-top: 8px solid var(--ink);
-      border-radius: 2px;
-      background: var(--paper-raised);
-      box-shadow: 0.65rem 0.65rem 0 var(--shadow);
-    }
-
-    .report-header::after {
-      position: absolute;
-      top: -0.6rem;
-      right: 2rem;
-      width: 4.5rem;
-      height: 1.05rem;
-      content: "";
-      border-inline: 1px solid var(--amber);
-      background: var(--amber-soft);
-      opacity: 0.85;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
     }
 
     .report-overline {
       margin-bottom: 0.9rem;
-      color: var(--cobalt);
+      color: var(--primary);
       font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 0.18em;
@@ -503,13 +456,13 @@
     }
 
     #report-title {
-      max-width: 20ch;
+      max-width: 52rem;
       margin: 0 0 2.5rem;
-      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-      font-size: clamp(2.55rem, 7vw, 6.6rem);
-      font-weight: 620;
-      letter-spacing: -0.055em;
-      line-height: 0.9;
+      font-family: var(--font-sans);
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
       text-wrap: balance;
     }
 
@@ -517,15 +470,15 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       margin: 0;
-      border-top: 1px solid var(--line);
-      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
     }
 
     .metadata-cell {
       min-width: 0;
       padding: 0.75rem;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .metadata-cell--wide {
@@ -534,7 +487,7 @@
 
     .metadata-cell dt {
       margin-bottom: 0.22rem;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.61rem;
       font-weight: 800;
       letter-spacing: 0.13em;
@@ -559,7 +512,7 @@
       gap: 0.75rem;
       align-items: center;
       margin: 4.6rem 0 1.6rem;
-      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-family: var(--font-sans);
       font-size: clamp(1.9rem, 4vw, 3.55rem);
       font-weight: 620;
       letter-spacing: -0.035em;
@@ -569,12 +522,12 @@
     #report-main > h2::after {
       height: 1px;
       content: "";
-      background: var(--line-strong);
+      background: var(--input);
     }
 
     #report-main > h3 {
       margin: 2.8rem 0 1rem;
-      color: var(--cobalt);
+      color: var(--primary);
       font-size: 0.78rem;
       font-weight: 820;
       letter-spacing: 0.15em;
@@ -604,17 +557,17 @@
     li code,
     dd code {
       padding: 0.1em 0.32em;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      background: var(--paper-muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--muted);
       overflow-wrap: anywhere;
     }
 
     .table-scroll {
       margin: 1.2rem 0 2rem;
       overflow-x: auto;
-      border: 1px solid var(--line-strong);
-      background: var(--paper-raised);
+      border: 1px solid var(--input);
+      background: var(--card);
     }
 
     table {
@@ -626,8 +579,8 @@
     th,
     td {
       padding: 0.7rem 0.8rem;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       text-align: left;
     }
 
@@ -641,8 +594,8 @@
     }
 
     th {
-      background: var(--ink);
-      color: var(--paper-raised);
+      background: var(--primary);
+      color: var(--primary-foreground);
       font-size: 0.66rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -659,15 +612,15 @@
 
     .summary-card {
       margin: 0 0 1.1rem;
-      border: 1px solid var(--line-strong);
-      border-left: 5px solid var(--cobalt);
-      border-radius: 2px;
-      background: var(--paper-raised);
-      box-shadow: 0.3rem 0.3rem 0 var(--shadow);
+      border: 1px solid var(--input);
+      border-left: 5px solid var(--primary);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
     }
 
     .summary-card.impact-high {
-      border-left-color: var(--amber);
+      border-left-color: var(--ring);
     }
 
     .card-summary {
@@ -693,8 +646,8 @@
       height: 0.65rem;
       margin-top: 0.42rem;
       content: "+";
-      color: var(--cobalt);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      color: var(--primary);
+      font-family: var(--font-mono);
       font-size: 0.95rem;
       font-weight: 800;
       line-height: 0.65rem;
@@ -714,15 +667,15 @@
     }
 
     .summary-id {
-      color: var(--cobalt);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      color: var(--primary);
+      font-family: var(--font-mono);
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.08em;
     }
 
     .summary-title {
-      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-family: var(--font-sans);
       font-size: clamp(1.12rem, 2.2vw, 1.55rem);
       font-weight: 650;
       line-height: 1.1;
@@ -743,8 +696,8 @@
       align-items: center;
       min-height: 1.55rem;
       padding: 0.18rem 0.48rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 999px;
+      border: 1px solid var(--input);
+      border-radius: calc(var(--radius) - 0.125rem);
       font-size: 0.61rem;
       font-weight: 800;
       letter-spacing: 0.06em;
@@ -753,22 +706,24 @@
     }
 
     .badge--category {
-      background: var(--cobalt-soft);
+      background: var(--accent);
+      color: var(--accent-foreground);
     }
 
     .badge--impact {
-      background: var(--amber-soft);
+      background: var(--secondary);
+      color: var(--secondary-foreground);
     }
 
     .comment-count {
       min-width: 1.55rem;
       justify-content: center;
-      background: var(--paper-muted);
+      background: var(--muted);
     }
 
     .card-panel {
       padding: 0 1.15rem 1.15rem;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--border);
       animation: atlas-reveal 160ms ease-out;
     }
 
@@ -791,10 +746,10 @@
       margin: 1rem 0 1.35rem;
       padding: 1rem;
       overflow: auto;
-      border: 1px solid var(--line-strong);
-      border-radius: 2px;
-      background: #151c22;
-      color: #e9eee8;
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: #18181b;
+      color: #fafafa;
       font-size: 0.78rem;
       line-height: 1.55;
       tab-size: 2;
@@ -838,12 +793,12 @@
       gap: 1rem;
       margin-top: 1.2rem;
       padding: 0.9rem 0;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--border);
     }
 
     .card-files-title {
       margin: 0;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.65rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -852,9 +807,9 @@
     .comment-thread {
       margin-top: 1rem;
       padding: 1rem;
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--amber);
-      background: color-mix(in srgb, var(--paper-muted) 68%, transparent);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--ring);
+      background: color-mix(in srgb, var(--muted) 68%, transparent);
     }
 
     .comment-thread[hidden] {
@@ -863,7 +818,7 @@
 
     .comment-thread-title {
       margin: 0 0 0.7rem;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.13em;
@@ -884,19 +839,19 @@
 
     .review-comment {
       padding: 0.75rem;
-      border: 1px solid var(--line);
-      background: var(--paper-raised);
+      border: 1px solid var(--border);
+      background: var(--card);
     }
 
     .review-comment.is-targeted {
-      border-color: var(--cobalt);
-      box-shadow: 0 0 0 3px var(--cobalt-soft);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--accent);
     }
 
     .comment-meta {
       margin: 0 0 0.45rem;
-      color: var(--ink-muted);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
       font-size: 0.64rem;
     }
 
@@ -918,26 +873,26 @@
     .comment-editor-action {
       min-height: 2rem;
       padding: 0.3rem 0.6rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 2px;
-      background: var(--paper-raised);
-      color: var(--ink);
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--foreground);
       cursor: pointer;
       font-size: 0.68rem;
       font-weight: 750;
     }
 
     .comment-delete:hover {
-      border-color: var(--negative);
-      background: var(--negative);
-      color: #fff;
+      border-color: var(--destructive);
+      background: var(--destructive);
+      color: var(--destructive-foreground);
     }
 
     .comment-editor {
       margin-top: 1rem;
       padding: 1rem;
-      border: 1px solid var(--cobalt);
-      background: var(--cobalt-soft);
+      border: 1px solid var(--primary);
+      background: var(--accent);
     }
 
     .comment-editor-label {
@@ -953,17 +908,17 @@
       min-height: 7rem;
       resize: vertical;
       padding: 0.7rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 2px;
-      background: var(--paper-raised);
-      color: var(--ink);
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--foreground);
       font: inherit;
       line-height: 1.5;
     }
 
     .comment-editor-help {
       margin: 0.45rem 0 0;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.67rem;
     }
 
@@ -975,9 +930,9 @@
     }
 
     .comment-editor-action--save {
-      border-color: var(--cobalt);
-      background: var(--cobalt);
-      color: #fff;
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--primary-foreground);
     }
 
     .file-list {
@@ -999,8 +954,8 @@
       max-width: 100%;
       padding: 0.2rem 0.38rem;
       overflow-wrap: anywhere;
-      border: 1px solid var(--line);
-      background: var(--paper-muted);
+      border: 1px solid var(--border);
+      background: var(--muted);
       font-size: 0.68rem;
     }
 
@@ -1009,7 +964,7 @@
       gap: 0.45rem;
       justify-content: flex-end;
       padding-top: 0.9rem;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--border);
     }
 
     .card-action {
@@ -1018,9 +973,9 @@
     }
 
     .card-action--accent {
-      border-color: var(--cobalt);
-      background: var(--cobalt);
-      color: #fff;
+      border-color: var(--primary);
+      background: var(--primary);
+      color: var(--primary-foreground);
     }
 
     .report-footer {
@@ -1029,9 +984,9 @@
       gap: 1rem;
       margin-top: 5rem;
       padding-top: 1rem;
-      border-top: 1px solid var(--line-strong);
-      color: var(--ink-muted);
-      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      border-top: 1px solid var(--input);
+      color: var(--muted-foreground);
+      font-family: var(--font-sans);
       font-size: 0.65rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -1046,15 +1001,16 @@
       padding: 0;
       border: 0;
       background: transparent;
-      color: var(--ink);
+      color: var(--foreground);
       pointer-events: none;
     }
 
     .status-region:not(:empty) {
       padding: 0.7rem 0.9rem;
-      border: 1px solid var(--line-strong);
-      background: var(--paper-raised);
-      box-shadow: 0.25rem 0.25rem 0 var(--shadow);
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
     }
 
     .manual-copy-backdrop {
@@ -1072,22 +1028,22 @@
       max-height: calc(100vh - 2rem);
       padding: 1.1rem;
       overflow: auto;
-      border: 1px solid var(--line-strong);
-      border-top: 6px solid var(--amber);
-      background: var(--paper-raised);
-      box-shadow: 0.55rem 0.55rem 0 var(--shadow);
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
     }
 
     .manual-copy-title {
       margin: 0 0 0.35rem;
-      font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+      font-family: var(--font-sans);
       font-size: 1.45rem;
       line-height: 1.15;
     }
 
     .manual-copy-instructions {
       margin: 0 0 0.8rem;
-      color: var(--ink-muted);
+      color: var(--muted-foreground);
       font-size: 0.78rem;
     }
 
@@ -1097,10 +1053,10 @@
       min-height: min(18rem, 48vh);
       resize: vertical;
       padding: 0.75rem;
-      border: 1px solid var(--line-strong);
-      background: var(--paper);
-      color: var(--ink);
-      font: 0.76rem/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      border: 1px solid var(--input);
+      background: var(--background);
+      color: var(--foreground);
+      font: 0.76rem/1.5 var(--font-mono);
       white-space: pre-wrap;
     }
 
@@ -1142,11 +1098,10 @@
         max-height: none;
         padding: 0.85rem 1rem;
         border-right: 0;
-        border-bottom: 1px solid var(--line-strong);
+        border-bottom: 1px solid var(--input);
       }
 
-      .rail-registration,
-      .rail-legend {
+      .rail-registration {
         display: none;
       }
 
@@ -1254,16 +1209,27 @@
       }
 
       body {
-        --paper: #fff;
-        --paper-raised: #fff;
-        --paper-muted: #f2f2f2;
-        --ink: #111;
-        --ink-muted: #444;
-        --line: #bbb;
-        --line-strong: #555;
-        --shadow: transparent;
-        background: #fff;
-        color: #111;
+        --background: #ffffff;
+        --foreground: #09090b;
+        --card: #ffffff;
+        --card-foreground: #09090b;
+        --popover: #ffffff;
+        --popover-foreground: #09090b;
+        --muted: #f4f4f5;
+        --muted-foreground: #71717a;
+        --primary: #18181b;
+        --primary-foreground: #fafafa;
+        --secondary: #f4f4f5;
+        --secondary-foreground: #18181b;
+        --accent: #f4f4f5;
+        --accent-foreground: #18181b;
+        --destructive: #dc2626;
+        --destructive-foreground: #fafafa;
+        --border: #e4e4e7;
+        --input: #e4e4e7;
+        --ring: #18181b;
+        background: var(--background);
+        color: var(--foreground);
         font-size: 10pt;
       }
 
@@ -1290,15 +1256,9 @@
         overflow: visible;
       }
 
-      .atlas-canvas::before,
-      .report-header::after {
-        display: none;
-      }
-
       .report-header {
         margin-bottom: 12mm;
         padding: 8mm;
-        box-shadow: none;
       }
 
       #report-title {
@@ -1312,7 +1272,6 @@
 
       .summary-card {
         break-inside: avoid;
-        box-shadow: none;
       }
 
       .summary-card:not([open]) > :not(summary) {
@@ -1336,18 +1295,18 @@
 <body data-default-theme="__DEFAULT_THEME__">
   <a class="skip-link" href="#report-main">Skip to report</a>
   <div class="atlas-shell">
-    <aside class="atlas-rail" aria-label="Report atlas controls">
-      <div class="rail-registration">Offline review plate</div>
+    <aside class="atlas-rail" aria-label="Report controls">
+      <div class="rail-registration">Diff Summary</div>
       <div class="rail-brand">
-        <span class="rail-brand-kicker">Engineering change atlas</span>
-        <strong>Diff / Summary</strong>
+        <span class="rail-brand-kicker">Change report</span>
+        <strong>Diff Summary</strong>
       </div>
       <div class="rail-controls" aria-label="Display controls">
         <button type="button" class="rail-control" data-sidebar-toggle aria-controls="report-sections" aria-expanded="true" aria-label="Toggle report index">Index</button>
         <button type="button" class="rail-control" data-theme-toggle aria-label="Change color theme">Theme</button>
       </div>
       <nav id="report-sections" class="atlas-sidebar" aria-label="Report sections">
-        <div class="atlas-sidebar-label" data-atlas-index>Atlas index</div>
+        <div class="atlas-sidebar-label" data-atlas-index>Sections</div>
         __SIDEBAR_NAV__
       </nav>
       <section class="comment-panel" aria-label="Review comments">
@@ -1361,10 +1320,6 @@
         <button type="button" class="rail-control" data-copy-report aria-label="Copy complete report Markdown">Copy report</button>
         <button type="button" class="rail-control rail-action--danger" data-clear-comments aria-label="Clear all reviewer comments">Clear comments</button>
       </section>
-      <div class="rail-legend" aria-label="Visual legend">
-        <span>Cobalt marks structure</span>
-        <span>Amber marks impact</span>
-      </div>
     </aside>
 
     <div class="sidebar-resizer" data-sidebar-resizer role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize report sidebar" aria-valuemin="224" aria-valuemax="480" aria-valuenow="304"></div>
@@ -1376,8 +1331,7 @@
           __REPORT_BODY__
         </main>
         <footer class="report-footer">
-          <span>Portable review artifact</span>
-          <span>No network required</span>
+          <span>Generated report</span>
         </footer>
       </div>
     </div>
@@ -1409,7 +1363,7 @@
           index: "Index",
           collapseSidebar: "Collapse report sidebar",
           expandSidebar: "Expand report sidebar",
-          atlasIndex: "Atlas index",
+          atlasIndex: "Sections",
           displayControls: "Display controls",
           commentsHeading: "Review comments",
           noComments: "No comments yet.",
