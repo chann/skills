@@ -77,8 +77,8 @@ def finding_key(title: str) -> str:
     return match.group(1) if match else slugify(title)
 
 
-def parse_table(lines: list[str]) -> str:
-    """Convert markdown table lines to an HTML table."""
+def parse_table(lines: list[str], label: str) -> str:
+    """Convert markdown table lines to an accessible scroll region and table."""
     if len(lines) < 2:
         return ""
     out = ['<table>', '<thead><tr>']
@@ -101,7 +101,12 @@ def parse_table(lines: list[str]) -> str:
             out.append(f'  <td{css}>{cell_html}</td>')
         out.append('</tr>')
     out.append('</tbody></table>')
-    return '\n'.join(out)
+    return (
+        '<div class="table-scroll" role="region" '
+        f'aria-label="{html.escape(label, quote=True)}" tabindex="0">\n'
+        + '\n'.join(out)
+        + '\n</div>'
+    )
 
 
 def wrap_code_block(code: str, lang: str) -> str:
@@ -366,6 +371,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
     out: list[str] = []
     i, total = 0, len(lines)
     current_severity: str | None = None
+    current_heading = "Code review report table"
     in_finding_body = False
     list_items: list[str] = []
 
@@ -414,7 +420,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
                 while i < total and lines[i].strip().startswith('|'):
                     table_lines.append(lines[i].strip())
                     i += 1
-                out.append(parse_table(table_lines))
+                out.append(parse_table(table_lines, current_heading))
                 continue
 
         # Horizontal rule
@@ -430,6 +436,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
             flush_list(list_items)
             text = stripped[2:].strip()
             meta.title = text
+            current_heading = text
             out.append(f'<h1>{escape(text)}</h1>')
             i += 1
             continue
@@ -440,6 +447,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
             close_finding()
             current_severity = None
             text = stripped[3:].strip()
+            current_heading = text
             anchor = aid(slugify(text))
             sidebar.append(SidebarEntry(text, anchor))
             out.append(f'<h2 id="{anchor}">{escape(text)}</h2>')
@@ -451,6 +459,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
             flush_list(list_items)
             close_finding()
             text = stripped[4:].strip()
+            current_heading = text
             sev = detect_severity(text)
             anchor = aid(slugify(text))
             if sev:
@@ -472,6 +481,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
             flush_list(list_items)
             close_finding()
             text = stripped[5:].strip()
+            current_heading = text
             anchor = aid(slugify(text))
             fid = finding_key(text)
             sl = SEVERITY_LOWER.get(current_severity, "") if current_severity else ""

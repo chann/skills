@@ -450,10 +450,14 @@
     hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
     /* Report tables (NOT diff tables) */
+    .table-scroll {
+      margin-bottom: 20px;
+      max-width: 100%;
+      overflow-x: auto;
+    }
     table:not(.diff-table) {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
       font-size: 13px;
     }
     table:not(.diff-table) th, table:not(.diff-table) td {
@@ -775,11 +779,6 @@
       .sidebar-resizer { display: none; }
       main { padding: 18px; }
       .controls { justify-content: flex-start; }
-      table:not(.diff-table) {
-        display: block;
-        max-width: 100%;
-        overflow-x: auto;
-      }
       .diff-table { font-size: 11px; }
     }
 
@@ -791,6 +790,7 @@
       details.finding > .finding-body { display: block !important; }
       .lang-body { display: none !important; }
       .lang-body.is-active { display: block !important; }
+      .table-scroll { overflow-x: visible; }
       pre { white-space: pre-wrap; word-wrap: break-word; }
     }
   </style>

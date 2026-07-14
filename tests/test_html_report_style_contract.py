@@ -614,33 +614,45 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     ) -> None:
         source = self.templates["code-review-html"]
         narrow_rule = css_rule(source, "@media (max-width: 860px)")
-        report_table_rule = css_rule(
-            narrow_rule,
-            "table:not(.diff-table)",
-        )
-        report_table_declarations = {
+        table_scroll_rule = css_rule(source, ".table-scroll")
+        table_scroll_declarations = {
             name: value.strip()
             for name, value in re.findall(
                 r"([\w-]+)\s*:\s*([^;{}]+);",
-                report_table_rule,
+                table_scroll_rule,
             )
         }
 
         self.assertEqual(
-            report_table_declarations,
+            table_scroll_declarations,
             {
-                "display": "block",
+                "margin-bottom": "20px",
                 "max-width": "100%",
                 "overflow-x": "auto",
             },
         )
+        self.assertLess(
+            source.index(".table-scroll {"),
+            source.index("@media (max-width: 860px)"),
+        )
+        self.assertNotIn(".table-scroll", narrow_rule)
+        report_table_rule = css_rule(source, "table:not(.diff-table)")
+        self.assertNotRegex(
+            report_table_rule,
+            r"(?:display:\s*block|margin-bottom:\s*20px|overflow-x:\s*auto)\s*;",
+        )
+        self.assertNotIn("table:not(.diff-table)", narrow_rule)
         self.assertRegex(
             css_rule(source, ".diff-body"),
             r"overflow-x:\s*auto\s*;",
         )
         self.assertNotRegex(
-            css_rule(source, ".diff-table"),
+            css_rule(narrow_rule, ".diff-table"),
             r"display:\s*block\s*;",
+        )
+        self.assertRegex(
+            css_rule(css_rule(source, "@media print"), ".table-scroll"),
+            r"overflow-x:\s*visible\s*;",
         )
 
     def test_diff_summary_small_rail_labels_use_accessible_foreground(self) -> None:

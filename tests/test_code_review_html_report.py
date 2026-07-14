@@ -13,6 +13,67 @@ from generate_html_report import parse_markdown  # noqa: E402
 GENERATOR = SCRIPTS_DIR / "generate_html_report.py"
 
 
+def test_markdown_tables_render_in_named_focusable_scroll_regions() -> None:
+    markdown = """# Code Review Report
+
+**Language:** en
+
+## Executive Summary
+
+| Metric | Value |
+|--------|-------|
+| Files changed | 2 |
+"""
+
+    html, _meta, _sidebar = parse_markdown(markdown)
+
+    wrapper = (
+        '<div class="table-scroll" role="region" '
+        'aria-label="Executive Summary" tabindex="0">'
+    )
+    wrapper_index = html.index(wrapper)
+    table_index = html.index("<table>", wrapper_index)
+    table_end_index = html.index("</table>", table_index)
+    wrapper_end_index = html.index("</div>", table_end_index)
+
+    assert wrapper_index < table_index < table_end_index < wrapper_end_index
+    assert "<table>" in html
+    assert '<table class="table-scroll"' not in html
+
+
+def test_generic_table_scroll_region_does_not_capture_fenced_diff_tables() -> None:
+    markdown = """# Code Review Report
+
+**Language:** en
+
+## Evidence
+
+| File | Status |
+|------|--------|
+| src/cache.py | Modified |
+
+```diff
+--- a/src/cache.py
++++ b/src/cache.py
+@@ -1 +1 @@
+-stale = True
++stale = False
+```
+"""
+
+    html, _meta, _sidebar = parse_markdown(markdown)
+
+    wrapper_start = html.index('<div class="table-scroll"')
+    table_end = html.index("</table>", wrapper_start)
+    wrapper_end = html.index("</div>", table_end)
+    wrapper_html = html[wrapper_start:wrapper_end]
+
+    assert html.count('class="table-scroll"') == 1
+    assert html.count('<table class="diff-table') == 2
+    assert 'aria-label="Evidence"' in wrapper_html
+    assert "diff-table" not in wrapper_html
+
+
 def test_finding_actions_render_after_finding_content_with_full_markdown_label() -> None:
     markdown = """# Code Review Report
 
