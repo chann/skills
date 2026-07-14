@@ -609,6 +609,40 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         )
         self.assertNotIn("border-radius", finding_rule)
 
+    def test_code_review_narrow_report_tables_scroll_without_expanding_page(
+        self,
+    ) -> None:
+        source = self.templates["code-review-html"]
+        narrow_rule = css_rule(source, "@media (max-width: 860px)")
+        report_table_rule = css_rule(
+            narrow_rule,
+            "table:not(.diff-table)",
+        )
+        report_table_declarations = {
+            name: value.strip()
+            for name, value in re.findall(
+                r"([\w-]+)\s*:\s*([^;{}]+);",
+                report_table_rule,
+            )
+        }
+
+        self.assertEqual(
+            report_table_declarations,
+            {
+                "display": "block",
+                "max-width": "100%",
+                "overflow-x": "auto",
+            },
+        )
+        self.assertRegex(
+            css_rule(source, ".diff-body"),
+            r"overflow-x:\s*auto\s*;",
+        )
+        self.assertNotRegex(
+            css_rule(source, ".diff-table"),
+            r"display:\s*block\s*;",
+        )
+
     def test_diff_summary_small_rail_labels_use_accessible_foreground(self) -> None:
         rail_label_selectors = (
             ".rail-registration",
