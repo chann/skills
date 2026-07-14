@@ -371,6 +371,12 @@
       padding: 4px 8px;
     }
 
+    .control button:not([aria-pressed="true"]):where(:hover:not(:disabled)),
+    .control select:where(:hover:not(:disabled)) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
     .control button[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); }
     .control select { border-left: 1px solid var(--input); }
 
@@ -739,7 +745,11 @@
       border: 1px solid var(--border);
     }
     .btn-comment.btn-edit:hover { color: var(--accent-foreground); border-color: var(--input); }
-    .btn-comment.btn-delete:hover { color: var(--destructive); border-color: var(--destructive); }
+    .btn-comment.btn-delete:hover {
+      background: var(--destructive);
+      color: var(--destructive-foreground);
+      border-color: var(--destructive);
+    }
     .btn-comment.btn-save:hover { opacity: 0.9; }
 
     .report-footer {

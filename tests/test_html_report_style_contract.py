@@ -56,6 +56,15 @@ PRIMARY_CONTROL_SELECTORS = {
         ".btn-comment.btn-save",
     ),
 }
+DESTRUCTIVE_CONTROL_SELECTORS = {
+    "diff-viewer": (
+        ".clear-comments-btn:hover:not(:disabled)",
+    ),
+    "code-review-html": (
+        ".clear-comments-btn:hover:not(:disabled)",
+        ".btn-comment.btn-delete:hover",
+    ),
+}
 SMALL_SIDEBAR_TEXT_SELECTORS = {
     "diff-viewer": (
         ".icon-btn",
@@ -458,28 +467,49 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 )
 
     def test_viewer_and_review_preserve_complete_control_state_pairs(self) -> None:
-        for name in ("diff-viewer", "code-review-html"):
+        for name, destructive_selectors in DESTRUCTIVE_CONTROL_SELECTORS.items():
             source = self.templates[name]
-            destructive_rule = css_rule(
-                source,
-                ".clear-comments-btn:hover:not(:disabled)",
-            )
 
-            for property_name, token in (
-                ("background", "destructive"),
-                ("color", "destructive-foreground"),
-                ("border-color", "destructive"),
-            ):
-                with self.subTest(
-                    template=name,
-                    state="destructive",
-                    property=property_name,
+            for destructive_selector in destructive_selectors:
+                destructive_rule = css_rule(source, destructive_selector)
+
+                for property_name, token in (
+                    ("background", "destructive"),
+                    ("color", "destructive-foreground"),
+                    ("border-color", "destructive"),
                 ):
-                    self.assertRegex(
-                        destructive_rule,
-                        rf"{property_name}:\s*var\(--{token}\)"
-                        r"(?:\s*!important)?\s*;",
+                    with self.subTest(
+                        template=name,
+                        state="destructive",
+                        selector=destructive_selector,
+                        property=property_name,
+                    ):
+                        self.assertRegex(
+                            destructive_rule,
+                            rf"{property_name}:\s*var\(--{token}\)"
+                            r"(?:\s*!important)?\s*;",
+                        )
+
+                for theme, theme_selector in (
+                    ("light", ":root"),
+                    ("dark", 'html[data-page-theme="dark"]'),
+                ):
+                    declarations = custom_properties(
+                        css_rule(source, theme_selector)
                     )
+                    with self.subTest(
+                        template=name,
+                        state="destructive-contrast",
+                        selector=destructive_selector,
+                        theme=theme,
+                    ):
+                        self.assertGreaterEqual(
+                            contrast_ratio(
+                                declarations["destructive"],
+                                declarations["destructive-foreground"],
+                            ),
+                            4.5,
+                        )
 
             for selector in PRIMARY_CONTROL_SELECTORS[name]:
                 state_rule = css_rule(source, selector)
@@ -504,6 +534,44 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     copied_rule,
                     r"var\(--accent(?:-foreground)?\)",
                 )
+
+    def test_code_review_control_group_declares_effective_neutral_hover_states(
+        self,
+    ) -> None:
+        source = self.templates["code-review-html"]
+        hover_rule = re.search(
+            r'\.control button:not\(\[aria-pressed="true"\]\)'
+            r':where\(\s*:hover:not\(:disabled\)\s*\)\s*,\s*'
+            r'\.control select:where\(\s*:hover:not\(:disabled\)\s*\)\s*'
+            r'\{(?P<body>.*?)\}',
+            source,
+            re.DOTALL,
+        )
+
+        self.assertIsNotNone(hover_rule)
+        declarations = hover_rule.group("body")
+        self.assertRegex(declarations, r"background:\s*var\(--accent\)\s*;")
+        self.assertRegex(
+            declarations,
+            r"color:\s*var\(--accent-foreground\)\s*;",
+        )
+
+        base_position = source.index(".control button, .control select {")
+        pressed_position = source.index(
+            '.control button[aria-pressed="true"] {'
+        )
+        self.assertLess(base_position, hover_rule.start())
+        self.assertLess(hover_rule.start(), pressed_position)
+
+        pressed_rule = css_rule(
+            source,
+            '.control button[aria-pressed="true"]',
+        )
+        self.assertRegex(pressed_rule, r"background:\s*var\(--primary\)\s*;")
+        self.assertRegex(
+            pressed_rule,
+            r"color:\s*var\(--primary-foreground\)\s*;",
+        )
 
     def test_diff_viewer_has_print_layout_contract(self) -> None:
         print_rule = css_rule(self.templates["diff-viewer"], "@media print")
