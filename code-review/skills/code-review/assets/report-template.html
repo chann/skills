@@ -13,14 +13,28 @@
     *, *::before, *::after { box-sizing: border-box; }
 
     :root {
+      color-scheme: light;
       --sidebar-width: 220px;
-      --bg: #f7f7f5;
-      --surface: #ffffff;
-      --surface-muted: #f0f2f4;
-      --border: #d8dde3;
-      --text: #1f2933;
-      --muted: #667085;
-      --accent: #2563eb;
+      --background: #ffffff;
+      --foreground: #09090b;
+      --card: #ffffff;
+      --card-foreground: #09090b;
+      --popover: #ffffff;
+      --popover-foreground: #09090b;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --primary: #18181b;
+      --primary-foreground: #fafafa;
+      --secondary: #f4f4f5;
+      --secondary-foreground: #18181b;
+      --accent: #f4f4f5;
+      --accent-foreground: #18181b;
+      --destructive: #dc2626;
+      --destructive-foreground: #fafafa;
+      --border: #e4e4e7;
+      --input: #e4e4e7;
+      --ring: #18181b;
+      --radius: 0.5rem;
       /* Severity hues */
       --critical: #dc2626;
       --high: #ea580c;
@@ -40,18 +54,31 @@
       --code-hunk-text: #3150a8;
       --selection-bg: rgba(37, 99, 235, 0.18);
       --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     html[data-page-theme="dark"] {
-      --bg: #111318;
-      --surface: #181b21;
-      --surface-muted: #20242c;
-      --border: #323846;
-      --text: #e6e9ef;
-      --muted: #9aa4b2;
-      --accent: #7aa2ff;
+      color-scheme: dark;
+      --background: #09090b;
+      --foreground: #fafafa;
+      --card: #09090b;
+      --card-foreground: #fafafa;
+      --popover: #18181b;
+      --popover-foreground: #fafafa;
+      --muted: #27272a;
+      --muted-foreground: #a1a1aa;
+      --primary: #fafafa;
+      --primary-foreground: #18181b;
+      --secondary: #27272a;
+      --secondary-foreground: #fafafa;
+      --accent: #27272a;
+      --accent-foreground: #fafafa;
+      --destructive: #7f1d1d;
+      --destructive-foreground: #fafafa;
+      --border: #27272a;
+      --input: #27272a;
+      --ring: #d4d4d8;
       --critical: #f87171;
       --high: #fb923c;
       --medium: #fbbf24;
@@ -71,14 +98,44 @@
 
     body {
       margin: 0;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--background);
+      color: var(--foreground);
       font-family: var(--font-sans);
       font-size: 14px;
       line-height: 1.6;
     }
 
     a { color: inherit; text-decoration: none; }
+
+    button,
+    select {
+      min-height: 2rem;
+      border: 1px solid var(--input);
+      border-radius: calc(var(--radius) - 2px);
+      background: var(--background);
+      color: var(--foreground);
+      cursor: pointer;
+      font: inherit;
+      padding: 4px 8px;
+    }
+
+    button:hover:not(:disabled),
+    select:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    button:disabled,
+    select:disabled,
+    textarea:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
 
     .layout {
       display: grid;
@@ -95,7 +152,7 @@
       top: 0;
       height: 100vh;
       border-right: 1px solid var(--border);
-      background: var(--surface-muted);
+      background: var(--muted);
       display: flex;
       flex-direction: column;
       overflow: visible;
@@ -112,9 +169,7 @@
 
     .icon-btn {
       background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 4px;
+      color: var(--muted-foreground);
       padding: 3px 6px;
       cursor: pointer;
       font-size: 12px;
@@ -124,12 +179,12 @@
       justify-content: center;
     }
 
-    .icon-btn:hover { color: var(--text); border-color: var(--muted); }
+    .icon-btn:hover { color: var(--accent-foreground); }
 
     .brand {
       font-size: 11px;
       font-weight: 700;
-      color: var(--muted);
+      color: var(--muted-foreground);
       letter-spacing: 0.05em;
       text-transform: uppercase;
       margin: 0;
@@ -143,7 +198,7 @@
 
     .repo {
       overflow-wrap: anywhere;
-      color: var(--muted);
+      color: var(--muted-foreground);
       font-family: var(--font-mono);
       font-size: 10px;
       line-height: 1.35;
@@ -161,16 +216,16 @@
 
     .nav-lang a {
       display: block;
-      border-radius: 4px;
-      color: var(--muted);
+      border-radius: calc(var(--radius) - 2px);
+      color: var(--muted-foreground);
       padding: 3px 6px;
       font-size: 12px;
       line-height: 1.35;
       overflow-wrap: anywhere;
     }
 
-    .nav-lang a:hover { background: var(--border); color: var(--text); }
-    .nav-lang a.active { background: var(--accent); color: #fff; font-weight: 500; }
+    .nav-lang a:hover { background: var(--accent); color: var(--accent-foreground); }
+    .nav-lang a.active { background: var(--primary); color: var(--primary-foreground); font-weight: 500; }
     .nav-lang li.nav-severity { padding-left: 10px; }
     .nav-lang li.nav-severity a { font-size: 11px; }
 
@@ -181,7 +236,7 @@
     }
 
     .comment-panel-title {
-      color: var(--muted);
+      color: var(--muted-foreground);
       font-size: 11px;
       font-weight: 700;
       margin: 0 0 4px;
@@ -199,10 +254,8 @@
 
     .comment-list button {
       width: 100%;
-      border: 0;
       background: transparent;
-      border-radius: 4px;
-      color: var(--muted);
+      color: var(--muted-foreground);
       cursor: pointer;
       display: block;
       font-size: 11px;
@@ -214,8 +267,8 @@
     }
 
     .comment-list button:hover,
-    .comment-list button:focus-visible { background: var(--border); color: var(--text); outline: none; }
-    .comment-list .comment-empty { color: var(--muted); font-size: 11px; padding: 4px 6px; }
+    .comment-list button:focus-visible { background: var(--accent); color: var(--accent-foreground); }
+    .comment-list .comment-empty { color: var(--muted-foreground); font-size: 11px; padding: 4px 6px; }
 
     .sidebar-footer {
       border-top: 1px solid var(--border);
@@ -232,10 +285,8 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      background: var(--accent);
-      color: #fff;
-      border: 0;
-      border-radius: 6px;
+      background: var(--primary);
+      color: var(--primary-foreground);
       padding: 7px 10px;
       font-size: 12px;
       font-weight: 600;
@@ -245,12 +296,12 @@
 
     .copy-md-btn.secondary {
       background: transparent;
-      color: var(--muted);
+      color: var(--muted-foreground);
       border: 1px solid var(--border);
     }
 
     .copy-md-btn:hover { opacity: 0.92; }
-    .copy-md-btn.secondary:hover { color: var(--text); border-color: var(--muted); opacity: 1; }
+    .copy-md-btn.secondary:hover { color: var(--accent-foreground); border-color: var(--input); opacity: 1; }
     .copy-md-btn.copied { background: #16a34a; color: #fff; border-color: #16a34a; }
     .copy-md-btn .count {
       background: rgba(255, 255, 255, 0.25);
@@ -259,7 +310,7 @@
       font-size: 10px;
       font-weight: 700;
     }
-    .copy-md-btn.secondary .count { background: var(--border); color: var(--text); }
+    .copy-md-btn.secondary .count { background: var(--secondary); color: var(--secondary-foreground); }
 
     .sidebar-resizer {
       position: absolute;
@@ -271,7 +322,7 @@
       z-index: 5;
       background: transparent;
     }
-    .sidebar-resizer:hover, .sidebar-resizer.dragging { background: var(--accent); opacity: 0.45; }
+    .sidebar-resizer:hover, .sidebar-resizer.dragging { background: var(--primary); opacity: 0.45; }
 
     .sidebar-expand {
       position: fixed;
@@ -279,18 +330,16 @@
       left: 12px;
       z-index: 999;
       display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+      background: var(--card);
       padding: 4px 8px;
       cursor: pointer;
-      color: var(--text);
+      color: var(--card-foreground);
       font-size: 13px;
       line-height: 1;
       box-shadow: var(--shadow);
     }
     html[data-sidebar-collapsed="true"] .sidebar-expand { display: inline-flex; }
-    .sidebar-expand:hover { color: var(--accent); border-color: var(--accent); }
+    .sidebar-expand:hover { color: var(--accent-foreground); border-color: var(--input); }
 
     /* ---------------- Main ---------------- */
     main { min-width: 0; padding: 24px 32px 64px; }
@@ -307,37 +356,31 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: var(--surface);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius);
       padding: 4px 5px;
       box-shadow: var(--shadow);
     }
 
-    .control-label { color: var(--muted); font-size: 12px; padding-left: 4px; }
+    .control-label { color: var(--muted-foreground); font-size: 12px; padding-left: 4px; }
 
     .control button, .control select {
-      border: 0;
-      border-radius: 6px;
       background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      font: inherit;
       font-size: 12px;
-      min-height: 26px;
       padding: 4px 8px;
     }
 
-    .control button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-    .control select { border-left: 1px solid var(--border); }
+    .control button[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); }
+    .control select { border-left: 1px solid var(--input); }
 
     .clear-comments-btn {
       border: 1px solid var(--border) !important;
-      color: var(--muted) !important;
+      color: var(--muted-foreground) !important;
       white-space: nowrap;
     }
-    .clear-comments-btn:hover:not(:disabled) { border-color: var(--critical) !important; color: var(--critical) !important; }
-    .clear-comments-btn:disabled { cursor: default; opacity: 0.45; }
+    .clear-comments-btn:hover:not(:disabled) { border-color: var(--destructive) !important; color: var(--destructive) !important; }
+    .clear-comments-btn:disabled { cursor: default; }
 
     /* ---------------- Language bodies ---------------- */
     .lang-body { display: none; max-width: 980px; }
@@ -380,7 +423,7 @@
     .badge {
       display: inline-block;
       padding: 2px 9px;
-      border-radius: 12px;
+      border-radius: var(--radius);
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
@@ -410,13 +453,13 @@
     }
     table:not(.diff-table) th {
       font-weight: 600;
-      background: var(--surface-muted);
+      background: var(--muted);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: var(--muted);
+      color: var(--muted-foreground);
     }
-    table:not(.diff-table) tbody tr:hover { background: var(--surface-muted); }
+    table:not(.diff-table) tbody tr:hover { background: var(--accent); color: var(--accent-foreground); }
 
     td.risk-critical { color: var(--critical); font-weight: 600; }
     td.risk-high { color: var(--high); font-weight: 600; }
@@ -428,7 +471,8 @@
       border: 1px solid var(--border);
       border-left-width: 4px;
       margin-bottom: 14px;
-      background: var(--surface);
+      background: var(--card);
+      color: var(--card-foreground);
       overflow: hidden;
       box-shadow: var(--shadow);
     }
@@ -454,7 +498,7 @@
     .finding-summary-text::before {
       content: '\25B6';
       font-size: 9px;
-      color: var(--muted);
+      color: var(--muted-foreground);
       transition: transform 0.2s;
       flex-shrink: 0;
     }
@@ -462,8 +506,8 @@
 
     .finding-comment-chip {
       flex-shrink: 0;
-      background: var(--accent);
-      color: #fff;
+      background: var(--primary);
+      color: var(--primary-foreground);
       border-radius: 999px;
       font-size: 10px;
       font-weight: 700;
@@ -483,9 +527,9 @@
 
     .finding-tool-btn {
       border: 1px solid var(--border);
-      background: var(--surface-muted);
-      color: var(--muted);
-      border-radius: 5px;
+      background: var(--muted);
+      color: var(--muted-foreground);
+      border-radius: calc(var(--radius) - 2px);
       padding: 3px 10px;
       font-size: 11px;
       font-weight: 500;
@@ -493,14 +537,14 @@
       cursor: pointer;
       line-height: 1.5;
     }
-    .finding-tool-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .finding-tool-btn:hover { background: var(--accent); color: var(--accent-foreground); border-color: var(--input); }
     .finding-tool-btn.copied { color: #16a34a; border-color: #16a34a; }
 
     /* Inline code */
     code:not(pre code) {
-      background: var(--surface-muted);
+      background: var(--muted);
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: calc(var(--radius) - 2px);
       font-family: var(--font-mono);
       font-size: 12.5px;
     }
@@ -512,7 +556,7 @@
       background: var(--code-bg);
       color: var(--code-fg);
       padding: 14px 16px;
-      border-radius: 8px;
+      border-radius: var(--radius);
       overflow-x: auto;
       font-family: var(--font-mono);
       font-size: 12.5px;
@@ -530,7 +574,7 @@
       padding: 3px 9px;
       background: color-mix(in srgb, var(--code-bg) 80%, var(--code-fg));
       border: 1px solid var(--border);
-      border-radius: 5px;
+      border-radius: calc(var(--radius) - 2px);
       color: var(--code-muted);
       font-family: var(--font-sans);
       font-size: 11px;
@@ -542,7 +586,7 @@
     /* ---------------- Diff blocks (adapt to code scheme via color-mix) ---------------- */
     .diff-container {
       margin-bottom: 14px;
-      border-radius: 8px;
+      border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
       background: var(--code-bg);
@@ -557,7 +601,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .diff-toggles { display: flex; gap: 0; background: color-mix(in srgb, var(--code-bg) 85%, var(--code-fg)); border-radius: 6px; padding: 2px; }
+    .diff-toggles { display: flex; gap: 0; background: color-mix(in srgb, var(--code-bg) 85%, var(--code-fg)); border-radius: calc(var(--radius) - 2px); padding: 2px; }
 
     .diff-toggle {
       padding: 3px 12px;
@@ -568,10 +612,10 @@
       font-family: var(--font-sans);
       font-weight: 500;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: calc(var(--radius) - 2px);
     }
     .diff-toggle:hover { color: var(--code-fg); }
-    .diff-toggle.active { background: var(--accent); color: #fff; }
+    .diff-toggle.active { background: var(--primary); color: var(--primary-foreground); }
 
     .diff-copy-btn {
       padding: 3px 10px;
@@ -581,7 +625,7 @@
       font-size: 11px;
       font-family: var(--font-sans);
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: calc(var(--radius) - 2px);
     }
     .diff-copy-btn:hover { color: var(--code-fg); }
     .diff-copy-btn.copied { color: #16a34a; border-color: #16a34a; }
@@ -634,23 +678,24 @@
     .finding-comments { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 
     .comment {
-      background: var(--surface-muted);
+      background: var(--muted);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius);
       padding: 8px 10px;
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-    .comment.comment-focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--selection-bg); }
-    .comment-meta { color: var(--muted); font-size: 11px; }
+    .comment.comment-focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--selection-bg); }
+    .comment-meta { color: var(--muted-foreground); font-size: 11px; }
     .comment-body { white-space: pre-wrap; word-break: break-word; font-size: 13px; }
     .comment-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px; }
 
     .comment-input {
-      background: var(--surface-muted);
+      background: var(--popover);
+      color: var(--popover-foreground);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius);
       padding: 8px 10px;
       display: flex;
       flex-direction: column;
@@ -662,10 +707,10 @@
       width: 100%;
       min-height: 60px;
       resize: vertical;
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      background: var(--background);
+      color: var(--foreground);
+      border: 1px solid var(--input);
+      border-radius: calc(var(--radius) - 2px);
       padding: 6px 8px;
       font-family: var(--font-sans);
       font-size: 13px;
@@ -676,21 +721,21 @@
 
     .btn-comment {
       padding: 4px 12px;
-      border-radius: 4px;
+      border-radius: calc(var(--radius) - 2px);
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
       font-family: var(--font-sans);
       line-height: 1.4;
     }
-    .btn-comment.btn-save { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+    .btn-comment.btn-save { background: var(--primary); color: var(--primary-foreground); border: 1px solid var(--primary); }
     .btn-comment.btn-cancel, .btn-comment.btn-edit, .btn-comment.btn-delete {
       background: transparent;
-      color: var(--muted);
+      color: var(--muted-foreground);
       border: 1px solid var(--border);
     }
-    .btn-comment.btn-edit:hover { color: var(--accent); border-color: var(--accent); }
-    .btn-comment.btn-delete:hover { color: var(--critical); border-color: var(--critical); }
+    .btn-comment.btn-edit:hover { color: var(--accent-foreground); border-color: var(--input); }
+    .btn-comment.btn-delete:hover { color: var(--destructive); border-color: var(--destructive); }
     .btn-comment.btn-save:hover { opacity: 0.9; }
 
     .report-footer {
@@ -698,7 +743,7 @@
       padding-top: 16px;
       border-top: 1px solid var(--border);
       font-size: 12px;
-      color: var(--muted);
+      color: var(--muted-foreground);
       font-style: italic;
     }
 

@@ -14,6 +14,35 @@ SUMMARY_TEMPLATE = (
     / "assets"
     / "summary-template.html"
 )
+TEMPLATES = {
+    "diff-summary": SUMMARY_TEMPLATE,
+    "diff-viewer": (
+        ROOT
+        / "code-review"
+        / "skills"
+        / "diff-viewer"
+        / "assets"
+        / "diff-template.html"
+    ),
+    "code-review-html": (
+        ROOT
+        / "code-review"
+        / "skills"
+        / "code-review"
+        / "assets"
+        / "report-template.html"
+    ),
+}
+THEME_SELECTORS = {
+    "diff-summary": ("body", 'body[data-theme="dark"]'),
+    "diff-viewer": (":root", 'html[data-page-theme="dark"]'),
+    "code-review-html": (":root", 'html[data-page-theme="dark"]'),
+}
+LEGACY_TOKENS = {
+    "diff-summary": (),
+    "diff-viewer": ("bg", "surface", "surface-muted", "text"),
+    "code-review-html": ("bg", "surface", "surface-muted", "text"),
+}
 TOKENS = (
     "background",
     "foreground",
@@ -171,6 +200,10 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.template = SUMMARY_TEMPLATE.read_text(encoding="utf-8")
+        cls.templates = {
+            name: path.read_text(encoding="utf-8")
+            for name, path in TEMPLATES.items()
+        }
         cls.root_declarations = custom_properties(css_rule(cls.template, ":root"))
         cls.light_declarations = custom_properties(css_rule(cls.template, "body"))
         cls.dark_declarations = custom_properties(
@@ -183,15 +216,38 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             )
         )
 
-    def test_diff_summary_uses_exact_shared_light_theme_values(self) -> None:
-        self.assertEqual(
-            selected_properties(self.root_declarations, ROOT_TOKENS),
-            EXPECTED_ROOT_TOKENS,
-        )
-        self.assertEqual(
-            selected_properties(self.light_declarations, THEME_COLOR_TOKENS),
-            EXPECTED_LIGHT_THEME,
-        )
+    def test_every_html_report_uses_exact_shared_light_and_dark_values(
+        self,
+    ) -> None:
+        for name, source in self.templates.items():
+            light_selector, dark_selector = THEME_SELECTORS[name]
+            root_declarations = custom_properties(css_rule(source, ":root"))
+            light_declarations = custom_properties(
+                css_rule(source, light_selector)
+            )
+            dark_declarations = custom_properties(css_rule(source, dark_selector))
+
+            with self.subTest(template=name, theme="root"):
+                self.assertEqual(
+                    selected_properties(root_declarations, ROOT_TOKENS),
+                    EXPECTED_ROOT_TOKENS,
+                )
+            with self.subTest(template=name, theme="light"):
+                self.assertEqual(
+                    selected_properties(
+                        light_declarations,
+                        THEME_COLOR_TOKENS,
+                    ),
+                    EXPECTED_LIGHT_THEME,
+                )
+            with self.subTest(template=name, theme="dark"):
+                self.assertEqual(
+                    selected_properties(
+                        dark_declarations,
+                        THEME_COLOR_TOKENS,
+                    ),
+                    EXPECTED_DARK_THEME,
+                )
 
     def test_diff_summary_uses_exact_identical_explicit_and_auto_dark_values(
         self,
@@ -210,17 +266,10 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertEqual(auto_dark, explicit_dark)
         self.assertEqual(self.auto_dark_declarations, self.dark_declarations)
 
-    def test_diff_summary_declares_and_uses_shared_semantic_tokens(self) -> None:
+    def test_every_html_report_declares_and_uses_shared_semantic_tokens(
+        self,
+    ) -> None:
         single_declaration_tokens = {"radius", "font-sans", "font-mono"}
-        for token in TOKENS:
-            with self.subTest(token=token, contract="declaration"):
-                declaration_count = len(
-                    re.findall(rf"--{re.escape(token)}\s*:", self.template)
-                )
-                self.assertGreaterEqual(declaration_count, 1)
-                if token not in single_declaration_tokens:
-                    self.assertGreaterEqual(declaration_count, 2)
-
         referenced_tokens = (
             "background",
             "foreground",
@@ -233,9 +282,37 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             "ring",
             "radius",
         )
-        for token in referenced_tokens:
-            with self.subTest(token=token, contract="reference"):
-                self.assertRegex(self.template, rf"var\(\s*--{re.escape(token)}\s*\)")
+        for name, source in self.templates.items():
+            for token in TOKENS:
+                with self.subTest(
+                    template=name,
+                    token=token,
+                    contract="declaration",
+                ):
+                    declaration_count = len(
+                        re.findall(rf"--{re.escape(token)}\s*:", source)
+                    )
+                    self.assertGreaterEqual(declaration_count, 1)
+                    if token not in single_declaration_tokens:
+                        self.assertGreaterEqual(declaration_count, 2)
+
+            for token in referenced_tokens:
+                with self.subTest(
+                    template=name,
+                    token=token,
+                    contract="reference",
+                ):
+                    self.assertRegex(
+                        source,
+                        rf"var\(\s*--{re.escape(token)}\s*\)",
+                    )
+
+    def test_every_html_report_omits_legacy_palette_declarations(self) -> None:
+        for name, tokens in LEGACY_TOKENS.items():
+            source = self.templates[name]
+            for token in tokens:
+                with self.subTest(template=name, token=token):
+                    self.assertNotRegex(source, rf"--{re.escape(token)}\s*:")
 
     def test_diff_summary_omits_legacy_palette_declarations(self) -> None:
         legacy_tokens = (
@@ -255,29 +332,117 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertNotRegex(self.template, rf"--{re.escape(token)}\s*:")
 
-    def test_diff_summary_has_shared_focus_and_disabled_states(self) -> None:
-        focus_rule = re.search(
-            r":focus-visible\s*\{(?P<body>.*?)\}",
-            self.template,
-            re.DOTALL,
-        )
-        self.assertIsNotNone(focus_rule)
+    def test_every_html_report_preserves_control_responsive_and_print_states(
+        self,
+    ) -> None:
+        for name, source in self.templates.items():
+            focus_rules = re.findall(
+                r"[^{}]*:focus-visible[^{}]*\{(?P<body>.*?)\}",
+                source,
+                re.DOTALL,
+            )
+            disabled_rules = re.findall(
+                r"[^{}]*:disabled[^{}]*\{(?P<body>.*?)\}",
+                source,
+                re.DOTALL,
+            )
+
+            with self.subTest(template=name, state="focus-visible"):
+                self.assertTrue(
+                    any(
+                        re.search(
+                            r"outline:\s*2px\s+solid\s+var\(\s*--ring\s*\)",
+                            rule,
+                        )
+                        for rule in focus_rules
+                    )
+                )
+            with self.subTest(template=name, state="disabled"):
+                self.assertTrue(
+                    any(
+                        re.search(r"opacity:\s*0\.5\s*;", rule)
+                        and re.search(r"pointer-events:\s*none\s*;", rule)
+                        for rule in disabled_rules
+                    )
+                )
+            with self.subTest(template=name, state="narrow"):
+                self.assertRegex(source, r"@media\s*\([^)]*max-width")
+            with self.subTest(template=name, state="print"):
+                self.assertIn("@media print", source)
+
+    def test_viewer_and_review_share_control_component_states(self) -> None:
+        for name in ("diff-viewer", "code-review-html"):
+            source = self.templates[name]
+            control_rule = re.search(
+                r"button\s*,\s*select\s*\{(?P<body>.*?)\}",
+                source,
+                re.DOTALL,
+            )
+            hover_rule = re.search(
+                r"button:hover:not\(:disabled\)\s*,\s*"
+                r"select:hover:not\(:disabled\)\s*\{(?P<body>.*?)\}",
+                source,
+                re.DOTALL,
+            )
+
+            with self.subTest(template=name, component="control"):
+                self.assertIsNotNone(control_rule)
+                declarations = control_rule.group("body")
+                self.assertRegex(declarations, r"min-height:\s*2rem\s*;")
+                self.assertRegex(
+                    declarations,
+                    r"border:\s*1px\s+solid\s+var\(--input\)\s*;",
+                )
+                self.assertRegex(
+                    declarations,
+                    r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+                )
+                self.assertRegex(
+                    declarations,
+                    r"background:\s*var\(--background\)\s*;",
+                )
+                self.assertRegex(
+                    declarations,
+                    r"color:\s*var\(--foreground\)\s*;",
+                )
+            with self.subTest(template=name, component="control-hover"):
+                self.assertIsNotNone(hover_rule)
+                declarations = hover_rule.group("body")
+                self.assertRegex(
+                    declarations,
+                    r"background:\s*var\(--accent\)\s*;",
+                )
+                self.assertRegex(
+                    declarations,
+                    r"color:\s*var\(--accent-foreground\)\s*;",
+                )
+
+    def test_diff_viewer_has_print_layout_contract(self) -> None:
+        print_rule = css_rule(self.templates["diff-viewer"], "@media print")
+        for selector in (
+            "aside",
+            ".sidebar-expand",
+            ".topbar .controls",
+            ".comment-thread",
+            ".line-comment-marker",
+        ):
+            with self.subTest(selector=selector):
+                self.assertIn(selector, print_rule)
+        self.assertRegex(print_rule, r"\.layout\s*\{[^}]*display:\s*block\s*;")
+        self.assertRegex(print_rule, r"main\s*\{[^}]*padding:\s*0\s*;")
         self.assertRegex(
-            focus_rule.group("body"),
-            r"outline:\s*2px\s+solid\s+var\(\s*--ring\s*\)",
+            print_rule,
+            r"\.file-diff\s*\{[^}]*break-inside:\s*avoid\s*;"
+            r"[^}]*border-color:\s*#d4d4d8\s*;"
+            r"[^}]*box-shadow:\s*none\s*;",
         )
 
-        disabled_rule = re.search(
-            r":disabled\s*,\s*\[aria-disabled=[\"']true[\"']\]\s*"
-            r"\{(?P<body>.*?)\}",
-            self.template,
-            re.DOTALL,
+    def test_code_review_finding_accent_cards_remain_flat(self) -> None:
+        finding_rule = css_rule(
+            self.templates["code-review-html"],
+            "details.finding",
         )
-        self.assertIsNotNone(disabled_rule)
-        self.assertRegex(disabled_rule.group("body"), r"opacity:\s*0\.5\s*;")
-        self.assertRegex(
-            disabled_rule.group("body"), r"pointer-events:\s*none\s*;"
-        )
+        self.assertNotIn("border-radius", finding_rule)
 
     def test_diff_summary_small_rail_labels_use_accessible_foreground(self) -> None:
         rail_label_selectors = (
