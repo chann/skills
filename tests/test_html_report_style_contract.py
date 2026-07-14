@@ -699,6 +699,59 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         4.5,
                     )
 
+    def test_code_review_finding_tool_copied_state_uses_monochrome_pair(
+        self,
+    ) -> None:
+        source = self.templates["code-review-html"]
+        copied_declarations = {
+            name: value.strip()
+            for name, value in re.findall(
+                r"([\w-]+)\s*:\s*([^;{}]+);",
+                css_rule(source, ".finding-tool-btn.copied"),
+            )
+        }
+        surface_declarations = {
+            name: value.strip()
+            for name, value in re.findall(
+                r"([\w-]+)\s*:\s*([^;{}]+);",
+                css_rule(source, ".finding-tool-btn"),
+            )
+        }
+
+        for property_name in ("color", "border-color"):
+            with self.subTest(property=property_name):
+                self.assertEqual(
+                    copied_declarations[property_name],
+                    "var(--foreground)",
+                )
+        self.assertEqual(
+            surface_declarations["background"],
+            "var(--muted)",
+        )
+
+        for theme, theme_selector in (
+            ("light", ":root"),
+            ("dark", 'html[data-page-theme="dark"]'),
+        ):
+            declarations = custom_properties(css_rule(source, theme_selector))
+
+            def resolve_color(value: str) -> str:
+                token_match = re.fullmatch(r"var\(--([\w-]+)\)", value)
+                return (
+                    declarations[token_match.group(1)]
+                    if token_match is not None
+                    else value
+                )
+
+            with self.subTest(theme=theme):
+                self.assertGreaterEqual(
+                    contrast_ratio(
+                        resolve_color(copied_declarations["color"]),
+                        resolve_color(surface_declarations["background"]),
+                    ),
+                    4.5,
+                )
+
     def test_diff_summary_small_rail_labels_use_accessible_foreground(self) -> None:
         rail_label_selectors = (
             ".rail-registration",
