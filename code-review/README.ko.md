@@ -121,12 +121,13 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## 코드 리뷰 리포트 구조
 
-각 `/code-review*` 리포트에는 다음이 포함됩니다:
+### 근거 우선 문체
 
-- **Executive Summary** — 변경된 파일 수, 추가/삭제 라인, 발견 사항 수, 전체 리스크 수준
-- **Findings** — 심각도별 그룹핑 (CRITICAL / HIGH / MEDIUM / LOW), 파일 참조, 코드 스니펫, 수정 제안 포함
-- **Positive Observations** — 코드에서 잘된 점
-- **File-by-File Summary** — 변경된 파일별 상태와 리스크 레벨 요약 테이블
+리뷰 발견 사항은 **관찰 → 영향 → 수정** 순서로 작성합니다. 확인된 사실에는 변경된 경로와 줄 범위를 명시합니다. 중요한 추론은 추론임을 밝히고 근거와 연결합니다. 일반적인 칭찬, 상투적인 도입부, 템플릿을 채우기 위한 발견 사항은 넣지 않습니다.
+
+### 조건부 섹션
+
+리포트 메타데이터와 실행 가능한 발견 사항은 계속 제공합니다. `Decision Summary`, `Positive Observations`, `Open Questions`, `File Summary`는 서로 다른 의사결정 관련 정보를 더할 때만 표시합니다. 실행 가능한 발견 사항이 없으면 이를 직접 밝히고, 중요한 잔여 리스크나 공백만 남깁니다.
 
 ## HTML 리포트
 
@@ -160,7 +161,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | HIGH     | 버그, 취약점, 심각한 설계 결함 — 수정 권장          |
 | MEDIUM   | 코드 스멜, 불일치, 중간 리스크 — 개선 권장          |
 | LOW      | 스타일, 네이밍, 사소한 개선 — 하면 좋음             |
-| INFO     | 긍정적 관찰 또는 참고 사항                          |
+| INFO     | 의사결정에 영향을 주지만 코드 변경은 필요하지 않은 확인된 맥락 |
 
 ## 프로젝트 구조
 

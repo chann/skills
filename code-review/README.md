@@ -121,12 +121,13 @@ The report marks consequential inference and unverified runtime, test, migration
 
 ## Code review report format
 
-Each `/code-review*` report includes:
+### Evidence-first writing
 
-- **Executive Summary** — files changed, lines added/removed, finding counts, overall risk level
-- **Findings** — grouped by severity (CRITICAL / HIGH / MEDIUM / LOW), each with file reference, code snippet, and suggested fix
-- **Positive Observations** — things the code does well
-- **File-by-File Summary** — quick reference table of all changed files and their risk level
+Review findings use **observation → consequence → correction**. Verified facts cite the changed path and line range. Consequential inference is labeled and tied to evidence. Reports omit generic praise, canned introductions, and findings created only to fill a template.
+
+### Conditional sections
+
+Report metadata and actionable findings remain available. `Decision Summary`, `Positive Observations`, `Open Questions`, and `File Summary` appear only when they add distinct, decision-relevant information. When there are no actionable findings, the report says so directly and retains only material residual risks or gaps.
 
 ## HTML report
 
@@ -160,7 +161,7 @@ The skill suggests adding `.diff-summaries/` to a target repository's `.gitignor
 | HIGH     | Bug, vulnerability, or serious design flaw — should fix       |
 | MEDIUM   | Code smell, inconsistency, or moderate risk — recommended fix |
 | LOW      | Style, naming, minor improvement — nice to have               |
-| INFO     | Positive observation or contextual note                       |
+| INFO     | Verified context that affects a decision; no code change required |
 
 ## Project structure
 

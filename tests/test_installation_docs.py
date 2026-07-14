@@ -85,3 +85,30 @@ class InstallationDocsTests(unittest.TestCase):
         for phrase in ("코드를 요약해줘", "main..dev", "마지막 커밋", "PR"):
             with self.subTest(language="ko", phrase=phrase):
                 self.assertIn(phrase, korean)
+
+    def test_code_review_readmes_document_evidence_first_conditional_reports(self) -> None:
+        english = CODE_REVIEW_READMES[0].read_text(encoding="utf-8")
+        korean = CODE_REVIEW_READMES[1].read_text(encoding="utf-8")
+
+        for phrase in (
+            "Evidence-first writing",
+            "Conditional sections",
+            "observation → consequence → correction",
+            "Verified context that affects a decision; no code change required",
+        ):
+            with self.subTest(language="en", phrase=phrase):
+                self.assertIn(phrase, english)
+
+        for phrase in (
+            "근거 우선 문체",
+            "조건부 섹션",
+            "관찰 → 영향 → 수정",
+            "의사결정에 영향을 주지만 코드 변경은 필요하지 않은 확인된 맥락",
+        ):
+            with self.subTest(language="ko", phrase=phrase):
+                self.assertIn(phrase, korean)
+
+        self.assertNotIn("Each `/code-review*` report includes:", english)
+        self.assertNotIn("각 `/code-review*` 리포트에는 다음이 포함됩니다:", korean)
+        self.assertNotIn("Positive observation or contextual note", english)
+        self.assertNotIn("긍정적 관찰 또는 참고 사항", korean)
