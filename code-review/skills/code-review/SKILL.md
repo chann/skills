@@ -46,7 +46,7 @@ User: /code-review-md review staged changes
 → mkdir -p .reviews/
 → Write .reviews/2026-05-03_staged.md
 → Report finding counts, risk, report path, and fresh verification
-→ Suggest adding `.reviews/` to .gitignore (do NOT modify it)
+→ If `.reviews/` is not ignored, suggest adding it to .gitignore (do NOT modify it)
 ```
 
 ### `/code-review-html` — HTML + markdown
@@ -141,12 +141,25 @@ Never use INFO solely for uncertainty or praise. Missing evidence belongs under 
 
 This contract is authoritative for interactive, Markdown, and HTML reviews.
 
-- Start with the first actionable finding or the verified result. Do not add an announcement, generic preface, congratulations, or an overall-quality claim.
 - For every actionable finding, write in this order: **observed behavior** → **practical consequence** → **smallest justified correction**.
 - Cite the changed path and line before making the claim, and quote only the smallest excerpt needed to establish the evidence.
 - State verified facts directly. Prefix a consequential inference with `Inference:` and tie it to the cited evidence.
 - Keep prose proportional to the evidence. Do not restate code, repeat a conclusion, manufacture INFO items, or add generic praise such as "solid", "robust", "clean", or "well-structured".
 - When there are no actionable findings, state that directly and include only material residual risks or verification gaps.
+- Do not add an announcement, generic preface, congratulations, or an overall-quality claim in either output mode.
+
+#### Conversation-only mode (`/code-review`)
+
+- Start the user-visible response with the first actionable finding or the verified no-findings result.
+- The findings are the complete output.
+- Do not write files, mention artifact paths, or add a recap.
+
+#### Persisted report modes (`/code-review-md` and `/code-review-html`)
+
+- Start the report with its title and parser-significant metadata, then present findings.
+- Use a fact-only handoff after generation: finding counts by severity, overall risk, generated artifact paths, fresh verification, and the browser-open result or warning for HTML.
+- Do not repeat report prose or promise a fixed finding count.
+- The `.reviews/` ignore suggestion is allowed in this handoff only when persisted artifacts were generated and `.reviews/` is not ignored.
 
 ### 4. Present findings or write the markdown report
 
@@ -158,6 +171,7 @@ This contract is authoritative for interactive, Markdown, and HTML reviews.
 # Code Review Report
 
 **Date:** YYYY-MM-DD
+**Reviewer:** Codex (automated)
 **Scope:** [e.g., "Staged changes", "Commits a1b2c3d..f4e5d6a on branch feature-auth"]
 **Repository:** [repo name]
 **Language:** en
@@ -215,20 +229,21 @@ The HTML includes: a full-page language toggle (Korean shown by default), light/
 
 If only one language file exists, the generator still works and the language toggle is hidden (single-language fallback). Pass `--alt <path>` to point at a translation explicitly, or `--theme`/`--code-scheme` to change the defaults.
 
-### 6. Complete the handoff
+### 6. Finish by output mode
 
-Report only the finding counts by severity, overall risk, generated artifact paths, fresh verification, and the browser-open result when HTML was requested. Do not repeat report prose or promise a fixed number of findings. Mention at most one urgent finding inline only when the user needs it before opening an artifact.
+- **Conversation-only:** End after the complete findings or verified no-findings result. Do not add an artifact handoff or recap.
+- **Persisted Markdown/HTML:** Apply the fact-only handoff above. The only permitted addition is the conditional `.reviews/` ignore suggestion.
 
 ## Report Language
 
 Write the report in the same language as the user's prompt. If the user writes in Korean, the report should be in Korean. If in English, write in English. Default to English when the language is ambiguous.
 
-What to translate:
-- Section headings (e.g., "Decision Summary" → "결정 요약", "Findings" → "발견 사항")
-- Finding descriptions and any conditional narrative
-- Table headers and metadata labels
+Translate narrative headings, finding descriptions, conditional prose, and table headers or values when appropriate.
+
+Keep these parser-significant metadata keys exactly in English: `Date`, `Reviewer`, `Scope`, `Repository`, and `Language`. Translate their values when appropriate, and set `**Language:** ko` for a Korean report.
 
 What stays in English always:
+- Parser-significant metadata keys: `Date`, `Reviewer`, `Scope`, `Repository`, `Language`
 - Finding IDs: `CR-001`, `CR-002`, etc.
 - Severity labels: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, `INFO`
 - Code snippets (code is code)
@@ -260,7 +275,7 @@ If the user explicitly asks for a single language, write just that one file — 
 - Staged: `.reviews/2026-04-08_staged.md`
 - Working tree: `.reviews/2026-04-08_working.md`
 
-**Report language:** Match the user's prompt language. Translate section headings + narrative; keep finding IDs (`CR-001`), severity labels, code, and file paths in English. Add `**Language:** <bcp47>` field so the HTML generator sets `lang` correctly.
+**Report language:** Match the user's prompt language for narrative prose. Keep `Date`, `Reviewer`, `Scope`, `Repository`, and `Language` metadata keys in English; keep finding IDs (`CR-001`), severity labels, code, and file paths in English. Add `**Language:** <bcp47>` so the HTML generator sets `lang` correctly.
 
 **Large diffs (>1000 lines):** Focus on CRITICAL/HIGH. Group similar MEDIUM/LOW findings by pattern ("12 instances of unused imports") rather than listing each one separately.
 
@@ -303,7 +318,7 @@ If the user explicitly asks for a single language, write just that one file — 
 - Cite file + line range in every finding
 - Quote only the smallest evidence excerpt and propose the smallest justified correction
 - Match the user's prompt language for narrative
-- Suggest adding `.reviews/` to `.gitignore` if absent
+- Keep parser-significant metadata keys in English for persisted reports
 
 ## Integration
 

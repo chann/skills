@@ -22,8 +22,10 @@ In short:
 1. Determine review scope and run the matching `git diff` (see "Determining Review Scope" in the main SKILL.md).
 2. Run `diff_stats.py`, load language-relevant references, and `common-vulnerabilities.md` if security-sensitive.
 3. Analyze the diff against the five dimensions and assign severities.
-4. Create `.reviews/` if missing and write the report using the markdown template in the main SKILL.md ("Present findings or write the markdown report"). Suggest adding `.reviews/` to `.gitignore` if absent — never modify `.gitignore` automatically.
-5. In the conversation, report only finding counts by severity, overall risk, the Markdown artifact path, and fresh verification. Do not repeat report prose or promise a fixed finding count; mention at most one urgent finding inline only when immediate action is necessary.
+4. In this persisted Markdown mode, create `.reviews/` if missing and write the report using the markdown template in the main SKILL.md ("Present findings or write the markdown report").
+5. Use a fact-only handoff containing finding counts by severity, overall risk, the Markdown artifact path, and fresh verification. Do not repeat report prose or promise a fixed finding count.
+
+Include a `.reviews/` ignore suggestion in this handoff only when artifacts were generated and `.reviews/` is not ignored. Never modify `.gitignore` automatically.
 
 ## Filename
 
@@ -31,7 +33,7 @@ In short:
 
 ## Language
 
-Match the user's prompt language; see "Report Language" in the main SKILL.md. Add `**Language:** <bcp47>` in the metadata header.
+Match the user's prompt language; see "Report Language" in the main SKILL.md. Preserve its parser-significant English metadata keys and add `**Language:** <bcp47>` in the metadata header.
 
 ## Red Flags
 

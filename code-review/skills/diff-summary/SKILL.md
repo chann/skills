@@ -256,7 +256,7 @@ If `.diff-summaries/` is not ignored by the target repository, suggest adding it
 
 ## Conversation Handoff
 
-Lead with the verified result and its most decision-relevant consequence, then report:
+Report only these artifact and verification facts:
 
 - The exact requested scope and exact evidence command.
 - The generated card count and report language.
@@ -264,7 +264,7 @@ Lead with the verified result and its most decision-relevant consequence, then r
 - The browser-open result or retained-file warning.
 - Fresh verification performed and material unknowns that remain unverified.
 
-Do not repeat card prose in the conversation handoff.
+Do not repeat card or Executive Summary prose, even for one-card mechanical diffs.
 
 ## Empty Or Invalid Scope
 

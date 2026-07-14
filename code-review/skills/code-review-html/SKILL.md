@@ -28,9 +28,11 @@ In short:
    - `.reviews/<YYYY-MM-DD>_<short-sha>.md` — Korean, `**Language:** ko` (the main report).
    - `.reviews/<YYYY-MM-DD>_<short-sha>.en.md` — English, `**Language:** en`.
 
-   Follow the main skill's **Evidence-first writing contract**. Suggest adding `.reviews/` to `.gitignore` if absent — never modify `.gitignore` automatically.
+   Follow the main skill's **Evidence-first writing contract** and preserve its parser-significant English metadata keys.
 5. Run `python <skill-path>/scripts/generate_html_report.py .reviews/<report>.md` (it auto-detects the `.en.md` sibling and merges both into one HTML), then `open` it.
-6. In the conversation, report only finding counts by severity, overall risk, the Markdown and HTML artifact paths, fresh verification, and the browser-open fact. Do not repeat report prose or promise a fixed finding count; mention at most one urgent finding inline only when immediate action is necessary.
+6. For this persisted HTML mode, use a fact-only handoff containing finding counts by severity, overall risk, the Markdown and HTML artifact paths, fresh verification, and the browser-open fact or warning. Do not repeat report prose or promise a fixed finding count.
+
+Include a `.reviews/` ignore suggestion in this handoff only when artifacts were generated and `.reviews/` is not ignored. Never modify `.gitignore` automatically.
 
 The script lives at `<plugin-root>/skills/code-review/scripts/generate_html_report.py` (in the main skill — variants share it).
 

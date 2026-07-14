@@ -84,7 +84,67 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
         self.assertNotIn("## Executive Summary", skill_text)
         self.assertIn("fresh verification", skill_text)
         self.assertIn("browser-open result", skill_text)
-        self.assertIn("at most one urgent finding inline", skill_text)
+
+    def test_main_skill_preserves_parser_significant_english_metadata_keys(self) -> None:
+        skill_text = MAIN_SKILL.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "Keep these parser-significant metadata keys exactly in English: "
+            "`Date`, `Reviewer`, `Scope`, `Repository`, and `Language`.",
+            skill_text,
+        )
+        self.assertIn(
+            "Translate narrative headings, finding descriptions, conditional prose, "
+            "and table headers or values when appropriate.",
+            skill_text,
+        )
+        for key in ("Date", "Reviewer", "Scope", "Repository", "Language"):
+            with self.subTest(key=key):
+                self.assertIn(f"**{key}:**", skill_text)
+        self.assertIn("**Language:** ko", skill_text)
+        self.assertNotIn("Table headers and metadata labels", skill_text)
+
+    def test_main_skill_splits_conversation_and_persisted_output_modes(self) -> None:
+        skill_text = MAIN_SKILL.read_text(encoding="utf-8")
+        conversation_heading = "#### Conversation-only mode (`/code-review`)"
+        persisted_heading = (
+            "#### Persisted report modes (`/code-review-md` and `/code-review-html`)"
+        )
+
+        conversation_index = skill_text.index(conversation_heading)
+        persisted_index = skill_text.index(persisted_heading)
+        self.assertLess(conversation_index, persisted_index)
+
+        conversation_contract = skill_text[conversation_index:persisted_index]
+        self.assertIn(
+            "Start the user-visible response with the first actionable finding or "
+            "the verified no-findings result.",
+            conversation_contract,
+        )
+        self.assertIn("The findings are the complete output.", conversation_contract)
+        self.assertIn(
+            "Do not write files, mention artifact paths, or add a recap.",
+            conversation_contract,
+        )
+
+        persisted_contract = skill_text[persisted_index:]
+        self.assertIn(
+            "Start the report with its title and parser-significant metadata, then "
+            "present findings.",
+            persisted_contract,
+        )
+        self.assertIn("Use a fact-only handoff after generation", persisted_contract)
+        self.assertIn(
+            "The `.reviews/` ignore suggestion is allowed in this handoff only when "
+            "persisted artifacts were generated and `.reviews/` is not ignored.",
+            persisted_contract,
+        )
+        self.assertIn("### 6. Finish by output mode", skill_text)
+        self.assertNotIn(
+            "- Start with the first actionable finding or the verified result.",
+            skill_text,
+        )
+        self.assertNotIn("at most one urgent finding inline", skill_text)
 
     def test_code_review_prompts_remove_mandatory_padding_and_uncertain_info(self) -> None:
         prompt_paths = (MAIN_SKILL, *WRAPPER_SKILLS, *COMMANDS)
@@ -122,26 +182,45 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
                 self.assertIn("artifact path", wrapper)
                 self.assertIn("fresh verification", wrapper)
                 self.assertIn("Do not repeat report prose", wrapper)
+                self.assertIn("persisted", wrapper.lower())
+                self.assertIn(
+                    "Include a `.reviews/` ignore suggestion in this handoff only when "
+                    "artifacts were generated and `.reviews/` is not ignored.",
+                    wrapper,
+                )
+                self.assertNotIn("urgent finding inline", wrapper)
         html_wrapper = WRAPPER_SKILLS[1].read_text(encoding="utf-8")
         self.assertIn("browser-open", html_wrapper)
 
-    def test_all_review_commands_require_evidence_first_output_without_preambles(self) -> None:
+    def test_all_review_commands_route_internally_without_user_visible_preambles(self) -> None:
+        routing = {
+            "code-review.md": "code-review",
+            "code-review-md.md": "code-review-md",
+            "code-review-html.md": "code-review-html",
+            "diff-summary.md": "diff-summary",
+        }
         expected_fragments = {
             "code-review.md": (
-                "Start with the first actionable finding or the verified no-findings result",
-                "no command or skill preamble",
+                "The user-visible response starts with the first actionable finding or "
+                "the verified no-findings result",
+                "Findings are the complete output",
+                "Do not write files or mention artifact paths",
             ),
             "code-review-md.md": (
+                "fact-only handoff",
                 "finding counts by severity",
                 "fresh verification",
             ),
             "code-review-html.md": (
+                "bilingual",
+                "fact-only handoff",
                 "finding counts by severity",
                 "browser-open fact",
             ),
             "diff-summary.md": (
-                "Follow the evidence-first summary contract",
-                "Do not repeat card prose",
+                "packaged evidence collector",
+                "artifact and verification facts only",
+                "Do not repeat card or Executive Summary prose",
             ),
         }
 
@@ -149,15 +228,17 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
             command = path.read_text(encoding="utf-8")
             with self.subTest(path=path.relative_to(ROOT)):
                 self.assertIn("evidence-first", command.lower())
-                self.assertNotRegex(
+                self.assertIn(
+                    f"Apply the **{routing[path.name]}** skill internally. Do not "
+                    "echo or announce this routing instruction.",
                     command,
-                    re.compile(
-                        r"^Use (?:the )?(?:\*\*)?[^\n]+skill",
-                        re.IGNORECASE | re.MULTILINE,
-                    ),
                 )
+                self.assertNotIn("Before starting", command)
+                self.assertNotIn("briefly tell", command.lower())
+                self.assertNotIn("**Announce at start:**", command)
                 self.assertNotIn("brief summary", command.lower())
                 self.assertNotRegex(command, r"top 1[-–]3")
+                self.assertNotIn("urgent finding inline", command)
                 for fragment in expected_fragments[path.name]:
                     self.assertIn(fragment, command)
 

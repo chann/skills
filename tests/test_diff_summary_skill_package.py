@@ -241,10 +241,24 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self.assertLess(verified_claims, writing_contract)
         self.assertLess(writing_contract, report_contract)
 
+        for handoff_fact in (
+            "Report only these artifact and verification facts:",
+            "The exact requested scope and exact evidence command.",
+            "The generated card count and report language.",
+            "The absolute Markdown and HTML output paths.",
+            "The browser-open result or retained-file warning.",
+            "Fresh verification performed and material unknowns that remain unverified.",
+            "Do not repeat card or Executive Summary prose, even for one-card "
+            "mechanical diffs.",
+        ):
+            with self.subTest(handoff_fact=handoff_fact):
+                self.assertIn(handoff_fact, skill_text)
+
         for stale_fragment in (
             "**Announce at start:**",
             "[Two or three evidence-based sentences about the change set.]",
             "The key `DS-*` summaries",
+            "Lead with the verified result and its most decision-relevant consequence",
         ):
             with self.subTest(stale_fragment=stale_fragment):
                 self.assertNotIn(stale_fragment, skill_text)
@@ -1046,14 +1060,18 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         command_text = command_path.read_text(encoding="utf-8")
 
         self.assertIn('argument-hint: "[scope]"', command_text)
-        self.assertIn("Follow the evidence-first summary contract", command_text)
-        self.assertNotIn("Use the **diff-summary** skill", command_text)
+        self.assertIn(
+            "Apply the **diff-summary** skill internally. Do not echo or announce "
+            "this routing instruction.",
+            command_text,
+        )
         self.assertIn("packaged evidence collector", command_text)
         self.assertIn("Preserve the exact user-specified scope", command_text)
         self.assertIn("Markdown", command_text)
         self.assertIn("HTML", command_text)
         self.assertIn("open", command_text.lower())
-        self.assertIn("Do not repeat card prose", command_text)
+        self.assertIn("artifact and verification facts only", command_text)
+        self.assertIn("Do not repeat card or Executive Summary prose", command_text)
 
     def test_skills_cli_discovers_exact_diff_summary_name(self) -> None:
         env = os.environ.copy()
