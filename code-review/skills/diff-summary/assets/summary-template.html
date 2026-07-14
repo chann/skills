@@ -42,6 +42,7 @@
       --border: #e4e4e7;
       --input: #e4e4e7;
       --ring: #18181b;
+      --impact-high: #92400e;
       --positive: #216849;
       --positive-soft: #d9eee3;
       --destructive-soft: color-mix(in srgb, var(--destructive) 14%, var(--card));
@@ -75,6 +76,7 @@
       --border: #27272a;
       --input: #27272a;
       --ring: #d4d4d8;
+      --impact-high: #fbbf24;
       --positive: #7ecba7;
       --positive-soft: #193b30;
       color-scheme: dark;
@@ -106,6 +108,7 @@
         --border: #27272a;
         --input: #27272a;
         --ring: #d4d4d8;
+        --impact-high: #fbbf24;
         --positive: #7ecba7;
         --positive-soft: #193b30;
         color-scheme: dark;
@@ -238,7 +241,7 @@
 
     .rail-registration {
       margin-bottom: 1.5rem;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-family: var(--font-mono);
       font-size: 0.65rem;
       letter-spacing: 0.14em;
@@ -305,7 +308,7 @@
     .atlas-sidebar-label {
       display: block;
       margin-bottom: 0.6rem;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-size: 0.67rem;
       font-weight: 750;
       letter-spacing: 0.16em;
@@ -339,7 +342,7 @@
 
     .section-index-item--h3 a {
       padding-left: 0.85rem;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-size: 0.72rem;
     }
 
@@ -352,7 +355,7 @@
     .comment-panel-title,
     .rail-actions-label {
       margin: 0 0 0.55rem;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-size: 0.67rem;
       font-weight: 800;
       letter-spacing: 0.14em;
@@ -361,7 +364,7 @@
 
     .comment-empty {
       margin: 0;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-size: 0.72rem;
       line-height: 1.4;
     }
@@ -420,7 +423,7 @@
     }
 
     .index-mark {
-      color: var(--ring);
+      color: var(--foreground);
       font-family: var(--font-mono);
       text-align: center;
     }
@@ -620,7 +623,7 @@
     }
 
     .summary-card.impact-high {
-      border-left-color: var(--ring);
+      border-left-color: var(--impact-high);
     }
 
     .card-summary {
@@ -713,6 +716,12 @@
     .badge--impact {
       background: var(--secondary);
       color: var(--secondary-foreground);
+    }
+
+    .summary-card.impact-high .badge--impact {
+      border-color: var(--impact-high);
+      background: var(--card);
+      color: var(--impact-high);
     }
 
     .comment-count {
@@ -808,7 +817,7 @@
       margin-top: 1rem;
       padding: 1rem;
       border: 1px solid var(--border);
-      border-left: 4px solid var(--ring);
+      border-left: 4px solid var(--primary);
       background: color-mix(in srgb, var(--muted) 68%, transparent);
     }
 
@@ -1228,6 +1237,7 @@
         --border: #e4e4e7;
         --input: #e4e4e7;
         --ring: #18181b;
+        --impact-high: #92400e;
         background: var(--background);
         color: var(--foreground);
         font-size: 10pt;
