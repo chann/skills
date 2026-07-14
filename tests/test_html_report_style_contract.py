@@ -43,6 +43,40 @@ LEGACY_TOKENS = {
     "diff-viewer": ("bg", "surface", "surface-muted", "text"),
     "code-review-html": ("bg", "surface", "surface-muted", "text"),
 }
+PRIMARY_CONTROL_SELECTORS = {
+    "diff-viewer": (
+        'button[aria-pressed="true"]',
+        ".copy-md-btn",
+        ".btn-comment.btn-save",
+    ),
+    "code-review-html": (
+        '.control button[aria-pressed="true"]',
+        ".copy-md-btn",
+        ".diff-toggle.active",
+        ".btn-comment.btn-save",
+    ),
+}
+SMALL_SIDEBAR_TEXT_SELECTORS = {
+    "diff-viewer": (
+        ".icon-btn",
+        ".brand",
+        ".repo",
+        ".nav-list a",
+        ".comment-panel-title",
+        ".comment-list button",
+        ".comment-list .comment-empty",
+    ),
+    "code-review-html": (
+        ".icon-btn",
+        ".brand",
+        ".repo",
+        ".nav-lang a",
+        ".comment-panel-title",
+        ".comment-list button",
+        ".comment-list .comment-empty",
+        ".copy-md-btn.secondary",
+    ),
+}
 TOKENS = (
     "background",
     "foreground",
@@ -379,8 +413,9 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 re.DOTALL,
             )
             hover_rule = re.search(
-                r"button:hover:not\(:disabled\)\s*,\s*"
-                r"select:hover:not\(:disabled\)\s*\{(?P<body>.*?)\}",
+                r"button:where\(\s*:hover:not\(:disabled\)\s*\)\s*,\s*"
+                r"select:where\(\s*:hover:not\(:disabled\)\s*\)\s*"
+                r"\{(?P<body>.*?)\}",
                 source,
                 re.DOTALL,
             )
@@ -407,6 +442,11 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 )
             with self.subTest(template=name, component="control-hover"):
                 self.assertIsNotNone(hover_rule)
+                self.assertNotRegex(
+                    source,
+                    r"button:hover:not\(:disabled\)\s*,\s*"
+                    r"select:hover:not\(:disabled\)\s*\{",
+                )
                 declarations = hover_rule.group("body")
                 self.assertRegex(
                     declarations,
@@ -417,17 +457,74 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     r"color:\s*var\(--accent-foreground\)\s*;",
                 )
 
+    def test_viewer_and_review_preserve_complete_control_state_pairs(self) -> None:
+        for name in ("diff-viewer", "code-review-html"):
+            source = self.templates[name]
+            destructive_rule = css_rule(
+                source,
+                ".clear-comments-btn:hover:not(:disabled)",
+            )
+
+            for property_name, token in (
+                ("background", "destructive"),
+                ("color", "destructive-foreground"),
+                ("border-color", "destructive"),
+            ):
+                with self.subTest(
+                    template=name,
+                    state="destructive",
+                    property=property_name,
+                ):
+                    self.assertRegex(
+                        destructive_rule,
+                        rf"{property_name}:\s*var\(--{token}\)"
+                        r"(?:\s*!important)?\s*;",
+                    )
+
+            for selector in PRIMARY_CONTROL_SELECTORS[name]:
+                state_rule = css_rule(source, selector)
+                with self.subTest(
+                    template=name,
+                    state="primary",
+                    selector=selector,
+                ):
+                    self.assertRegex(
+                        state_rule,
+                        r"background:\s*var\(--primary\)\s*;",
+                    )
+                    self.assertRegex(
+                        state_rule,
+                        r"color:\s*var\(--primary-foreground\)\s*;",
+                    )
+
+            copied_rule = css_rule(source, ".copy-md-btn.copied")
+            with self.subTest(template=name, state="copied"):
+                self.assertRegex(copied_rule, r"background:\s*[^;]+;")
+                self.assertNotRegex(
+                    copied_rule,
+                    r"var\(--accent(?:-foreground)?\)",
+                )
+
     def test_diff_viewer_has_print_layout_contract(self) -> None:
         print_rule = css_rule(self.templates["diff-viewer"], "@media print")
         for selector in (
             "aside",
             ".sidebar-expand",
             ".topbar .controls",
-            ".comment-thread",
-            ".line-comment-marker",
+            ".comment-row",
+            ".comment-input-row",
         ):
             with self.subTest(selector=selector):
                 self.assertIn(selector, print_rule)
+        self.assertNotIn(".line-comment-marker", print_rule)
+        self.assertIn(
+            'tr.className = "comment-row";',
+            self.templates["diff-viewer"],
+        )
+        self.assertIn(
+            'tr.className = "comment-input-row";',
+            self.templates["diff-viewer"],
+        )
         self.assertRegex(print_rule, r"\.layout\s*\{[^}]*display:\s*block\s*;")
         self.assertRegex(print_rule, r"main\s*\{[^}]*padding:\s*0\s*;")
         self.assertRegex(
@@ -457,6 +554,32 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             with self.subTest(selector=selector):
                 rule = css_rule_containing_selector(self.template, selector)
                 self.assertRegex(rule, r"color:\s*var\(--foreground\)\s*;")
+
+    def test_viewer_and_review_small_sidebar_text_is_accessible(self) -> None:
+        for name, selectors in SMALL_SIDEBAR_TEXT_SELECTORS.items():
+            source = self.templates[name]
+
+            for selector in selectors:
+                with self.subTest(template=name, selector=selector):
+                    rule = css_rule_containing_selector(source, selector)
+                    self.assertRegex(
+                        rule,
+                        r"color:\s*var\(--foreground\)\s*;",
+                    )
+
+            for theme, selector in (
+                ("light", ":root"),
+                ("dark", 'html[data-page-theme="dark"]'),
+            ):
+                declarations = custom_properties(css_rule(source, selector))
+                with self.subTest(template=name, theme=theme):
+                    self.assertGreaterEqual(
+                        contrast_ratio(
+                            declarations["foreground"],
+                            declarations["muted"],
+                        ),
+                        4.5,
+                    )
 
     def test_diff_summary_high_impact_uses_distinct_accessible_status_token(
         self,

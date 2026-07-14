@@ -119,8 +119,8 @@
       padding: 4px 8px;
     }
 
-    button:hover:not(:disabled),
-    select:hover:not(:disabled) {
+    button:where(:hover:not(:disabled)),
+    select:where(:hover:not(:disabled)) {
       background: var(--accent);
       color: var(--accent-foreground);
     }
@@ -169,7 +169,7 @@
 
     .icon-btn {
       background: transparent;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       padding: 3px 6px;
       cursor: pointer;
       font-size: 12px;
@@ -184,7 +184,7 @@
     .brand {
       font-size: 11px;
       font-weight: 700;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       letter-spacing: 0.05em;
       text-transform: uppercase;
       margin: 0;
@@ -198,7 +198,7 @@
 
     .repo {
       overflow-wrap: anywhere;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-family: var(--font-mono);
       font-size: 10px;
       line-height: 1.35;
@@ -217,7 +217,7 @@
     .nav-lang a {
       display: block;
       border-radius: calc(var(--radius) - 2px);
-      color: var(--muted-foreground);
+      color: var(--foreground);
       padding: 3px 6px;
       font-size: 12px;
       line-height: 1.35;
@@ -236,7 +236,7 @@
     }
 
     .comment-panel-title {
-      color: var(--muted-foreground);
+      color: var(--foreground);
       font-size: 11px;
       font-weight: 700;
       margin: 0 0 4px;
@@ -255,7 +255,7 @@
     .comment-list button {
       width: 100%;
       background: transparent;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       cursor: pointer;
       display: block;
       font-size: 11px;
@@ -268,7 +268,7 @@
 
     .comment-list button:hover,
     .comment-list button:focus-visible { background: var(--accent); color: var(--accent-foreground); }
-    .comment-list .comment-empty { color: var(--muted-foreground); font-size: 11px; padding: 4px 6px; }
+    .comment-list .comment-empty { color: var(--foreground); font-size: 11px; padding: 4px 6px; }
 
     .sidebar-footer {
       border-top: 1px solid var(--border);
@@ -296,7 +296,7 @@
 
     .copy-md-btn.secondary {
       background: transparent;
-      color: var(--muted-foreground);
+      color: var(--foreground);
       border: 1px solid var(--border);
     }
 
@@ -379,7 +379,11 @@
       color: var(--muted-foreground) !important;
       white-space: nowrap;
     }
-    .clear-comments-btn:hover:not(:disabled) { border-color: var(--destructive) !important; color: var(--destructive) !important; }
+    .clear-comments-btn:hover:not(:disabled) {
+      background: var(--destructive) !important;
+      border-color: var(--destructive) !important;
+      color: var(--destructive-foreground) !important;
+    }
     .clear-comments-btn:disabled { cursor: default; }
 
     /* ---------------- Language bodies ---------------- */
