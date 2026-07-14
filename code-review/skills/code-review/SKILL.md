@@ -171,7 +171,7 @@ This contract is authoritative for interactive, Markdown, and HTML reviews.
 # Code Review Report
 
 **Date:** YYYY-MM-DD
-**Reviewer:** Codex (automated)
+**Reviewer:** automated review
 **Scope:** [e.g., "Staged changes", "Commits a1b2c3d..f4e5d6a on branch feature-auth"]
 **Repository:** [repo name]
 **Language:** en

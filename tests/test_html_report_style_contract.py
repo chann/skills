@@ -655,6 +655,50 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             r"overflow-x:\s*visible\s*;",
         )
 
+    def test_code_review_muted_microcopy_binds_accessible_token_pairs(
+        self,
+    ) -> None:
+        source = self.templates["code-review-html"]
+        selector_pairs = (
+            ("table:not(.diff-table) th", "table:not(.diff-table) th"),
+            (".finding-tool-btn", ".finding-tool-btn"),
+            (".comment-meta", ".comment"),
+        )
+
+        for text_selector, surface_selector in selector_pairs:
+            text_rule = css_rule(source, text_selector)
+            surface_rule = css_rule(source, surface_selector)
+            color_match = re.search(
+                r"color:\s*var\(--([\w-]+)\)\s*;",
+                text_rule,
+            )
+            background_match = re.search(
+                r"background:\s*var\(--([\w-]+)\)\s*;",
+                surface_rule,
+            )
+
+            with self.subTest(selector=text_selector, contract="tokens"):
+                self.assertIsNotNone(color_match)
+                self.assertIsNotNone(background_match)
+                self.assertEqual(color_match.group(1), "foreground")
+                self.assertEqual(background_match.group(1), "muted")
+
+            for theme, theme_selector in (
+                ("light", ":root"),
+                ("dark", 'html[data-page-theme="dark"]'),
+            ):
+                declarations = custom_properties(
+                    css_rule(source, theme_selector)
+                )
+                with self.subTest(selector=text_selector, theme=theme):
+                    self.assertGreaterEqual(
+                        contrast_ratio(
+                            declarations[color_match.group(1)],
+                            declarations[background_match.group(1)],
+                        ),
+                        4.5,
+                    )
+
     def test_diff_summary_small_rail_labels_use_accessible_foreground(self) -> None:
         rail_label_selectors = (
             ".rail-registration",

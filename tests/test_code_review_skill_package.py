@@ -104,6 +104,12 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
         self.assertIn("**Language:** ko", skill_text)
         self.assertNotIn("Table headers and metadata labels", skill_text)
 
+    def test_persisted_report_example_uses_vendor_neutral_reviewer(self) -> None:
+        skill_text = MAIN_SKILL.read_text(encoding="utf-8")
+
+        self.assertIn("**Reviewer:** automated review", skill_text)
+        self.assertNotIn("**Reviewer:** Codex", skill_text)
+
     def test_main_skill_splits_conversation_and_persisted_output_modes(self) -> None:
         skill_text = MAIN_SKILL.read_text(encoding="utf-8")
         conversation_heading = "#### Conversation-only mode (`/code-review`)"
