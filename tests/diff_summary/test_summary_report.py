@@ -108,6 +108,30 @@ METADATA_LINES = {
 }
 
 
+QUIZ_SECTION = """## Quiz
+
+#### [QZ-001] What does separating the parser protect?
+
+짧은 근거 문단이 질문 앞에 올 수 있습니다.
+
+- [ ] Rendering speed
+- [x] Input contract validation in `parse_report`
+- [ ] Browser storage of <script>alert("quiz")</script>
+
+**Explanation:** `parse_report` validates the report contract in one place before rendering.
+
+#### [QZ-002] Which scope stays byte-identical?
+
+- [x] `main..dev`
+- [ ] `main...dev`
+
+**Explanation:** The requested two-dot scope is preserved exactly.
+"""
+
+
+QUIZ_REPORT = REPORT + "\n" + QUIZ_SECTION
+
+
 def replace_once(markdown: str, old: str, new: str) -> str:
     if markdown.count(old) != 1:
         raise AssertionError(f"fixture fragment must occur exactly once: {old!r}")
@@ -550,6 +574,7 @@ TEMPLATE_PLACEHOLDERS = (
     "__REPORT_LANGUAGE__",
     "__REPORT_METADATA__",
     "__REPORT_BODY__",
+    "__SIDEBAR_REPOSITORY__",
     "__SIDEBAR_NAV__",
     "__SUMMARY_DATA__",
     "__RAW_MARKDOWN__",
@@ -559,16 +584,55 @@ TEMPLATE_PLACEHOLDERS = (
 
 
 class _MarkupInventory(HTMLParser):
+    _VOID_ELEMENTS = {
+        "area",
+        "base",
+        "br",
+        "col",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    }
+
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.elements: list[tuple[str, dict[str, str | None]]] = []
+        self.ancestors: list[
+            tuple[tuple[str, dict[str, str | None]], ...]
+        ] = []
+        self._open_elements: list[tuple[str, dict[str, str | None]]] = []
 
     def handle_starttag(
         self,
         tag: str,
         attrs: list[tuple[str, str | None]],
     ) -> None:
+        attributes = dict(attrs)
+        self.elements.append((tag, attributes))
+        self.ancestors.append(tuple(self._open_elements))
+        if tag not in self._VOID_ELEMENTS:
+            self._open_elements.append((tag, attributes))
+
+    def handle_startendtag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
         self.elements.append((tag, dict(attrs)))
+        self.ancestors.append(tuple(self._open_elements))
+
+    def handle_endtag(self, tag: str) -> None:
+        for index in range(len(self._open_elements) - 1, -1, -1):
+            if self._open_elements[index][0] == tag:
+                del self._open_elements[index:]
+                return
 
 
 def extract_json_script(rendered: str, element_id: str):
@@ -802,6 +866,14 @@ const controls = {
   feedback: new FakeElement("button"),
   clear: new FakeElement("button"),
 };
+const printControl = new FakeElement("button");
+printControl.dataset.printReport = "";
+const sidebarToggle = new FakeElement("button");
+sidebarToggle.dataset.sidebarToggle = "";
+sidebarToggle.dataset.testFocus = "sidebar-toggle";
+const sidebarExpand = new FakeElement("button");
+sidebarExpand.dataset.sidebarExpand = "";
+sidebarExpand.dataset.testFocus = "sidebar-expand";
 controls.add.dataset.addComment = "DS-001";
 controls.feedback.dataset.copyFeedback = "";
 controls.clear.dataset.clearComments = "";
@@ -813,6 +885,34 @@ if (cards[0]) {
   cards[0].append(panel);
 }
 
+const quizElements = (scenario.quizQuestions || []).map((spec) => {
+  const question = new FakeElement("section", ["quiz-question"]);
+  question.dataset.quizId = spec.id;
+  const list = new FakeElement("ol", ["quiz-options"]);
+  const optionButtons = [];
+  for (let index = 0; index < spec.options; index += 1) {
+    const item = new FakeElement("li", ["quiz-option-item"]);
+    const button = new FakeElement("button", ["quiz-option"]);
+    button.dataset.quizId = spec.id;
+    button.dataset.quizOption = String(index);
+    button.dataset.quizLabel = (spec.labels || [])[index] || `Option ${index + 1}`;
+    button.setAttribute("aria-pressed", "false");
+    if (index === spec.correct) {
+      button.dataset.quizCorrect = "";
+    }
+    item.append(button);
+    list.append(item);
+    optionButtons.push(button);
+  }
+  const status = new FakeElement("p", ["quiz-status"]);
+  status.dataset.quizStatus = "";
+  status.hidden = true;
+  const explanation = new FakeElement("details", ["quiz-explanation"]);
+  explanation.open = Boolean(spec.explanationOpen);
+  question.append(list, status, explanation);
+  return { question, optionButtons, status, explanation };
+});
+
 const selectorLists = new Map([
   [".summary-card[data-summary-id]", cards],
   [".metadata-cell", []],
@@ -821,13 +921,22 @@ const selectorLists = new Map([
   ["[data-clear-comments]", [controls.clear]],
   ["[data-copy-summary]", []],
   [".card-files-title", []],
+  [".quiz-question[data-quiz-id]", quizElements.map((entry) => entry.question)],
+  ["[data-quiz-option]", quizElements.flatMap((entry) => entry.optionButtons)],
+  [".quiz-explanation", quizElements.map((entry) => entry.explanation)],
+  [".quiz-explanation-title", []],
+  ["[data-print-report]", [printControl]],
 ]);
 const selectorSingles = new Map([
   [".report-header", header],
   ["[data-copy-feedback]", controls.feedback],
   ["[data-clear-comments]", controls.clear],
+  ["[data-sidebar-toggle]", sidebarToggle],
+  ["[data-sidebar-expand]", sidebarExpand],
+  ["[data-print-report]", printControl],
 ]);
 
+const documentListeners = new Map();
 globalThis.document = {
   body,
   documentElement,
@@ -836,7 +945,14 @@ globalThis.document = {
   querySelector(selector) { return selectorSingles.get(selector) || null; },
   querySelectorAll(selector) { return selectorLists.get(selector) || []; },
   createElement(tagName) { return new FakeElement(tagName); },
-  addEventListener() {},
+  addEventListener(type, listener) {
+    if (!documentListeners.has(type)) documentListeners.set(type, []);
+    documentListeners.get(type).push(listener);
+  },
+  dispatchEvent(event) {
+    (documentListeners.get(event.type) || []).forEach((listener) => listener(event));
+    return true;
+  },
   execCommand() {
     if (scenario.execCommandThrows) throw new Error("copy denied");
     return Boolean(scenario.execCommandResult);
@@ -845,6 +961,17 @@ globalThis.document = {
 globalThis.Element = FakeElement;
 globalThis.window = globalThis;
 window.confirm = () => true;
+let printCalls = 0;
+window.print = () => { printCalls += 1; };
+const windowListeners = new Map();
+window.addEventListener = (type, listener) => {
+  if (!windowListeners.has(type)) windowListeners.set(type, []);
+  windowListeners.get(type).push(listener);
+};
+window.dispatchEvent = (event) => {
+  (windowListeners.get(event.type) || []).forEach((listener) => listener(event));
+  return true;
+};
 const origin = controls.add;
 origin.dataset.testFocus = "origin";
 document.activeElement = origin;
@@ -890,6 +1017,9 @@ vm.runInThisContext(runtimeSource, { filename: "diff-summary-runtime.js" });
   let afterCopy = null;
   let afterDismiss = null;
   let afterCommentCommit = null;
+  let quizPrintStates = null;
+  let sidebarFocusStates = null;
+  const quizAnswerResults = [];
   if (scenario.action === "copy-failure") {
     await bridge.copyText(scenario.copyText, "copied", "copy failed");
     afterCopy = bridge.getState();
@@ -905,15 +1035,76 @@ vm.runInThisContext(runtimeSource, { filename: "diff-summary-runtime.js" });
     bridge.openCommentEditor("DS-001", null, origin);
     bridge.commitActiveComment(scenario.commentText);
     afterCommentCommit = bridge.getState();
+  } else if (scenario.action === "quiz-answer") {
+    if (typeof bridge.answerQuiz !== "function") {
+      throw new Error("quiz runtime bridge missing");
+    }
+    quizAnswerResults.push(
+      bridge.answerQuiz(scenario.quizAnswerId, scenario.quizAnswerIndex),
+    );
+    if (scenario.quizRepeatIndex !== undefined) {
+      quizAnswerResults.push(
+        bridge.answerQuiz(scenario.quizAnswerId, scenario.quizRepeatIndex),
+      );
+    }
+  } else if (scenario.action === "quiz-print") {
+    const openStates = () => quizElements.map(
+      (entry) => Boolean(entry.explanation.open),
+    );
+    const beforePrint = openStates();
+    window.dispatchEvent({ type: "beforeprint" });
+    const duringPrint = openStates();
+    window.dispatchEvent({ type: "afterprint" });
+    quizPrintStates = { beforePrint, duringPrint, afterPrint: openStates() };
+  } else if (scenario.action === "print-control") {
+    document.dispatchEvent({ type: "click", target: printControl });
+  } else if (scenario.action === "sidebar-focus") {
+    document.dispatchEvent({ type: "click", target: sidebarToggle });
+    const afterCollapse = bridge.getState().activeFocus;
+    document.dispatchEvent({ type: "click", target: sidebarExpand });
+    sidebarFocusStates = {
+      afterCollapse,
+      afterExpand: bridge.getState().activeFocus,
+    };
+  } else if (scenario.action === "sidebar-programmatic") {
+    bridge.setSidebarCollapsed(true);
+    const afterCollapse = bridge.getState().activeFocus;
+    bridge.setSidebarCollapsed(false);
+    sidebarFocusStates = {
+      afterCollapse,
+      afterExpand: bridge.getState().activeFocus,
+    };
   }
   console.log(JSON.stringify({
     before,
     afterCopy,
     afterDismiss,
     afterCommentCommit,
+    quizPrintStates,
+    sidebarFocusStates,
+    quizAnswerResults,
+    quiz: quizElements.map((entry) => ({
+      id: entry.question.dataset.quizId,
+      answered: entry.question.dataset.quizAnswered || null,
+      statusHidden: entry.status.hidden,
+      statusText: entry.status.textContent,
+      statusTone: entry.status.dataset.tone || null,
+      explanationOpen: Boolean(entry.explanation.open),
+      options: entry.optionButtons.map((button) => ({
+        disabled: button.disabled,
+        classes: Array.from(button.classList.names).sort(),
+        ariaLabel: button.getAttribute("aria-label"),
+        ariaPressed: button.getAttribute("aria-pressed"),
+      })),
+    })),
     status: status.textContent,
     tone: status.dataset.tone || null,
     storageCalls,
+    printCalls,
+    printControl: {
+      textContent: printControl.textContent,
+      ariaLabel: printControl.getAttribute("aria-label"),
+    },
     controls: {
       addDisabled: controls.add.disabled,
       feedbackDisabled: controls.feedback.disabled,
@@ -1237,6 +1428,172 @@ class HtmlAssemblyTests(unittest.TestCase):
             with self.subTest(editorial_copy=editorial_copy):
                 self.assertNotIn(editorial_copy, rendered)
 
+    def test_non_quiz_long_prose_and_section_titles_render_on_wrapping_surfaces(
+        self,
+    ) -> None:
+        long_section = "OrdinarySectionIdentifier" * 24
+        long_prose = "OrdinaryExecutiveSummaryProse" * 24
+        report = replace_once(REPORT, "## Notes", f"## {long_section}")
+        report = replace_once(
+            report,
+            "Generated footer outside the summary cards.",
+            long_prose,
+        )
+
+        rendered = renderer.assemble_html(
+            parse_report(report),
+            renderer.load_template(),
+        )
+
+        self.assertGreaterEqual(rendered.count(long_section), 2)
+        self.assertIn(f"<p>{long_prose}</p>", rendered)
+        self.assertIn('class="section-index-item section-index-item--h2"', rendered)
+
+    def test_generated_report_uses_shared_shell_with_escaped_sidebar_repository(
+        self,
+    ) -> None:
+        report = REPORT.replace(
+            "**Repository:** chann/skills",
+            "**Repository:** repo<&>",
+            1,
+        )
+        rendered = renderer.assemble_html(
+            parse_report(report), renderer.load_template()
+        )
+        inventory = _MarkupInventory()
+        inventory.feed(rendered)
+
+        def has_class(tag_name: str, class_name: str) -> bool:
+            return any(
+                tag == tag_name
+                and class_name in (attrs.get("class") or "").split()
+                for tag, attrs in inventory.elements
+            )
+
+        html_attrs = next(attrs for tag, attrs in inventory.elements if tag == "html")
+        navigation = next(
+            attrs
+            for tag, attrs in inventory.elements
+            if tag == "nav" and attrs.get("id") == "report-sections"
+        )
+        headings = [
+            attrs
+            for tag, attrs in inventory.elements
+            if tag == "h1" and attrs.get("id") == "report-title"
+        ]
+
+        self.assertEqual(html_attrs["data-sidebar-collapsed"], "false")
+        for tag_name, class_name in (
+            ("div", "layout"),
+            ("div", "sidebar-header"),
+            ("div", "sidebar-body"),
+            ("div", "sidebar-footer"),
+            ("div", "main-column"),
+            ("div", "topbar"),
+            ("div", "controls"),
+            ("div", "control"),
+        ):
+            with self.subTest(tag=tag_name, class_name=class_name):
+                self.assertTrue(has_class(tag_name, class_name))
+
+        self.assertTrue(
+            any(
+                tag == "aside" and "data-sidebar" in attrs
+                for tag, attrs in inventory.elements
+            )
+        )
+        self.assertEqual(navigation.get("class"), "sidebar-nav")
+        self.assertEqual(len(headings), 1)
+        self.assertEqual(rendered.count('<div class="control">'), 4)
+        for hook in (
+            "data-theme-toggle",
+            "data-copy-feedback",
+            "data-copy-report",
+            "data-print-report",
+        ):
+            with self.subTest(hook=hook):
+                self.assertRegex(
+                    rendered,
+                    rf'<div class="control">\s*<button[^>]*\b{hook}\b',
+                )
+        for hook in (
+            "data-sidebar",
+            "data-sidebar-toggle",
+            "data-sidebar-expand",
+        ):
+            with self.subTest(hook=hook):
+                self.assertIn(hook, rendered)
+        for tag, attrs in inventory.elements:
+            for name, value in attrs.items():
+                if name in {"class", "id"} or name.startswith("data-"):
+                    self.assertNotRegex(name, r"^data-atlas-")
+                    self.assertNotRegex(value or "", r"\batlas-")
+
+        self.assertIn('<div class="repo">repo&lt;&amp;&gt;</div>', rendered)
+        self.assertNotIn("repo<&>", rendered)
+
+    def test_sidebar_expand_is_outside_layout(self) -> None:
+        rendered = renderer.assemble_html(
+            parse_report(REPORT), renderer.load_template()
+        )
+        inventory = _MarkupInventory()
+        inventory.feed(rendered)
+        expand_index = next(
+            index
+            for index, (tag, attrs) in enumerate(inventory.elements)
+            if tag == "button" and "data-sidebar-expand" in attrs
+        )
+
+        self.assertFalse(
+            any(
+                tag == "div" and "layout" in (attrs.get("class") or "").split()
+                for tag, attrs in inventory.ancestors[expand_index]
+            )
+        )
+
+    def test_report_main_contains_header_body_and_footer(self) -> None:
+        rendered = renderer.assemble_html(
+            parse_report(REPORT), renderer.load_template()
+        )
+        inventory = _MarkupInventory()
+        inventory.feed(rendered)
+
+        def element_index(tag_name: str, class_name: str | None = None) -> int:
+            return next(
+                index
+                for index, (tag, attrs) in enumerate(inventory.elements)
+                if tag == tag_name
+                and (
+                    class_name is None
+                    or class_name in (attrs.get("class") or "").split()
+                )
+            )
+
+        header_index = element_index("header", "report-header")
+        body_heading_index = next(
+            index
+            for index, (tag, attrs) in enumerate(inventory.elements)
+            if tag == "h2" and attrs.get("id") == "executive-summary"
+        )
+        footer_index = element_index("footer", "report-footer")
+
+        for label, index in (
+            ("metadata", header_index),
+            ("report body", body_heading_index),
+            ("footer", footer_index),
+        ):
+            with self.subTest(region=label):
+                self.assertTrue(
+                    any(
+                        tag == "main" and attrs.get("id") == "report-main"
+                        for tag, attrs in inventory.ancestors[index]
+                    )
+                )
+        self.assertEqual(
+            inventory.ancestors[body_heading_index][-1][1].get("id"),
+            "report-main",
+        )
+
     def test_card_header_grid_assigns_each_element_to_an_explicit_column(self) -> None:
         template = renderer.load_template()
 
@@ -1250,7 +1607,7 @@ class HtmlAssemblyTests(unittest.TestCase):
         self.assertRegex(css_rule(template, ".card-heading"), r"grid-column:\s*2\s*;")
         self.assertRegex(css_rule(template, ".card-badges"), r"grid-column:\s*3\s*;")
 
-        mobile = template[template.index("@media (max-width: 46rem)") :]
+        mobile = template[template.index("@media (max-width: 860px)") :]
         self.assertRegex(
             css_rule(mobile, ".card-summary"),
             r"grid-template-columns:\s*auto\s+minmax\(0,\s*1fr\)\s*;",
@@ -1276,13 +1633,21 @@ class HtmlAssemblyTests(unittest.TestCase):
         navigation = next(
             attrs
             for tag, attrs in inventory.elements
-            if tag == "nav" and "atlas-sidebar" in (attrs.get("class") or "")
+            if tag == "nav" and attrs.get("id") == "report-sections"
+        )
+        expand = next(
+            attrs
+            for tag, attrs in inventory.elements
+            if tag == "button" and "data-sidebar-expand" in attrs
         )
         ids = [attrs["id"] for _, attrs in inventory.elements if "id" in attrs]
 
         self.assertEqual(navigation["id"], "report-sections")
+        self.assertEqual(navigation["class"], "sidebar-nav")
         self.assertEqual(toggle["aria-controls"], "report-sections")
         self.assertEqual(toggle["aria-expanded"], "true")
+        self.assertEqual(expand["aria-controls"], "report-sections")
+        self.assertEqual(expand["aria-expanded"], "true")
         self.assertEqual(len(ids), len(set(ids)))
         self.assertIn("report-sections-2", ids)
         self.assertIn('href="#report-sections-2"', rendered)
@@ -1292,9 +1657,9 @@ class HtmlAssemblyTests(unittest.TestCase):
         rendered = renderer.assemble_html(parsed, renderer.load_template())
 
         self.assertRegex(rendered, re.compile(r"(?i)^<!doctype html>"))
-        self.assertIn('<html lang="ko">', rendered)
+        self.assertIn('<html lang="ko" data-sidebar-collapsed="false">', rendered)
         self.assertIn(
-            '<nav id="report-sections" class="atlas-sidebar" aria-label="Report sections">',
+            '<nav id="report-sections" class="sidebar-nav" aria-label="Report sections">',
             rendered,
         )
         self.assertIn('<main id="report-main"', rendered)
@@ -1384,7 +1749,13 @@ class HtmlAssemblyTests(unittest.TestCase):
             for tag, attrs in inventory.elements
             if tag == "header" and "report-header" in (attrs.get("class") or "")
         )
-        self.assertEqual(html_attrs, {"lang": 'ko" data-pwned="yes'})
+        self.assertEqual(
+            html_attrs,
+            {
+                "lang": 'ko" data-pwned="yes',
+                "data-sidebar-collapsed": "false",
+            },
+        )
         self.assertEqual(header_attrs["data-repository"], 'team "atlas" <repo>')
         self.assertEqual(header_attrs["data-scope"], 'main..dev" data-pwned="yes')
         self.assertNotIn("data-pwned", header_attrs)
@@ -1950,6 +2321,794 @@ class ReportCliTests(unittest.TestCase):
                 self.assertIn("unexpected failure", standard_error.getvalue())
 
 
+def quiz_block(rendered: str, quiz_id: str) -> str:
+    marker = f'data-quiz-id="{quiz_id}"'
+    marker_index = rendered.index(marker)
+    start = rendered.rfind("<section", 0, marker_index)
+    end = rendered.index("</section>", marker_index) + len("</section>")
+    return rendered[start:end]
+
+
+class QuizParsingTests(unittest.TestCase):
+    def test_report_without_quiz_parses_with_empty_quiz_tuple(self) -> None:
+        parsed = parse_report(REPORT)
+
+        self.assertEqual(parsed.quiz, ())
+
+    def test_parses_quiz_questions_options_answers_and_exact_slices(self) -> None:
+        parsed = parse_report(QUIZ_REPORT)
+
+        self.assertEqual(len(parsed.cards), 2)
+        self.assertEqual(len(parsed.quiz), 2)
+        first, second = parsed.quiz
+        self.assertEqual(
+            (first.id, first.title, first.answer_index),
+            ("QZ-001", "What does separating the parser protect?", 1),
+        )
+        self.assertEqual(
+            first.options,
+            (
+                "Rendering speed",
+                "Input contract validation in `parse_report`",
+                'Browser storage of <script>alert("quiz")</script>',
+            ),
+        )
+        self.assertEqual(
+            first.explanation,
+            "`parse_report` validates the report contract in one place "
+            "before rendering.",
+        )
+        self.assertEqual(
+            (second.id, second.answer_index, second.options),
+            ("QZ-002", 0, ("`main..dev`", "`main...dev`")),
+        )
+
+        first_start = QUIZ_REPORT.index("#### [QZ-001]")
+        second_start = QUIZ_REPORT.index("#### [QZ-002]")
+        self.assertEqual(first.markdown, QUIZ_REPORT[first_start:second_start])
+        self.assertEqual(second.markdown, QUIZ_REPORT[second_start:])
+        with self.assertRaises(FrozenInstanceError):
+            first.answer_index = 0  # type: ignore[misc]
+
+    def test_quiz_changes_do_not_change_the_stable_comment_scope(self) -> None:
+        scope = renderer.stable_comment_scope(parse_report(REPORT))
+
+        with_quiz = renderer.stable_comment_scope(parse_report(QUIZ_REPORT))
+        edited_quiz = renderer.stable_comment_scope(
+            parse_report(
+                replace_once(
+                    QUIZ_REPORT,
+                    "Which scope stays byte-identical?",
+                    "Which comparison scope is preserved?",
+                )
+            )
+        )
+
+        self.assertEqual(scope, with_quiz)
+        self.assertEqual(scope, edited_quiz)
+
+    def test_quiz_like_lines_inside_fenced_code_stay_inert(self) -> None:
+        fenced = """```markdown
+## Quiz
+#### [QZ-999] Fake fenced question
+- [x] fake fenced option
+**Explanation:** fenced
+```
+
+"""
+        report = replace_once(
+            QUIZ_REPORT,
+            "짧은 근거 문단이 질문 앞에 올 수 있습니다.",
+            fenced + "짧은 근거 문단이 질문 앞에 올 수 있습니다.",
+        )
+
+        parsed = parse_report(report)
+
+        self.assertEqual([question.id for question in parsed.quiz], ["QZ-001", "QZ-002"])
+        self.assertEqual(len(parsed.quiz[0].options), 3)
+        self.assertIn("#### [QZ-999] Fake fenced question", parsed.quiz[0].markdown)
+
+    def test_rejects_malformed_quiz_question_heading(self) -> None:
+        report = replace_once(QUIZ_REPORT, "#### [QZ-001]", "#### [QZ-01]")
+        heading_line = source_line_number(report, "#### [QZ-01]")
+
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"malformed quiz question heading at line {heading_line}.*QZ-01",
+        ):
+            parse_report(report)
+
+    def test_rejects_quiz_content_before_the_first_question(self) -> None:
+        malformed = replace_once(
+            QUIZ_REPORT,
+            "#### [QZ-001]",
+            "####[QZ-001] Missing required heading space",
+        )
+        malformed_line = source_line_number(
+            malformed, "####[QZ-001] Missing required heading space"
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"Quiz section.*content before.*line {malformed_line}",
+        ):
+            parse_report(malformed)
+
+        stray_option = replace_once(
+            QUIZ_REPORT,
+            "#### [QZ-001]",
+            "- [x] Stray answer marker\n\n#### [QZ-001]",
+        )
+        stray_line = source_line_number(stray_option, "- [x] Stray answer marker")
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"Quiz section.*content before.*line {stray_line}",
+        ):
+            parse_report(stray_option)
+
+    def test_rejects_plain_or_fenced_content_before_the_first_question(self) -> None:
+        for preamble in (
+            "Introductory quiz prose is not allowed here.",
+            "```text\nnot a question\n```",
+        ):
+            report = replace_once(
+                QUIZ_REPORT,
+                "#### [QZ-001]",
+                f"{preamble}\n\n#### [QZ-001]",
+            )
+            preamble_line = source_line_number(report, preamble.splitlines()[0])
+            with self.subTest(preamble=preamble), self.assertRaisesRegex(
+                ReportFormatError,
+                rf"Quiz section.*content before.*line {preamble_line}",
+            ):
+                parse_report(report)
+
+    def test_rejects_an_empty_quiz_section(self) -> None:
+        report = REPORT + "\n## Quiz\n"
+        quiz_line = source_line_number(report, "## Quiz")
+
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"Quiz section at line {quiz_line}.*at least one question",
+        ):
+            parse_report(report)
+
+    def test_rejects_quiz_before_a_later_level_two_section(self) -> None:
+        quiz = QUIZ_REPORT[len(REPORT) + 1 :]
+        report = replace_once(
+            REPORT,
+            "## Notes",
+            f"{quiz}\n## Notes",
+        )
+        quiz_line = source_line_number(report, "## Quiz")
+        later_line = source_line_number(report, "## Notes")
+
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"Quiz section at line {quiz_line}.*final level-two.*line {later_line}",
+        ):
+            parse_report(report)
+
+    def test_rejects_over_indented_quiz_question_heading(self) -> None:
+        report = replace_once(QUIZ_REPORT, "#### [QZ-002]", "    #### [QZ-002]")
+        heading_line = source_line_number(report, "    #### [QZ-002]")
+
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"over-indented.*line {heading_line}.*QZ-002",
+        ):
+            parse_report(report)
+
+    def test_rejects_wrong_level_or_malformed_later_question_headings(self) -> None:
+        for malformed_heading in (
+            "##### [QZ-002] Wrong level",
+            "####[QZ-002] Missing heading space",
+            "    #### [QZ-02] Over-indented and malformed",
+        ):
+            report = replace_once(
+                QUIZ_REPORT,
+                "#### [QZ-002] Which scope stays byte-identical?",
+                malformed_heading,
+            )
+            line = source_line_number(report, malformed_heading)
+            with self.subTest(heading=malformed_heading), self.assertRaisesRegex(
+                ReportFormatError,
+                rf"(?:malformed|over-indented).*line {line}",
+            ):
+                parse_report(report)
+
+    def test_rejects_summary_cards_inside_the_quiz_section(self) -> None:
+        card = """#### [DS-003] Card in the quiz section
+
+**Category:** Test
+**Impact:** Low
+**Files:** `tests/test_report_parser.py`
+
+Invalid placement.
+
+"""
+        report = replace_once(QUIZ_REPORT, "#### [QZ-001]", card + "#### [QZ-001]")
+
+        with self.assertRaisesRegex(
+            ReportFormatError, r"summary card DS-003.*inside the Quiz section"
+        ):
+            parse_report(report)
+
+    def test_rejects_quiz_questions_outside_the_quiz_section(self) -> None:
+        stray = """#### [QZ-001] Stray question?
+
+- [x] Yes
+- [ ] No
+
+**Explanation:** Stray.
+
+"""
+        report = replace_once(REPORT, "## Notes", stray + "## Notes")
+
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            r"quiz question QZ-001.*under the level-two Quiz section",
+        ):
+            parse_report(report)
+
+    def test_rejects_level_three_sections_inside_the_quiz(self) -> None:
+        report = replace_once(
+            QUIZ_REPORT,
+            "#### [QZ-002]",
+            "### Grouped questions\n\n#### [QZ-002]",
+        )
+
+        with self.assertRaisesRegex(
+            ReportFormatError, r"Quiz section must not contain level-three"
+        ):
+            parse_report(report)
+
+    def test_rejects_duplicate_quiz_sections(self) -> None:
+        report = QUIZ_REPORT + "\n## Quiz\n"
+        duplicate_line = report.count("\n", 0, report.rindex("## Quiz")) + 1
+
+        with self.assertRaisesRegex(
+            ReportFormatError, rf"duplicate Quiz section.*line {duplicate_line}"
+        ):
+            parse_report(report)
+
+    def test_rejects_duplicate_and_non_sequential_quiz_ids(self) -> None:
+        duplicate = replace_once(QUIZ_REPORT, "#### [QZ-002]", "#### [QZ-001]")
+        duplicate_line = source_line_number(
+            duplicate, "#### [QZ-001] Which scope stays byte-identical?"
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"duplicate quiz question ID.*QZ-001.*heading line {duplicate_line}",
+        ):
+            parse_report(duplicate)
+
+        gap = replace_once(QUIZ_REPORT, "#### [QZ-002]", "#### [QZ-003]")
+        gap_line = source_line_number(gap, "#### [QZ-003]")
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"QZ-003.*heading line {gap_line}.*expected QZ-002",
+        ):
+            parse_report(gap)
+
+    def test_rejects_missing_options_and_option_count_bounds(self) -> None:
+        two_options = "- [x] `main..dev`\n- [ ] `main...dev`"
+        missing = replace_once(QUIZ_REPORT, two_options + "\n\n", "")
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*missing its options list"
+        ):
+            parse_report(missing)
+
+        single = replace_once(QUIZ_REPORT, two_options, "- [x] `main..dev`")
+        with self.assertRaisesRegex(ReportFormatError, r"QZ-002.*at least 2 options"):
+            parse_report(single)
+
+        seven = replace_once(
+            QUIZ_REPORT,
+            two_options,
+            "- [x] `main..dev`\n"
+            + "\n".join(f"- [ ] option {index}" for index in range(6)),
+        )
+        with self.assertRaisesRegex(ReportFormatError, r"QZ-002.*at most 6 options"):
+            parse_report(seven)
+
+    def test_rejects_bare_or_over_indented_option_like_lines(self) -> None:
+        for malformed_option in (
+            "-",
+            "    - [x] Hidden extra correct-looking option",
+        ):
+            report = replace_once(
+                QUIZ_REPORT,
+                "- [ ] Rendering speed",
+                f"{malformed_option}\n- [ ] Rendering speed",
+            )
+            line = source_line_number(
+                report, f"{malformed_option}\n- [ ] Rendering speed"
+            )
+            with self.subTest(option=malformed_option), self.assertRaisesRegex(
+                ReportFormatError,
+                rf"QZ-001.*malformed quiz option at line {line}",
+            ):
+                parse_report(report)
+
+    def test_rejects_zero_or_multiple_correct_marks(self) -> None:
+        none_correct = replace_once(QUIZ_REPORT, "- [x] `main..dev`", "- [ ] `main..dev`")
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*exactly one correct option"
+        ):
+            parse_report(none_correct)
+
+        both_correct = replace_once(
+            QUIZ_REPORT, "- [ ] `main...dev`", "- [x] `main...dev`"
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*exactly one correct option"
+        ):
+            parse_report(both_correct)
+
+    def test_rejects_each_malformed_option_line(self) -> None:
+        for malformed in (
+            "- [X] `main...dev`",
+            "* [ ] `main...dev`",
+            "- `main...dev`",
+            "- [] `main...dev`",
+        ):
+            with self.subTest(malformed=malformed):
+                report = replace_once(QUIZ_REPORT, "- [ ] `main...dev`", malformed)
+                line = source_line_number(report, malformed)
+                with self.assertRaisesRegex(
+                    ReportFormatError,
+                    rf"QZ-002.*malformed quiz option at line {line}",
+                ):
+                    parse_report(report)
+
+    def test_rejects_duplicate_option_text(self) -> None:
+        report = replace_once(QUIZ_REPORT, "- [ ] `main...dev`", "- [ ] `main..dev`")
+
+        with self.assertRaisesRegex(ReportFormatError, r"QZ-002.*duplicate option"):
+            parse_report(report)
+
+    def test_rejects_visually_empty_or_render_duplicate_option_text(self) -> None:
+        empty = replace_once(QUIZ_REPORT, "- [ ] `main...dev`", "- [ ] ** **")
+        empty_line = source_line_number(empty, "- [ ] ** **")
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            rf"QZ-002.*empty option text.*line {empty_line}",
+        ):
+            parse_report(empty)
+
+        duplicate = replace_once(
+            QUIZ_REPORT,
+            "- [ ] `main...dev`",
+            "- [ ] **main..dev**",
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*duplicate option text"
+        ):
+            parse_report(duplicate)
+
+    def test_rejects_split_options_lists(self) -> None:
+        report = replace_once(
+            QUIZ_REPORT,
+            "- [x] `main..dev`\n- [ ] `main...dev`",
+            "- [x] `main..dev`\n\nInterrupting prose.\n\n- [ ] `main...dev`",
+        )
+
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*one contiguous options list"
+        ):
+            parse_report(report)
+
+    def test_rejects_missing_duplicate_empty_or_early_explanation(self) -> None:
+        explanation = "**Explanation:** The requested two-dot scope is preserved exactly."
+        missing = replace_once(QUIZ_REPORT, explanation + "\n", "")
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*missing.*Explanation"
+        ):
+            parse_report(missing)
+
+        duplicate = replace_once(
+            QUIZ_REPORT, explanation, f"{explanation}\n{explanation}"
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*duplicate.*Explanation"
+        ):
+            parse_report(duplicate)
+
+        empty = replace_once(QUIZ_REPORT, explanation, "**Explanation:**   ")
+        with self.assertRaisesRegex(ReportFormatError, r"QZ-002.*empty Explanation"):
+            parse_report(empty)
+
+        visually_empty = replace_once(
+            QUIZ_REPORT,
+            "**Explanation:** The requested two-dot scope is preserved exactly.",
+            "**Explanation:** ** **",
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*empty Explanation"
+        ):
+            parse_report(visually_empty)
+
+        early = replace_once(QUIZ_REPORT, explanation + "\n", "")
+        early = replace_once(
+            early,
+            "- [x] `main..dev`",
+            f"{explanation}\n\n- [x] `main..dev`",
+        )
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*Explanation.*after.*options"
+        ):
+            parse_report(early)
+
+    def test_rejects_content_after_the_explanation(self) -> None:
+        report = QUIZ_REPORT + "\nTrailing prose after the explanation.\n"
+
+        with self.assertRaisesRegex(
+            ReportFormatError, r"QZ-002.*after the Explanation"
+        ):
+            parse_report(report)
+
+
+class QuizRenderingTests(unittest.TestCase):
+    def test_report_without_quiz_renders_no_quiz_markup(self) -> None:
+        body = renderer.render_report_body(parse_report(REPORT))
+
+        self.assertNotIn("quiz-question", body)
+        self.assertNotIn("data-quiz-option", body)
+
+    def test_renders_interactive_quiz_blocks_with_marked_answer(self) -> None:
+        body = renderer.render_report_body(parse_report(QUIZ_REPORT))
+        first = quiz_block(body, "QZ-001")
+        second = quiz_block(body, "QZ-002")
+
+        self.assertIn('<h2 id="quiz">Quiz</h2>', body)
+        self.assertIn('<section class="quiz-question" data-quiz-id="QZ-001"', body)
+        for index in range(3):
+            self.assertIn(f'data-quiz-option="{index}"', first)
+        self.assertEqual(first.count("data-quiz-correct"), 1)
+        self.assertEqual(second.count("data-quiz-correct"), 1)
+        self.assertLess(
+            first.index('data-quiz-option="1"'),
+            first.index("data-quiz-correct"),
+        )
+        self.assertIn("짧은 근거 문단이 질문 앞에 올 수 있습니다.", first)
+        self.assertLess(first.index("짧은 근거 문단"), first.index("quiz-options"))
+        self.assertIn('data-quiz-status', first)
+        self.assertIn("hidden", first[first.index("data-quiz-status") - 80 :])
+        self.assertIn('<details class="quiz-explanation">', first)
+        self.assertIn("Explanation", first)
+        self.assertIn("<code>parse_report</code>", first)
+        self.assertIn("<code>main..dev</code>", second)
+
+    def test_quiz_option_and_explanation_text_is_escaped(self) -> None:
+        body = renderer.render_report_body(parse_report(QUIZ_REPORT))
+        first = quiz_block(body, "QZ-001")
+
+        self.assertIn("&lt;script&gt;alert(&quot;quiz&quot;)&lt;/script&gt;", first)
+        self.assertNotIn('<script>alert("quiz")</script>', first)
+
+    def test_quiz_buttons_are_typed_and_labeled(self) -> None:
+        rendered = renderer.assemble_html(
+            parse_report(QUIZ_REPORT), renderer.load_template()
+        )
+        inventory = _MarkupInventory()
+        inventory.feed(rendered)
+        option_buttons = [
+            attrs
+            for tag, attrs in inventory.elements
+            if tag == "button" and "data-quiz-option" in attrs
+        ]
+
+        self.assertEqual(len(option_buttons), 5)
+        self.assertTrue(all(attrs.get("type") == "button" for attrs in option_buttons))
+        self.assertTrue(all(attrs.get("aria-label") for attrs in option_buttons))
+        self.assertTrue(
+            all(attrs.get("data-quiz-id") for attrs in option_buttons)
+        )
+        self.assertTrue(
+            all(attrs.get("aria-pressed") == "false" for attrs in option_buttons)
+        )
+        rendered_labels = {
+            attrs.get("data-quiz-label"): attrs.get("aria-label")
+            for attrs in option_buttons
+        }
+        for option_text in (
+            "Rendering speed",
+            "Input contract validation in parse_report",
+            "main..dev",
+        ):
+            with self.subTest(option=option_text):
+                self.assertIn(option_text, rendered_labels)
+                self.assertIn(option_text, rendered_labels[option_text])
+        self.assertNotIn("`", " ".join(rendered_labels))
+        self.assertNotIn("**", " ".join(rendered_labels))
+
+    def test_quiz_report_stays_offline_with_unchanged_payload_scripts(self) -> None:
+        rendered = renderer.assemble_html(
+            parse_report(QUIZ_REPORT), renderer.load_template()
+        )
+        inventory = _MarkupInventory()
+        inventory.feed(rendered)
+        scripts = [attrs for tag, attrs in inventory.elements if tag == "script"]
+
+        self.assertEqual(len(scripts), 4)
+        self.assertIn('href="#quiz"', rendered)
+        self.assertNotRegex(rendered, re.compile(r"(?i)https?://"))
+        self.assertNotRegex(
+            rendered,
+            re.compile(r"(?i)<(?:script|img)[^>]+\bsrc=|<link\b|@import\b|url\s*\("),
+        )
+        self.assertEqual(extract_json_script(rendered, "raw-markdown"), QUIZ_REPORT)
+
+    def test_template_prints_quiz_as_an_answer_key(self) -> None:
+        template = renderer.load_template()
+        print_styles = template[template.index("@media print") :]
+
+        self.assertIn(".quiz-option", print_styles)
+        self.assertIn(".quiz-explanation", print_styles)
+        self.assertIn('window.addEventListener("beforeprint"', template)
+        self.assertIn('window.addEventListener("afterprint"', template)
+
+
+class QuizRuntimeTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.rendered = renderer.assemble_html(
+            parse_report(QUIZ_REPORT), renderer.load_template()
+        )
+        self.runtime = extract_runtime_script(self.rendered)
+
+    def quiz_scenario(self, **overrides) -> dict:
+        scenario = {
+            "defaultTheme": "auto",
+            "summaryData": [
+                {
+                    "id": "DS-001",
+                    "title": "Runtime contract",
+                    "markdown": "#### [DS-001] Runtime contract\n",
+                }
+            ],
+            "rawMarkdown": QUIZ_REPORT,
+            "commentScope": "chann/skills::main..dev::runtime",
+            "domCardIds": ["DS-001"],
+            "storage": {},
+            "quizQuestions": [
+                {
+                    "id": "QZ-001",
+                    "options": 3,
+                    "correct": 1,
+                    "labels": [
+                        "Rendering speed",
+                        "Input contract validation in parse_report",
+                        "Browser storage",
+                    ],
+                }
+            ],
+            "action": "quiz-answer",
+            "quizAnswerId": "QZ-001",
+        }
+        scenario.update(overrides)
+        return run_runtime_harness(self.runtime, scenario)
+
+    def test_correct_answer_marks_disables_and_reveals_the_explanation(self) -> None:
+        result = self.quiz_scenario(quizAnswerIndex=1)
+
+        question = result["quiz"][0]
+        self.assertEqual(result["quizAnswerResults"], [True])
+        self.assertEqual(question["answered"], "true")
+        self.assertFalse(question["statusHidden"])
+        self.assertEqual(question["statusTone"], "success")
+        self.assertTrue(question["statusText"])
+        self.assertTrue(question["explanationOpen"])
+        self.assertTrue(all(option["disabled"] for option in question["options"]))
+        self.assertIn("is-selected", question["options"][1]["classes"])
+        self.assertIn("is-correct", question["options"][1]["classes"])
+        self.assertNotIn("is-incorrect", question["options"][1]["classes"])
+        self.assertEqual(question["options"][1]["ariaPressed"], "true")
+        self.assertTrue(
+            all(
+                option["ariaPressed"] == ("true" if index == 1 else "false")
+                for index, option in enumerate(question["options"])
+            )
+        )
+
+    def test_incorrect_answer_highlights_the_correct_option_once(self) -> None:
+        result = self.quiz_scenario(quizAnswerIndex=0, quizRepeatIndex=1)
+
+        question = result["quiz"][0]
+        self.assertEqual(result["quizAnswerResults"], [False, False])
+        self.assertEqual(question["statusTone"], "error")
+        self.assertTrue(question["explanationOpen"])
+        self.assertIn("is-selected", question["options"][0]["classes"])
+        self.assertIn("is-incorrect", question["options"][0]["classes"])
+        self.assertIn("is-correct", question["options"][1]["classes"])
+        self.assertNotIn("is-selected", question["options"][1]["classes"])
+        self.assertTrue(all(option["disabled"] for option in question["options"]))
+        self.assertEqual(question["options"][0]["ariaPressed"], "true")
+        self.assertIn("Input contract validation in parse_report", question["statusText"])
+        self.assertIn(
+            "Input contract validation in parse_report",
+            question["options"][1]["ariaLabel"],
+        )
+        self.assertRegex(question["options"][1]["ariaLabel"], r"(?i)correct answer")
+
+    def test_unknown_question_or_option_answers_nothing(self) -> None:
+        result = self.quiz_scenario(quizAnswerId="QZ-404", quizAnswerIndex=0)
+
+        question = result["quiz"][0]
+        self.assertEqual(result["quizAnswerResults"], [False])
+        self.assertIsNone(question["answered"])
+        self.assertTrue(question["statusHidden"])
+        self.assertFalse(question["explanationOpen"])
+
+        out_of_range = self.quiz_scenario(quizAnswerIndex=9)
+        self.assertEqual(out_of_range["quizAnswerResults"], [False])
+        self.assertIsNone(out_of_range["quiz"][0]["answered"])
+
+    def test_print_expands_explanations_then_restores_each_open_state(self) -> None:
+        result = self.quiz_scenario(
+            action="quiz-print",
+            quizQuestions=[
+                {"id": "QZ-001", "options": 3, "correct": 1},
+                {
+                    "id": "QZ-002",
+                    "options": 2,
+                    "correct": 0,
+                    "explanationOpen": True,
+                },
+            ],
+        )
+
+        self.assertEqual(
+            result["quizPrintStates"],
+            {
+                "beforePrint": [False, True],
+                "duringPrint": [True, True],
+                "afterPrint": [False, True],
+            },
+        )
+
+
+class MarkdownOnlyCliTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.directory = Path(self.temporary_directory.name)
+        self.artifact_root = self.directory / ".diff-summaries"
+
+    def tearDown(self) -> None:
+        self.temporary_directory.cleanup()
+
+    def run_cli(self, *arguments: str, stdin: str | None = None):
+        return subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), *arguments],
+            cwd=ROOT,
+            input=stdin,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+
+    def test_markdown_only_writes_only_the_markdown_artifact(self) -> None:
+        expected_stem = f"2026-07-13_{renderer.scope_tag('main..dev')}"
+
+        result = self.run_cli(
+            "--markdown-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            "--markdown-only",
+            stdin=REPORT,
+        )
+
+        markdown_path = (self.artifact_root / f"{expected_stem}.md").absolute()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(markdown_path.read_text(encoding="utf-8"), REPORT)
+        self.assertFalse((self.artifact_root / f"{expected_stem}.html").exists())
+        self.assertEqual(
+            sorted(path.name for path in self.artifact_root.iterdir()),
+            [f"{expected_stem}.md"],
+        )
+        self.assertIn("2 summary cards", result.stdout)
+        self.assertIn(f"Markdown: {markdown_path}", result.stdout)
+        self.assertNotIn("HTML:", result.stdout)
+
+    def test_markdown_only_still_validates_the_report_contract(self) -> None:
+        invalid = replace_once(REPORT, METADATA_LINES["Date"] + "\n", "")
+
+        result = self.run_cli(
+            "--markdown-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            "--markdown-only",
+            stdin=invalid,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertRegex(result.stderr, r"(?i)error:.*Date")
+        self.assertFalse(self.artifact_root.exists())
+
+    def test_markdown_only_rejects_incompatible_argument_shapes(self) -> None:
+        input_path = self.directory / "cli-summary.md"
+        input_path.write_text(REPORT, encoding="utf-8")
+        cases = (
+            ((str(input_path), "--markdown-only"), "--markdown-only"),
+            (
+                (str(input_path), "--markdown-stdin", "--markdown-only"),
+                "--markdown-only",
+            ),
+            (
+                (
+                    "--markdown-stdin",
+                    "--output-directory",
+                    str(self.artifact_root),
+                    "--markdown-only",
+                    "--open",
+                ),
+                "--markdown-only",
+            ),
+            (
+                (
+                    "--markdown-stdin",
+                    "--output-directory",
+                    str(self.artifact_root),
+                    "--markdown-only",
+                    "--output",
+                    str(self.directory / "forbidden.html"),
+                ),
+                "--output-directory",
+            ),
+            (
+                (
+                    str(input_path),
+                    "--markdown-stdin",
+                    "--output-directory",
+                    str(self.artifact_root),
+                    "--markdown-only",
+                ),
+                "--output-directory",
+            ),
+        )
+        for arguments, expected_error in cases:
+            with self.subTest(arguments=arguments):
+                result = self.run_cli(*arguments, stdin=REPORT)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(expected_error, result.stderr)
+                self.assertFalse(self.artifact_root.exists())
+
+    def test_quiz_question_count_is_reported_in_generation_output(self) -> None:
+        with_quiz = self.run_cli(
+            "--markdown-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            stdin=QUIZ_REPORT,
+        )
+        without_quiz = self.run_cli(
+            "--markdown-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            "--markdown-only",
+            stdin=REPORT,
+        )
+
+        self.assertEqual(with_quiz.returncode, 0, with_quiz.stderr)
+        self.assertIn("Quiz questions: 2", with_quiz.stdout)
+        self.assertEqual(without_quiz.returncode, 0, without_quiz.stderr)
+        self.assertNotIn("Quiz questions", without_quiz.stdout)
+
+    def test_single_quiz_question_uses_the_stable_plural_output_key(self) -> None:
+        one_question_report = QUIZ_REPORT[: QUIZ_REPORT.index("#### [QZ-002]")]
+
+        result = self.run_cli(
+            "--markdown-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            "--markdown-only",
+            stdin=one_question_report,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Quiz questions: 1", result.stdout)
+        self.assertNotIn("Quiz question: 1", result.stdout)
+
+
 class SkillRendererIntegrationTests(unittest.TestCase):
     def test_documented_report_template_is_parseable_and_renderable(self) -> None:
         skill_text = (
@@ -1972,6 +3131,37 @@ class SkillRendererIntegrationTests(unittest.TestCase):
         self.assertEqual(
             extract_json_script(rendered, "raw-markdown"), documented_report
         )
+
+    def test_documented_quiz_example_is_parseable_and_renderable(self) -> None:
+        main_skill_text = (
+            ROOT / "code-review" / "skills" / "diff-summary" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        quiz_skill_text = (
+            ROOT / "code-review" / "skills" / "diff-summary-quiz" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        report_match = re.search(
+            r"Use this top-level structure:\n\n```markdown\n(?P<report>.*?)\n```",
+            main_skill_text,
+            re.DOTALL,
+        )
+        quiz_match = re.search(
+            r"```markdown\n(?P<quiz>## Quiz\n.*?)\n```",
+            quiz_skill_text,
+            re.DOTALL,
+        )
+        if report_match is None or quiz_match is None:
+            self.fail(
+                "both the canonical report template and the documented quiz "
+                "example are required"
+            )
+
+        combined = report_match.group("report") + "\n\n" + quiz_match.group("quiz") + "\n"
+        parsed = parse_report(combined)
+        rendered = renderer.assemble_html(parsed, renderer.load_template())
+
+        self.assertGreaterEqual(len(parsed.quiz), 1)
+        self.assertEqual(parsed.quiz[0].id, "QZ-001")
+        self.assertIn('data-quiz-id="QZ-001"', rendered)
 
 
 class InteractionRuntimeContractTests(unittest.TestCase):
@@ -2047,6 +3237,7 @@ class InteractionRuntimeContractTests(unittest.TestCase):
             "clearComments",
             "jumpToComment",
             "buildFeedbackMarkdown",
+            "answerQuiz",
             "applyTheme",
             "setSidebarCollapsed",
             "setSidebarWidth",
@@ -2164,7 +3355,7 @@ class InteractionRuntimeContractTests(unittest.TestCase):
     def test_sidebar_control_labels_do_not_create_heading_id_collisions(self) -> None:
         colliding_report = REPORT.replace(
             "## Notes",
-            "## Comment Panel Title\n\n## Rail Actions Title",
+            "## Comment Panel Title\n\n## Sidebar Footer Title",
             1,
         )
         rendered = renderer.assemble_html(
@@ -2289,6 +3480,53 @@ class InteractionRuntimeContractTests(unittest.TestCase):
                     self.assertEqual(result["tone"], "success")
                     self.assertEqual(result["status"], "Comment saved.")
 
+    def test_user_sidebar_collapse_moves_focus_to_external_expand_control(
+        self,
+    ) -> None:
+        result = self.runtime_scenario(action="sidebar-focus")
+
+        self.assertEqual(result["before"]["activeFocus"], "origin")
+        self.assertEqual(
+            result["sidebarFocusStates"]["afterCollapse"],
+            "sidebar-expand",
+        )
+
+    def test_print_control_calls_window_print_once(self) -> None:
+        result = self.runtime_scenario(action="print-control")
+
+        self.assertEqual(result["printCalls"], 1)
+
+    def test_print_control_is_localized_in_english_and_korean(self) -> None:
+        for language, expected_text, expected_label in (
+            ("en", "Print", "Print report"),
+            ("ko", "인쇄", "보고서 인쇄"),
+        ):
+            with self.subTest(language=language):
+                result = self.runtime_scenario(language=language)
+
+                self.assertEqual(result["printControl"]["textContent"], expected_text)
+                self.assertEqual(result["printControl"]["ariaLabel"], expected_label)
+
+    def test_user_sidebar_expand_moves_focus_to_internal_toggle(self) -> None:
+        result = self.runtime_scenario(action="sidebar-focus")
+
+        self.assertEqual(
+            result["sidebarFocusStates"]["afterExpand"],
+            "sidebar-toggle",
+        )
+
+    def test_persisted_and_programmatic_sidebar_state_preserve_focus(self) -> None:
+        result = self.runtime_scenario(
+            action="sidebar-programmatic",
+            storage={"diff-summary:sidebar:collapsed": "true"},
+        )
+
+        self.assertEqual(result["before"]["activeFocus"], "origin")
+        self.assertEqual(
+            result["sidebarFocusStates"],
+            {"afterCollapse": "origin", "afterExpand": "origin"},
+        )
+
     def test_theme_sidebar_resizer_and_localized_controls_have_accessible_hooks(
         self,
     ) -> None:
@@ -2322,7 +3560,28 @@ class InteractionRuntimeContractTests(unittest.TestCase):
         self.assertIn('removeAttribute("data-theme")', self.runtime)
         self.assertIn("body.dataset.theme = theme", self.runtime)
         self.assertIn("dataset.sidebarCollapsed = String(collapsed)", self.runtime)
-        self.assertIn("classList.toggle", self.runtime)
+        self.assertIn("const root = document.documentElement;", self.runtime)
+        self.assertIn('const rail = document.querySelector("aside[data-sidebar]");', self.runtime)
+        self.assertIn(
+            'const sidebarExpand = document.querySelector("[data-sidebar-expand]");',
+            self.runtime,
+        )
+        self.assertIn("root.dataset.sidebarCollapsed = String(collapsed)", self.runtime)
+        self.assertNotIn('rail.classList.toggle("is-collapsed"', self.runtime)
+        self.assertIn('root.style.setProperty("--sidebar-width"', self.runtime)
+        self.assertIn("const SIDEBAR_MIN = 96;", self.runtime)
+        self.assertIn("const SIDEBAR_MAX = 480;", self.runtime)
+        self.assertIn("storedWidth === null ? 220 : storedWidth", self.runtime)
+        self.assertRegex(
+            self.runtime,
+            r'target\.matches\("\[data-sidebar-toggle\]"\)\)\s*\{\s*'
+            r"setSidebarCollapsed\(true\);",
+        )
+        self.assertRegex(
+            self.runtime,
+            r'target\.matches\("\[data-sidebar-expand\]"\)\)\s*\{\s*'
+            r"setSidebarCollapsed\(false\);",
+        )
         self.assertIn("Math.min(SIDEBAR_MAX", self.runtime)
         self.assertIn("Math.max(SIDEBAR_MIN", self.runtime)
         self.assertIn('event.key === "ArrowLeft"', self.runtime)

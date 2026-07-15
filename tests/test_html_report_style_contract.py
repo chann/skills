@@ -752,16 +752,81 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     4.5,
                 )
 
-    def test_diff_summary_small_rail_labels_use_accessible_foreground(self) -> None:
-        rail_label_selectors = (
-            ".rail-registration",
-            ".atlas-sidebar-label",
+    def test_diff_summary_uses_shared_compact_report_shell(self) -> None:
+        self.assertEqual(self.root_declarations["sidebar-width"], "220px")
+        self.assertRegex(
+            css_rule(self.template, ".layout"),
+            r"grid-template-columns:\s*var\(--sidebar-width\)\s+"
+            r"minmax\(0,\s*1fr\)\s*;",
+        )
+        self.assertRegex(
+            css_rule(
+                self.template,
+                'html[data-sidebar-collapsed="true"] aside',
+            ),
+            r"display:\s*none\s*;",
+        )
+
+        for selector in (
+            ".sidebar-header",
+            ".sidebar-body",
+            ".sidebar-footer",
+            ".sidebar-expand",
+            ".topbar",
+            ".controls",
+            ".control",
+            ".main-column",
+        ):
+            with self.subTest(selector=selector):
+                css_rule(self.template, selector)
+
+        for legacy_selector in (
+            ".atlas-shell",
+            ".atlas-rail",
+            ".atlas-canvas",
+            ".rail-controls",
+            ".rail-control",
+            ".rail-actions",
+            ".report-stage",
+            "data-atlas-",
+            "data-rail-",
+            "atlasIndex",
+        ):
+            with self.subTest(legacy_selector=legacy_selector):
+                self.assertNotIn(legacy_selector, self.template)
+        self.assertNotRegex(self.template, r"\.atlas-[\w-]+")
+        self.assertNotIn("@keyframes atlas-reveal", self.template)
+
+    def test_diff_summary_collapsed_layout_removes_sidebar_column(self) -> None:
+        self.assertRegex(
+            css_rule(
+                self.template,
+                'html[data-sidebar-collapsed="true"] .layout',
+            ),
+            r"grid-template-columns:\s*minmax\(0,\s*1fr\)\s*;",
+        )
+
+    def test_diff_summary_main_column_matches_shared_report_width(self) -> None:
+        self.assertRegex(
+            css_rule(self.template, ".main-column"),
+            r"padding:\s*24px\s+32px\s+64px\s*;",
+        )
+        self.assertRegex(
+            css_rule(self.template, "#report-main"),
+            r"max-width:\s*980px\s*;",
+        )
+
+    def test_diff_summary_small_sidebar_labels_use_accessible_foreground(self) -> None:
+        sidebar_label_selectors = (
+            ".brand",
+            ".repo",
+            ".sidebar-label",
             ".section-index-item--h3 a",
             ".comment-panel-title",
-            ".rail-actions-label",
+            ".sidebar-footer-label",
             ".comment-empty",
         )
-        for selector in rail_label_selectors:
+        for selector in sidebar_label_selectors:
             with self.subTest(selector=selector):
                 rule = css_rule_containing_selector(self.template, selector)
                 self.assertRegex(rule, r"color:\s*var\(--foreground\)\s*;")
@@ -791,6 +856,362 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         ),
                         4.5,
                     )
+
+    def test_diff_summary_cards_use_code_review_finding_skin(self) -> None:
+        card = css_rule(self.template, ".summary-card")
+        self.assertRegex(card, r"background:\s*var\(--card\)\s*;")
+        self.assertRegex(card, r"color:\s*var\(--card-foreground\)\s*;")
+        self.assertRegex(card, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(
+            card,
+            r"border-left:\s*4px\s+solid\s+var\(--primary\)\s*;",
+        )
+        self.assertRegex(card, r"box-shadow:\s*var\(--shadow\)\s*;")
+        self.assertRegex(card, r"overflow:\s*hidden\s*;")
+        self.assertNotIn("border-radius", card)
+
+        summary = css_rule(self.template, ".card-summary")
+        self.assertRegex(summary, r"padding:\s*12px\s+16px\s*;")
+        self.assertRegex(summary, r"min-width:\s*0\s*;")
+        self.assertRegex(summary, r"min-height:\s*0\s*;")
+        chevron = css_rule(self.template, ".card-summary::before")
+        self.assertRegex(chevron, r'content:\s*"▶"\s*;')
+        self.assertRegex(chevron, r"transition:\s*transform")
+        self.assertRegex(
+            css_rule(self.template, ".summary-card[open] .card-summary::before"),
+            r"transform:\s*rotate\(90deg\)\s*;",
+        )
+
+    def test_diff_summary_card_tools_use_shared_muted_control_skin(self) -> None:
+        self.assertEqual(self.template.count(".card-action {"), 1)
+        base = css_rule(self.template, ".card-action")
+        self.assertRegex(base, r"background:\s*var\(--muted\)\s*;")
+        self.assertRegex(base, r"color:\s*var\(--foreground\)\s*;")
+        self.assertRegex(base, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(
+            base,
+            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+        )
+        self.assertRegex(base, r"padding:\s*4px\s+8px\s*;")
+        self.assertRegex(base, r"font-size:\s*12px\s*;")
+        self.assertRegex(base, r"font-weight:\s*500\s*;")
+        self.assertRegex(base, r"letter-spacing:\s*0\s*;")
+        self.assertRegex(base, r"text-transform:\s*none\s*;")
+
+        hover = css_rule(self.template, ".card-action:hover")
+        self.assertRegex(hover, r"border-color:\s*var\(--input\)\s*;")
+        self.assertRegex(hover, r"background:\s*var\(--accent\)\s*;")
+        self.assertRegex(hover, r"color:\s*var\(--accent-foreground\)\s*;")
+        self.assertNotIn("transform", hover)
+        self.assertNotRegex(self.template, r"\.card-action--accent\s*\{")
+
+    def test_diff_summary_card_body_uses_compact_finding_padding(self) -> None:
+        panel = css_rule(self.template, ".card-panel")
+        self.assertRegex(panel, r"padding:\s*2px\s+16px\s+16px\s*;")
+        self.assertRegex(panel, r"border-top:\s*0\s*;")
+        self.assertRegex(panel, r"animation:\s*none\s*;")
+        self.assertRegex(
+            css_rule(self.template, ".card-content"),
+            r"padding-top:\s*0\s*;",
+        )
+
+    def test_diff_summary_header_uses_compact_report_scale(self) -> None:
+        body = css_rule(self.template, "body")
+        self.assertRegex(body, r"font-size:\s*14px\s*;")
+        self.assertRegex(body, r"line-height:\s*1\.6\s*;")
+
+        report_main = css_rule(self.template, "#report-main")
+        self.assertRegex(report_main, r"width:\s*100%\s*;")
+        self.assertRegex(report_main, r"max-width:\s*980px\s*;")
+
+        header = css_rule(self.template, ".report-header")
+        self.assertRegex(header, r"margin:\s*0\s+0\s+24px\s*;")
+        self.assertRegex(header, r"padding:\s*0\s*;")
+        self.assertRegex(header, r"border:\s*0\s*;")
+        self.assertRegex(header, r"background:\s*transparent\s*;")
+
+        title = css_rule(self.template, "#report-title")
+        self.assertRegex(title, r"margin:\s*0\s+0\s+16px\s*;")
+        self.assertRegex(title, r"font-size:\s*27px\s*;")
+        self.assertRegex(title, r"line-height:\s*1\.2\s*;")
+
+        section_heading = css_rule(self.template, "#report-main > h2")
+        self.assertRegex(section_heading, r"font-size:\s*21px\s*;")
+        self.assertNotRegex(
+            self.template,
+            r"font-size:\s*clamp\([^;]*3(?:\.\d+)?rem",
+        )
+
+    def test_diff_summary_metadata_uses_compact_shared_chips(self) -> None:
+        metadata = css_rule(self.template, ".report-metadata")
+        self.assertRegex(metadata, r"display:\s*flex\s*;")
+        self.assertRegex(metadata, r"flex-wrap:\s*wrap\s*;")
+        self.assertRegex(metadata, r"gap:\s*8px\s*;")
+        self.assertRegex(metadata, r"margin:\s*0\s*;")
+
+        cell = css_rule(self.template, ".metadata-cell")
+        self.assertRegex(cell, r"min-width:\s*0\s*;")
+        self.assertRegex(cell, r"padding:\s*8px\s+10px\s*;")
+        self.assertRegex(cell, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(cell, r"border-radius:\s*var\(--radius\)\s*;")
+        self.assertRegex(cell, r"background:\s*var\(--card\)\s*;")
+        self.assertRegex(cell, r"box-shadow:\s*var\(--shadow\)\s*;")
+        self.assertRegex(
+            css_rule(self.template, ".metadata-cell dd"),
+            r"overflow-wrap:\s*anywhere\s*;",
+        )
+
+    def test_diff_summary_comments_use_shared_surfaces_and_controls(self) -> None:
+        thread = css_rule(self.template, ".comment-thread")
+        self.assertRegex(thread, r"margin-top:\s*12px\s*;")
+        self.assertRegex(thread, r"padding:\s*12px\s*;")
+        self.assertRegex(thread, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(thread, r"background:\s*var\(--muted\)\s*;")
+
+        comment = css_rule(self.template, ".review-comment")
+        self.assertRegex(comment, r"padding:\s*10px\s*;")
+        self.assertRegex(comment, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(
+            comment,
+            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+        )
+        self.assertRegex(comment, r"background:\s*var\(--card\)\s*;")
+
+        meta = css_rule(self.template, ".comment-meta")
+        self.assertRegex(meta, r"color:\s*var\(--foreground\)\s*;")
+        self.assertRegex(meta, r"font-size:\s*11px\s*;")
+
+        editor = css_rule(self.template, ".comment-editor")
+        self.assertRegex(editor, r"margin-top:\s*12px\s*;")
+        self.assertRegex(editor, r"padding:\s*12px\s*;")
+        self.assertRegex(editor, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(editor, r"background:\s*var\(--muted\)\s*;")
+
+        textarea = css_rule(self.template, ".comment-editor textarea")
+        self.assertRegex(textarea, r"border:\s*1px\s+solid\s+var\(--input\)\s*;")
+        self.assertRegex(
+            textarea,
+            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+        )
+        self.assertRegex(textarea, r"background:\s*var\(--card\)\s*;")
+        self.assertRegex(textarea, r"color:\s*var\(--foreground\)\s*;")
+
+        action = css_rule(self.template, ".comment-editor-action")
+        self.assertRegex(action, r"min-height:\s*2rem\s*;")
+        self.assertRegex(action, r"border:\s*1px\s+solid\s+var\(--input\)\s*;")
+        self.assertRegex(
+            action,
+            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+        )
+        self.assertRegex(action, r"background:\s*var\(--card\)\s*;")
+        self.assertRegex(action, r"color:\s*var\(--foreground\)\s*;")
+
+        for selector in (
+            ".comment-delete:hover",
+            ".sidebar-action--danger:hover:not(:disabled)",
+        ):
+            hover = css_rule(self.template, selector)
+            with self.subTest(selector=selector):
+                self.assertRegex(
+                    hover,
+                    r"border-color:\s*var\(--destructive\)\s*;",
+                )
+                self.assertRegex(
+                    hover,
+                    r"background:\s*var\(--destructive\)\s*;",
+                )
+                self.assertRegex(
+                    hover,
+                    r"color:\s*var\(--destructive-foreground\)\s*;",
+                )
+
+    def test_diff_summary_quiz_uses_shared_card_and_input_skin(self) -> None:
+        question = css_rule(self.template, ".quiz-question")
+        self.assertRegex(question, r"background:\s*var\(--card\)\s*;")
+        self.assertRegex(question, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
+        self.assertRegex(question, r"border-radius:\s*var\(--radius\)\s*;")
+
+        option = css_rule(self.template, ".quiz-option")
+        self.assertRegex(option, r"min-width:\s*0\s*;")
+        self.assertRegex(option, r"width:\s*100%\s*;")
+        self.assertRegex(option, r"border:\s*1px\s+solid\s+var\(--input\)\s*;")
+        self.assertRegex(
+            option,
+            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+        )
+        self.assertRegex(option, r"background:\s*var\(--background\)\s*;")
+        self.assertRegex(option, r"color:\s*var\(--foreground\)\s*;")
+
+        hover = css_rule(self.template, ".quiz-option:hover:not(:disabled)")
+        self.assertRegex(hover, r"border-color:\s*var\(--input\)\s*;")
+        self.assertRegex(hover, r"background:\s*var\(--accent\)\s*;")
+        self.assertRegex(hover, r"color:\s*var\(--accent-foreground\)\s*;")
+
+    def test_diff_summary_quiz_long_text_wraps_inside_cards(self) -> None:
+        for selector in (
+            ".quiz-question-heading",
+            ".quiz-question-title",
+            ".quiz-option-text",
+            ".quiz-explanation",
+        ):
+            with self.subTest(selector=selector):
+                rule = css_rule(self.template, selector)
+                self.assertRegex(rule, r"min-width:\s*0\s*;")
+                self.assertRegex(rule, r"overflow-wrap:\s*anywhere\s*;")
+        self.assertRegex(
+            css_rule(self.template, ".quiz-option"),
+            r"min-width:\s*0\s*;",
+        )
+
+    def test_diff_summary_responsive_uses_one_shared_narrow_layout_contract(
+        self,
+    ) -> None:
+        self.assertEqual(self.template.count("@media (max-width: 860px)"), 1)
+        for legacy_breakpoint in (
+            "@media (max-width: 68rem)",
+            "@media (max-width: 46rem)",
+            "@media (max-width: 30rem)",
+        ):
+            with self.subTest(legacy_breakpoint=legacy_breakpoint):
+                self.assertNotIn(legacy_breakpoint, self.template)
+
+        narrow = css_rule(self.template, "@media (max-width: 860px)")
+        self.assertRegex(css_rule(narrow, ".layout"), r"display:\s*block\s*;")
+
+        aside = css_rule(narrow, "aside")
+        self.assertRegex(aside, r"position:\s*static\s*;")
+        self.assertRegex(aside, r"height:\s*auto\s*;")
+        self.assertRegex(aside, r"max-height:\s*40vh\s*;")
+        self.assertRegex(aside, r"border-right:\s*0\s*;")
+        self.assertRegex(
+            aside,
+            r"border-bottom:\s*1px\s+solid\s+var\(--border\)\s*;",
+        )
+
+        self.assertRegex(
+            css_rule(narrow, ".sidebar-resizer"),
+            r"display:\s*none\s*;",
+        )
+        self.assertRegex(
+            css_rule(narrow, ".main-column"),
+            r"padding:\s*20px\s+16px\s+48px\s*;",
+        )
+        self.assertRegex(css_rule(narrow, ".topbar"), r"display:\s*block\s*;")
+
+        controls = css_rule(narrow, ".controls")
+        self.assertRegex(controls, r"justify-content:\s*flex-start\s*;")
+        self.assertRegex(controls, r"margin-bottom:\s*16px\s*;")
+
+        metadata = css_rule(narrow, ".report-metadata")
+        self.assertRegex(metadata, r"display:\s*grid\s*;")
+        self.assertRegex(
+            metadata,
+            r"grid-template-columns:\s*minmax\(0,\s*1fr\)\s*;",
+        )
+        self.assertRegex(
+            css_rule(narrow, ".card-summary"),
+            r"grid-template-columns:\s*auto\s+minmax\(0,\s*1fr\)\s*;",
+        )
+        badges = css_rule(narrow, ".card-badges")
+        self.assertRegex(badges, r"grid-column:\s*2\s*;")
+        self.assertRegex(badges, r"grid-row:\s*2\s*;")
+        self.assertRegex(badges, r"justify-content:\s*flex-start\s*;")
+
+    def test_diff_summary_non_quiz_long_content_wraps_within_report_and_nav(
+        self,
+    ) -> None:
+        self.assertRegex(
+            css_rule(self.template, "#report-main"),
+            r"overflow-wrap:\s*anywhere\s*;",
+        )
+
+        navigation_link = css_rule(self.template, ".section-index-item a")
+        self.assertRegex(
+            navigation_link,
+            r"grid-template-columns:\s*1\.2rem\s+minmax\(0,\s*1fr\)\s*;",
+        )
+        self.assertRegex(navigation_link, r"min-width:\s*0\s*;")
+        self.assertRegex(navigation_link, r"overflow-wrap:\s*anywhere\s*;")
+
+    def test_diff_summary_print_uses_shared_report_contract(self) -> None:
+        printed = css_rule(self.template, "@media print")
+        for selector in (
+            "aside",
+            ".sidebar-expand",
+            ".topbar .controls",
+            ".card-toolbar",
+            ".comment-thread",
+            ".comment-editor",
+            ".status-region",
+        ):
+            with self.subTest(selector=selector):
+                self.assertIn(selector, printed)
+        self.assertRegex(
+            css_rule(printed, ".status-region"),
+            r"display:\s*none\s*!important\s*;",
+        )
+
+        self.assertRegex(
+            css_rule(printed, ".layout"),
+            r"display:\s*block\s*;",
+        )
+        self.assertRegex(
+            css_rule(printed, ".main-column"),
+            r"padding:\s*0\s*;",
+        )
+
+        card = css_rule(printed, ".summary-card")
+        self.assertRegex(card, r"break-inside:\s*avoid\s*;")
+        self.assertRegex(card, r"box-shadow:\s*none\s*;")
+        self.assertRegex(
+            css_rule(printed, ".summary-card:not([open]) > :not(summary)"),
+            r"display:\s*block\s*;",
+        )
+        self.assertRegex(
+            printed,
+            r"\.quiz-question\s*,\s*\.quiz-explanation\s*\{[^}]*"
+            r"break-inside:\s*avoid\s*;[^}]*box-shadow:\s*none\s*;",
+        )
+        self.assertRegex(
+            css_rule(printed, '.quiz-option[data-quiz-correct]::after'),
+            r'content:\s*"\s*✓"\s*;',
+        )
+        self.assertRegex(
+            css_rule(printed, ".quiz-status"),
+            r"display:\s*none\s*!important\s*;",
+        )
+
+        self.assertNotRegex(
+            printed,
+            r"\.report-header\s*\{[^}]*padding:\s*8mm\s*;",
+        )
+        self.assertNotRegex(
+            printed,
+            r"#report-title\s*\{[^}]*font-size:\s*32pt\s*;",
+        )
+
+    def test_diff_summary_print_palette_overrides_dark_theme_specificity(
+        self,
+    ) -> None:
+        printed = css_rule(self.template, "@media print")
+        print_palette_selector = (
+            "body,\n"
+            '      body[data-default-theme="dark"]:not([data-theme]),\n'
+            '      body[data-theme="dark"],\n'
+            '      body[data-default-theme="auto"]:not([data-theme])'
+        )
+        palette = css_rule(printed, print_palette_selector)
+        declarations = custom_properties(palette)
+
+        self.assertEqual(
+            selected_properties(declarations, THEME_COLOR_TOKENS),
+            EXPECTED_LIGHT_THEME,
+        )
+        self.assertEqual(declarations["impact-high"], "#92400e")
+        self.assertEqual(declarations["positive"], "#216849")
+        self.assertEqual(declarations["positive-soft"], "#d9eee3")
+        self.assertEqual(declarations["shadow"], "none")
+        self.assertRegex(palette, r"color-scheme:\s*light\s*;")
 
     def test_diff_summary_high_impact_uses_distinct_accessible_status_token(
         self,

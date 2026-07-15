@@ -13,6 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CODE_REVIEW = ROOT / "code-review"
 DIFF_SUMMARY = CODE_REVIEW / "skills" / "diff-summary"
+DIFF_SUMMARY_MD = CODE_REVIEW / "skills" / "diff-summary-md"
+DIFF_SUMMARY_QUIZ = CODE_REVIEW / "skills" / "diff-summary-quiz"
 DESIGN = ROOT / "docs" / "superpowers" / "specs" / "2026-07-13-diff-summary-design.md"
 PLAN = ROOT / "docs" / "superpowers" / "plans" / "2026-07-13-diff-summary.md"
 HARDENED_GIT_PREFIX = (
@@ -116,7 +118,11 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
             DIFF_SUMMARY / "scripts" / "collect_diff_evidence.py",
             DIFF_SUMMARY / "scripts" / "generate_summary_report.py",
             DIFF_SUMMARY / "assets" / "summary-template.html",
+            DIFF_SUMMARY_MD / "SKILL.md",
+            DIFF_SUMMARY_QUIZ / "SKILL.md",
             CODE_REVIEW / "commands" / "diff-summary.md",
+            CODE_REVIEW / "commands" / "diff-summary-md.md",
+            CODE_REVIEW / "commands" / "diff-summary-quiz.md",
         )
 
         for path in expected_files:
@@ -125,13 +131,48 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                     path.is_file(), f"canonical package file is missing: {path}"
                 )
 
+    def test_variant_skills_bundle_a_synchronized_standalone_runtime(self) -> None:
+        canonical_files = {
+            Path("references/diff-summary-workflow.md"): (
+                DIFF_SUMMARY / "SKILL.md"
+            ).read_text(encoding="utf-8").split("---\n", 2)[2].lstrip("\n"),
+            Path("scripts/collect_diff_evidence.py"): (
+                DIFF_SUMMARY / "scripts" / "collect_diff_evidence.py"
+            ).read_text(encoding="utf-8"),
+            Path("scripts/generate_summary_report.py"): (
+                DIFF_SUMMARY / "scripts" / "generate_summary_report.py"
+            ).read_text(encoding="utf-8"),
+            Path("assets/summary-template.html"): (
+                DIFF_SUMMARY / "assets" / "summary-template.html"
+            ).read_text(encoding="utf-8"),
+        }
+
+        for variant in (DIFF_SUMMARY_MD, DIFF_SUMMARY_QUIZ):
+            with self.subTest(variant=variant.name):
+                self.assertEqual(
+                    sorted(
+                        path.relative_to(variant)
+                        for path in variant.rglob("*")
+                        if path.is_file()
+                    ),
+                    sorted([Path("SKILL.md"), *canonical_files]),
+                )
+                for relative_path, canonical_text in canonical_files.items():
+                    self.assertEqual(
+                        (variant / relative_path).read_text(encoding="utf-8"),
+                        canonical_text,
+                        f"standalone runtime drifted: {variant.name}/{relative_path}",
+                    )
+
     def test_plugin_metadata_registers_diff_summary_release(self) -> None:
         metadata = json.loads(
             (CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text()
         )
 
-        self.assertEqual(metadata["version"], "2.3.0")
+        self.assertEqual(metadata["version"], "2.4.0")
         self.assertIn("diff-summary", metadata["description"])
+        self.assertIn("diff-summary-md", metadata["description"])
+        self.assertIn("diff-summary-quiz", metadata["description"])
 
     def test_skill_documents_triggers_scope_preservation_and_boundaries(self) -> None:
         skill_path = DIFF_SUMMARY / "SKILL.md"
@@ -166,8 +207,175 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self.assertIn("Do not rewrite `..` to `...`", skill_text)
         self.assertIn("code-review", description)
         self.assertIn("diff-viewer", description)
+        self.assertIn("diff-summary-md", description)
+        self.assertIn("diff-summary-quiz", description)
         self.assertIn(".diff-summaries/<date>_<scope-tag>.md", skill_text)
         self.assertIn(".diff-summaries/<date>_<scope-tag>.html", skill_text)
+
+    def test_main_skill_routes_output_mode_variants_and_explanatory_depth(
+        self,
+    ) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+
+        for fragment in (
+            "`diff-summary-md`",
+            "`diff-summary-quiz`",
+            "## Explanatory Depth",
+            "## Background",
+            "skippable",
+            "worked example",
+            "ASCII-art",
+            "foundation-first",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, skill_text)
+
+        writing_contract = skill_text.index("## Evidence-first summary writing")
+        explanatory_depth = skill_text.index("## Explanatory Depth")
+        report_contract = skill_text.index("## Stable Report Contract")
+        self.assertLess(writing_contract, explanatory_depth)
+        self.assertLess(explanatory_depth, report_contract)
+
+    def test_markdown_variant_documents_a_markdown_only_contract(self) -> None:
+        skill_path = DIFF_SUMMARY_MD / "SKILL.md"
+        skill_text = skill_path.read_text(encoding="utf-8")
+        frontmatter = skill_text.split("---", 2)[1]
+        description_match = re.search(r"(?m)^description:\s*(.+)$", frontmatter)
+        self.assertIsNotNone(description_match, "frontmatter description is required")
+        description = description_match.group(1) if description_match else ""
+
+        self.assertRegex(frontmatter, r"(?m)^name:\s*diff-summary-md$")
+        for trigger in (
+            "마크다운",
+            "마크다운 요약만 저장",
+            "markdown-only diff summary",
+            "/diff-summary-md",
+            "diff-summary-quiz",
+        ):
+            with self.subTest(trigger=trigger):
+                self.assertIn(trigger, description)
+
+        for fragment in (
+            "references/diff-summary-workflow.md",
+            "--markdown-only",
+            "--markdown-stdin",
+            ".diff-summaries/<date>_<scope-tag>.md",
+            "Do not generate the HTML report",
+            "Do not attempt a browser open",
+            "Do not repeat card or Executive Summary prose",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, skill_text)
+        self.assertNotIn("--open", skill_text)
+
+    def test_quiz_variant_documents_the_quiz_authoring_contract(self) -> None:
+        skill_path = DIFF_SUMMARY_QUIZ / "SKILL.md"
+        skill_text = skill_path.read_text(encoding="utf-8")
+        frontmatter = skill_text.split("---", 2)[1]
+        description_match = re.search(r"(?m)^description:\s*(.+)$", frontmatter)
+        self.assertIsNotNone(description_match, "frontmatter description is required")
+        description = description_match.group(1) if description_match else ""
+
+        self.assertRegex(frontmatter, r"(?m)^name:\s*diff-summary-quiz$")
+        for trigger in (
+            "퀴즈",
+            "이 변경 이해했는지 퀴즈로 확인",
+            "quiz me on this diff",
+            "test my understanding",
+            "/diff-summary-quiz",
+            "diff-summary-md",
+        ):
+            with self.subTest(trigger=trigger):
+                self.assertIn(trigger, description)
+
+        for fragment in (
+            "references/diff-summary-workflow.md",
+            "## Quiz",
+            "#### [QZ-001]",
+            "- [x]",
+            "**Explanation:**",
+            "exactly one",
+            "2",
+            "6",
+            "five questions",
+            "medium difficulty",
+            "answer key",
+            "question count",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, skill_text)
+
+        self.assertIn(
+            "Question-level validation errors identify the question ID and heading line",
+            skill_text,
+        )
+        self.assertIn(
+            "Quiz-section validation errors identify the relevant source line",
+            skill_text,
+        )
+
+    def test_requirements_document_shared_diff_summary_runtime_dependencies(
+        self,
+    ) -> None:
+        documents = (
+            (ROOT / "README.md", "Requirements"),
+            (ROOT / "README.ko.md", "요구 사항"),
+            (ROOT / "USAGE.md", "Requirements"),
+            (CODE_REVIEW / "README.md", "Requirements"),
+            (CODE_REVIEW / "README.ko.md", "요구 사항"),
+        )
+
+        for path, heading in documents:
+            text = path.read_text(encoding="utf-8")
+            match = re.search(
+                rf"(?ms)^## {re.escape(heading)}\n(?P<body>.*?)(?=^## |\Z)",
+                text,
+            )
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertIsNotNone(match, f"missing {heading} section")
+                requirements = match.group("body") if match else ""
+                self.assertIn("Git 2.45+", requirements)
+                self.assertIn("Python 3.10+", requirements)
+                for skill_name in (
+                    "diff-summary",
+                    "diff-summary-md",
+                    "diff-summary-quiz",
+                ):
+                    self.assertIn(skill_name, requirements)
+
+    def test_variant_commands_route_to_their_skills(self) -> None:
+        md_command = (CODE_REVIEW / "commands" / "diff-summary-md.md").read_text(
+            encoding="utf-8"
+        )
+        quiz_command = (CODE_REVIEW / "commands" / "diff-summary-quiz.md").read_text(
+            encoding="utf-8"
+        )
+
+        for command_text, skill_name in (
+            (md_command, "diff-summary-md"),
+            (quiz_command, "diff-summary-quiz"),
+        ):
+            with self.subTest(skill=skill_name):
+                self.assertIn(
+                    f"Apply the **{skill_name}** skill internally. Do not echo or "
+                    "announce this routing instruction.",
+                    command_text,
+                )
+                self.assertIn('argument-hint: "[scope]"', command_text)
+                self.assertIn("packaged evidence collector", command_text)
+                self.assertIn("Preserve the exact user-specified scope", command_text)
+
+        self.assertIn("Do not repeat card or Executive Summary prose", md_command)
+        self.assertIn(
+            "Do not repeat card, Executive Summary, or quiz prose", quiz_command
+        )
+        self.assertIn("Markdown", md_command)
+        self.assertNotIn("browser", md_command.lower())
+        self.assertIn("Do NOT generate an HTML report", md_command)
+        self.assertIn("## Quiz", quiz_command)
+        self.assertIn("interactive", quiz_command)
+        self.assertIn("question count", quiz_command)
+        self.assertIn("open", quiz_command.lower())
 
     def test_skill_uses_the_packaged_collector_as_the_only_git_runtime(self) -> None:
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
@@ -1077,7 +1285,15 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         env = os.environ.copy()
         env.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
         result = subprocess.run(
-            ["npx", "--yes", "skills", "add", ".", "-l", "--full-depth"],
+            [
+                "npx",
+                "--yes",
+                "skills",
+                "add",
+                str(CODE_REVIEW),
+                "-l",
+                "--full-depth",
+            ],
             cwd=ROOT,
             env=env,
             text=True,
@@ -1088,6 +1304,70 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stdout)
-        self.assertRegex(
-            result.stdout, re.compile(r"(?m)^[^A-Za-z0-9]*diff-summary\s*$")
-        )
+        for skill_name in ("diff-summary", "diff-summary-md", "diff-summary-quiz"):
+            with self.subTest(skill=skill_name):
+                self.assertRegex(
+                    result.stdout,
+                    re.compile(rf"(?m)^[^A-Za-z0-9]*{re.escape(skill_name)}\s*$"),
+                )
+
+    def test_variant_exact_selector_installs_a_usable_standalone_package(self) -> None:
+        env = os.environ.copy()
+        env.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
+
+        for skill_name in ("diff-summary-md", "diff-summary-quiz"):
+            with self.subTest(skill=skill_name), tempfile.TemporaryDirectory() as target:
+                subprocess.run(["git", "init", "-q"], cwd=target, check=True)
+                result = subprocess.run(
+                    [
+                        "npx",
+                        "--yes",
+                        "skills",
+                        "add",
+                        str(CODE_REVIEW),
+                        "--skill",
+                        skill_name,
+                        "--agent",
+                        "codex",
+                        "--copy",
+                        "-y",
+                        "--full-depth",
+                    ],
+                    cwd=target,
+                    env=env,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    timeout=60,
+                    check=False,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stdout)
+                installed = Path(target) / ".agents" / "skills" / skill_name
+                for relative_path in (
+                    "SKILL.md",
+                    "references/diff-summary-workflow.md",
+                    "scripts/collect_diff_evidence.py",
+                    "scripts/generate_summary_report.py",
+                    "assets/summary-template.html",
+                ):
+                    self.assertTrue(
+                        (installed / relative_path).is_file(),
+                        f"exact selector omitted {skill_name}/{relative_path}",
+                    )
+
+                help_result = subprocess.run(
+                    [
+                        sys.executable,
+                        "-I",
+                        str(installed / "scripts" / "generate_summary_report.py"),
+                        "--help",
+                    ],
+                    cwd=target,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                self.assertEqual(help_result.returncode, 0, help_result.stderr)
+                self.assertIn("--markdown-only", help_result.stdout)
