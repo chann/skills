@@ -9,7 +9,7 @@ git diff를 변경 요약, 결함 리뷰, 브라우저용 원본 패치로 다�
 - 5가지 차원으로 코드 변경사항 분석: 정확성, 보안, 복잡도/일관성, 유지보수성, 언어별 베스트 프랙티스
 - `.reviews/` 디렉토리에 날짜+커밋SHA 기반 리포트 생성 (예: `2026-04-08_a1b2c3d.md`)
 - 자체 완결형 **이중언어** HTML 리포트 옵션 (한국어 + 영문, 전체 페이지 언어 토글, 한국어 기본 표시): 심각도 배지, light/dark/auto 테마 + 코드 신택스 스킴 셀렉터, 컴팩트 접이식 사이드바, 항목별 마크다운 복사, 브라우저 내 항목별 코멘트, 리뷰어 코멘트로 리뷰를 재생성하는 "피드백 복사" 페이로드
-- 코드, 동작, 아키텍처, 패턴, 계약, 테스트, 운영 변경을 근거 기반으로 설명하는 마크다운 + 인터랙티브 HTML `/diff-summary` 포함
+- 코드, 동작, 아키텍처, 패턴, 계약, 테스트, 운영 변경을 근거 기반으로 설명하는 마크다운 + 인터랙티브 HTML `/diff-summary` 포함. 마크다운만 만드는 `/diff-summary-md`, 같은 요약에 인터랙티브 이해도 퀴즈를 더한 `/diff-summary-quiz` 변형도 제공
 - 리뷰 분석 없이 현재 작업 트리 diff를 브라우저용 HTML로 보여주는 `/diff-viewer` 포함
 - 다양한 리뷰 범위 지원: 스테이징된 변경, 특정 커밋, 커밋 범위, 브랜치 비교, PR
 - Python, JavaScript/TypeScript 베스트 프랙티스 참조 가이드 포함
@@ -24,6 +24,8 @@ npx skills add -y -g chann/skills \
   --skill code-review-md \
   --skill code-review-html \
   --skill diff-summary \
+  --skill diff-summary-md \
+  --skill diff-summary-quiz \
   --skill diff-viewer
 ```
 
@@ -35,10 +37,12 @@ npx skills add chann/skills \
   --skill code-review-md \
   --skill code-review-html \
   --skill diff-summary \
+  --skill diff-summary-md \
+  --skill diff-summary-quiz \
   --skill diff-viewer
 ```
 
-설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. 이 플러그인에는 독립적으로 발견되는 다섯 스킬이 들어 있습니다. 설치 전 `npx skills add chann/skills -l --full-depth`로 selector를 확인할 수 있습니다.
+설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. 이 플러그인에는 독립적으로 발견되는 일곱 스킬이 들어 있습니다. 각 diff-summary selector는 필요한 워크플로우와 런타임을 함께 제공하므로 `diff-summary-md` 또는 `diff-summary-quiz`만 설치해도 실행할 수 있습니다. 설치 전 `npx skills add chann/skills -l --full-depth`로 selector를 확인할 수 있습니다.
 
 **수동 설치:**
 
@@ -51,13 +55,15 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 설치 후 자연어 의도에 맞는 스킬이 자동으로 트리거되며, 명시적 커맨드도 사용할 수 있습니다:
 
-| 커맨드                   | 스킬               | 출력                                                                         |
-| ------------------------ | ------------------ | ---------------------------------------------------------------------------- |
-| `/code-review`           | `code-review`      | 대화에서 결과 표시 (파일 생성 안 함)                                         |
-| `/code-review-md`        | `code-review-md`   | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운 리포트                     |
-| `/code-review-html`      | `code-review-html` | 마크다운 + 자체 완결형 HTML 리뷰                                             |
-| `/diff-summary [scope]`  | `diff-summary`     | `.diff-summaries/<YYYY-MM-DD>_<scope>.*`에 마크다운 + 인터랙티브 HTML 요약   |
-| `/diff-viewer`           | `diff-viewer`      | `.diffs/<YYYY-MM-DD>_<tag>.html`에 HTML diff viewer                          |
+| 커맨드                          | 스킬                  | 출력                                                             |
+| ---------------------------- | ------------------- | -------------------------------------------------------------- |
+| `/code-review`               | `code-review`       | 대화에서 결과 표시 (파일 생성 안 함)                                         |
+| `/code-review-md`            | `code-review-md`    | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운 리포트               |
+| `/code-review-html`          | `code-review-html`  | 마크다운 + 자체 완결형 HTML 리뷰                                          |
+| `/diff-summary [scope]`      | `diff-summary`      | `.diff-summaries/<YYYY-MM-DD>_<scope>.*`에 마크다운 + 인터랙티브 HTML 요약 |
+| `/diff-summary-md [scope]`   | `diff-summary-md`   | `.diff-summaries/<YYYY-MM-DD>_<scope>.md`에 마크다운만 (HTML 없음)     |
+| `/diff-summary-quiz [scope]` | `diff-summary-quiz` | 마크다운 + 인터랙티브 HTML + `## Quiz` 이해도 섹션                           |
+| `/diff-viewer`               | `diff-viewer`       | `.diffs/<YYYY-MM-DD>_<tag>.html`에 HTML diff viewer             |
 
 **예시:**
 
@@ -94,6 +100,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | 목적 | 워크플로우 | 결과 |
 |---|---|---|
 | 무엇이 왜 바뀌었고 코드, 아키텍처, 패턴, 계약, 테스트, 운영이 어떻게 연결되는지 설명 | `diff-summary` | 리뷰 심각도 없는 근거 기반 요약 카드 |
+| 같은 설명을 HTML·브라우저 없이 마크다운으로만 저장 | `diff-summary-md` | 검증된 마크다운 파일 하나 |
+| 변경을 설명하고 이해도를 확인 | `diff-summary-quiz` | 마크다운 정답지 + 인터랙티브 오프라인 HTML 퀴즈 |
 | 결함, 회귀, 취약점, 권장 수정 사항 탐색 | `code-review`, `code-review-md`, `code-review-html` | 심각도별 finding |
 | 분석 없이 패치 자체 확인 | `diff-viewer` | unified/split 원본 diff HTML |
 
@@ -174,6 +182,8 @@ code-review/
 │   ├── code-review-md.md                 # /code-review-md 커맨드
 │   ├── code-review-html.md               # /code-review-html 커맨드
 │   ├── diff-summary.md                    # /diff-summary 커맨드
+│   ├── diff-summary-md.md                 # /diff-summary-md 커맨드
+│   ├── diff-summary-quiz.md               # /diff-summary-quiz 커맨드
 │   └── diff-viewer.md                    # /diff-viewer 커맨드
 ├── skills/
 │   ├── code-review/                      # 메인 스킬 — 전체 워크플로우 + 공유 자산
@@ -194,9 +204,24 @@ code-review/
 │   │   └── SKILL.md                      # HTML 변형 스킬
 │   ├── diff-summary/                      # 설명형 마크다운 + HTML 변경 요약
 │   │   ├── SKILL.md
+│   │   ├── agents/openai.yaml
 │   │   ├── scripts/
 │   │   │   ├── collect_diff_evidence.py   # 강화된 Git/GitHub -> 제한된 JSON
 │   │   │   └── generate_summary_report.py # 검증된 마크다운 -> 오프라인 HTML
+│   │   └── assets/summary-template.html
+│   ├── diff-summary-md/                  # 독립 설치 가능한 마크다운 전용 패키지
+│   │   ├── SKILL.md
+│   │   ├── references/diff-summary-workflow.md
+│   │   ├── scripts/                      # 동기화된 런타임
+│   │   │   ├── collect_diff_evidence.py
+│   │   │   └── generate_summary_report.py
+│   │   └── assets/summary-template.html
+│   ├── diff-summary-quiz/                # 독립 설치 가능한 퀴즈 패키지
+│   │   ├── SKILL.md
+│   │   ├── references/diff-summary-workflow.md
+│   │   ├── scripts/                      # 동기화된 런타임
+│   │   │   ├── collect_diff_evidence.py
+│   │   │   └── generate_summary_report.py
 │   │   └── assets/summary-template.html
 │   └── diff-viewer/
 │       ├── SKILL.md                      # HTML diff viewer 워크플로우
@@ -213,8 +238,8 @@ code-review/
 
 - [Claude Code](https://code.claude.com) (CLI, 데스크톱 앱, 또는 IDE 확장)
 - Git 저장소
-- `diff-summary` 증거 수집에는 Git 2.45+
-- Python 3.10+ (`code-review-html`, `diff-summary`, `diff-viewer` 리포트 생성 시 필요, 표준 라이브러리만 사용)
+- `diff-summary`, `diff-summary-md`, `diff-summary-quiz` 증거 수집에는 Git 2.45+
+- Python 3.10+ (`code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` 리포트 생성 시 필요, 표준 라이브러리만 사용)
 
 ## 보안 노트
 

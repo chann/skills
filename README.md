@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 15 practical agent skills for software engineering workflows.
+A collection of 17 practical agent skills for software engineering workflows.
 
 ## Skills
 
@@ -47,9 +47,11 @@ Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 | `/code-review-md`         | Write markdown review to `.reviews/`                            |
 | `/code-review-html`       | Write markdown + HTML review reports to `.reviews/`             |
 | `/diff-summary [scope]`   | Explain changes in Markdown + interactive HTML under `.diff-summaries/` |
+| `/diff-summary-md [scope]` | Explain changes in Markdown only under `.diff-summaries/` (no HTML, no browser) |
+| `/diff-summary-quiz [scope]` | Same as `/diff-summary`, plus an interactive comprehension quiz in the HTML |
 | `/diff-viewer`            | Render the raw working-tree diff to `.diffs/`                   |
 
-`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” It preserves explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
+`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
 
 ### doc-skill → [details](doc-skill/README.md)
@@ -118,8 +120,8 @@ What is and isn't portable:
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
-- Git 2.45+ for `diff-summary`
-- Python 3.10+ (for `code-review-html`, `diff-summary`, `diff-viewer`, and `git-commit-rewrite`)
+- Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
+- Python 3.10+ (for `code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite`)
 
 ## License
 

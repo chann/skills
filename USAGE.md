@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 15 independently discoverable skills across five workflow plugins.
+This repository exposes 17 independently discoverable skills across five workflow plugins.
 
 ## Installation
 
@@ -18,7 +18,7 @@ npx skills add -y -g chann/skills
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `git-commit-push`, `gen-frontend-handoff`, or `gen-backend-handoff`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -43,6 +43,8 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > review my changes                         # code-review
 > /code-review-html review staged changes
 > /diff-summary main..dev                  # explanatory Markdown + interactive HTML
+> /diff-summary-md main..dev               # explanatory Markdown only
+> /diff-summary-quiz main..dev             # summary + comprehension quiz
 > /git-commit                               # group changes into Conventional Commits
 > /gen-docs                                   # generate/update project docs
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
@@ -60,6 +62,8 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 | `/code-review-md` | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md` |
 | `/code-review-html` | Markdown + self-contained bilingual HTML report under `.reviews/` |
 | `/diff-summary [scope]` | Prompt-language Markdown + interactive offline HTML under `.diff-summaries/` |
+| `/diff-summary-md [scope]` | Prompt-language Markdown only under `.diff-summaries/` (no HTML, no browser open) |
+| `/diff-summary-quiz [scope]` | Same as `/diff-summary` plus an interactive `## Quiz` comprehension section in both Markdown and HTML |
 | `/diff-viewer` | HTML diff at `.diffs/<YYYY-MM-DD>_<tag>.html` (view only — no analysis) |
 
 Review and summary scopes include the working tree, staged or unstaged changes, the last commit or last N commits, a specific commit, an exact commit range, a branch comparison, and PRs. `diff-summary` validates and preserves an explicit range verbatim: `main..dev` and `main...dev` retain their different Git semantics.
@@ -69,10 +73,12 @@ Choose the workflow by the result you need:
 | Goal | Workflow | Output contract |
 |---|---|---|
 | Explain purpose, behavior, architecture, patterns, contracts, tests, and operational implications supported by the diff | `diff-summary` | Descriptive `DS-*` cards without defect severity |
+| Save the same explanation as Markdown only, without HTML or a browser open | `diff-summary-md` | One validated `.md` artifact |
+| Explain the change and test comprehension | `diff-summary-quiz` | Markdown answer key plus an interactive offline HTML quiz |
 | Find correctness, security, or maintainability problems and recommend fixes | `code-review`, `code-review-md`, `code-review-html` | Findings grouped by review severity |
 | Inspect changed lines without analysis | `diff-viewer` | Unified/split raw patch |
 
-Natural-language requests such as `summarize the code changes`, `코드를 요약해줘`, `main..dev 코드를 요약해줘`, `summarize the last commit`, and `summarize PR #42` automatically select `diff-summary`. When summary and review are both requested, the explanatory cards and review findings remain separate.
+Natural-language requests such as `summarize the code changes`, `코드를 요약해줘`, `main..dev 코드를 요약해줘`, `summarize the last commit`, and `summarize PR #42` select `diff-summary`. Requests such as `마크다운 요약만 저장` select `diff-summary-md`; `이 변경 이해했는지 퀴즈로 확인` or `quiz me on this diff` select `diff-summary-quiz`. When summary and review are both requested, the explanatory cards and review findings remain separate.
 
 `/diff-summary` uses `collect_diff_evidence.py` as its only Git/GitHub runtime. Before entering the target repository, the agent resolves a canonical absolute Python 3.10+ executable outside that repository and launches both packaged scripts with `-I`; bare `python3`, script shebangs, repository virtual environments, and Python startup injection are not allowed. The collector's fixed argv is `/absolute/trusted/python3 -I <skill-path>/scripts/collect_diff_evidence.py`. The agent sends the repository and scope as a bounded JSON request over standard input and treats the returned JSON as inert data. The collector preserves exact ranges, disables repository-configured execution surfaces, rejects unsafe repository metadata and sensitive paths, and caps command time, output, and filesystem enumeration. It never falls back to a different scope.
 
@@ -168,7 +174,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | Path | Written by | Notes |
 |---|---|---|
 | `.reviews/` | `code-review-md`, `code-review-html` | Markdown / HTML reports; gitignored |
-| `.diff-summaries/` | `diff-summary` | Markdown source + interactive self-contained HTML; gitignored |
+| `.diff-summaries/` | `diff-summary`, `diff-summary-md`, `diff-summary-quiz` | Markdown source, plus interactive self-contained HTML for `diff-summary` and `diff-summary-quiz`; gitignored |
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
 | `.agent/` | `long-task` | Working-memory and lifecycle state for a run |
@@ -224,5 +230,5 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
 - A Git repository
-- Git 2.45+ for `diff-summary`
-- Python 3.10+ for `code-review-html`, `diff-summary`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)
+- Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
+- Python 3.10+ for `code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)
