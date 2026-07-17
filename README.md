@@ -23,7 +23,12 @@ CLI, GitHub Copilot CLI, and OpenCode with the installer's symlink mode
 (recommended):
 
 ```bash
-npx skills add chann/skills --skill '*' --agent claude-code codex antigravity-cli gemini-cli github-copilot opencode --global --yes
+npx skills add chann/skills \
+  --skill '*' \
+  --agent claude-code codex antigravity-cli gemini-cli \
+    github-copilot opencode \
+  --global \
+  --yes
 ```
 
 The explicit agent list is intentional. `skills@1.5.19` can

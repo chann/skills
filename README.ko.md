@@ -20,7 +20,12 @@ Claude Code, Codex, Antigravity CLI, Gemini CLI, GitHub Copilot CLI,
 OpenCode에 모든 스킬을 설치 도구의 symlink 방식으로 전역 설치 (권장):
 
 ```bash
-npx skills add chann/skills --skill '*' --agent claude-code codex antigravity-cli gemini-cli github-copilot opencode --global --yes
+npx skills add chann/skills \
+  --skill '*' \
+  --agent claude-code codex antigravity-cli gemini-cli \
+    github-copilot opencode \
+  --global \
+  --yes
 ```
 
 에이전트 목록은 의도적으로 명시했습니다. `skills@1.5.19`에서
