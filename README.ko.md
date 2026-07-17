@@ -16,10 +16,11 @@
 
 ## 설치 방법
 
-Claude Code와 Codex에 모든 스킬을 설치 도구의 symlink 방식으로 전역 설치 (권장):
+Claude Code, Codex, Antigravity CLI, Gemini CLI, GitHub Copilot CLI,
+OpenCode에 모든 스킬을 설치 도구의 symlink 방식으로 전역 설치 (권장):
 
 ```bash
-npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes
+npx skills add chann/skills --skill '*' --agent claude-code codex antigravity-cli gemini-cli github-copilot opencode --global --yes
 ```
 
 에이전트 목록은 의도적으로 명시했습니다. `skills@1.5.19`에서
@@ -28,7 +29,7 @@ PromptScript 어댑터가 암묵적으로 추가될 수 있습니다. 이 경우
 정상 설치됐는데도 스킬마다 실패가 하나씩 표시됩니다. 위 명령은 모든 스킬을
 선택하고 기본 symlink 방식(`--copy`를 추가하지 않음)을 유지하면서 해당 비지원
 대상을 제외합니다. 다른 전역 설치 지원 에이전트가 필요하면 ID를 추가하되,
-이 CLI 버전이 copy 방식으로 전환하지 않도록 명시한 두 대상은 유지하세요.
+이 CLI 버전이 copy 방식으로 전환하지 않도록 명시한 대상 목록은 유지하세요.
 [업스트림 수정](https://github.com/vercel-labs/skills/pull/1561)이 반영될 때까지
 이 명시적 대상 목록이 필요합니다.
 
