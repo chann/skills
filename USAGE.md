@@ -7,10 +7,13 @@ This repository exposes 17 independently discoverable skills across five workflo
 ### All skills at once (recommended)
 
 ```bash
-npx skills add -y -g chann/skills
+npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes
 ```
 
-`-g` installs globally for your user; `-y` skips prompts. Drop both for an interactive, project-local install.
+`--global` installs for your user, `--yes` skips prompts, and omitting `--copy`
+keeps the installer's default symlink mode. The explicit agent list avoids the
+`skills@1.5.19` bugs that can implicitly target the project-only PromptScript
+adapter or fall back to copy mode during non-interactive global installs.
 
 ### A single skill
 

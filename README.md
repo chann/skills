@@ -18,11 +18,22 @@ A collection of 17 practical agent skills for software engineering workflows.
 
 ## Installation
 
-Install all skills globally with one command (recommended):
+Install all skills globally for Claude Code and Codex with the installer's
+symlink mode (recommended):
 
 ```bash
-npx skills add -y -g chann/skills
+npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes
 ```
+
+The explicit agent list is intentional. `skills@1.5.19` can
+implicitly add the project-only PromptScript adapter when `--global --yes` is
+used without `--agent`, producing one misleading failure for every skill even
+though the supported targets were installed. The command above selects all
+skills, keeps the default symlink mode (do not add `--copy`), and avoids that
+unsupported target. Append other globally supported agent IDs if needed, but
+keep the two explicit targets so this CLI version does not fall back to copy
+mode while
+[the upstream fix](https://github.com/vercel-labs/skills/pull/1561) is pending.
 
 Per-skill or non-global installs (and manual setup) are documented in each skill's README:
 
