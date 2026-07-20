@@ -58,9 +58,6 @@ installable copies:
 
 - `code-review/skills/diff-summary-md/assets/summary-template.html`
 - `code-review/skills/diff-summary-quiz/assets/summary-template.html`
-- `.agents/skills/diff-summary/assets/summary-template.html`
-- `.agents/skills/diff-summary-md/assets/summary-template.html`
-- `.agents/skills/diff-summary-quiz/assets/summary-template.html`
 
 ## Visual Direction
 
@@ -193,8 +190,8 @@ token declarations because every skill must remain portable. Consistency is
 enforced by tests rather than a runtime import.
 
 After the canonical diff-summary template is updated, it is copied byte for
-byte to the two exact-selector package copies and the three local `.agents`
-mirrors. No mirror receives a hand-edited palette.
+byte to the two exact-selector package copies. No package copy receives a
+hand-edited palette.
 
 ## Testing Strategy
 
@@ -206,8 +203,8 @@ mirrors. No mirror receives a hand-edited palette.
    focus, and code/diff pairs.
 5. Assert that the previous zinc literals are absent from active theme and
    print declarations.
-6. Update the canonical templates and synchronize the standalone and local
-   mirrors.
+6. Update the canonical templates and synchronize the standalone package
+   copies.
 7. Run focused renderer, style-contract, package, and exact-selector tests.
 8. Run the complete repository test suite.
 9. Generate representative code-review, diff-summary, quiz, and diff-viewer
@@ -226,8 +223,7 @@ mirrors. No mirror receives a hand-edited palette.
 - All tested normal-text color pairs meet or exceed `4.5:1`.
 - Theme, code-scheme, quiz, comment, copy, sidebar, print, and responsive
   behavior remains unchanged.
-- Diff-summary canonical, exact-selector, and local mirror templates are
-  byte-identical.
+- Diff-summary canonical and exact-selector templates are byte-identical.
 - Focused and full test suites pass.
 - Generated artifacts are inspected in both themes and no active surface uses
   the old zinc palette.
