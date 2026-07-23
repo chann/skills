@@ -83,6 +83,45 @@ class GitSkillPackageTests(unittest.TestCase):
         self.assertIn("will not compile", prompts)
         self.assertIn("remote advances", prompts)
 
+    def test_live_commit_push_is_documented_across_package_surfaces(self) -> None:
+        package_readmes = [
+            GIT_SKILL / "README.md",
+            GIT_SKILL / "README.ko.md",
+        ]
+        command_docs = [
+            ROOT / "README.md",
+            ROOT / "README.ko.md",
+            ROOT / "USAGE.md",
+            ROOT / "ARCHITECTURE.md",
+        ]
+
+        for path in package_readmes:
+            with self.subTest(path=path):
+                text = path.read_text(encoding="utf-8")
+                self.assertEqual(2, text.count("--skill git-commit-push-live"))
+                self.assertIn("/git-commit-push-live", text)
+
+        for path in command_docs:
+            with self.subTest(path=path):
+                self.assertIn(
+                    "git-commit-push-live",
+                    path.read_text(encoding="utf-8"),
+                )
+
+    def test_published_skill_count_matches_packaged_skills(self) -> None:
+        packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
+        self.assertEqual(17, len(packaged_skills))
+
+        expected_counts = {
+            ROOT / "README.md": "17 practical agent skills",
+            ROOT / "README.ko.md": "17개의 실용적인 에이전트 스킬",
+            ROOT / "USAGE.md": "17 independently discoverable skills",
+            ROOT / "ARCHITECTURE.md": "expose 17 skills",
+        }
+        for path, phrase in expected_counts.items():
+            with self.subTest(path=path):
+                self.assertIn(phrase, path.read_text(encoding="utf-8"))
+
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
         expected_contracts = {
             GIT_SKILL

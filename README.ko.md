@@ -10,7 +10,7 @@
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.ko.md)**         | git 변경 인텔리전스 — 설명형 diff 요약, 심각도 기반 리뷰, 원본 HTML diff 뷰어                    |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 prose 보존하며 생성 또는 갱신              |
-| **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, push, 히스토리 재작성, main/dev 머지, 머지된 로컬 브랜치 정리            |
+| **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, live checkpoint push, 히스토리 재작성, main/dev 머지, 로컬 브랜치 정리    |
 | **[handoff](handoff/README.ko.md)**                 | git diff, 범위, 세션 컨텍스트에서 프론트엔드/백엔드 핸드오프 문서 생성                         |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 
@@ -77,6 +77,7 @@ diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 | --------------------- | ------------------------------------------------------------------------------- |
 | `/git-commit`         | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
 | `/git-commit-push`    | 위 작업 후 `git push` 까지 진행 (`--force` 안 함)                               |
+| `/git-commit-push-live` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                     |
 | `/git-commit-rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                        |
 | `/git-merge-to-main`  | 현재 브랜치를 `main` 으로 머지 후 소스 브랜치를 `git branch -d` 로 삭제         |
 | `/git-merge-to-dev`   | 현재 브랜치를 `dev` (없으면 `develop`) 으로 머지 후 소스 브랜치 삭제            |
