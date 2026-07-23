@@ -122,6 +122,17 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(phrase, path.read_text(encoding="utf-8"))
 
+    def test_plugin_metadata_publishes_live_checkpoint_support(self) -> None:
+        metadata = json.loads(
+            (GIT_SKILL / ".claude-plugin" / "plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual("git-skill", metadata["name"])
+        self.assertEqual("0.4.0", metadata["version"])
+        self.assertIn("live checkpoint pushes", metadata["description"])
+
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
         expected_contracts = {
             GIT_SKILL

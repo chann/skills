@@ -14,7 +14,7 @@ Each skill is authored as a portable `SKILL.md` document plus optional `referenc
 |---|---|---|---|
 | `code-review` | 2.4.0 | `code-review`, `code-review-md`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` | Explain changes across code and architecture; review diffs for defects; emit Markdown/HTML reports; render standalone raw HTML diffs |
 | `doc-skill` | 0.1.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
-| `git-skill` | 0.3.0 | `git-commit`, `git-commit-push`, `git-commit-push-live`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, one-shot or live checkpoint pushes, history rewrite, guarded merges, and merged-branch cleanup |
+| `git-skill` | 0.4.0 | `git-commit`, `git-commit-push`, `git-commit-push-live`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, one-shot or live checkpoint pushes, history rewrite, guarded merges, and merged-branch cleanup |
 | `handoff` | 0.1.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
 | `long-task` | 0.2.1 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 
@@ -134,7 +134,7 @@ skills/
 │   │   ├── SKILL.md
 │   │   └── templates/                # README.md.tmpl, README.ko.md.tmpl, ARCHITECTURE.md.tmpl, USAGE.md.tmpl
 │   └── README.md · README.ko.md
-├── git-skill/                        # plugin (v0.3.0)
+├── git-skill/                        # plugin (v0.4.0)
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/                     # seven git-* commands
 │   ├── skills/
