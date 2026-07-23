@@ -1,5 +1,5 @@
 ---
-description: Summarize an exact git diff scope as one explanatory Markdown report and interactive HTML report, then open it in a browser.
+description: Summarize an exact git diff scope in Korean and English Markdown plus one interactive bilingual HTML report, then open it in a browser.
 argument-hint: "[scope]"
 ---
 
@@ -13,9 +13,11 @@ Preserve the exact user-specified scope from `$ARGUMENTS`, including the distinc
 
 The command is complete only after it:
 
-1. Writes one Markdown summary in the prompt language.
-2. Generates the matching self-contained HTML report.
+1. Writes aligned Korean and English Markdown summaries with the same `DS-*` IDs and evidence claims.
+2. Generates the matching self-contained bilingual HTML report with Korean as the default view and an accessible language control.
 3. Opens the HTML report in a browser.
-4. Reports artifact and verification facts only: the exact scope and evidence command, card count and language, both absolute output paths, browser-open fact or warning, fresh verification, and material unknowns.
+4. Reports artifact and verification facts only: the exact scope and evidence command, card count and languages, all three absolute output paths, browser-open fact or warning, fresh verification, and material unknowns.
+
+Korean and English are the default output languages. Use the skill's explicit single-language mode only when the user requests one language.
 
 Do not repeat card or Executive Summary prose, including for a one-card mechanical diff, and do not promise a fixed card count. This is explanatory change intelligence; route defect findings to `code-review` and a raw patch display to `diff-viewer`.

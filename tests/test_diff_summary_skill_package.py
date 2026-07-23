@@ -420,6 +420,29 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self.assertIn("--open", skill_text)
         self.assertNotIn("renderer is not implemented", skill_text)
 
+    def test_skill_defaults_to_aligned_korean_and_english_report_artifacts(
+        self,
+    ) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+        command_text = (CODE_REVIEW / "commands" / "diff-summary.md").read_text(
+            encoding="utf-8"
+        )
+        quiz_text = (DIFF_SUMMARY_QUIZ / "SKILL.md").read_text(encoding="utf-8")
+
+        for fragment in (
+            "bilingual",
+            "Korean",
+            "English",
+            "--bilingual-json-stdin",
+            ".diff-summaries/<date>_<scope-tag>.en.md",
+            "same `DS-*` IDs",
+            "single-language",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, skill_text)
+        self.assertIn("Korean and English", command_text)
+        self.assertIn("same `QZ-*` IDs", quiz_text)
+
     def test_skill_enforces_evidence_first_summary_writing(self) -> None:
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
         required_contract = (
@@ -452,8 +475,9 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         for handoff_fact in (
             "Report only these artifact and verification facts:",
             "The exact requested scope and exact evidence command.",
-            "The generated card count and report language.",
-            "The absolute Markdown and HTML output paths.",
+            "The generated card count and report languages.",
+            "The absolute Korean and English Markdown paths and the bilingual "
+            "HTML path.",
             "The browser-open result or retained-file warning.",
             "Fresh verification performed and material unknowns that remain unverified.",
             "Do not repeat card or Executive Summary prose, even for one-card "

@@ -36,6 +36,7 @@ _CATEGORIES = (
 )
 _IMPACTS = ("High", "Medium", "Low", "Informational")
 _MAX_STDIN_REPORT_SIZE = 16 * 1024 * 1024
+_MAX_BILINGUAL_STDIN_SIZE = (2 * _MAX_STDIN_REPORT_SIZE) + (64 * 1024)
 _DATE_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 _FIXED_SCOPE_TAGS = {
     "working": "working",
@@ -99,6 +100,7 @@ _TEMPLATE_PLACEHOLDERS = (
     "__REPORT_BODY__",
     "__SIDEBAR_REPOSITORY__",
     "__SIDEBAR_NAV__",
+    "__LANGUAGE_CONTROL__",
     "__SUMMARY_DATA__",
     "__RAW_MARKDOWN__",
     "__COMMENT_SCOPE__",
@@ -295,13 +297,104 @@ def assemble_html(
     report: ParsedReport,
     template: str,
     default_theme: str = "auto",
+    alternate_report: ParsedReport | None = None,
 ) -> str:
     """Assemble a complete self-contained diff-summary HTML report."""
     if default_theme not in {"auto", "light", "dark"}:
         raise ReportFormatError("default theme must be one of: auto, light, dark")
 
-    body, navigation = _render_report(report)
-    summary_data: list[_JsonValue] = [
+    reports = _aligned_language_reports(report, alternate_report)
+    default_report = reports[0]
+    multiple_languages = len(reports) > 1
+    metadata_parts: list[str] = []
+    body_parts: list[str] = []
+    navigation_parts: list[str] = []
+    summary_by_language: dict[str, _JsonValue] = {}
+    markdown_by_language: dict[str, _JsonValue] = {}
+
+    for document in reports:
+        language = document.metadata.language
+        prefix = f"{language}--" if multiple_languages else ""
+        body, navigation = _render_report(document, anchor_prefix=prefix)
+        metadata = _render_metadata(document.metadata, anchor_prefix=prefix)
+        if multiple_languages:
+            active_class = " is-active" if document is default_report else ""
+            hidden = "" if document is default_report else " hidden"
+            title = escape(document.metadata.title, quote=True)
+            metadata_parts.append(
+                f'<div class="language-part{active_class}" '
+                f'data-language-part="{language}" data-report-title="{title}"{hidden}>'
+                f"{metadata}</div>"
+            )
+            body_parts.append(
+                f'<div class="language-part{active_class}" '
+                f'data-language-part="{language}" data-report-body{hidden}>'
+                f"{body}</div>"
+            )
+            navigation_parts.append(
+                f'<div class="language-part{active_class}" '
+                f'data-language-part="{language}"{hidden}>'
+                f"{_render_navigation(navigation)}</div>"
+            )
+        else:
+            metadata_parts.append(metadata)
+            body_parts.append(body)
+            navigation_parts.append(_render_navigation(navigation))
+        summary_by_language[language] = _summary_data(document)
+        markdown_by_language[language] = document.markdown
+
+    language_control = ""
+    if multiple_languages:
+        buttons = "".join(
+            '<button type="button" aria-pressed="{pressed}" '
+            'data-set-lang="{language}">{label}</button>'.format(
+                language=escape(document.metadata.language, quote=True),
+                pressed=(
+                    "true" if document.metadata.language == default_report.metadata.language
+                    else "false"
+                ),
+                label="한국어" if document.metadata.language == "ko" else "English",
+            )
+            for document in reports
+        )
+        language_control = (
+            '<div class="control control--language" role="group" aria-label="Language">'
+            '<span class="control-label" data-language-label>Lang</span>'
+            f"{buttons}</div>"
+        )
+
+    summary_payload: _JsonValue = (
+        summary_by_language
+        if multiple_languages
+        else summary_by_language[default_report.metadata.language]
+    )
+    markdown_payload: _JsonValue = (
+        markdown_by_language
+        if multiple_languages
+        else markdown_by_language[default_report.metadata.language]
+    )
+    mapping = {
+        "__REPORT_TITLE__": escape(default_report.metadata.title, quote=True),
+        "__REPORT_LANGUAGE__": escape(
+            default_report.metadata.language, quote=True
+        ),
+        "__REPORT_METADATA__": "\n".join(metadata_parts),
+        "__REPORT_BODY__": "\n".join(body_parts),
+        "__SIDEBAR_REPOSITORY__": escape(
+            default_report.metadata.repository, quote=True
+        ),
+        "__SIDEBAR_NAV__": "\n".join(navigation_parts),
+        "__LANGUAGE_CONTROL__": language_control,
+        "__SUMMARY_DATA__": json_for_script(summary_payload),
+        "__RAW_MARKDOWN__": json_for_script(markdown_payload),
+        "__COMMENT_SCOPE__": json_for_script(stable_comment_scope(default_report)),
+        "__DEFAULT_THEME__": default_theme,
+    }
+    return replace_placeholders(template, mapping)
+
+
+def _summary_data(report: ParsedReport) -> list[_JsonValue]:
+    return [
         {
             "id": card.id,
             "title": card.title,
@@ -313,21 +406,63 @@ def assemble_html(
         }
         for card in report.cards
     ]
-    mapping = {
-        "__REPORT_TITLE__": escape(report.metadata.title, quote=True),
-        "__REPORT_LANGUAGE__": escape(report.metadata.language, quote=True),
-        "__REPORT_METADATA__": _render_metadata(report.metadata),
-        "__REPORT_BODY__": body,
-        "__SIDEBAR_REPOSITORY__": escape(
-            report.metadata.repository, quote=True
-        ),
-        "__SIDEBAR_NAV__": _render_navigation(navigation),
-        "__SUMMARY_DATA__": json_for_script(summary_data),
-        "__RAW_MARKDOWN__": json_for_script(report.markdown),
-        "__COMMENT_SCOPE__": json_for_script(stable_comment_scope(report)),
-        "__DEFAULT_THEME__": default_theme,
+
+
+def _aligned_language_reports(
+    report: ParsedReport,
+    alternate_report: ParsedReport | None,
+) -> tuple[ParsedReport, ...]:
+    if alternate_report is None:
+        return (report,)
+
+    reports_by_language = {
+        report.metadata.language: report,
+        alternate_report.metadata.language: alternate_report,
     }
-    return replace_placeholders(template, mapping)
+    if set(reports_by_language) != {"ko", "en"}:
+        raise ReportFormatError(
+            "bilingual reports must contain exactly one Korean (ko) and one English (en) report"
+        )
+
+    korean = reports_by_language["ko"]
+    english = reports_by_language["en"]
+    for field in ("date", "repository", "scope", "command", "head"):
+        if getattr(korean.metadata, field) != getattr(english.metadata, field):
+            raise ReportFormatError(
+                f"bilingual report metadata field {field.title()} must match"
+            )
+    if len(korean.cards) != len(english.cards):
+        raise ReportFormatError("bilingual reports must contain the same DS card count")
+    for korean_card, english_card in zip(korean.cards, english.cards, strict=True):
+        if korean_card.id != english_card.id:
+            raise ReportFormatError(
+                "bilingual reports must contain the same DS card IDs in the same order"
+            )
+        for field in ("category", "impact", "files"):
+            if getattr(korean_card, field) != getattr(english_card, field):
+                raise ReportFormatError(
+                    f"bilingual card {korean_card.id} field {field.title()} must match"
+                )
+    if len(korean.quiz) != len(english.quiz):
+        raise ReportFormatError(
+            "bilingual reports must contain the same QZ question count"
+        )
+    for korean_question, english_question in zip(
+        korean.quiz, english.quiz, strict=True
+    ):
+        if korean_question.id != english_question.id:
+            raise ReportFormatError(
+                "bilingual reports must contain the same QZ IDs in the same order"
+            )
+        if len(korean_question.options) != len(english_question.options):
+            raise ReportFormatError(
+                f"bilingual question {korean_question.id} option count must match"
+            )
+        if korean_question.answer_index != english_question.answer_index:
+            raise ReportFormatError(
+                f"bilingual question {korean_question.id} correct option must match"
+            )
+    return korean, english
 
 
 @dataclass(frozen=True)
@@ -340,8 +475,11 @@ class _NavigationItem:
 class _HeadingIndex:
     """Allocate deterministic document anchors without duplicate DOM IDs."""
 
-    def __init__(self) -> None:
-        self._used = set(_RESERVED_DOM_IDS)
+    def __init__(self, anchor_prefix: str = "") -> None:
+        self._anchor_prefix = anchor_prefix
+        self._used = {
+            f"{anchor_prefix}{reserved}" for reserved in _RESERVED_DOM_IDS
+        }
         self.navigation: list[_NavigationItem] = []
 
     def add(self, level: int, title: str) -> str:
@@ -352,10 +490,10 @@ class _HeadingIndex:
         if not base[0].isalpha():
             base = f"section-{base}"
 
-        anchor = base
+        anchor = f"{self._anchor_prefix}{base}"
         suffix = 2
         while anchor in self._used:
-            anchor = f"{base}-{suffix}"
+            anchor = f"{self._anchor_prefix}{base}-{suffix}"
             suffix += 1
         self._used.add(anchor)
         if level in (2, 3):
@@ -759,9 +897,12 @@ def _render_quiz_question(question: QuizQuestion, headings: _HeadingIndex) -> st
     )
 
 
-def _render_report(report: ParsedReport) -> tuple[str, tuple[_NavigationItem, ...]]:
+def _render_report(
+    report: ParsedReport,
+    anchor_prefix: str = "",
+) -> tuple[str, tuple[_NavigationItem, ...]]:
     scan = _scan_fences(report.markdown)
-    headings = _HeadingIndex()
+    headings = _HeadingIndex(anchor_prefix)
     parts: list[str] = []
     pending: list[str] = []
     card_index = 0
@@ -815,14 +956,18 @@ def _render_report(report: ParsedReport) -> tuple[str, tuple[_NavigationItem, ..
     return "\n".join(parts), tuple(headings.navigation)
 
 
-def _render_metadata(metadata: ReportMetadata) -> str:
+def _render_metadata(
+    metadata: ReportMetadata,
+    anchor_prefix: str = "",
+) -> str:
     repository_attribute = escape(metadata.repository, quote=True)
     scope_attribute = escape(metadata.scope, quote=True)
     return (
         f'<header class="report-header" data-repository="{repository_attribute}" '
         f'data-scope="{scope_attribute}">\n'
         '<div class="report-overline">Diff Summary</div>\n'
-        f'<h1 id="report-title">{escape(metadata.title, quote=True)}</h1>\n'
+        f'<h1 id="{escape(anchor_prefix, quote=True)}report-title">'
+        f"{escape(metadata.title, quote=True)}</h1>\n"
         '<dl class="report-metadata">\n'
         '<div class="metadata-cell"><dt>Date</dt>'
         f"<dd>{escape(metadata.date, quote=True)}</dd></div>\n"
@@ -1480,6 +1625,7 @@ class _GenerationResult:
 
     path: Path | None
     markdown_path: Path
+    alternate_markdown_path: Path | None
     report: ParsedReport
     comment_scope: str
 
@@ -1678,6 +1824,7 @@ def _generate_report(
     return _GenerationResult(
         path=destination_path,
         markdown_path=source_path,
+        alternate_markdown_path=None,
         report=report,
         comment_scope=stable_comment_scope(report),
     )
@@ -1715,6 +1862,7 @@ def _generate_report_from_markdown(
     return _GenerationResult(
         path=destination_path,
         markdown_path=source_path,
+        alternate_markdown_path=None,
         report=report,
         comment_scope=stable_comment_scope(report),
     )
@@ -1752,8 +1900,55 @@ def _generate_report_in_directory(
     return _GenerationResult(
         path=destination_path,
         markdown_path=source_path,
+        alternate_markdown_path=None,
         report=report,
         comment_scope=stable_comment_scope(report),
+    )
+
+
+def _generate_bilingual_report_in_directory(
+    korean_markdown: str,
+    english_markdown: str,
+    output_directory: str | Path,
+    theme: str = "auto",
+    open_report: bool = False,
+    markdown_only: bool = False,
+) -> _GenerationResult:
+    """Validate aligned ko/en reports and write their shared artifact set."""
+    if not isinstance(korean_markdown, str) or not isinstance(english_markdown, str):
+        raise TypeError("bilingual report values must be strings")
+    korean = parse_report(korean_markdown)
+    english = parse_report(english_markdown)
+    korean, english = _aligned_language_reports(korean, english)
+    stem = report_artifact_stem(korean.metadata)
+    html = (
+        None
+        if markdown_only
+        else assemble_html(
+            korean,
+            load_template(),
+            default_theme=theme,
+            alternate_report=english,
+        )
+    )
+    directory = _absolute_lexical_path(output_directory)
+    _validate_output_parent(directory / ".artifact-parent-check", create=True)
+    korean_path = directory / f"{stem}.md"
+    english_path = directory / f"{stem}.en.md"
+    destination_path: Path | None = None
+    _atomic_write_text(korean_path, korean_markdown)
+    _atomic_write_text(english_path, english_markdown)
+    if html is not None:
+        destination_path = directory / f"{stem}.html"
+        _atomic_write_text(destination_path, html)
+    if open_report and destination_path is not None:
+        _open_generated_report(destination_path)
+    return _GenerationResult(
+        path=destination_path,
+        markdown_path=korean_path,
+        alternate_markdown_path=english_path,
+        report=korean,
+        comment_scope=stable_comment_scope(korean),
     )
 
 
@@ -1792,6 +1987,23 @@ def generate_report_in_directory(
     ).path
 
 
+def generate_bilingual_report_in_directory(
+    korean_markdown: str,
+    english_markdown: str,
+    output_directory: str | Path,
+    theme: str = "auto",
+    open_report: bool = False,
+) -> Path:
+    """Write aligned Korean/English Markdown and their shared HTML report."""
+    return _generate_bilingual_report_in_directory(
+        korean_markdown,
+        english_markdown,
+        output_directory,
+        theme,
+        open_report,
+    ).path
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the diff-summary report generator command-line interface."""
     parser = argparse.ArgumentParser(
@@ -1811,6 +2023,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--bilingual-json-stdin",
+        action="store_true",
+        help=(
+            'read one JSON object shaped {"ko": "<Markdown>", "en": "<Markdown>"} '
+            "from standard input and atomically write aligned bilingual artifacts"
+        ),
+    )
+    parser.add_argument(
         "-o", "--output", help="HTML output path (default: input with .html)"
     )
     parser.add_argument(
@@ -1825,7 +2045,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "validate the report contract and write only the Markdown artifact "
-            "(requires --markdown-stdin and --output-directory)"
+            "(requires a standard-input mode and --output-directory)"
         ),
     )
     parser.add_argument(
@@ -1852,27 +2072,67 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Generate one report and print facts needed for the skill handoff."""
     arguments = build_parser().parse_args(argv)
     try:
+        if arguments.markdown_stdin and arguments.bilingual_json_stdin:
+            raise ReportFormatError(
+                "--markdown-stdin and --bilingual-json-stdin are mutually exclusive"
+            )
+        stdin_mode = arguments.markdown_stdin or arguments.bilingual_json_stdin
         if arguments.markdown_only:
-            if arguments.output_directory is None or not arguments.markdown_stdin:
+            if arguments.output_directory is None or not stdin_mode:
                 raise ReportFormatError(
-                    "--markdown-only requires --markdown-stdin and --output-directory"
+                    "--markdown-only requires a standard-input mode and --output-directory"
                 )
             if arguments.open_report:
                 raise ReportFormatError(
                     "--markdown-only cannot be combined with --open"
                 )
         if arguments.output_directory is not None:
-            if not arguments.markdown_stdin:
-                raise ReportFormatError("--output-directory requires --markdown-stdin")
+            if not stdin_mode:
+                raise ReportFormatError(
+                    "--output-directory requires --markdown-stdin or "
+                    "--bilingual-json-stdin"
+                )
             if arguments.markdown_report is not None or arguments.output is not None:
                 raise ReportFormatError(
                     "--output-directory cannot be combined with markdown_report or --output"
                 )
+        elif arguments.bilingual_json_stdin:
+            raise ReportFormatError(
+                "--bilingual-json-stdin requires --output-directory"
+            )
         elif arguments.markdown_report is None:
             raise ReportFormatError(
                 "markdown_report is required unless --output-directory is used"
             )
-        if arguments.markdown_stdin:
+        if arguments.bilingual_json_stdin:
+            payload_bytes = sys.stdin.buffer.read(_MAX_BILINGUAL_STDIN_SIZE + 1)
+            if len(payload_bytes) > _MAX_BILINGUAL_STDIN_SIZE:
+                raise ReportFormatError(
+                    "bilingual JSON from standard input exceeds the 32 MiB report budget"
+                )
+            try:
+                payload = json.loads(payload_bytes.decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError) as error:
+                raise ReportFormatError(
+                    f"bilingual standard input must be valid UTF-8 JSON: {error}"
+                ) from error
+            if (
+                not isinstance(payload, dict)
+                or set(payload) != {"ko", "en"}
+                or not all(isinstance(payload[language], str) for language in ("ko", "en"))
+            ):
+                raise ReportFormatError(
+                    'bilingual JSON must contain exactly string keys "ko" and "en"'
+                )
+            result = _generate_bilingual_report_in_directory(
+                payload["ko"],
+                payload["en"],
+                arguments.output_directory,
+                theme=arguments.theme,
+                open_report=arguments.open_report,
+                markdown_only=arguments.markdown_only,
+            )
+        elif arguments.markdown_stdin:
             markdown_bytes = sys.stdin.buffer.read(_MAX_STDIN_REPORT_SIZE + 1)
             if len(markdown_bytes) > _MAX_STDIN_REPORT_SIZE:
                 raise ReportFormatError("Markdown from standard input exceeds 16 MiB")
@@ -1919,10 +2179,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     quiz_count = len(result.report.quiz)
     if quiz_count:
         print(f"Quiz questions: {quiz_count}")
-    print(f"Language: {result.report.metadata.language}")
+    if result.alternate_markdown_path is not None:
+        print("Languages: ko,en")
+    else:
+        print(f"Language: {result.report.metadata.language}")
     print(f"Comment scope: {result.comment_scope}")
     if arguments.markdown_stdin:
         print(f"Markdown: {result.markdown_path}")
+    elif arguments.bilingual_json_stdin:
+        print(f"Markdown (ko): {result.markdown_path}")
+        print(f"Markdown (en): {result.alternate_markdown_path}")
     if result.path is not None:
         print(f"HTML: {result.path}")
     return 0

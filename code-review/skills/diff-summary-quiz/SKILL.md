@@ -13,15 +13,16 @@ Variant of the `diff-summary` skill that appends a validated `## Quiz` section t
 
 **Before starting, read the bundled base workflow** at `<skill-path>/references/diff-summary-workflow.md`. It is a synchronized copy of the authoritative `diff-summary` workflow, including the packaged evidence collector contract, scope preservation and validation rules, untrusted-evidence rules, analysis dimensions, evidence-first writing contract, Explanatory Depth guidance, Stable Report Contract, and generation steps. Do not restate or weaken it here.
 
-Follow the bundled base workflow exactly — evidence collection, analysis, evidence-first cards, generation with `--markdown-stdin --output-directory`, artifact verification, and the attempted browser open — and additionally author the quiz section below before generating.
+Follow the bundled base workflow exactly — evidence collection, analysis, evidence-first cards, bilingual generation with `--bilingual-json-stdin --output-directory`, artifact verification, and the attempted browser open — and additionally author an aligned quiz section in each language before generating.
 
 ## Quiz Authoring Contract
 
-Add `## Quiz` as the final level-two section of the report. The section heading `Quiz` and the `**Explanation:**` key are parser-significant English keys; question prose stays in the report language.
+Add `## Quiz` as the final level-two section of each report. The section heading `Quiz` and the `**Explanation:**` key are parser-significant English keys; question prose stays in each report's language.
 
 - Author five questions by default. Use fewer only when the diff cannot support five without padding, and never state facts absent from the report's evidence.
 - Aim for medium difficulty: a reader should need to understand the substance of the change — purpose, behavior, architecture, contracts, operations — not trivia such as line counts. Wrong options must be plausible; no trick questions.
 - Each question is a `#### [QZ-001] Title` heading. Question IDs are unique and sequential from `QZ-001`, mirroring the `DS-*` rules.
+- The Korean and English quiz sections use the same `QZ-*` IDs in the same order, the same option count, and the same correct-option position. Translate the question, options, and explanation without changing what knowledge is tested.
 - Options are one contiguous task list of 2 to 6 single-line items shaped exactly `- [ ] option`, with exactly one correct option marked `- [x]`. Duplicate option text is rejected.
 - Exactly one non-empty `**Explanation:**` line follows the options and justifies the correct answer with report evidence. Only blank lines may follow it inside the question.
 - Question prose may appear between the heading and the options. Quiz-like lines inside fenced code are inert.

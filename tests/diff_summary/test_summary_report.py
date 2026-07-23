@@ -131,6 +131,51 @@ QUIZ_SECTION = """## Quiz
 
 QUIZ_REPORT = REPORT + "\n" + QUIZ_SECTION
 
+ENGLISH_REPORT = """# main..dev Diff Summary
+
+**Date:** 2026-07-13
+**Repository:** chann/skills
+**Scope:** main..dev
+**Command:** `git diff --no-ext-diff --no-color --end-of-options main..dev`
+**HEAD:** abc1234
+**Language:** en
+
+## Executive Summary
+
+| Metric | Value |
+| --- | ---: |
+| Summary cards | 2 |
+| High impact | 1 |
+
+The change set keeps **review context** close to `main..dev` while rendering escaped markup as text.
+
+## Changes
+
+### Architecture
+
+#### [DS-001] Separate parsing from rendering
+
+**Category:** Architecture
+**Impact:** High
+**Files:** `src/report_parser.py`, `tests/test_report_parser.py`
+
+The parser validates the input contract independently from the renderer.
+
+### Tests
+
+#### [DS-002] Cover report validation
+
+**Category:** Test
+**Impact:** Medium
+**Files:** `tests/test_report_parser.py`
+
+Regression tests preserve the exact `main..dev` scope and Unicode content.
+
+## Notes
+
+Generated footer outside the summary cards.
+"""
+
 
 def replace_once(markdown: str, old: str, new: str) -> str:
     if markdown.count(old) != 1:
@@ -576,6 +621,7 @@ TEMPLATE_PLACEHOLDERS = (
     "__REPORT_BODY__",
     "__SIDEBAR_REPOSITORY__",
     "__SIDEBAR_NAV__",
+    "__LANGUAGE_CONTROL__",
     "__SUMMARY_DATA__",
     "__RAW_MARKDOWN__",
     "__COMMENT_SCOPE__",
@@ -1158,6 +1204,7 @@ class StaticRendererApiTests(unittest.TestCase):
             "load_template",
             "replace_placeholders",
             "generate_report",
+            "generate_bilingual_report_in_directory",
         ):
             with self.subTest(api=api):
                 self.assertTrue(callable(getattr(renderer, api, None)), api)
@@ -1410,6 +1457,105 @@ class MarkdownRenderingTests(unittest.TestCase):
 
 
 class HtmlAssemblyTests(unittest.TestCase):
+    def test_assembles_bilingual_report_with_korean_default_and_language_toggle(
+        self,
+    ) -> None:
+        korean = parse_report(REPORT)
+        english = parse_report(ENGLISH_REPORT)
+
+        rendered = renderer.assemble_html(
+            korean,
+            renderer.load_template(),
+            alternate_report=english,
+        )
+        inventory = _MarkupInventory()
+        inventory.feed(rendered)
+        ids = [attrs["id"] for _, attrs in inventory.elements if "id" in attrs]
+
+        self.assertIn('<html lang="ko" data-sidebar-collapsed="false">', rendered)
+        self.assertIn('data-language-part="ko"', rendered)
+        self.assertIn('data-language-part="en"', rendered)
+        self.assertIn('data-set-lang="ko">한국어</button>', rendered)
+        self.assertIn('data-set-lang="en">English</button>', rendered)
+        self.assertIn("function setLanguage(", rendered)
+        self.assertIn("applyTheme(currentTheme)", rendered)
+        self.assertIn("setSidebarCollapsed(currentSidebarCollapsed, false)", rendered)
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertEqual(
+            extract_json_script(rendered, "summary-data"),
+            {
+                "ko": [
+                    {
+                        "id": card.id,
+                        "title": card.title,
+                        "section": card.section,
+                        "category": card.category,
+                        "impact": card.impact,
+                        "files": list(card.files),
+                        "markdown": card.markdown,
+                    }
+                    for card in korean.cards
+                ],
+                "en": [
+                    {
+                        "id": card.id,
+                        "title": card.title,
+                        "section": card.section,
+                        "category": card.category,
+                        "impact": card.impact,
+                        "files": list(card.files),
+                        "markdown": card.markdown,
+                    }
+                    for card in english.cards
+                ],
+            },
+        )
+        self.assertEqual(
+            extract_json_script(rendered, "raw-markdown"),
+            {"ko": REPORT, "en": ENGLISH_REPORT},
+        )
+
+    def test_bilingual_report_rejects_drift_between_translation_contracts(
+        self,
+    ) -> None:
+        korean = parse_report(REPORT)
+        drifted = parse_report(
+            replace_once(
+                ENGLISH_REPORT,
+                "**Files:** `src/report_parser.py`, `tests/test_report_parser.py`",
+                "**Files:** `src/other.py`",
+            )
+        )
+
+        with self.assertRaisesRegex(
+            ReportFormatError,
+            r"DS-001.*Files",
+        ):
+            renderer.assemble_html(
+                korean,
+                renderer.load_template(),
+                alternate_report=drifted,
+            )
+
+    def test_bilingual_runtime_reads_context_from_active_metadata_part(self) -> None:
+        rendered = renderer.assemble_html(
+            parse_report(REPORT),
+            renderer.load_template(),
+            alternate_report=parse_report(ENGLISH_REPORT),
+        )
+        runtime = extract_runtime_script(rendered)
+
+        self.assertIn("function activeMetadataRoot()", runtime)
+        self.assertIn("const metadataRoot = activeMetadataRoot();", runtime)
+        self.assertIn(
+            'metadataRoot.querySelectorAll(".metadata-cell")',
+            runtime,
+        )
+        self.assertIn(
+            'metadataRoot.querySelector(".report-header")',
+            runtime,
+        )
+
     def test_generated_report_has_plain_product_copy_without_editorial_atlas_chrome(
         self,
     ) -> None:
@@ -1962,6 +2108,34 @@ class ReportGenerationTests(unittest.TestCase):
         )
         self.assertTrue(generated.is_file())
 
+    def test_bilingual_directory_mode_writes_two_markdown_files_and_shared_html(
+        self,
+    ) -> None:
+        artifact_root = self.directory / ".diff-summaries"
+        expected_stem = f"2026-07-13_{renderer.scope_tag('main..dev')}"
+
+        generated = renderer.generate_bilingual_report_in_directory(
+            REPORT,
+            ENGLISH_REPORT,
+            artifact_root,
+        )
+
+        self.assertEqual(
+            generated, (artifact_root / f"{expected_stem}.html").absolute()
+        )
+        self.assertEqual(
+            (artifact_root / f"{expected_stem}.md").read_text(encoding="utf-8"),
+            REPORT,
+        )
+        self.assertEqual(
+            (artifact_root / f"{expected_stem}.en.md").read_text(encoding="utf-8"),
+            ENGLISH_REPORT,
+        )
+        self.assertEqual(
+            extract_json_script(generated.read_text(encoding="utf-8"), "raw-markdown"),
+            {"ko": REPORT, "en": ENGLISH_REPORT},
+        )
+
     def test_directory_mode_rejects_invalid_dates_and_symlinked_parent(self) -> None:
         invalid_report = replace_once(
             REPORT,
@@ -2224,6 +2398,40 @@ class ReportCliTests(unittest.TestCase):
         self.assertEqual(markdown_path.read_text(encoding="utf-8"), REPORT)
         self.assertTrue(html_path.is_file())
         self.assertIn(f"Markdown: {markdown_path}", result.stdout)
+        self.assertIn(f"HTML: {html_path}", result.stdout)
+
+    def test_cli_bilingual_json_stdin_writes_aligned_language_artifacts(
+        self,
+    ) -> None:
+        artifact_root = self.directory / ".diff-summaries"
+        expected_stem = f"2026-07-13_{renderer.scope_tag('main..dev')}"
+        korean_path = (artifact_root / f"{expected_stem}.md").absolute()
+        english_path = (artifact_root / f"{expected_stem}.en.md").absolute()
+        html_path = (artifact_root / f"{expected_stem}.html").absolute()
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_PATH),
+                "--bilingual-json-stdin",
+                "--output-directory",
+                str(artifact_root),
+            ],
+            cwd=ROOT,
+            input=json.dumps({"ko": REPORT, "en": ENGLISH_REPORT}),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(korean_path.read_text(encoding="utf-8"), REPORT)
+        self.assertEqual(english_path.read_text(encoding="utf-8"), ENGLISH_REPORT)
+        self.assertTrue(html_path.is_file())
+        self.assertIn("Languages: ko,en", result.stdout)
+        self.assertIn(f"Markdown (ko): {korean_path}", result.stdout)
+        self.assertIn(f"Markdown (en): {english_path}", result.stdout)
         self.assertIn(f"HTML: {html_path}", result.stdout)
 
     def test_cli_output_directory_requires_stdin_and_excludes_explicit_paths(
@@ -3240,6 +3448,7 @@ class InteractionRuntimeContractTests(unittest.TestCase):
             "buildFeedbackMarkdown",
             "answerQuiz",
             "applyTheme",
+            "setLanguage",
             "setSidebarCollapsed",
             "setSidebarWidth",
         )
@@ -3301,7 +3510,7 @@ class InteractionRuntimeContractTests(unittest.TestCase):
                 )
         self.assertEqual(self.runtime.count("localStorage."), 3)
         self.assertIn('"diff-summary:comments:" + commentScope', self.runtime)
-        self.assertIn("const interactionsReady =", self.runtime)
+        self.assertIn("let interactionsReady =", self.runtime)
         self.assertRegex(
             self.runtime,
             r"const\s+commentStorageKey\s*=\s*interactionsReady\s*\?",

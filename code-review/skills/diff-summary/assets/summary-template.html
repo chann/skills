@@ -499,6 +499,24 @@
     .control button {
       background: transparent;
       font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .control-label {
+      padding: 0 4px;
+      color: var(--muted-foreground);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .control--language button[aria-pressed="true"] {
+      border-color: var(--foreground);
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .language-part[hidden] {
+      display: none !important;
     }
 
     .card-action {
@@ -539,6 +557,16 @@
     }
 
     #report-title {
+      margin: 0 0 16px;
+      font-family: var(--font-sans);
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    [id$="--report-title"] {
       margin: 0 0 16px;
       font-family: var(--font-sans);
       font-size: 27px;
@@ -610,7 +638,27 @@
       line-height: 1.3;
     }
 
+    #report-main > .language-part[data-report-body] > h2 {
+      margin: 44px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      font-family: var(--font-sans);
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
     #report-main > h3 {
+      margin: 30px 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    #report-main > .language-part[data-report-body] > h3 {
       margin: 30px 0 12px;
       font-size: 16px;
       font-weight: 700;
@@ -625,10 +673,22 @@
       margin: 0 0 12px;
     }
 
+    #report-main > .language-part[data-report-body] > p {
+      max-width: 72ch;
+      margin: 0 0 12px;
+    }
+
     #report-main > ul,
     #report-main > ol,
     .card-content > ul,
     .card-content > ol {
+      max-width: 70ch;
+      margin: 6px 0 14px;
+      padding-left: 1.35rem;
+    }
+
+    #report-main > .language-part[data-report-body] > ul,
+    #report-main > .language-part[data-report-body] > ol {
       max-width: 70ch;
       margin: 6px 0 14px;
       padding-left: 1.35rem;
@@ -1469,6 +1529,11 @@
         break-after: avoid;
       }
 
+      #report-main > .language-part[data-report-body] > h2 {
+        margin-top: 12mm;
+        break-after: avoid;
+      }
+
       .summary-card {
         break-inside: avoid;
         box-shadow: none;
@@ -1538,6 +1603,7 @@
     <div class="main-column">
       <div class="topbar">
         <div class="controls" aria-label="Display controls">
+          __LANGUAGE_CONTROL__
           <div class="control">
             <button type="button" data-theme-toggle aria-label="Change color theme">Theme</button>
           </div>
@@ -1578,12 +1644,14 @@
       const sidebarExpand = document.querySelector("[data-sidebar-expand]");
       const themeToggle = document.querySelector("[data-theme-toggle]");
       const sidebarResizer = document.querySelector("[data-sidebar-resizer]");
-      const language = (root.lang || "").toLowerCase().startsWith("ko")
+      let language = (root.lang || "").toLowerCase().startsWith("ko")
         ? "ko"
         : "en";
       const messages = {
         en: {
           dataError: "Some embedded report data could not be read. The report remains available.",
+          language: "Language",
+          skipToReport: "Skip to report",
           storageUnavailable: "Browser storage is unavailable. Changes will remain in this tab only.",
           commentsReset: "Invalid saved comments were reset.",
           collapseSidebar: "Collapse report sidebar",
@@ -1606,6 +1674,9 @@
           addCommentLabel: (summaryId) => `Add comment to ${summaryId}`,
           copyMarkdown: "Copy Markdown",
           copyMarkdownLabel: (summaryId) => `Copy ${summaryId} Markdown`,
+          copyCode: "Copy",
+          copiedCode: "Copied!",
+          copyCodeLabel: "Copy code block",
           files: "Files",
           comments: "Comments",
           commentCount: (count) => `${count} ${count === 1 ? "comment" : "comments"}`,
@@ -1664,6 +1735,8 @@
         },
         ko: {
           dataError: "보고서 내장 데이터 일부를 읽지 못했습니다. 보고서 내용은 계속 볼 수 있습니다.",
+          language: "언어",
+          skipToReport: "보고서로 건너뛰기",
           storageUnavailable: "브라우저 저장소를 사용할 수 없어 변경 사항이 현재 탭에만 유지됩니다.",
           commentsReset: "잘못 저장된 댓글을 초기화했습니다.",
           collapseSidebar: "보고서 사이드바 접기",
@@ -1686,6 +1759,9 @@
           addCommentLabel: (summaryId) => `${summaryId}에 댓글 추가`,
           copyMarkdown: "Markdown 복사",
           copyMarkdownLabel: (summaryId) => `${summaryId} Markdown 복사`,
+          copyCode: "복사",
+          copiedCode: "복사됨!",
+          copyCodeLabel: "코드 블록 복사",
           files: "파일",
           comments: "댓글",
           commentCount: (count) => `댓글 ${count}개`,
@@ -1742,7 +1818,7 @@
           },
         },
       };
-      const strings = messages[language] || messages.en;
+      let strings = messages[language] || messages.en;
 
       let storageFailureAnnounced = false;
       let comments = [];
@@ -1750,7 +1826,7 @@
       let manualCopyDialog = null;
       let manualCopyTextarea = null;
       let manualCopyPreviousFocus = null;
-      let currentTheme = "auto";
+      let currentTheme = body.dataset.defaultTheme || "auto";
       let currentSidebarCollapsed = false;
       let currentSidebarWidth = 220;
 
@@ -1819,10 +1895,9 @@
       const embeddedSummaryData = summaryPayload.value;
       const embeddedRawMarkdown = rawMarkdownPayload.value;
       const embeddedCommentScope = commentScopePayload.value;
-      const summaryPayloadValid =
-        summaryPayload.ok &&
-        Array.isArray(embeddedSummaryData) &&
-        embeddedSummaryData.every(
+      const isSummaryList = (value) =>
+        Array.isArray(value) &&
+        value.every(
           (card) =>
             card &&
             typeof card === "object" &&
@@ -1830,58 +1905,141 @@
             typeof card.title === "string" &&
             typeof card.markdown === "string",
         );
-      const rawMarkdown =
-        rawMarkdownPayload.ok && typeof embeddedRawMarkdown === "string"
-          ? embeddedRawMarkdown
-          : null;
+      const summaryDataByLanguage =
+        Array.isArray(embeddedSummaryData)
+          ? { [language]: embeddedSummaryData }
+          : embeddedSummaryData &&
+              typeof embeddedSummaryData === "object" &&
+              !Array.isArray(embeddedSummaryData)
+            ? embeddedSummaryData
+            : {};
+      const rawMarkdownByLanguage =
+        typeof embeddedRawMarkdown === "string"
+          ? { [language]: embeddedRawMarkdown }
+          : embeddedRawMarkdown &&
+              typeof embeddedRawMarkdown === "object" &&
+              !Array.isArray(embeddedRawMarkdown)
+            ? embeddedRawMarkdown
+            : {};
+      const supportedLanguages = Object.keys(summaryDataByLanguage).filter(
+        (code) =>
+          (code === "ko" || code === "en") &&
+          isSummaryList(summaryDataByLanguage[code]) &&
+          typeof rawMarkdownByLanguage[code] === "string",
+      );
+      const summaryPayloadValid =
+        summaryPayload.ok &&
+        rawMarkdownPayload.ok &&
+        supportedLanguages.length > 0 &&
+        supportedLanguages.length === Object.keys(summaryDataByLanguage).length &&
+        supportedLanguages.length === Object.keys(rawMarkdownByLanguage).length;
       const commentScope =
         commentScopePayload.ok &&
         typeof embeddedCommentScope === "string" &&
         embeddedCommentScope.trim()
           ? embeddedCommentScope
           : null;
-      const summaryData = summaryPayloadValid ? embeddedSummaryData : [];
-      const cardsById = new Map(summaryData.map((card) => [card.id, card]));
-      const cardElements = Array.from(
-        document.querySelectorAll(".summary-card[data-summary-id]"),
-      );
-      const cardElementsById = new Map(
-        cardElements.map((card) => [
-          card.dataset.summaryId,
-          card,
-        ]),
-      );
-      const payloadCardIds = summaryData.map((card) => card.id);
-      const domCardIds = cardElements.map((card) => card.dataset.summaryId);
-      const payloadCardIdSet = new Set(payloadCardIds);
-      const domCardIdSet = new Set(domCardIds);
-      const interactionsReady =
-        summaryPayloadValid &&
-        commentScope !== null &&
-        payloadCardIds.length === domCardIds.length &&
-        payloadCardIdSet.size === payloadCardIds.length &&
-        domCardIdSet.size === domCardIds.length &&
-        payloadCardIds.every((summaryId) => domCardIdSet.has(summaryId));
+      if (!supportedLanguages.includes(language) && supportedLanguages.length > 0) {
+        language = supportedLanguages[0];
+        strings = messages[language] || messages.en;
+      }
+      let summaryData = [];
+      let rawMarkdown = null;
+      let cardsById = new Map();
+      let cardElements = [];
+      let cardElementsById = new Map();
+      let interactionsReady = false;
+      let reportContext = {
+        repository: "",
+        scope: "",
+        command: "",
+        head: "",
+      };
+      let quizQuestionElements = [];
+      let quizQuestionsById = new Map();
+
+      function activeReportRoot() {
+        const bodies = Array.from(document.querySelectorAll("[data-report-body]"));
+        return (
+          bodies.find(
+            (candidate) =>
+              candidate.dataset.languagePart === language && !candidate.hidden,
+          ) || document
+        );
+      }
+
+      function activeMetadataRoot() {
+        const metadataParts = Array.from(
+          document.querySelectorAll("[data-report-title]"),
+        );
+        return (
+          metadataParts.find(
+            (candidate) =>
+              candidate.dataset.languagePart === language && !candidate.hidden,
+          ) || document
+        );
+      }
+
+      function refreshActiveReportState() {
+        const reportRoot = activeReportRoot();
+        const metadataRoot = activeMetadataRoot();
+        summaryData =
+          summaryPayloadValid && isSummaryList(summaryDataByLanguage[language])
+            ? summaryDataByLanguage[language]
+            : [];
+        rawMarkdown =
+          summaryPayloadValid && typeof rawMarkdownByLanguage[language] === "string"
+            ? rawMarkdownByLanguage[language]
+            : null;
+        cardsById = new Map(summaryData.map((card) => [card.id, card]));
+        cardElements = Array.from(
+          reportRoot.querySelectorAll(".summary-card[data-summary-id]"),
+        );
+        cardElementsById = new Map(
+          cardElements.map((card) => [card.dataset.summaryId, card]),
+        );
+        const payloadCardIds = summaryData.map((card) => card.id);
+        const domCardIds = cardElements.map((card) => card.dataset.summaryId);
+        const payloadCardIdSet = new Set(payloadCardIds);
+        const domCardIdSet = new Set(domCardIds);
+        interactionsReady =
+          summaryPayloadValid &&
+          commentScope !== null &&
+          payloadCardIds.length === domCardIds.length &&
+          payloadCardIdSet.size === payloadCardIds.length &&
+          domCardIdSet.size === domCardIds.length &&
+          payloadCardIds.every((summaryId) => domCardIdSet.has(summaryId));
+        body.dataset.interactionsReady = String(interactionsReady);
+
+        const metadataValues = new Map(
+          Array.from(metadataRoot.querySelectorAll(".metadata-cell"), (cell) => [
+            (cell.querySelector("dt") || {}).textContent || "",
+            (cell.querySelector("dd") || {}).textContent || "",
+          ]),
+        );
+        const reportHeader = metadataRoot.querySelector(".report-header");
+        reportContext = {
+          repository: reportHeader ? reportHeader.dataset.repository || "" : "",
+          scope: reportHeader ? reportHeader.dataset.scope || "" : "",
+          command: metadataValues.get("Command") || "",
+          head: metadataValues.get("HEAD") || "",
+        };
+        quizQuestionElements = Array.from(
+          reportRoot.querySelectorAll(".quiz-question[data-quiz-id]"),
+        );
+        quizQuestionsById = new Map(
+          quizQuestionElements.map((question) => [question.dataset.quizId, question]),
+        );
+      }
+
+      refreshActiveReportState();
       if (!interactionsReady || rawMarkdown === null) {
         announce(strings.dataError, "error");
       }
-      body.dataset.interactionsReady = String(interactionsReady);
       const commentStorageKey =
         interactionsReady ? "diff-summary:comments:" + commentScope : null;
-      const metadataValues = new Map(
-        Array.from(document.querySelectorAll(".metadata-cell"), (cell) => [
-          (cell.querySelector("dt") || {}).textContent || "",
-          (cell.querySelector("dd") || {}).textContent || "",
-        ]),
-      );
-      const reportHeader = document.querySelector(".report-header");
-      const reportContext = {
-        repository: reportHeader ? reportHeader.dataset.repository || "" : "",
-        scope: reportHeader ? reportHeader.dataset.scope || "" : "",
-        command: metadataValues.get("Command") || "",
-        head: metadataValues.get("HEAD") || "",
-      };
       const THEME_KEY = "diff-summary:theme";
+      const LANGUAGE_KEY = "diff-summary:language";
       const SIDEBAR_COLLAPSED_KEY = "diff-summary:sidebar:collapsed";
       const SIDEBAR_WIDTH_KEY = "diff-summary:sidebar:width";
       const SIDEBAR_MIN = 96;
@@ -1989,6 +2147,7 @@
         if (!interactionsReady) {
           return;
         }
+        document.querySelectorAll(".comment-thread").forEach((thread) => thread.remove());
         summaryData.forEach((card) => {
           const cardElement = cardElementsById.get(card.id);
           if (!cardElement) {
@@ -2006,7 +2165,7 @@
             const thread = document.createElement("section");
             const heading = document.createElement("h4");
             const list = document.createElement("ol");
-            const headingId = `comment-thread-title-${card.id}`;
+            const headingId = `${language}--comment-thread-title-${card.id}`;
             thread.className = "comment-thread";
             thread.hidden = cardComments.length === 0;
             thread.setAttribute("aria-labelledby", headingId);
@@ -2147,7 +2306,7 @@
           strings.cancel,
           strings.cancel,
         );
-        const editorId = `comment-editor-${summaryId}`;
+        const editorId = `${language}--comment-editor-${summaryId}`;
         editor.className = "comment-editor";
         label.className = "comment-editor-label";
         label.htmlFor = editorId;
@@ -2334,19 +2493,15 @@
         return sections.join("\n\n");
       }
 
-      const quizQuestionElements = Array.from(
-        document.querySelectorAll(".quiz-question[data-quiz-id]"),
-      );
-      const quizQuestionsById = new Map(
-        quizQuestionElements.map((question) => [question.dataset.quizId, question]),
-      );
       let quizPrintOpenStates = null;
 
       function prepareQuizForPrint() {
         if (quizPrintOpenStates !== null) {
           return;
         }
-        const explanations = Array.from(document.querySelectorAll(".quiz-explanation"));
+        const explanations = Array.from(
+          activeReportRoot().querySelectorAll(".quiz-explanation"),
+        );
         quizPrintOpenStates = explanations.map((explanation) => explanation.open);
         explanations.forEach((explanation) => {
           explanation.open = true;
@@ -2357,7 +2512,9 @@
         if (quizPrintOpenStates === null) {
           return;
         }
-        const explanations = Array.from(document.querySelectorAll(".quiz-explanation"));
+        const explanations = Array.from(
+          activeReportRoot().querySelectorAll(".quiz-explanation"),
+        );
         explanations.forEach((explanation, index) => {
           explanation.open = Boolean(quizPrintOpenStates[index]);
         });
@@ -2565,6 +2722,40 @@
         }
       }
 
+      function setLanguage(nextLanguage, persist = true) {
+        if (!supportedLanguages.includes(nextLanguage)) {
+          return false;
+        }
+        closeCommentEditor(false);
+        language = nextLanguage;
+        strings = messages[language] || messages.en;
+        root.lang = language;
+        document.querySelectorAll("[data-language-part]").forEach((part) => {
+          const active = part.dataset.languagePart === language;
+          part.hidden = !active;
+          part.classList.toggle("is-active", active);
+          if (active && part.dataset.reportTitle) {
+            document.title = part.dataset.reportTitle;
+          }
+        });
+        document.querySelectorAll("[data-set-lang]").forEach((button) => {
+          button.setAttribute(
+            "aria-pressed",
+            String(button.dataset.setLang === language),
+          );
+        });
+        refreshActiveReportState();
+        applyTheme(currentTheme);
+        setSidebarCollapsed(currentSidebarCollapsed, false);
+        applyLocalizedInterface();
+        setInteractionControlsEnabled(interactionsReady);
+        renderComments();
+        if (persist) {
+          safeStorageSet(LANGUAGE_KEY, language);
+        }
+        return true;
+      }
+
       function setSidebarCollapsed(collapsed, persist = true) {
         collapsed = Boolean(collapsed);
         currentSidebarCollapsed = collapsed;
@@ -2606,6 +2797,9 @@
 
       function applyLocalizedInterface() {
         const controls = document.querySelector(".controls");
+        const skipLink = document.querySelector(".skip-link");
+        const languageControl = document.querySelector(".control--language");
+        const languageLabel = document.querySelector("[data-language-label]");
         const navigation = document.getElementById("report-sections");
         const navigationLabel = document.querySelector("[data-sidebar-navigation-title]");
         const commentPanel = document.querySelector(".comment-panel");
@@ -2618,6 +2812,15 @@
         const clearButton = document.querySelector("[data-clear-comments]");
         if (controls) {
           controls.setAttribute("aria-label", strings.displayControls);
+        }
+        if (skipLink) {
+          skipLink.textContent = strings.skipToReport;
+        }
+        if (languageControl) {
+          languageControl.setAttribute("aria-label", strings.language);
+        }
+        if (languageLabel) {
+          languageLabel.textContent = strings.language;
         }
         if (navigationLabel) {
           navigationLabel.textContent = strings.sidebarNavigation;
@@ -2665,6 +2868,12 @@
           const summaryId = button.dataset.copySummary;
           button.textContent = strings.copyMarkdown;
           button.setAttribute("aria-label", strings.copyMarkdownLabel(summaryId));
+        });
+        document.querySelectorAll(".code-copy-btn").forEach((button) => {
+          if (!button.classList.contains("copied")) {
+            button.textContent = strings.copyCode;
+          }
+          button.setAttribute("aria-label", strings.copyCodeLabel);
         });
         document.querySelectorAll(".card-files-title").forEach((heading) => {
           heading.textContent = strings.files;
@@ -2733,6 +2942,8 @@
           const nextIndex = (THEME_ORDER.indexOf(currentTheme) + 1) % THEME_ORDER.length;
           applyTheme(THEME_ORDER[nextIndex]);
           safeStorageSet(THEME_KEY, currentTheme);
+        } else if (target.matches("[data-set-lang]")) {
+          setLanguage(target.dataset.setLang);
         } else if (target.matches("[data-sidebar-toggle]")) {
           setSidebarCollapsed(true);
           if (sidebarExpand) {
@@ -2793,8 +3004,11 @@
         });
       }
 
-      applyLocalizedInterface();
-      setInteractionControlsEnabled(interactionsReady);
+      const storedLanguage = safeStorageGet(LANGUAGE_KEY);
+      setLanguage(
+        supportedLanguages.includes(storedLanguage) ? storedLanguage : language,
+        false,
+      );
       const storedTheme = safeStorageGet(THEME_KEY);
       const defaultTheme = body.dataset.defaultTheme;
       applyTheme(THEME_ORDER.includes(storedTheme) ? storedTheme : defaultTheme);
@@ -2810,6 +3024,7 @@
           copyText,
           dismissManualCopy,
           applyTheme,
+          setLanguage,
           setSidebarCollapsed,
           openCommentEditor,
           answerQuiz,
@@ -2830,6 +3045,7 @@
             commentStorageKey,
             editorOpen: Boolean(activeEditor),
             currentTheme,
+            language,
             bodyTheme: body.dataset.theme || null,
             defaultTheme: body.dataset.defaultTheme || null,
             bodyInteractionsReady: body.dataset.interactionsReady,
@@ -2858,12 +3074,11 @@
       }
 
       const MAX_SOURCE_LENGTH = 200000;
-      const korean = (document.documentElement.lang || "")
-        .toLowerCase()
-        .startsWith("ko");
-      const strings = korean
-        ? { copy: "복사", copied: "복사됨!", copyLabel: "코드 블록 복사" }
-        : { copy: "Copy", copied: "Copied!", copyLabel: "Copy code block" };
+      function copyStrings() {
+        return (document.documentElement.lang || "").toLowerCase().startsWith("ko")
+          ? { copy: "복사", copied: "복사됨!", copyLabel: "코드 블록 복사" }
+          : { copy: "Copy", copied: "Copied!", copyLabel: "Copy code block" };
+      }
 
       function words(list) {
         return new Set(list.split(" "));
@@ -3258,22 +3473,27 @@
         const button = document.createElement("button");
         button.type = "button";
         button.className = "code-copy-btn";
-        button.textContent = strings.copy;
-        button.setAttribute("aria-label", strings.copyLabel);
+        const initialStrings = copyStrings();
+        button.textContent = initialStrings.copy;
+        button.setAttribute("aria-label", initialStrings.copyLabel);
         let restoreTimer = null;
         button.addEventListener("click", async () => {
           const copied = await copyText(pre.textContent || "");
           if (!copied) {
             return;
           }
+          const activeStrings = copyStrings();
           button.classList.add("copied");
-          button.textContent = strings.copied;
+          button.textContent = activeStrings.copied;
+          button.setAttribute("aria-label", activeStrings.copyLabel);
           if (restoreTimer !== null) {
             clearTimeout(restoreTimer);
           }
           restoreTimer = setTimeout(() => {
+            const restoredStrings = copyStrings();
             button.classList.remove("copied");
-            button.textContent = strings.copy;
+            button.textContent = restoredStrings.copy;
+            button.setAttribute("aria-label", restoredStrings.copyLabel);
             restoreTimer = null;
           }, 1500);
         });

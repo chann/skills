@@ -7,7 +7,7 @@ description: Use when the user wants an explanatory code, diff, branch, commit, 
 
 ## Overview
 
-Turn a precisely scoped git diff into one evidence-based explanatory report in Markdown and self-contained HTML. Explain what changed, why it matters, and how the changed pieces relate without turning the summary into a defect review.
+Turn a precisely scoped git diff into aligned Korean and English evidence-based explanatory reports plus one self-contained bilingual HTML report. Explain what changed, why it matters, and how the changed pieces relate without turning the summary into a defect review.
 
 ## Choose The Right Workflow
 
@@ -179,7 +179,11 @@ Reports are read by people who did not write the change. When the evidence suppo
 
 ## Stable Report Contract
 
-Write one report in the language of the user's prompt. Markdown and HTML are two formats of that same report, not separate language reports. Produce another language only when explicitly requested.
+Author one Korean report and one English report from the same evidence by default. Korean is the canonical/default view and English is its aligned translation. Both reports must make equivalent claims, use the same `DS-*` IDs in the same order, and keep each card's `Category`, `Impact`, and `Files` fields aligned. Translate titles and prose, but do not create independent analyses or add a claim to only one language.
+
+Use `Language: ko` in the Korean source and `Language: en` in the English source. The six parser-significant metadata keys and structural headings shown below remain English in both sources; their values and explanatory prose may be translated as appropriate. The `Date`, `Repository`, `Scope`, `Command`, and `HEAD` values must match exactly across the bilingual pair.
+
+Use single-language mode only when the user explicitly requests one language. In that mode, write one report in the requested language and use the legacy `--markdown-stdin` generation path.
 
 Use this top-level structure:
 
@@ -245,23 +249,23 @@ Use Markdown headings, tables, lists, inline code, and fenced code or diff block
 ## Write, Render, And Open
 
 1. Put the local canonical `YYYY-MM-DD` in `Date` and the exact, unsanitized collector scope in `Scope`. Do not compute or supply an artifact filename. The packaged generator owns that operation: fixed scopes become stable tags; arbitrary scopes encode `..` as `-dot2-` and `...` as `-dot3-`, cap the readable portion at 60 characters, and append the first 12 lowercase hex characters of SHA-256 over the exact UTF-8 scope. This makes two-dot, three-dot, and punctuation-sanitization collisions distinct.
-2. Start the packaged generator using the same trusted absolute Python path and isolated `-I` mode, with fixed argv, `--markdown-stdin`, and the direct output directory. Send the completed report through standard input; do not write the Markdown with a shell redirection, heredoc, repository-created helper, or agent-computed filename.
-3. The generator validates `Date` and `Scope`, derives the collision-safe stem, safely creates a missing direct `.diff-summaries/` directory, rejects a symlink or non-directory artifact parent, atomically writes the Markdown source, and renders the same content to the sibling HTML:
+2. Start the packaged generator using the same trusted absolute Python path and isolated `-I` mode, with fixed argv, `--bilingual-json-stdin`, and the direct output directory. Send one exact JSON object shaped `{"ko":"<complete Korean Markdown>","en":"<complete English Markdown>"}` through standard input; do not write either Markdown file with a shell redirection, heredoc, repository-created helper, or agent-computed filename.
+3. The generator validates both report contracts and their alignment, derives the collision-safe stem, safely creates a missing direct `.diff-summaries/` directory, rejects a symlink or non-directory artifact parent, atomically writes both Markdown sources, and renders one HTML page with an accessible Korean/English language control:
 
    ```text
    /absolute/trusted/python3 -I <skill-path>/scripts/generate_summary_report.py \
-     --markdown-stdin \
+     --bilingual-json-stdin \
      --output-directory ".diff-summaries" \
      --theme auto
    ```
 
-   The resulting artifact pair is `.diff-summaries/<date>_<scope-tag>.md` and `.diff-summaries/<date>_<scope-tag>.html`; use the exact absolute paths printed by the generator.
+   The resulting artifact set is `.diff-summaries/<date>_<scope-tag>.md` (Korean), `.diff-summaries/<date>_<scope-tag>.en.md` (English), and `.diff-summaries/<date>_<scope-tag>.html` (bilingual); use the exact absolute paths printed by the generator.
 
-4. Require a zero generator exit status. Its success output reports the card count, language, stable comment scope, absolute Markdown path, and absolute HTML path.
-5. Verify that both files exist and that the HTML is self-contained. Then use the host agent's browser/file-opening capability to open the absolute HTML `file://` URI; do not delegate opening through repository PATH or an ambient `BROWSER` command.
+4. Require a zero generator exit status. Its success output reports the card count, both languages, stable comment scope, both absolute Markdown paths, and the absolute HTML path.
+5. Verify that all three files exist, that the HTML is self-contained, and that the language control switches between the aligned Korean and English views without navigation. Then use the host agent's browser/file-opening capability to open the absolute HTML `file://` URI; do not delegate opening through repository PATH or an ambient `BROWSER` command.
 6. If host browser opening fails, keep the valid files and report the warning instead of treating the report as missing. The renderer's optional `--open` path also uses only a fixed system launcher with `BROWSER` and Python startup variables removed, but the host-open path is preferred.
 
-Completion requires the Markdown report, HTML report, and an attempted browser open. A malformed report or output error is incomplete: fix the Markdown contract or output path and rerun the renderer rather than claiming partial delivery.
+Completion requires both Markdown reports, the bilingual HTML report, and an attempted browser open. A malformed or misaligned report or output error is incomplete: fix the Markdown contract or output path and rerun the renderer rather than claiming partial delivery.
 
 If `.diff-summaries/` is not ignored by the target repository, suggest adding it to that repository's `.gitignore`. Never edit `.gitignore` automatically.
 
@@ -270,8 +274,8 @@ If `.diff-summaries/` is not ignored by the target repository, suggest adding it
 Report only these artifact and verification facts:
 
 - The exact requested scope and exact evidence command.
-- The generated card count and report language.
-- The absolute Markdown and HTML output paths.
+- The generated card count and report languages.
+- The absolute Korean and English Markdown paths and the bilingual HTML path.
 - The browser-open result or retained-file warning.
 - Fresh verification performed and material unknowns that remain unverified.
 
