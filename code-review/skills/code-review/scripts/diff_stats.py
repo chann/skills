@@ -94,7 +94,11 @@ def detect_language(path: str) -> str:
 
 
 def is_security_sensitive(path: str) -> bool:
-    return bool(SECURITY_PATH_RE.search(path))
+    normalized = path.replace("\\", "/")
+    components = [component for component in normalized.split("/") if component]
+    if components and components[-1].lower() == ".env.example":
+        normalized = "/".join(components[:-1])
+    return bool(SECURITY_PATH_RE.search(normalized))
 
 
 def is_binary(added: str, deleted: str) -> bool:

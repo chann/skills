@@ -544,6 +544,7 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
             "tracked diff and the untracked list are both empty",
             "reject symlinks and non-regular files",
             "256 KiB",
+            "Treat the exact final basename `.env.example` as a public template",
             "sensitive path",
             "binary",
             'gh pr view "$pr_number" --json',

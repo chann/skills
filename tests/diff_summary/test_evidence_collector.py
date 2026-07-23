@@ -858,6 +858,39 @@ class EvidenceCollectorTests(unittest.TestCase):
                     self.assertIn("--name-only", calls[0])
                     self.assertIn("-z", calls[0])
 
+    def test_tracked_env_example_diff_is_collected_as_public_template(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            repository = Path(temporary_directory)
+            initialize_repository(repository)
+            (repository / ".env.example").write_text(
+                "API_TOKEN=replace-me\n",
+                encoding="utf-8",
+            )
+            run("git", "add", ".env.example", cwd=repository)
+
+            evidence = collector.collect_evidence(
+                {"kind": "current"}, repository=repository
+            )
+
+        self.assertIn(".env.example", evidence["diff"])
+        self.assertIn("API_TOKEN=replace-me", evidence["diff"])
+
+    def test_env_example_exception_preserves_other_sensitive_path_rules(self) -> None:
+        for safe_path in (".env.example", "deploy/.ENV.EXAMPLE"):
+            with self.subTest(path=safe_path):
+                self.assertFalse(collector._is_sensitive_path(safe_path))
+
+        for sensitive_path in (
+            ".env",
+            ".env.local",
+            ".envrc",
+            ".env.example.local",
+            ".env.example/actual.env",
+            "secrets/.env.example",
+        ):
+            with self.subTest(path=sensitive_path):
+                self.assertTrue(collector._is_sensitive_path(sensitive_path))
+
     def test_sensitive_rename_source_is_blocked_for_worktree_range_and_commit_scopes(
         self,
     ) -> None:
@@ -1307,6 +1340,10 @@ class EvidenceCollectorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary_directory:
             repository = Path(temporary_directory)
             initialize_repository(repository)
+            (repository / ".env.example").write_text(
+                "API_TOKEN=replace-me\n",
+                encoding="utf-8",
+            )
             (repository / ".env.local").write_text("TOKEN=secret\n", encoding="utf-8")
             (repository / ".envrc").write_text("TOKEN=secret\n", encoding="utf-8")
             (repository / "binary.dat").write_bytes(b"prefix\0binary")
@@ -1333,6 +1370,7 @@ class EvidenceCollectorTests(unittest.TestCase):
                 {
                     "kind": "current",
                     "include_untracked": [
+                        ".env.example",
                         ".env.local",
                         ".envrc",
                         "binary.dat",
@@ -1349,6 +1387,10 @@ class EvidenceCollectorTests(unittest.TestCase):
 
         by_path = {entry["path"]: entry for entry in evidence["untracked"]}
         self.assertEqual(by_path["safe.txt"]["content"], "safe\n")
+        self.assertEqual(
+            by_path[".env.example"]["content"],
+            "API_TOKEN=replace-me\n",
+        )
         self.assertEqual(by_path[".env.local"]["status"], "skipped")
         self.assertEqual(by_path[".env.local"]["reason"], "sensitive path")
         self.assertEqual(by_path[".envrc"]["reason"], "sensitive path")

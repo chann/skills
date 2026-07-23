@@ -8,7 +8,7 @@ Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 
 
 - **Commit / Push / Rewrite** — staged + unstaged 변경을 의미 단위(feat / fix / docs / ...)로 그룹핑해 단일 Conventional Commit 생성, 선택적 push, 비순응 subject 재작성
 - 절대 `git add .` 사용 안 함, 항상 명시 경로로 staging
-- `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고
+- `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고 (정확한 파일명 `.env.example`은 예외)
 - `git filter-branch` 로 비순응 커밋 subject 만 재작성, 기존 body는 보존
 - 이미 원격에 푸시된 커밋의 rewrite는 기본 거부 (대신 3-option 메뉴 표시) — 단, `force` 키워드로 명시 동의 시 강제 진행
 - **Merge / Cleanup** — `main` (또는 `dev`/`develop`) 으로 머지 후 보호 브랜치가 아닌 소스 브랜치를 `git branch -d` 로 삭제, 보호 브랜치에 이미 머지된 모든 로컬 브랜치를 일괄 삭제
@@ -155,7 +155,7 @@ BREAKING CHANGE: email service is now required at boot
 - `git add .` / `git add -A` 사용 안 함 (항상 명시 경로)
 - `--no-verify` / `--no-gpg-sign` 으로 hook 우회 안 함
 - force push 안 함 (`--force-with-lease` 도 사용자의 명시적 동의 후에만)
-- 비밀 의심 파일(`.env*`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) 명시적 override 없이 커밋 안 함
+- 비밀 의심 파일(`.env*` 중 정확한 파일명 `.env.example`은 예외, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) 명시적 override 없이 커밋 안 함
 - `feat` 와 `fix` 를 한 커밋에 합치지 않음
 - 푸시된 커밋을 3-option 메뉴 없이 재작성 안 함
 - `git filter-branch --root` 사용 안 함

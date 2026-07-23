@@ -11,6 +11,26 @@ PROTECTED_BRANCH_LIST = (
 
 
 class GitSkillPackageTests(unittest.TestCase):
+    def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
+        expected_contracts = {
+            GIT_SKILL
+            / "skills"
+            / "git-commit"
+            / "SKILL.md": "Do not flag the exact basename `.env.example` solely because it matches `.env*`",
+            GIT_SKILL
+            / "skills"
+            / "git-commit-push"
+            / "SKILL.md": "The exact basename `.env.example` is a public template",
+            GIT_SKILL
+            / "README.md": "except the exact basename `.env.example`",
+            GIT_SKILL
+            / "README.ko.md": "정확한 파일명 `.env.example`은 예외",
+        }
+
+        for path, contract in expected_contracts.items():
+            with self.subTest(path=path):
+                self.assertIn(contract, path.read_text(encoding="utf-8"))
+
     def test_merge_skills_keep_protected_source_branches_after_merge(self) -> None:
         checked_paths = [
             GIT_SKILL / "skills" / "git-merge-to-main" / "SKILL.md",

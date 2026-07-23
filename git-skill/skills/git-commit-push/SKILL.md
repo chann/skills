@@ -38,7 +38,7 @@ Same Never/Always lists as the main `<plugin-root>/skills/git-commit/SKILL.md`. 
 - **Never** `git add .` or `git add -A` — always explicit paths.
 - **Never** bypass hooks with `--no-verify`.
 - **Never** `--force` push, and only `--force-with-lease` after explicit user consent.
-- **Never** commit suspected secret files (`.env*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`, `credentials.*`) without explicit override.
+- **Never** commit suspected secret files (`.env*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`, `credentials.*`) without explicit override. The exact basename `.env.example` is a public template and is not suspected solely because it matches `.env*`; every other secret-path rule still applies.
 
 ## Integration
 

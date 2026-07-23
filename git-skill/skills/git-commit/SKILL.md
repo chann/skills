@@ -116,7 +116,7 @@ Grouping rules:
 
 Don't over-split (a one-line trivial cleanup with the feature is fine) and don't over-combine (a `feat` and `fix` must be separate commits).
 
-**Secrets check** — flag any of these and exclude by default unless the user explicitly confirms: `.env*`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`, files containing the word `secret` in the path. Warn the user; they should not be committed.
+**Secrets check** — flag any of these and exclude by default unless the user explicitly confirms: `.env*`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`, files containing the word `secret` in the path. Do not flag the exact basename `.env.example` solely because it matches `.env*`; it is a public template. Every other secret-path rule still applies, including sensitive parent directories or other matching filename patterns. Warn the user about files that remain suspected secrets; they should not be committed.
 
 ### Step 3: Show the commit plan
 
@@ -536,7 +536,7 @@ Use these translations when generating new subjects in Step 4.
 - `git add .` or `git add -A` (use explicit paths)
 - `--no-verify`, `--no-gpg-sign`, `--amend` without explicit user consent
 - `--force` push — **except** `/git-commit-rewrite` force mode (the `force` keyword is explicit consent); otherwise `--force-with-lease` only after explicit consent
-- Commit `.env*`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12` without explicit user override
+- Commit suspected `.env*` files (except the exact basename `.env.example`), `credentials.*`, `*_rsa`, `*.pem`, `*.key`, or `*.p12` without explicit user override
 - Combine `feat` and `fix` in one commit
 - Rewrite pushed commits without showing the 3-option menu first — **except** in force mode, where the `force` keyword is the pre-consent
 - Use `git filter-branch --root`

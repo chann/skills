@@ -2,6 +2,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -18,6 +19,36 @@ COMMANDS = (
 
 
 class CodeReviewSkillPackageTests(unittest.TestCase):
+    def test_env_example_is_not_classified_as_security_sensitive(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(
+                    CODE_REVIEW
+                    / "skills"
+                    / "code-review"
+                    / "scripts"
+                    / "diff_stats.py"
+                ),
+            ],
+            input=(
+                "1\t0\t.env.example\n"
+                "1\t0\t.env.local\n"
+                "1\t0\tauth/.env.example\n"
+            ),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(result.stdout)
+        by_path = {entry["path"]: entry for entry in report["files"]}
+        self.assertFalse(by_path[".env.example"]["security_sensitive"])
+        self.assertTrue(by_path[".env.local"]["security_sensitive"])
+        self.assertTrue(by_path["auth/.env.example"]["security_sensitive"])
+
     def test_main_skill_enforces_the_evidence_first_writing_contract(self) -> None:
         skill_text = MAIN_SKILL.read_text(encoding="utf-8")
 

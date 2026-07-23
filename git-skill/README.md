@@ -8,7 +8,7 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 
 - **Commit / Push / Rewrite** — group staged + unstaged changes into logical Conventional Commits, optionally push, or rewrite non-conformant subjects in place
 - Creates each commit with explicit `git add <paths>` — never `git add .`
-- Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...)
+- Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
 - Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
 - Refuses to rewrite commits already pushed to a remote (3-option menu instead) — unless you opt in with the `force` keyword
 - **Merge / Cleanup** — merge into `main` (or `dev`/`develop`) then `git branch -d` the source unless it is protected; bulk-delete every local branch already merged into a protected branch
@@ -155,7 +155,7 @@ The skills **never**:
 - Use `git add .` or `git add -A` (always explicit paths)
 - Bypass hooks with `--no-verify` or `--no-gpg-sign`
 - Force-push (`--force-with-lease` only after explicit user consent)
-- Commit suspected secret files (`.env*`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) without explicit override
+- Commit suspected secret files (`.env*` except the exact basename `.env.example`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) without explicit override
 - Combine `feat` and `fix` in one commit
 - Rewrite pushed commits without showing the 3-option menu first
 - Use `git filter-branch --root`

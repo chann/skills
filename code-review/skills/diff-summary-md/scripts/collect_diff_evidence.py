@@ -72,6 +72,7 @@ MAX_STDOUT_BYTES = 32 * 1024 * 1024
 MAX_STDERR_BYTES = 256 * 1024
 _CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
 _ASCII_DIGITS_RE = re.compile(r"[0-9]+")
+_PUBLIC_ENV_TEMPLATE_BASENAME = ".env.example"
 _SENSITIVE_COMPONENTS = {
     ".netrc",
     ".npmrc",
@@ -1244,8 +1245,12 @@ def _is_sensitive_path(path: str) -> bool:
         return True
     if (".kube", "config") in component_pairs:
         return True
-    for component in components:
-        if component.startswith(".env"):
+    for index, component in enumerate(components):
+        is_public_env_template = (
+            component == _PUBLIC_ENV_TEMPLATE_BASENAME
+            and index == len(components) - 1
+        )
+        if component.startswith(".env") and not is_public_env_template:
             return True
         if component in _SENSITIVE_COMPONENTS:
             return True
