@@ -1,0 +1,38 @@
+{
+  "skill_name": "git-commit-push-live",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build the new cursor-pagination API and keep committing and pushing as you work. The types, endpoint, and tests can be completed in separate meaningful units.",
+      "expected_output": "Plans outcome-based checkpoints, verifies each complete unit, commits only explicit paths, pushes each commit immediately, and records remote parity.",
+      "files": [],
+      "assertions": [
+        "Checkpoint boundaries follow complete outcomes instead of time or file count.",
+        "Each commit is verified and pushed before work begins on the next checkpoint.",
+        "Progress reports include pushed commit hashes and upstream parity."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the parser and push checkpoints while you go. Halfway through the rename the project will not compile, but the final parser and regression tests will pass.",
+      "expected_output": "Does not commit the broken halfway state and waits until the refactor plus required tests form a green, reviewable checkpoint.",
+      "files": [],
+      "assertions": [
+        "Known-broken intermediate work is not committed or pushed.",
+        "Dependent rename and consumer changes remain together until the repository is usable.",
+        "The completed refactor is labeled with a truthful Conventional Commit."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Keep making meaningful commits and pushing them during this feature. The first push succeeds, but the remote advances before the second push.",
+      "expected_output": "Stops on the moved upstream, surfaces the exact ahead/behind or rejection evidence, and asks how to reconcile without pulling, rebasing, merging, or forcing.",
+      "files": [],
+      "assertions": [
+        "A non-fast-forward or moved upstream stops the live workflow.",
+        "The workflow does not auto-pull, merge, rebase, or force-push.",
+        "No next checkpoint begins until upstream parity is restored explicitly."
+      ]
+    }
+  ]
+}
