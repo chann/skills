@@ -58,12 +58,12 @@ diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 | ------------------------- | --------------------------------------------------------------------- |
 | `/code-review [scope]`    | `.reviews/`에 마크다운 + 이중언어 HTML 리뷰 생성                       |
 | `/code-review-md [scope]` | `.reviews/`에 마크다운 리뷰만 생성                                    |
-| `/diff-summary [scope]`   | `.diff-summaries/`에 설명형 마크다운 + 인터랙티브 HTML 요약 생성      |
-| `/diff-summary-md [scope]` | `.diff-summaries/`에 설명형 마크다운만 생성 (HTML·브라우저 없음)      |
-| `/diff-summary-quiz [scope]` | `/diff-summary`에 인터랙티브 이해도 퀴즈를 HTML에 추가              |
+| `/diff-summary [scope]`   | `.diff-summaries/`에 정렬된 한·영 마크다운 + 이중언어 인터랙티브 HTML 요약 생성 |
+| `/diff-summary-md [scope]` | `.diff-summaries/`에 정렬된 한·영 마크다운만 생성 (HTML·브라우저 없음) |
+| `/diff-summary-quiz [scope]` | `/diff-summary`에 한·영 정렬 이해도 퀴즈를 추가                    |
 | `/diff-viewer`            | 작업 트리 원본 diff를 `.diffs/` HTML로 렌더링                         |
 
-`diff-summary`는 “코드를 요약해줘”, “마지막 커밋 코드를 요약해줘”, “main..dev 변경 요약” 같은 요청에도 자동으로 활성화됩니다. “마크다운 요약만 저장”은 `diff-summary-md`, “이 변경 이해했는지 퀴즈로 확인”은 `diff-summary-quiz`로 연결됩니다. 세 스킬 모두 명시한 `..`/`...` 범위를 정확히 보존합니다. 결함 탐색은 `code-review`, 원본 패치 확인은 `diff-viewer`를 사용하세요.
+`diff-summary`는 “코드를 요약해줘”, “마지막 커밋 코드를 요약해줘”, “main..dev 변경 요약” 같은 요청에도 자동으로 활성화됩니다. 기본 출력은 한국어를 먼저 보여주는 정렬된 한·영 보고서이며, 한 언어만 명시적으로 요청하면 단일 언어 모드를 사용합니다. “마크다운 요약만 저장”은 `diff-summary-md`, “이 변경 이해했는지 퀴즈로 확인”은 `diff-summary-quiz`로 연결됩니다. 세 스킬 모두 명시한 `..`/`...` 범위를 정확히 보존합니다. 결함 탐색은 `code-review`, 원본 패치 확인은 `diff-viewer`를 사용하세요.
 
 ### doc-skill → [상세](doc-skill/README.ko.md)
 

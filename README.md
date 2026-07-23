@@ -62,12 +62,12 @@ Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 | ------------------------- | -------------------------------------------------------------- |
 | `/code-review [scope]`    | Write markdown + bilingual HTML review reports to `.reviews/`   |
 | `/code-review-md [scope]` | Write a markdown-only review to `.reviews/`                      |
-| `/diff-summary [scope]`   | Explain changes in Markdown + interactive HTML under `.diff-summaries/` |
-| `/diff-summary-md [scope]` | Explain changes in Markdown only under `.diff-summaries/` (no HTML, no browser) |
-| `/diff-summary-quiz [scope]` | Same as `/diff-summary`, plus an interactive comprehension quiz in the HTML |
+| `/diff-summary [scope]`   | Explain changes in Korean + English Markdown and one bilingual interactive HTML under `.diff-summaries/` |
+| `/diff-summary-md [scope]` | Explain changes in Korean + English Markdown only under `.diff-summaries/` (no HTML, no browser) |
+| `/diff-summary-quiz [scope]` | Same as `/diff-summary`, plus aligned interactive comprehension quizzes |
 | `/diff-viewer`            | Render the raw working-tree diff to `.diffs/`                   |
 
-`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
+`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Its default output is an aligned Korean/English pair with Korean shown first; explicitly request one language for single-language mode. Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
 
 ### doc-skill → [details](doc-skill/README.md)

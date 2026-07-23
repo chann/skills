@@ -9,7 +9,7 @@ git diff를 변경 요약, 결함 리뷰, 브라우저용 원본 패치로 다�
 - 5가지 차원으로 코드 변경사항 분석: 정확성, 보안, 복잡도/일관성, 유지보수성, 언어별 베스트 프랙티스
 - `.reviews/` 디렉토리에 날짜+커밋SHA 기반 리포트 생성 (예: `2026-04-08_a1b2c3d.md`)
 - 기본으로 자체 완결형 **이중언어** HTML 리포트 생성 (한국어 + 영문, 전체 페이지 언어 토글, 한국어 기본 표시): 심각도 배지, light/dark/auto 테마 + 코드 신택스 스킴 셀렉터, 컴팩트 접이식 사이드바, 항목별 마크다운 복사, 브라우저 내 항목별 코멘트, 리뷰어 코멘트로 리뷰를 재생성하는 "피드백 복사" 페이로드
-- 코드, 동작, 아키텍처, 패턴, 계약, 테스트, 운영 변경을 근거 기반으로 설명하는 마크다운 + 인터랙티브 HTML `/diff-summary` 포함. 마크다운만 만드는 `/diff-summary-md`, 같은 요약에 인터랙티브 이해도 퀴즈를 더한 `/diff-summary-quiz` 변형도 제공
+- 코드, 동작, 아키텍처, 패턴, 계약, 테스트, 운영 변경을 근거 기반으로 설명하는 정렬된 한·영 마크다운 + 이중언어 인터랙티브 HTML `/diff-summary` 포함. 한·영 마크다운만 만드는 `/diff-summary-md`, 정렬된 이해도 퀴즈를 더한 `/diff-summary-quiz` 변형도 제공
 - 리뷰 분석 없이 현재 작업 트리 diff를 브라우저용 HTML로 보여주는 `/diff-viewer` 포함
 - 다양한 리뷰 범위 지원: 스테이징된 변경, 특정 커밋, 커밋 범위, 브랜치 비교, PR
 - Python, JavaScript/TypeScript 베스트 프랙티스 참조 가이드 포함
@@ -57,9 +57,9 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | ---------------------------- | ------------------- | -------------------------------------------------------------- |
 | `/code-review [scope]`       | `code-review`       | `.reviews/`에 마크다운 + 자체 완결형 이중언어 HTML 리뷰                   |
 | `/code-review-md [scope]`    | `code-review-md`    | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운만 생성                 |
-| `/diff-summary [scope]`      | `diff-summary`      | `.diff-summaries/<YYYY-MM-DD>_<scope>.*`에 마크다운 + 인터랙티브 HTML 요약 |
-| `/diff-summary-md [scope]`   | `diff-summary-md`   | `.diff-summaries/<YYYY-MM-DD>_<scope>.md`에 마크다운만 (HTML 없음)     |
-| `/diff-summary-quiz [scope]` | `diff-summary-quiz` | 마크다운 + 인터랙티브 HTML + `## Quiz` 이해도 섹션                           |
+| `/diff-summary [scope]`      | `diff-summary`      | `.diff-summaries/`에 한·영 마크다운 + 이중언어 HTML 요약                 |
+| `/diff-summary-md [scope]`   | `diff-summary-md`   | `.diff-summaries/`에 한·영 마크다운만 (HTML 없음)                        |
+| `/diff-summary-quiz [scope]` | `diff-summary-quiz` | 이중언어 산출물 + 정렬된 `## Quiz` 이해도 섹션                            |
 | `/diff-viewer`               | `diff-viewer`       | `.diffs/<YYYY-MM-DD>_<tag>.html`에 HTML diff viewer             |
 
 **예시:**
@@ -97,8 +97,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | 목적 | 워크플로우 | 결과 |
 |---|---|---|
 | 무엇이 왜 바뀌었고 코드, 아키텍처, 패턴, 계약, 테스트, 운영이 어떻게 연결되는지 설명 | `diff-summary` | 리뷰 심각도 없는 근거 기반 요약 카드 |
-| 같은 설명을 HTML·브라우저 없이 마크다운으로만 저장 | `diff-summary-md` | 검증된 마크다운 파일 하나 |
-| 변경을 설명하고 이해도를 확인 | `diff-summary-quiz` | 마크다운 정답지 + 인터랙티브 오프라인 HTML 퀴즈 |
+| 같은 설명을 HTML·브라우저 없이 마크다운으로만 저장 | `diff-summary-md` | 검증된 한·영 마크다운 파일 |
+| 변경을 설명하고 이해도를 확인 | `diff-summary-quiz` | 한·영 마크다운 정답지 + 인터랙티브 오프라인 HTML 퀴즈 |
 | 결함, 회귀, 취약점, 권장 수정 사항 탐색 | `code-review` 또는 `code-review-md` | 심각도별 finding |
 | 분석 없이 패치 자체 확인 | `diff-viewer` | unified/split 원본 diff HTML |
 
@@ -118,8 +118,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 1. 요청 범위와 정확한 `..`/`...` 문법을 그대로 검증 및 보존
 2. 저장소와 범위를 JSON으로 패키지의 `collect_diff_evidence.py` 표준 입력에 전달하며, 이 수집기만 Git/GitHub를 실행
-3. 크기가 제한된 JSON 결과를 비실행 데이터로 취급해 안정적인 `DS-001` 형식의 프롬프트 언어 마크다운 작성
-4. 마크다운을 `generate_summary_report.py` 표준 입력에 보내 검증 후 원본과 HTML을 원자적으로 기록
+3. 크기가 제한된 JSON 결과를 비실행 데이터로 취급해 같은 `DS-001` ID를 쓰는 정렬된 한·영 마크다운 작성
+4. 두 보고서를 이중언어 JSON으로 `generate_summary_report.py` 표준 입력에 보내 정렬을 검증하고 두 원본과 하나의 HTML을 원자적으로 기록
 5. 자체 완결형 HTML 리포트를 브라우저에서 열기
 
 중요한 추론과 확인하지 않은 런타임, 테스트, 마이그레이션, 배포 결과는 사실처럼 단정하지 않고 명시적으로 구분합니다.
@@ -149,6 +149,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 각 `/diff-summary` HTML 리포트는 서버, 네트워크 요청, 패키지 설치, JavaScript 빌드 없이 로컬 `file://` URL에서 바로 동작합니다.
 
+- **전체 리포트 언어 전환** — 한국어가 기본이며, 영어로 바꾸면 메타데이터, 목차, 카드, 퀴즈, 댓글, 복사 작업, 코드 복사 라벨이 제자리에서 함께 전환
 - **안정적인 요약 카드** — 각 `DS-*` 카드에 카테고리, 영향도, 파일 근거, 정확한 마크다운 원본 포함
 - **카드별 코멘트** — 리포트 콘텐츠 단위로 브라우저에 저장되는 코멘트 추가, 수정, 삭제, 전체 삭제, 카드 이동
 - **마크다운 복사** — 개별 카드, 전체 원본 리포트, 카드와 코멘트를 묶은 피드백 페이로드 복사
@@ -243,7 +244,7 @@ Snyk 등 SAST 도구가 이 스킬을 잡는 경우 아래 항목을 참고하�
 - **`generate_html_report.py` — fence language attribute XSS (실제 버그, 수정됨)**: 수정 전에는 ` ```a"><script>... ` 같은 악의적인 마크다운 fence가 `class="language-..."` attribute를 빠져나갈 수 있었습니다 (`html.escape(..., quote=False)`는 `"`를 escape 하지 않음). 새로 추가된 `safe_lang()` 헬퍼가 lang 토큰을 `[A-Za-z0-9._+-]{0,32}` 화이트리스트로 제한해 attribute 탈출을 차단합니다.
 - **`html.escape(quote=False)` 광범위 사용 (false positive)**: `quote=False` 결과는 모두 element body context에만 삽입됩니다. attribute에 들어가는 값은 하드코딩된 클래스명이거나 `slugify()`로 비단어 문자를 제거한 anchor뿐 — 오염된 값이 attribute에 도달하지 않습니다.
 - **raw markdown 임베드 (정상 방어 중)**: 마크다운 원본은 브라우저가 실행하지 않는 `<script type="application/json">` 블록 안에 들어가고, `</` 시퀀스를 `<\/`로 변환해 script 태그 조기 종료를 막습니다.
-- **`diff-summary` 증거 경계**: `collect_diff_evidence.py`만 Git/GitHub를 실행합니다. 고정 argv와 정제된 환경을 사용하고 lazy fetch 및 저장소 설정 실행 표면을 차단하며, 안전하지 않은 저장소 메타데이터와 민감 경로를 거부하고 시간/stdout/stderr를 제한한 뒤 JSON을 반환합니다. `generate_summary_report.py --markdown-stdin --output-directory`는 심볼릭 링크 아티팩트 부모를 거부하고 충돌 없는 파일명을 직접 계산하여 검증된 마크다운/HTML 쌍을 원자적으로 기록합니다.
+- **`diff-summary` 증거 경계**: `collect_diff_evidence.py`만 Git/GitHub를 실행합니다. 고정 argv와 정제된 환경을 사용하고 lazy fetch 및 저장소 설정 실행 표면을 차단하며, 안전하지 않은 저장소 메타데이터와 민감 경로를 거부하고 시간/stdout/stderr를 제한한 뒤 JSON을 반환합니다. `generate_summary_report.py --bilingual-json-stdin --output-directory`는 심볼릭 링크 아티팩트 부모를 거부하고 충돌 없는 파일명을 직접 계산하며 한·영 정렬 계약을 검증한 뒤 마크다운 두 개와 이중언어 HTML 하나를 원자적으로 기록합니다.
 - **CLI path 인자 (false positive)**: `args.input` 읽기와 `args.output` 쓰기는 사용자가 직접 입력한 경로이며, 권한 상승이나 외부 입력 통로가 없습니다.
 
 앞으로 의도적으로 취약한 fixture를 추가할 일이 있다면 플러그인 폴더가 아닌 저장소 루트의 `samples/` 트리 안에 두세요. `.snyk` 가 그쪽을 exclude 합니다.

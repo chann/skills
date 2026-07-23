@@ -45,9 +45,9 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 ```
 > review my changes                         # code-review
 > /code-review review staged changes
-> /diff-summary main..dev                  # explanatory Markdown + interactive HTML
-> /diff-summary-md main..dev               # explanatory Markdown only
-> /diff-summary-quiz main..dev             # summary + comprehension quiz
+> /diff-summary main..dev                  # Korean + English Markdown + bilingual HTML
+> /diff-summary-md main..dev               # Korean + English Markdown only
+> /diff-summary-quiz main..dev             # bilingual summary + aligned quiz
 > /git-commit                               # group changes into Conventional Commits
 > /git-commit-push-live                     # push each verified outcome while working
 > /gen-docs                                   # generate/update project docs
@@ -64,9 +64,9 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 |---|---|
 | `/code-review [scope]` | Markdown + self-contained bilingual HTML report under `.reviews/` |
 | `/code-review-md [scope]` | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md` |
-| `/diff-summary [scope]` | Prompt-language Markdown + interactive offline HTML under `.diff-summaries/` |
-| `/diff-summary-md [scope]` | Prompt-language Markdown only under `.diff-summaries/` (no HTML, no browser open) |
-| `/diff-summary-quiz [scope]` | Same as `/diff-summary` plus an interactive `## Quiz` comprehension section in both Markdown and HTML |
+| `/diff-summary [scope]` | Aligned Korean + English Markdown and one bilingual offline HTML under `.diff-summaries/` |
+| `/diff-summary-md [scope]` | Aligned Korean + English Markdown only under `.diff-summaries/` (no HTML, no browser open) |
+| `/diff-summary-quiz [scope]` | Same as `/diff-summary` plus aligned interactive `## Quiz` sections |
 | `/diff-viewer` | HTML diff at `.diffs/<YYYY-MM-DD>_<tag>.html` (view only — no analysis) |
 
 Review and summary scopes include the working tree, staged or unstaged changes, the last commit or last N commits, a specific commit, an exact commit range, a branch comparison, and PRs. `diff-summary` validates and preserves an explicit range verbatim: `main..dev` and `main...dev` retain their different Git semantics.
@@ -76,7 +76,7 @@ Choose the workflow by the result you need:
 | Goal | Workflow | Output contract |
 |---|---|---|
 | Explain purpose, behavior, architecture, patterns, contracts, tests, and operational implications supported by the diff | `diff-summary` | Descriptive `DS-*` cards without defect severity |
-| Save the same explanation as Markdown only, without HTML or a browser open | `diff-summary-md` | One validated `.md` artifact |
+| Save the same explanation as Markdown only, without HTML or a browser open | `diff-summary-md` | Validated Korean and English `.md` artifacts |
 | Explain the change and test comprehension | `diff-summary-quiz` | Markdown answer key plus an interactive offline HTML quiz |
 | Find correctness, security, or maintainability problems and recommend fixes | `code-review` or `code-review-md` | Findings grouped by review severity |
 | Inspect changed lines without analysis | `diff-viewer` | Unified/split raw patch |
@@ -97,7 +97,7 @@ Representative request bodies are:
 
 Supported scope kinds are `current`, `staged`, `unstaged`, `last_commit`, `last_n`, `range`, `commit`, and `pr`. Current/unstaged collection lists untracked paths without content by default; an explicit second request may name up to 32 safe untracked files, with 256 KiB per-file and 2 MiB aggregate content limits. Unborn SHA-1 and SHA-256 repositories use their native empty-tree ID. Git 2.45+ is required so the collector can fail closed with the global no-lazy-fetch option.
 
-The skill then sends its completed Markdown report to `generate_summary_report.py --markdown-stdin --output-directory .diff-summaries`. The generator validates the output parent and report contract, derives the filename from the report's `Date` and exact `Scope`, and atomically writes `.diff-summaries/<YYYY-MM-DD>_<scope-tag>.md` plus a sibling `.html`; the host agent opens the printed absolute HTML file URI. Arbitrary scope tags encode `..` as `dot2` and `...` as `dot3`, cap the readable part, and append a 12-hex SHA-256 suffix over the exact scope so sanitized names cannot overwrite one another. Every `DS-*` card supports comments and exact Markdown copy; report-level controls copy the whole report or a feedback payload containing cards plus comments. The self-contained page also provides light/dark/system themes, a collapsible/resizable sidebar, responsive and print layouts, and guarded browser-local persistence. It works without a web server or network connection.
+The skill then sends its completed Korean and English Markdown reports to `generate_summary_report.py --bilingual-json-stdin --output-directory .diff-summaries`. The generator validates the output parent, both report contracts, and matching `DS-*` identities and fields. It derives filenames from the reports' shared `Date` and exact `Scope`, then atomically writes `.diff-summaries/<YYYY-MM-DD>_<scope-tag>.md`, its `.en.md` sibling, and one bilingual `.html`; the host agent opens the printed absolute HTML file URI. Korean is the default view and an accessible control switches the complete interface to English. Arbitrary scope tags encode `..` as `dot2` and `...` as `dot3`, cap the readable part, and append a 12-hex SHA-256 suffix over the exact scope so sanitized names cannot overwrite one another. Every `DS-*` card supports comments and exact language-specific Markdown copy; report-level controls copy the active source report or a feedback payload containing cards plus comments. The self-contained page also provides light/dark/system themes, a collapsible/resizable sidebar, responsive and print layouts, and guarded browser-local persistence. It works without a web server or network connection.
 
 The bundled presentation-only renderer can also render an existing Markdown file directly:
 
@@ -110,7 +110,7 @@ The bundled presentation-only renderer can also render an existing Markdown file
 
 `--theme` accepts `auto`, `light`, or `dark`. The renderer does not collect a diff or write analytical prose; the skill workflow owns evidence collection and Markdown authoring. Optional `--open` uses a fixed system launcher with ambient `BROWSER` and Python startup variables removed, but host-controlled opening is preferred.
 
-For the skill's write path, invoke the same script with `--markdown-stdin --output-directory .diff-summaries`, then provide the report through the process's standard-input API. This mode creates only the direct output directory, refuses a symlinked parent, derives collision-safe names itself, and writes both Markdown and HTML without a shell redirection or repository-created helper.
+For the skill's default write path, invoke the same script with `--bilingual-json-stdin --output-directory .diff-summaries`, then provide the exact `{"ko":"...","en":"..."}` object through the process's standard-input API. This mode creates only the direct output directory, refuses a symlinked parent, derives collision-safe names itself, and writes two Markdown sources plus one HTML report without a shell redirection or repository-created helper. Explicit single-language requests use the legacy `--markdown-stdin` mode.
 
 `/diff-viewer` runs `generate_diff_report.py` and accepts:
 
@@ -178,7 +178,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | Path | Written by | Notes |
 |---|---|---|
 | `.reviews/` | `code-review`, `code-review-md` | Markdown / HTML reports; gitignored |
-| `.diff-summaries/` | `diff-summary`, `diff-summary-md`, `diff-summary-quiz` | Markdown source, plus interactive self-contained HTML for `diff-summary` and `diff-summary-quiz`; gitignored |
+| `.diff-summaries/` | `diff-summary`, `diff-summary-md`, `diff-summary-quiz` | Korean + English Markdown sources, plus bilingual self-contained HTML for `diff-summary` and `diff-summary-quiz`; gitignored |
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
 | `.agent/` | `long-task` | Working-memory and lifecycle state for a run |
