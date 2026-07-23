@@ -19,4 +19,4 @@ After the script writes the report:
 2. Print a one-line summary in the conversation: number of files changed, lines added/removed, and the report path.
 3. If `.diffs/` is not in `.gitignore`, suggest adding it. Do not modify `.gitignore` automatically.
 
-This command does NOT perform a code review. For analysis use `/code-review`, `/code-review-md`, or `/code-review-html`.
+This command does NOT perform a code review. For analysis use `/code-review` or `/code-review-md`.

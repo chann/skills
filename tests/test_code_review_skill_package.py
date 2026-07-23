@@ -9,14 +9,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CODE_REVIEW = ROOT / "code-review"
 MAIN_SKILL = CODE_REVIEW / "skills" / "code-review" / "SKILL.md"
-WRAPPER_SKILLS = (
-    CODE_REVIEW / "skills" / "code-review-md" / "SKILL.md",
-    CODE_REVIEW / "skills" / "code-review-html" / "SKILL.md",
-)
+WRAPPER_SKILLS = (CODE_REVIEW / "skills" / "code-review-md" / "SKILL.md",)
 COMMANDS = (
     CODE_REVIEW / "commands" / "code-review.md",
     CODE_REVIEW / "commands" / "code-review-md.md",
-    CODE_REVIEW / "commands" / "code-review-html.md",
     CODE_REVIEW / "commands" / "diff-summary.md",
 )
 
@@ -49,9 +45,7 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
             "decision but requires no code change | No action needed |",
             skill_text,
         )
-        self.assertIn(
-            "Never use INFO solely for uncertainty or praise.", skill_text
-        )
+        self.assertIn("Never use INFO solely for uncertainty or praise.", skill_text)
         self.assertIn(
             "Missing evidence belongs under one specific **Open Questions** item "
             "only when it changes severity or action; otherwise omit it.",
@@ -85,7 +79,9 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
         self.assertIn("fresh verification", skill_text)
         self.assertIn("browser-open result", skill_text)
 
-    def test_main_skill_preserves_parser_significant_english_metadata_keys(self) -> None:
+    def test_main_skill_preserves_parser_significant_english_metadata_keys(
+        self,
+    ) -> None:
         skill_text = MAIN_SKILL.read_text(encoding="utf-8")
 
         self.assertIn(
@@ -110,30 +106,14 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
         self.assertIn("**Reviewer:** automated review", skill_text)
         self.assertNotIn("**Reviewer:** Codex", skill_text)
 
-    def test_main_skill_splits_conversation_and_persisted_output_modes(self) -> None:
+    def test_main_skill_makes_html_default_and_markdown_only_explicit(self) -> None:
         skill_text = MAIN_SKILL.read_text(encoding="utf-8")
-        conversation_heading = "#### Conversation-only mode (`/code-review`)"
         persisted_heading = (
-            "#### Persisted report modes (`/code-review-md` and `/code-review-html`)"
+            "#### Persisted report modes (`/code-review` and `/code-review-md`)"
         )
-
-        conversation_index = skill_text.index(conversation_heading)
         persisted_index = skill_text.index(persisted_heading)
-        self.assertLess(conversation_index, persisted_index)
-
-        conversation_contract = skill_text[conversation_index:persisted_index]
-        self.assertIn(
-            "Start the user-visible response with the first actionable finding or "
-            "the verified no-findings result.",
-            conversation_contract,
-        )
-        self.assertIn("The findings are the complete output.", conversation_contract)
-        self.assertIn(
-            "Do not write files, mention artifact paths, or add a recap.",
-            conversation_contract,
-        )
-
         persisted_contract = skill_text[persisted_index:]
+
         self.assertIn(
             "Start the report with its title and parser-significant metadata, then "
             "present findings.",
@@ -146,13 +126,28 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
             persisted_contract,
         )
         self.assertIn("### 6. Finish by output mode", skill_text)
+        self.assertIn(
+            "### 5. Generate HTML (default; skip for `/code-review-md`)",
+            skill_text,
+        )
+        self.assertIn(
+            "**Markdown + HTML (`/code-review`):**",
+            skill_text,
+        )
+        self.assertIn(
+            "**Markdown only (`/code-review-md`):**",
+            skill_text,
+        )
+        self.assertNotIn("Conversation-only mode", skill_text)
         self.assertNotIn(
             "- Start with the first actionable finding or the verified result.",
             skill_text,
         )
         self.assertNotIn("at most one urgent finding inline", skill_text)
 
-    def test_code_review_prompts_remove_mandatory_padding_and_uncertain_info(self) -> None:
+    def test_code_review_prompts_remove_mandatory_padding_and_uncertain_info(
+        self,
+    ) -> None:
         prompt_paths = (MAIN_SKILL, *WRAPPER_SKILLS, *COMMANDS)
         forbidden_patterns = (
             r"\*\*Announce at start:\*\*",
@@ -172,7 +167,9 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
                 with self.subTest(path=path.relative_to(ROOT), pattern=pattern):
                     self.assertIsNone(re.search(pattern, prompt, re.IGNORECASE))
 
-    def test_report_wrappers_defer_to_the_authoritative_writing_contract(self) -> None:
+    def test_markdown_wrapper_defers_to_the_authoritative_writing_contract(
+        self,
+    ) -> None:
         authority = (
             "The main skill's **Evidence-first writing contract** and "
             "conditional-section rules are authoritative. Do not restate or weaken "
@@ -195,33 +192,28 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
                     wrapper,
                 )
                 self.assertNotIn("urgent finding inline", wrapper)
-        html_wrapper = WRAPPER_SKILLS[1].read_text(encoding="utf-8")
-        self.assertIn("browser-open", html_wrapper)
+                self.assertIn("no HTML report and no browser open", wrapper)
+                self.assertIn("Skip step 5 (HTML).", wrapper)
 
-    def test_all_review_commands_route_internally_without_user_visible_preambles(self) -> None:
+    def test_all_review_commands_route_internally_without_user_visible_preambles(
+        self,
+    ) -> None:
         routing = {
             "code-review.md": "code-review",
             "code-review-md.md": "code-review-md",
-            "code-review-html.md": "code-review-html",
             "diff-summary.md": "diff-summary",
         }
         expected_fragments = {
             "code-review.md": (
-                "The user-visible response starts with the first actionable finding or "
-                "the verified no-findings result",
-                "Findings are the complete output",
-                "Do not write files or mention artifact paths",
+                "bilingual",
+                "fact-only handoff",
+                "finding counts by severity",
+                "browser-open fact",
             ),
             "code-review-md.md": (
                 "fact-only handoff",
                 "finding counts by severity",
                 "fresh verification",
-            ),
-            "code-review-html.md": (
-                "bilingual",
-                "fact-only handoff",
-                "finding counts by severity",
-                "browser-open fact",
             ),
             "diff-summary.md": (
                 "packaged evidence collector",
@@ -245,10 +237,28 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
                 self.assertNotIn("brief summary", command.lower())
                 self.assertNotRegex(command, r"top 1[-–]3")
                 self.assertNotIn("urgent finding inline", command)
+                self.assertIn('argument-hint: "[scope]"', command)
+                self.assertIn("$ARGUMENTS", command)
                 for fragment in expected_fragments[path.name]:
                     self.assertIn(fragment, command)
 
-    def test_skills_cli_discovers_diff_viewer(self) -> None:
+    def test_default_command_owns_html_and_legacy_variant_is_removed(self) -> None:
+        legacy_command = CODE_REVIEW / "commands" / "code-review-html.md"
+        legacy_skill = CODE_REVIEW / "skills" / "code-review-html" / "SKILL.md"
+        default_command = (CODE_REVIEW / "commands" / "code-review.md").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertFalse(legacy_command.exists())
+        self.assertFalse(legacy_skill.exists())
+        self.assertIn("**Output mode: Markdown + HTML.**", default_command)
+        self.assertIn(
+            "Runs `python <skill-path>/scripts/generate_html_report.py`",
+            default_command,
+        )
+        self.assertIn("Opens the resulting `.html` file in a browser.", default_command)
+
+    def test_skills_cli_discovers_default_review_and_diff_viewer(self) -> None:
         env = os.environ.copy()
         env.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
         result = subprocess.run(
@@ -263,26 +273,53 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stdout)
-        self.assertRegex(result.stdout, re.compile(r"(?m)^[^A-Za-z0-9]*diff-viewer\s*$"))
+        self.assertRegex(
+            result.stdout,
+            re.compile(r"(?m)^[^A-Za-z0-9]*code-review\s*$"),
+        )
+        self.assertRegex(
+            result.stdout,
+            re.compile(r"(?m)^[^A-Za-z0-9]*diff-viewer\s*$"),
+        )
+        self.assertNotRegex(
+            result.stdout,
+            re.compile(r"(?m)^[^A-Za-z0-9]*code-review-html\s*$"),
+        )
 
     def test_diff_viewer_slash_command_and_skill_are_packaged(self) -> None:
         command = CODE_REVIEW / "commands" / "diff-viewer.md"
         skill = CODE_REVIEW / "skills" / "diff-viewer" / "SKILL.md"
-        script = CODE_REVIEW / "skills" / "diff-viewer" / "scripts" / "generate_diff_report.py"
-        template = CODE_REVIEW / "skills" / "diff-viewer" / "assets" / "diff-template.html"
+        script = (
+            CODE_REVIEW
+            / "skills"
+            / "diff-viewer"
+            / "scripts"
+            / "generate_diff_report.py"
+        )
+        template = (
+            CODE_REVIEW / "skills" / "diff-viewer" / "assets" / "diff-template.html"
+        )
 
         self.assertTrue(command.is_file(), "Claude slash command must be packaged")
         self.assertTrue(skill.is_file(), "Codex/skill discovery requires SKILL.md")
-        self.assertTrue(script.is_file(), "diff-viewer runtime must be inside the skill folder")
-        self.assertTrue(template.is_file(), "HTML template must be inside the skill folder")
+        self.assertTrue(
+            script.is_file(), "diff-viewer runtime must be inside the skill folder"
+        )
+        self.assertTrue(
+            template.is_file(), "HTML template must be inside the skill folder"
+        )
 
         command_text = command.read_text(encoding="utf-8")
         skill_text = skill.read_text(encoding="utf-8")
         self.assertIn("Use the **diff-viewer** skill", command_text)
         self.assertIn("scripts/generate_diff_report.py", skill_text)
 
-    def test_code_review_plugin_metadata_mentions_diff_viewer_and_diff_summary(self) -> None:
-        metadata = json.loads((CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text())
+    def test_code_review_plugin_metadata_mentions_diff_viewer_and_diff_summary(
+        self,
+    ) -> None:
+        metadata = json.loads(
+            (CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text()
+        )
 
         self.assertEqual(metadata["version"], "2.4.0")
         self.assertIn("diff-viewer", metadata["description"])

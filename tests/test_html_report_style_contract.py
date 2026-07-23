@@ -24,7 +24,7 @@ TEMPLATES = {
         / "assets"
         / "diff-template.html"
     ),
-    "code-review-html": (
+    "code-review": (
         ROOT
         / "code-review"
         / "skills"
@@ -36,12 +36,12 @@ TEMPLATES = {
 THEME_SELECTORS = {
     "diff-summary": ("body", 'body[data-theme="dark"]'),
     "diff-viewer": (":root", 'html[data-page-theme="dark"]'),
-    "code-review-html": (":root", 'html[data-page-theme="dark"]'),
+    "code-review": (":root", 'html[data-page-theme="dark"]'),
 }
 LEGACY_TOKENS = {
     "diff-summary": (),
     "diff-viewer": ("bg", "surface", "surface-muted", "text"),
-    "code-review-html": ("bg", "surface", "surface-muted", "text"),
+    "code-review": ("bg", "surface", "surface-muted", "text"),
 }
 PRIMARY_CONTROL_SELECTORS = {
     "diff-viewer": (
@@ -49,7 +49,7 @@ PRIMARY_CONTROL_SELECTORS = {
         ".copy-md-btn",
         ".btn-comment.btn-save",
     ),
-    "code-review-html": (
+    "code-review": (
         '.control button[aria-pressed="true"]',
         ".copy-md-btn",
         ".diff-toggle.active",
@@ -57,10 +57,8 @@ PRIMARY_CONTROL_SELECTORS = {
     ),
 }
 DESTRUCTIVE_CONTROL_SELECTORS = {
-    "diff-viewer": (
-        ".clear-comments-btn:hover:not(:disabled)",
-    ),
-    "code-review-html": (
+    "diff-viewer": (".clear-comments-btn:hover:not(:disabled)",),
+    "code-review": (
         ".clear-comments-btn:hover:not(:disabled)",
         ".btn-comment.btn-delete:hover",
     ),
@@ -75,7 +73,7 @@ SMALL_SIDEBAR_TEXT_SELECTORS = {
         ".comment-list button",
         ".comment-list .comment-empty",
     ),
-    "code-review-html": (
+    "code-review": (
         ".icon-btn",
         ".brand",
         ".repo",
@@ -224,8 +222,7 @@ def selected_properties(
 def contrast_ratio(first: str, second: str) -> float:
     def luminance(hex_color: str) -> float:
         channels = [
-            int(hex_color[index : index + 2], 16) / 255
-            for index in range(1, 7, 2)
+            int(hex_color[index : index + 2], 16) / 255 for index in range(1, 7, 2)
         ]
         linear = [
             channel / 12.92
@@ -244,8 +241,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.template = SUMMARY_TEMPLATE.read_text(encoding="utf-8")
         cls.templates = {
-            name: path.read_text(encoding="utf-8")
-            for name, path in TEMPLATES.items()
+            name: path.read_text(encoding="utf-8") for name, path in TEMPLATES.items()
         }
         cls.root_declarations = custom_properties(css_rule(cls.template, ":root"))
         cls.light_declarations = custom_properties(css_rule(cls.template, "body"))
@@ -265,9 +261,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         for name, source in self.templates.items():
             light_selector, dark_selector = THEME_SELECTORS[name]
             root_declarations = custom_properties(css_rule(source, ":root"))
-            light_declarations = custom_properties(
-                css_rule(source, light_selector)
-            )
+            light_declarations = custom_properties(css_rule(source, light_selector))
             dark_declarations = custom_properties(css_rule(source, dark_selector))
 
             with self.subTest(template=name, theme="root"):
@@ -414,7 +408,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 self.assertIn("@media print", source)
 
     def test_viewer_and_review_share_control_component_states(self) -> None:
-        for name in ("diff-viewer", "code-review-html"):
+        for name in ("diff-viewer", "code-review"):
             source = self.templates[name]
             control_rule = re.search(
                 r"button\s*,\s*select\s*\{(?P<body>.*?)\}",
@@ -494,9 +488,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     ("light", ":root"),
                     ("dark", 'html[data-page-theme="dark"]'),
                 ):
-                    declarations = custom_properties(
-                        css_rule(source, theme_selector)
-                    )
+                    declarations = custom_properties(css_rule(source, theme_selector))
                     with self.subTest(
                         template=name,
                         state="destructive-contrast",
@@ -538,12 +530,12 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_code_review_control_group_declares_effective_neutral_hover_states(
         self,
     ) -> None:
-        source = self.templates["code-review-html"]
+        source = self.templates["code-review"]
         hover_rule = re.search(
             r'\.control button:not\(\[aria-pressed="true"\]\)'
-            r':where\(\s*:hover:not\(:disabled\)\s*\)\s*,\s*'
-            r'\.control select:where\(\s*:hover:not\(:disabled\)\s*\)\s*'
-            r'\{(?P<body>.*?)\}',
+            r":where\(\s*:hover:not\(:disabled\)\s*\)\s*,\s*"
+            r"\.control select:where\(\s*:hover:not\(:disabled\)\s*\)\s*"
+            r"\{(?P<body>.*?)\}",
             source,
             re.DOTALL,
         )
@@ -557,9 +549,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         )
 
         base_position = source.index(".control button, .control select {")
-        pressed_position = source.index(
-            '.control button[aria-pressed="true"] {'
-        )
+        pressed_position = source.index('.control button[aria-pressed="true"] {')
         self.assertLess(base_position, hover_rule.start())
         self.assertLess(hover_rule.start(), pressed_position)
 
@@ -604,7 +594,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
     def test_code_review_finding_accent_cards_remain_flat(self) -> None:
         finding_rule = css_rule(
-            self.templates["code-review-html"],
+            self.templates["code-review"],
             "details.finding",
         )
         self.assertNotIn("border-radius", finding_rule)
@@ -612,7 +602,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_code_review_narrow_report_tables_scroll_without_expanding_page(
         self,
     ) -> None:
-        source = self.templates["code-review-html"]
+        source = self.templates["code-review"]
         narrow_rule = css_rule(source, "@media (max-width: 860px)")
         table_scroll_rule = css_rule(source, ".table-scroll")
         table_scroll_declarations = {
@@ -658,7 +648,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_code_review_muted_microcopy_binds_accessible_token_pairs(
         self,
     ) -> None:
-        source = self.templates["code-review-html"]
+        source = self.templates["code-review"]
         selector_pairs = (
             ("table:not(.diff-table) th", "table:not(.diff-table) th"),
             (".finding-tool-btn", ".finding-tool-btn"),
@@ -687,9 +677,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 ("light", ":root"),
                 ("dark", 'html[data-page-theme="dark"]'),
             ):
-                declarations = custom_properties(
-                    css_rule(source, theme_selector)
-                )
+                declarations = custom_properties(css_rule(source, theme_selector))
                 with self.subTest(selector=text_selector, theme=theme):
                     self.assertGreaterEqual(
                         contrast_ratio(
@@ -702,7 +690,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_code_review_finding_tool_copied_state_uses_monochrome_pair(
         self,
     ) -> None:
-        source = self.templates["code-review-html"]
+        source = self.templates["code-review"]
         copied_declarations = {
             name: value.strip()
             for name, value in re.findall(
@@ -1173,7 +1161,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             r"break-inside:\s*avoid\s*;[^}]*box-shadow:\s*none\s*;",
         )
         self.assertRegex(
-            css_rule(printed, '.quiz-option[data-quiz-correct]::after'),
+            css_rule(printed, ".quiz-option[data-quiz-correct]::after"),
             r'content:\s*"\s*✓"\s*;',
         )
         self.assertRegex(

@@ -44,7 +44,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 
 ```
 > review my changes                         # code-review
-> /code-review-html review staged changes
+> /code-review review staged changes
 > /diff-summary main..dev                  # explanatory Markdown + interactive HTML
 > /diff-summary-md main..dev               # explanatory Markdown only
 > /diff-summary-quiz main..dev             # summary + comprehension quiz
@@ -61,9 +61,8 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 
 | Command | Output |
 |---|---|
-| `/code-review` | Findings in conversation; no file |
-| `/code-review-md` | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md` |
-| `/code-review-html` | Markdown + self-contained bilingual HTML report under `.reviews/` |
+| `/code-review [scope]` | Markdown + self-contained bilingual HTML report under `.reviews/` |
+| `/code-review-md [scope]` | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md` |
 | `/diff-summary [scope]` | Prompt-language Markdown + interactive offline HTML under `.diff-summaries/` |
 | `/diff-summary-md [scope]` | Prompt-language Markdown only under `.diff-summaries/` (no HTML, no browser open) |
 | `/diff-summary-quiz [scope]` | Same as `/diff-summary` plus an interactive `## Quiz` comprehension section in both Markdown and HTML |
@@ -78,7 +77,7 @@ Choose the workflow by the result you need:
 | Explain purpose, behavior, architecture, patterns, contracts, tests, and operational implications supported by the diff | `diff-summary` | Descriptive `DS-*` cards without defect severity |
 | Save the same explanation as Markdown only, without HTML or a browser open | `diff-summary-md` | One validated `.md` artifact |
 | Explain the change and test comprehension | `diff-summary-quiz` | Markdown answer key plus an interactive offline HTML quiz |
-| Find correctness, security, or maintainability problems and recommend fixes | `code-review`, `code-review-md`, `code-review-html` | Findings grouped by review severity |
+| Find correctness, security, or maintainability problems and recommend fixes | `code-review` or `code-review-md` | Findings grouped by review severity |
 | Inspect changed lines without analysis | `diff-viewer` | Unified/split raw patch |
 
 Natural-language requests such as `summarize the code changes`, `코드를 요약해줘`, `main..dev 코드를 요약해줘`, `summarize the last commit`, and `summarize PR #42` select `diff-summary`. Requests such as `마크다운 요약만 저장` select `diff-summary-md`; `이 변경 이해했는지 퀴즈로 확인` or `quiz me on this diff` select `diff-summary-quiz`. When summary and review are both requested, the explanatory cards and review findings remain separate.
@@ -176,7 +175,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 
 | Path | Written by | Notes |
 |---|---|---|
-| `.reviews/` | `code-review-md`, `code-review-html` | Markdown / HTML reports; gitignored |
+| `.reviews/` | `code-review`, `code-review-md` | Markdown / HTML reports; gitignored |
 | `.diff-summaries/` | `diff-summary`, `diff-summary-md`, `diff-summary-quiz` | Markdown source, plus interactive self-contained HTML for `diff-summary` and `diff-summary-quiz`; gitignored |
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
@@ -189,7 +188,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 
 ```
 # Review and persist a bilingual HTML report for staged changes
-> /code-review-html review staged changes
+> /code-review review staged changes
 
 # Summarize current changes, an exact branch range, the last commit, or a PR
 > summarize the code changes
@@ -225,7 +224,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | `/git-commit-rewrite` stops on pushed commits | rewriting published history | pick the branch-based option, or pass `force` to accept `--force-with-lease` |
 | No HTML report generated | Python 3.10+ missing | install Python 3.10 or newer |
 | `/diff-summary` reports an invalid or empty scope | The requested ref/range is unresolved or contains no changes | Correct the exact scope; the skill will not silently fall back to the working tree |
-| `/code-review` wrote no file | `/code-review` is conversation-only | use `/code-review-md` or `/code-review-html` |
+| `/code-review` wrote no file | Report generation did not complete | inspect the handoff warning and rerun `/code-review`; use `/code-review-md` only when HTML is not wanted |
 | long-task won't auto-continue | `.agent/state.md` missing or not `active` | run `/long-task` to start, or `/long-task resume` |
 | long-task stopped early | hit `LONG_TASK_MAX_STOP_CONTINUES` | raise it, e.g. `export LONG_TASK_MAX_STOP_CONTINUES=1000` |
 
@@ -234,4 +233,4 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
 - A Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ for `code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)
+- Python 3.10+ for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)

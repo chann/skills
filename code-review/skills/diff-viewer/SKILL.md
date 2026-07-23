@@ -47,4 +47,4 @@ Valid `--view` values are `unified` and `split`. Valid `--theme` values are `aut
 
 - Uses `git diff HEAD` so staged and unstaged changes are shown together.
 - Produces HTML only, with no markdown report and no analysis.
-- For actual review findings, use `code-review`, `code-review-md`, or `code-review-html`.
+- For actual review findings, use `code-review` or `code-review-md`.

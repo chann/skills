@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles five independent plugins — `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 17 skills.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles five independent plugins — `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 16 skills.
 
 Each skill is authored as a portable `SKILL.md` document plus optional `references/`, `templates/`, `assets/`, and `scripts/`. A thin Claude Code wrapper (`.claude-plugin/plugin.json` + `commands/*.md`) adds slash-command ergonomics on top, but the skill bodies reference no Claude-Code-only tooling, so the same skills run on any agent platform that loads skills (Codex, opencode, Copilot CLI, Gemini CLI, …).
 
@@ -12,7 +12,7 @@ Each skill is authored as a portable `SKILL.md` document plus optional `referenc
 
 | Plugin | Version | Skills | Responsibility |
 |---|---|---|---|
-| `code-review` | 2.4.0 | `code-review`, `code-review-md`, `code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` | Explain changes across code and architecture; review diffs for defects; emit Markdown/HTML reports; render standalone raw HTML diffs |
+| `code-review` | 2.4.0 | `code-review`, `code-review-md`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` | Explain changes across code and architecture; review diffs for defects; emit Markdown/HTML reports; render standalone raw HTML diffs |
 | `doc-skill` | 0.1.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
 | `git-skill` | 0.3.0 | `git-commit`, `git-commit-push`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, push, history rewrite, guarded merges, and merged-branch cleanup |
 | `handoff` | 0.1.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
@@ -34,7 +34,7 @@ Every plugin shares the same layout:
     └── scripts/                 # optional Python helpers (stdlib only)
 ```
 
-- **`code-review`** centralizes defect analysis in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` and `code-review-html` variants are thin skills that reuse that workflow and only choose an output format. `diff-summary` is the canonical authoring source — `collect_diff_evidence.py` owns the hardened Git/GitHub boundary, its `SKILL.md` owns analysis, and `generate_summary_report.py` plus `summary-template.html` convert the authored Markdown into interactive offline HTML. For exact-selector installation, `diff-summary-md` and `diff-summary-quiz` each bundle a synchronized workflow reference, collector, generator, and template: the first invokes `--markdown-only` (no HTML, no browser open), and the second appends a validated `## Quiz` section rendered as an interactive multiple-choice quiz. `diff-viewer` is also standalone — `generate_diff_report.py` plus `diff-template.html` — and displays the raw patch without analysis.
+- **`code-review`** centralizes defect analysis and the default Markdown + bilingual HTML output in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` variant is a thin skill that reuses that workflow while stopping after the Markdown artifact. `diff-summary` is the canonical authoring source — `collect_diff_evidence.py` owns the hardened Git/GitHub boundary, its `SKILL.md` owns analysis, and `generate_summary_report.py` plus `summary-template.html` convert the authored Markdown into interactive offline HTML. For exact-selector installation, `diff-summary-md` and `diff-summary-quiz` each bundle a synchronized workflow reference, collector, generator, and template: the first invokes `--markdown-only` (no HTML, no browser open), and the second appends a validated `## Quiz` section rendered as an interactive multiple-choice quiz. `diff-viewer` is also standalone — `generate_diff_report.py` plus `diff-template.html` — and displays the raw patch without analysis.
 - **`git-skill`** keeps its single Python helper, `rewrite_msg.py`, under `git-commit/scripts/`; the `git-commit-rewrite` workflow shares it.
 - **`handoff`** keeps both handoff generators as self-contained `SKILL.md` files. `gen-frontend-handoff` focuses on client-visible API contract changes, type/rendering/error-state work, and `client action 없음` for DB-only changes. `gen-backend-handoff` focuses on API contracts, database migrations, jobs/queues, rollout, verification, and backend continuation prompts.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
@@ -94,7 +94,7 @@ This boundary keeps three intents independent: `diff-summary` explains changes w
 skills/
 ├── code-review/                      # plugin (v2.4.0)
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/                     # code-review, code-review-md, code-review-html, diff-summary, diff-summary-md, diff-summary-quiz, diff-viewer
+│   ├── commands/                     # code-review, code-review-md, diff-summary, diff-summary-md, diff-summary-quiz, diff-viewer
 │   ├── skills/
 │   │   ├── code-review/              # main skill: workflow + shared assets
 │   │   │   ├── SKILL.md
@@ -102,7 +102,6 @@ skills/
 │   │   │   ├── scripts/              # diff_stats.py, generate_html_report.py
 │   │   │   └── assets/report-template.html
 │   │   ├── code-review-md/SKILL.md
-│   │   ├── code-review-html/SKILL.md
 │   │   ├── diff-summary/             # hardened evidence + explanatory offline report
 │   │   │   ├── SKILL.md
 │   │   │   ├── agents/openai.yaml

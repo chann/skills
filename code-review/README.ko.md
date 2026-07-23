@@ -8,7 +8,7 @@ git diff를 변경 요약, 결함 리뷰, 브라우저용 원본 패치로 다�
 
 - 5가지 차원으로 코드 변경사항 분석: 정확성, 보안, 복잡도/일관성, 유지보수성, 언어별 베스트 프랙티스
 - `.reviews/` 디렉토리에 날짜+커밋SHA 기반 리포트 생성 (예: `2026-04-08_a1b2c3d.md`)
-- 자체 완결형 **이중언어** HTML 리포트 옵션 (한국어 + 영문, 전체 페이지 언어 토글, 한국어 기본 표시): 심각도 배지, light/dark/auto 테마 + 코드 신택스 스킴 셀렉터, 컴팩트 접이식 사이드바, 항목별 마크다운 복사, 브라우저 내 항목별 코멘트, 리뷰어 코멘트로 리뷰를 재생성하는 "피드백 복사" 페이로드
+- 기본으로 자체 완결형 **이중언어** HTML 리포트 생성 (한국어 + 영문, 전체 페이지 언어 토글, 한국어 기본 표시): 심각도 배지, light/dark/auto 테마 + 코드 신택스 스킴 셀렉터, 컴팩트 접이식 사이드바, 항목별 마크다운 복사, 브라우저 내 항목별 코멘트, 리뷰어 코멘트로 리뷰를 재생성하는 "피드백 복사" 페이로드
 - 코드, 동작, 아키텍처, 패턴, 계약, 테스트, 운영 변경을 근거 기반으로 설명하는 마크다운 + 인터랙티브 HTML `/diff-summary` 포함. 마크다운만 만드는 `/diff-summary-md`, 같은 요약에 인터랙티브 이해도 퀴즈를 더한 `/diff-summary-quiz` 변형도 제공
 - 리뷰 분석 없이 현재 작업 트리 diff를 브라우저용 HTML로 보여주는 `/diff-viewer` 포함
 - 다양한 리뷰 범위 지원: 스테이징된 변경, 특정 커밋, 커밋 범위, 브랜치 비교, PR
@@ -22,7 +22,6 @@ git diff를 변경 요약, 결함 리뷰, 브라우저용 원본 패치로 다�
 npx skills add -y -g chann/skills \
   --skill code-review \
   --skill code-review-md \
-  --skill code-review-html \
   --skill diff-summary \
   --skill diff-summary-md \
   --skill diff-summary-quiz \
@@ -35,14 +34,13 @@ npx skills add -y -g chann/skills \
 npx skills add chann/skills \
   --skill code-review \
   --skill code-review-md \
-  --skill code-review-html \
   --skill diff-summary \
   --skill diff-summary-md \
   --skill diff-summary-quiz \
   --skill diff-viewer
 ```
 
-설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. 이 플러그인에는 독립적으로 발견되는 일곱 스킬이 들어 있습니다. 각 diff-summary selector는 필요한 워크플로우와 런타임을 함께 제공하므로 `diff-summary-md` 또는 `diff-summary-quiz`만 설치해도 실행할 수 있습니다. 설치 전 `npx skills add chann/skills -l --full-depth`로 selector를 확인할 수 있습니다.
+설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. 이 플러그인에는 독립적으로 발견되는 여섯 스킬이 들어 있습니다. 각 diff-summary selector는 필요한 워크플로우와 런타임을 함께 제공하므로 `diff-summary-md` 또는 `diff-summary-quiz`만 설치해도 실행할 수 있습니다. 설치 전 `npx skills add chann/skills -l --full-depth`로 selector를 확인할 수 있습니다.
 
 **수동 설치:**
 
@@ -57,9 +55,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 | 커맨드                          | 스킬                  | 출력                                                             |
 | ---------------------------- | ------------------- | -------------------------------------------------------------- |
-| `/code-review`               | `code-review`       | 대화에서 결과 표시 (파일 생성 안 함)                                         |
-| `/code-review-md`            | `code-review-md`    | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운 리포트               |
-| `/code-review-html`          | `code-review-html`  | 마크다운 + 자체 완결형 HTML 리뷰                                          |
+| `/code-review [scope]`       | `code-review`       | `.reviews/`에 마크다운 + 자체 완결형 이중언어 HTML 리뷰                   |
+| `/code-review-md [scope]`    | `code-review-md`    | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운만 생성                 |
 | `/diff-summary [scope]`      | `diff-summary`      | `.diff-summaries/<YYYY-MM-DD>_<scope>.*`에 마크다운 + 인터랙티브 HTML 요약 |
 | `/diff-summary-md [scope]`   | `diff-summary-md`   | `.diff-summaries/<YYYY-MM-DD>_<scope>.md`에 마크다운만 (HTML 없음)     |
 | `/diff-summary-quiz [scope]` | `diff-summary-quiz` | 마크다운 + 인터랙티브 HTML + `## Quiz` 이해도 섹션                           |
@@ -70,7 +67,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 ```
 > 내 변경사항 리뷰해줘
 > 마지막 커밋 리뷰
-> /code-review-html 스테이징된 변경사항 리뷰
+> /code-review 스테이징된 변경사항 리뷰
 > /code-review-md feature-auth 브랜치를 main과 비교해서 리뷰
 > 코드를 요약해줘
 > /diff-summary main..dev
@@ -102,7 +99,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | 무엇이 왜 바뀌었고 코드, 아키텍처, 패턴, 계약, 테스트, 운영이 어떻게 연결되는지 설명 | `diff-summary` | 리뷰 심각도 없는 근거 기반 요약 카드 |
 | 같은 설명을 HTML·브라우저 없이 마크다운으로만 저장 | `diff-summary-md` | 검증된 마크다운 파일 하나 |
 | 변경을 설명하고 이해도를 확인 | `diff-summary-quiz` | 마크다운 정답지 + 인터랙티브 오프라인 HTML 퀴즈 |
-| 결함, 회귀, 취약점, 권장 수정 사항 탐색 | `code-review`, `code-review-md`, `code-review-html` | 심각도별 finding |
+| 결함, 회귀, 취약점, 권장 수정 사항 탐색 | `code-review` 또는 `code-review-md` | 심각도별 finding |
 | 분석 없이 패치 자체 확인 | `diff-viewer` | unified/split 원본 diff HTML |
 
 요약과 리뷰를 함께 요청하면 두 워크플로우를 모두 실행하고 설명 카드와 결함 finding을 별도 섹션으로 유지합니다.
@@ -112,8 +109,8 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 1. 해당 git diff를 수집
 2. 언어를 감지하고 적절한 베스트 프랙티스 참조 파일 로드
 3. 각 변경된 파일을 5가지 차원으로 분석
-4. 대화에서 결과 표시, 또는 리포트 파일 생성 (커맨드에 따라)
-5. 핵심 요약 제시
+4. 마크다운 리포트 작성 및 기본 이중언어 HTML 흐름을 위한 영문 형제 파일 생성
+5. `/code-review-md`가 아닌 경우 HTML 리포트 생성 후 브라우저에서 열기
 
 `/diff-viewer`는 별도 동작입니다. `git diff HEAD`를 캡처해 unified/split HTML diff viewer를 만들고 브라우저로 열며, 코드 분석은 하지 않습니다.
 
@@ -139,14 +136,14 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## HTML 리포트
 
-`/code-review-html`는 한국어 리포트와 영문 번역을 하나의 자체 완결형 HTML로 병합하며 다음을 제공합니다:
+`/code-review`는 한국어 리포트와 영문 번역을 하나의 자체 완결형 HTML로 병합하며 다음을 제공합니다:
 
 - **언어 토글** — 한국어가 기본 표시, 전체 페이지를 영문으로 전환. 번역이 없으면 단일 언어로 폴백(토글 숨김).
 - **테마 & 코드 스킴** — light/dark/auto 페이지 테마 + 8종 신택스 하이라이트 스킴(GitHub, Monokai, Dracula, Nord 등). diff/코드 블록이 자동으로 맞춰짐.
 - **컴팩트 사이드바** — 접기/드래그 리사이즈 지원, 섹션 네비게이션과 코멘트 패널 포함.
 - **항목별 "마크다운 복사"** — 개별 finding의 마크다운만 복사.
 - **항목별 코멘트** — 개별 finding에 리뷰 코멘트 작성(브라우저 저장, finding ID로 키잉되어 언어 전환에도 유지).
-- **"피드백 복사"** — 재생성 페이로드(원본 finding 마크다운 + 작성한 코멘트)를 생성. 새 `/code-review-html` 실행에 붙여넣으면 피드백을 반영해 리뷰를 다시 작성.
+- **"피드백 복사"** — 재생성 페이로드(원본 finding 마크다운 + 작성한 코멘트)를 생성. 새 `/code-review` 실행에 붙여넣으면 피드백을 반영해 리뷰를 다시 작성.
 
 ### Diff summary HTML
 
@@ -178,9 +175,8 @@ code-review/
 ├── .claude-plugin/
 │   └── plugin.json                       # 플러그인 메타데이터
 ├── commands/
-│   ├── code-review.md                    # /code-review (대화 전용)
+│   ├── code-review.md                    # /code-review 마크다운 + HTML 커맨드
 │   ├── code-review-md.md                 # /code-review-md 커맨드
-│   ├── code-review-html.md               # /code-review-html 커맨드
 │   ├── diff-summary.md                    # /diff-summary 커맨드
 │   ├── diff-summary-md.md                 # /diff-summary-md 커맨드
 │   ├── diff-summary-quiz.md               # /diff-summary-quiz 커맨드
@@ -200,8 +196,6 @@ code-review/
 │   │       └── report-template.html      # HTML 리포트 템플릿
 │   ├── code-review-md/
 │   │   └── SKILL.md                      # 마크다운 변형 스킬
-│   ├── code-review-html/
-│   │   └── SKILL.md                      # HTML 변형 스킬
 │   ├── diff-summary/                      # 설명형 마크다운 + HTML 변경 요약
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
@@ -239,7 +233,7 @@ code-review/
 - [Claude Code](https://code.claude.com) (CLI, 데스크톱 앱, 또는 IDE 확장)
 - Git 저장소
 - `diff-summary`, `diff-summary-md`, `diff-summary-quiz` 증거 수집에는 Git 2.45+
-- Python 3.10+ (`code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` 리포트 생성 시 필요, 표준 라이브러리만 사용)
+- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` 리포트 생성 시 필요, 표준 라이브러리만 사용)
 
 ## 보안 노트
 

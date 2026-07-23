@@ -1,13 +1,15 @@
 ---
 name: code-review
-description: Use when the user asks to review code, review changes, review a commit, review a PR, audit code quality, check for security issues, or generate a code review report. Trigger on phrases like "review my changes", "코드 리뷰", "check my code", "review the last commit", "what do you think of this diff", "compare branches", "code audit" — even if they don't say "code review" explicitly. For persistent file output use `code-review-md` (markdown) or `code-review-html` (markdown + HTML).
+description: Use when the user asks to review code, review changes, review a commit, review a PR, audit code quality, check for security issues, or generate a code review report. Trigger on phrases like "review my changes", "코드 리뷰", "check my code", "review the last commit", "what do you think of this diff", "compare branches", "code audit", "HTML 리뷰 보고서", "styled review report" — even if they don't say "code review" explicitly. Produces severity-tagged findings as a Markdown report plus a self-contained bilingual HTML report under `.reviews/`, opened in a browser. For a Markdown-only artifact use `code-review-md`.
 ---
 
 # Code Review Skill
 
 ## Overview
 
-Structured code review from git diffs. Analyzes changes for correctness, security, complexity, maintainability, and language-specific best practices, then presents findings either inline or as a persistent report.
+Structured code review from git diffs. Analyzes changes for correctness, security, complexity, maintainability, and language-specific best practices, then persists findings as a Markdown report **and** a self-contained, interactive HTML report — the same artifact pattern as `diff-summary` and `diff-viewer`.
+
+The HTML report is **bilingual** (Korean + English with a full-page language toggle, Korean shown by default) and includes: severity badges, syntax highlighting with a light/dark/auto theme and an 8-option code scheme selector, a compact collapsible/resizable sidebar, per-finding "Copy Markdown", per-finding comments stored in the browser, and a "Copy feedback" button that emits a regeneration payload to refine the review.
 
 **Core principle:** Diff in → severity-tagged findings out, scoped strictly to what changed.
 
@@ -15,44 +17,15 @@ Structured code review from git diffs. Analyzes changes for correctness, securit
 
 | Command | Skill | Output | When to use |
 |---|---|---|---|
-| `/code-review` (or implicit trigger) | `code-review` | Findings shown in conversation; no file | Quick interactive review |
-| `/code-review-md` | `code-review-md` | Markdown file at `.reviews/<date>_<sha>.md` | Persistent record, share via git |
-| `/code-review-html` | `code-review-html` | Markdown file + self-contained HTML | Browser-readable report with badges, syntax highlighting, sidebar nav |
+| `/code-review [scope]` (or implicit trigger) | `code-review` | Markdown report + bilingual HTML under `.reviews/`, opened in browser | Default review |
+| `/code-review-md [scope]` | `code-review-md` | Markdown file at `.reviews/<date>_<sha>.md` (no HTML) | Markdown-only record, share via git |
 
 ## Command Examples
 
-### `/code-review` — interactive
+### `/code-review` — markdown + HTML
 
 ```
-User: review my changes
-→ git diff && git diff --staged
-→ Analyze
-→ Print findings in conversation; write nothing
-```
-
-```
-User: 마지막 커밋 코드 리뷰해줘
-→ git diff HEAD~1..HEAD
-→ Analyze; output narrative in Korean (section headings translated)
-→ Print findings in conversation
-```
-
-### `/code-review-md` — markdown report
-
-```
-User: /code-review-md review staged changes
-→ git diff --staged
-→ Analyze
-→ mkdir -p .reviews/
-→ Write .reviews/2026-05-03_staged.md
-→ Report finding counts, risk, report path, and fresh verification
-→ If `.reviews/` is not ignored, suggest adding it to .gitignore (do NOT modify it)
-```
-
-### `/code-review-html` — HTML + markdown
-
-```
-User: /code-review-html review PR #42
+User: /code-review review PR #42
 → gh pr diff 42
 → diff_stats.py reports has_security_sensitive_files: true
 → Load python.md + common-vulnerabilities.md
@@ -62,6 +35,26 @@ User: /code-review-html review PR #42
 → python <skill-path>/scripts/generate_html_report.py .reviews/2026-05-03_a1b2c3d.md
 → open .reviews/2026-05-03_a1b2c3d.html     (Korean shown by default; toggle to English)
 → Report finding counts, risk, artifact paths, fresh verification, and browser-open result
+```
+
+```
+User: 마지막 커밋 코드 리뷰해줘
+→ git diff HEAD~1..HEAD
+→ Analyze; write the Korean report and its English sibling
+→ Generate + open the bilingual HTML report
+→ Report finding counts, risk, artifact paths, fresh verification, and browser-open result
+```
+
+### `/code-review-md` — markdown only
+
+```
+User: /code-review-md review staged changes
+→ git diff --staged
+→ Analyze
+→ mkdir -p .reviews/
+→ Write .reviews/2026-05-03_staged.md
+→ Report finding counts, risk, report path, and fresh verification
+→ If `.reviews/` is not ignored, suggest adding it to .gitignore (do NOT modify it)
 ```
 
 ## Determining Review Scope
@@ -139,7 +132,7 @@ Never use INFO solely for uncertainty or praise. Missing evidence belongs under 
 
 ### Evidence-first writing contract
 
-This contract is authoritative for interactive, Markdown, and HTML reviews.
+This contract is authoritative for Markdown and HTML reviews.
 
 - For every actionable finding, write in this order: **observed behavior** → **practical consequence** → **smallest justified correction**.
 - Cite the changed path and line before making the claim, and quote only the smallest excerpt needed to establish the evidence.
@@ -148,24 +141,16 @@ This contract is authoritative for interactive, Markdown, and HTML reviews.
 - When there are no actionable findings, state that directly and include only material residual risks or verification gaps.
 - Do not add an announcement, generic preface, congratulations, or an overall-quality claim in either output mode.
 
-#### Conversation-only mode (`/code-review`)
-
-- Start the user-visible response with the first actionable finding or the verified no-findings result.
-- The findings are the complete output.
-- Do not write files, mention artifact paths, or add a recap.
-
-#### Persisted report modes (`/code-review-md` and `/code-review-html`)
+#### Persisted report modes (`/code-review` and `/code-review-md`)
 
 - Start the report with its title and parser-significant metadata, then present findings.
 - Use a fact-only handoff after generation: finding counts by severity, overall risk, generated artifact paths, fresh verification, and the browser-open result or warning for HTML.
 - Do not repeat report prose or promise a fixed finding count.
 - The `.reviews/` ignore suggestion is allowed in this handoff only when persisted artifacts were generated and `.reviews/` is not ignored.
 
-### 4. Present findings or write the markdown report
+### 4. Write the markdown report
 
-**Default (bare `/code-review` or implicit trigger):** Present the review using the contract and finding shape below directly in the conversation. Do NOT write any files.
-
-**When invoked via the `code-review-md` or `code-review-html` skill (`/code-review-md` / `/code-review-html`):** Create the `.reviews/` directory in the repository root if it doesn't exist. Use this minimal report shape, omitting zero-finding severity headings:
+Create the `.reviews/` directory in the repository root if it doesn't exist. Use this minimal report shape, omitting zero-finding severity headings:
 
 ```markdown
 # Code Review Report
@@ -207,9 +192,9 @@ Omit filler, empty headings, and any conclusion already stated in a finding.
 
 Save to: `.reviews/<YYYY-MM-DD>_<short-sha>.md`
 
-### 5. Generate HTML (`/code-review-html` only)
+### 5. Generate HTML (default; skip for `/code-review-md`)
 
-Only when invoked via the `code-review-html` skill / `/code-review-html`. The HTML report is **bilingual**: write a Korean report and an English report (see Report Language), then merge them into one HTML file.
+Default for `/code-review` and implicit triggers; skip this step only when invoked via the `code-review-md` skill / `/code-review-md`. The HTML report is **bilingual**: write a Korean report and an English report (see Report Language), then merge them into one HTML file.
 
 Filenames — primary Korean report plus an `.en.md` sibling with identical structure (same finding IDs, same code blocks):
 
@@ -225,14 +210,14 @@ python <skill-path>/scripts/generate_html_report.py .reviews/<report>.md
 open .reviews/<report>.html
 ```
 
-The HTML includes: a full-page language toggle (Korean shown by default), light/dark/auto theme + code syntax scheme selector, a compact collapsible sidebar, per-finding "Copy Markdown", per-finding comments (stored in the browser), and a "Copy feedback" button that produces a regeneration payload — paste it back into a new `/code-review-html` run to revise the review against the reviewer's comments.
+The HTML includes: a full-page language toggle (Korean shown by default), light/dark/auto theme + code syntax scheme selector, a compact collapsible sidebar, per-finding "Copy Markdown", per-finding comments (stored in the browser), and a "Copy feedback" button that produces a regeneration payload — paste it back into a new `/code-review` run to revise the review against the reviewer's comments.
 
 If only one language file exists, the generator still works and the language toggle is hidden (single-language fallback). Pass `--alt <path>` to point at a translation explicitly, or `--theme`/`--code-scheme` to change the defaults.
 
 ### 6. Finish by output mode
 
-- **Conversation-only:** End after the complete findings or verified no-findings result. Do not add an artifact handoff or recap.
-- **Persisted Markdown/HTML:** Apply the fact-only handoff above. The only permitted addition is the conditional `.reviews/` ignore suggestion.
+- **Markdown + HTML (`/code-review`):** Apply the fact-only handoff above, including the browser-open result or warning. The only permitted addition is the conditional `.reviews/` ignore suggestion.
+- **Markdown only (`/code-review-md`):** Apply the same fact-only handoff without HTML artifact or browser-open facts.
 
 ## Report Language
 
@@ -257,9 +242,9 @@ Add a `**Language:**` field in the report metadata header so the HTML generator 
 
 Use the [BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag): `en`, `ko`, `ja`, `zh`, etc.
 
-### Bilingual HTML reports (`/code-review-html`)
+### Bilingual HTML reports (`/code-review`)
 
-The HTML variant is **bilingual by default**: produce a Korean report and an English report so the reader can toggle languages. Korean is the default displayed language.
+The HTML report is **bilingual by default**: produce a Korean report and an English report so the reader can toggle languages. Korean is the default displayed language.
 
 - Write both files with **identical structure** — same headings, same finding IDs (`[CR-001]`), same code blocks. Only the prose (titles, descriptions, summaries, table labels) is translated; code, IDs, file paths, and severity labels are shared verbatim.
 - Set the `**Language:**` header in each file (`ko` in the primary, `en` in the `.en.md`).
@@ -308,7 +293,7 @@ If the user explicitly asks for a single language, write just that one file — 
 ## Red Flags
 
 **Never:**
-- Write files for bare `/code-review` (conversation only)
+- Generate an HTML report for `/code-review-md` (markdown only)
 - Modify `.gitignore` automatically (suggest, don't apply)
 - Comment on code outside the diff
 - Manufacture findings to fill space

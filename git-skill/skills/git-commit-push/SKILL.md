@@ -42,5 +42,5 @@ Same Never/Always lists as the main `<plugin-root>/skills/git-commit/SKILL.md`. 
 
 ## Integration
 
-**Pairs with:** `code-review` (or `code-review-md` / `code-review-html`) — run a review before committing.
+**Pairs with:** `code-review` (or `code-review-md` for Markdown only) — run a review before committing.
 **Called by:** Manual user invocation only. Never auto-run during another skill's workflow.

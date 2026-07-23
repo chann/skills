@@ -8,7 +8,7 @@ Change intelligence for git diffs: explanatory summaries, defect reviews, and ra
 
 - Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
 - Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
-- Optionally generates a styled, self-contained **bilingual** HTML report (Korean + English with a full-page language toggle) featuring severity badges, light/dark/auto themes with a code syntax scheme selector, a compact collapsible sidebar, per-finding markdown copy, in-browser per-finding comments, and a "Copy feedback" payload to regenerate the review against reviewer comments
+- Generates a styled, self-contained **bilingual** HTML report by default (Korean + English with a full-page language toggle), featuring severity badges, light/dark/auto themes with a code syntax scheme selector, a compact collapsible sidebar, per-finding markdown copy, in-browser per-finding comments, and a "Copy feedback" payload to regenerate the review against reviewer comments
 - Includes `/diff-summary` for evidence-based code, behavior, architecture, pattern, contract, test, and operational change summaries in Markdown plus interactive HTML, with `/diff-summary-md` for a Markdown-only artifact and `/diff-summary-quiz` for the same summary plus an interactive comprehension quiz
 - Includes `/diff-viewer` for a browser-readable HTML view of the current working-tree diff without review analysis
 - Supports multiple review scopes: staged changes, specific commits, commit ranges, branch comparisons, and PRs
@@ -22,7 +22,6 @@ Change intelligence for git diffs: explanatory summaries, defect reviews, and ra
 npx skills add -y -g chann/skills \
   --skill code-review \
   --skill code-review-md \
-  --skill code-review-html \
   --skill diff-summary \
   --skill diff-summary-md \
   --skill diff-summary-quiz \
@@ -35,14 +34,13 @@ npx skills add -y -g chann/skills \
 npx skills add chann/skills \
   --skill code-review \
   --skill code-review-md \
-  --skill code-review-html \
   --skill diff-summary \
   --skill diff-summary-md \
   --skill diff-summary-quiz \
   --skill diff-viewer
 ```
 
-Use the actual skill names with `--skill`; this plugin packages seven independently discoverable skills. Each diff-summary selector bundles the workflow and runtime it needs, so installing only `diff-summary-md` or only `diff-summary-quiz` remains executable. Run `npx skills add chann/skills -l --full-depth` to inspect the selectors before installing.
+Use the actual skill names with `--skill`; this plugin packages six independently discoverable skills. Each diff-summary selector bundles the workflow and runtime it needs, so installing only `diff-summary-md` or only `diff-summary-quiz` remains executable. Run `npx skills add chann/skills -l --full-depth` to inspect the selectors before installing.
 
 **Manual:**
 
@@ -57,9 +55,8 @@ The matching skill triggers automatically from natural language, or you can use 
 
 | Command                      | Skill               | Output                                                                  |
 | ---------------------------- | ------------------- | ----------------------------------------------------------------------- |
-| `/code-review`               | `code-review`       | Findings shown in conversation; no file                                 |
-| `/code-review-md`            | `code-review-md`    | Markdown report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`               |
-| `/code-review-html`          | `code-review-html`  | Markdown + self-contained HTML review                                   |
+| `/code-review [scope]`       | `code-review`       | Markdown + self-contained bilingual HTML review under `.reviews/`       |
+| `/code-review-md [scope]`    | `code-review-md`    | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`          |
 | `/diff-summary [scope]`      | `diff-summary`      | Markdown + interactive HTML at `.diff-summaries/<YYYY-MM-DD>_<scope>.*` |
 | `/diff-summary-md [scope]`   | `diff-summary-md`   | Markdown-only summary at `.diff-summaries/<YYYY-MM-DD>_<scope>.md`      |
 | `/diff-summary-quiz [scope]` | `diff-summary-quiz` | Markdown + interactive HTML plus a `## Quiz` comprehension section      |
@@ -70,7 +67,7 @@ The matching skill triggers automatically from natural language, or you can use 
 ```
 > review my changes
 > review the last commit
-> /code-review-html review staged changes
+> /code-review review staged changes
 > /code-review-md review branch feature-auth compared to main
 > summarize the code changes
 > /diff-summary main..dev
@@ -102,7 +99,7 @@ An explicit range is preserved exactly: `main..dev` and `main...dev` are differe
 | Explain what changed, why it matters, and how code, architecture, patterns, contracts, tests, and operations relate | `diff-summary` | Evidence-based summary cards; no review severity |
 | Save that explanation as Markdown only, without HTML or a browser open | `diff-summary-md` | One validated Markdown artifact |
 | Explain the change and test comprehension | `diff-summary-quiz` | Markdown answer key plus an interactive offline HTML quiz |
-| Find defects, regressions, vulnerabilities, and recommended fixes | `code-review`, `code-review-md`, `code-review-html` | Findings grouped by severity |
+| Find defects, regressions, vulnerabilities, and recommended fixes | `code-review` or `code-review-md` | Findings grouped by severity |
 | Inspect the patch itself without analysis | `diff-viewer` | Unified/split raw diff in HTML |
 
 If a prompt asks for both a summary and a review, run both workflows and keep the explanatory cards and defect findings in distinct sections.
@@ -112,8 +109,8 @@ If a prompt asks for both a summary and a review, run both workflows and keep th
 1. Gather the relevant git diff
 2. Detect languages and load appropriate best-practice references
 3. Analyze each changed file across the five dimensions
-4. Present findings in conversation, or write report files (depending on the command)
-5. Show a summary of findings
+4. Write the Markdown report, plus its English sibling for the default bilingual HTML flow
+5. Generate and open the HTML report, unless `/code-review-md` requested Markdown only
 
 `/diff-viewer` is separate: it captures `git diff HEAD`, renders unified and split diff views to HTML, opens the report, and does not analyze the code.
 
@@ -139,14 +136,14 @@ Report metadata and actionable findings remain available. `Decision Summary`, `P
 
 ## HTML report
 
-`/code-review-html` merges a Korean report and its English translation into one self-contained HTML file with:
+`/code-review` merges a Korean report and its English translation into one self-contained HTML file with:
 
 - **Language toggle** — Korean shown by default, switch to English for the whole page. Falls back to a single language (toggle hidden) when no translation exists.
 - **Theme & code scheme** — light/dark/auto page theme plus an 8-option syntax highlight scheme (GitHub, Monokai, Dracula, Nord, …). Diff and code blocks adapt automatically.
 - **Compact sidebar** — collapsible and drag-resizable, with section nav and a comments panel.
 - **Per-finding "Copy Markdown"** — copy any single finding's markdown.
 - **Per-finding comments** — leave review comments on individual findings (stored in the browser, keyed by finding ID so they survive language switches).
-- **"Copy feedback"** — emits a regeneration payload (original finding markdown + your comments). Paste it into a fresh `/code-review-html` run to revise the review against the feedback.
+- **"Copy feedback"** — emits a regeneration payload (original finding markdown + your comments). Paste it into a fresh `/code-review` run to revise the review against the feedback.
 
 ### Diff summary HTML
 
@@ -178,9 +175,8 @@ code-review/
 ├── .claude-plugin/
 │   └── plugin.json                       # Plugin metadata
 ├── commands/
-│   ├── code-review.md                    # /code-review (conversation-only)
+│   ├── code-review.md                    # /code-review Markdown + HTML command
 │   ├── code-review-md.md                 # /code-review-md command
-│   ├── code-review-html.md               # /code-review-html command
 │   ├── diff-summary.md                    # /diff-summary command
 │   ├── diff-summary-md.md                 # /diff-summary-md command
 │   ├── diff-summary-quiz.md               # /diff-summary-quiz command
@@ -200,8 +196,6 @@ code-review/
 │   │       └── report-template.html      # HTML report template
 │   ├── code-review-md/
 │   │   └── SKILL.md                      # Markdown variant skill
-│   ├── code-review-html/
-│   │   └── SKILL.md                      # HTML variant skill
 │   ├── diff-summary/                      # Explanatory Markdown + HTML summaries
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
@@ -239,7 +233,7 @@ Sample fixtures (intentionally vulnerable code the reviewer is meant to flag) li
 - [Claude Code](https://code.claude.com) (CLI, desktop app, or IDE extension)
 - Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz` evidence collection
-- Python 3.10+ (for `code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, and `diff-viewer` report generation; standard library only)
+- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, and `diff-viewer` report generation; standard library only)
 
 ## Security notes
 

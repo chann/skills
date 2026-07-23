@@ -11,7 +11,7 @@ Turn a precisely scoped git diff into one evidence-based explanatory report in M
 | Explain what changed, why, and how the pieces fit together | `diff-summary` |
 | Persist the summary as a Markdown-only artifact, with no HTML and no browser open | `diff-summary-md` |
 | Produce the summary plus an interactive comprehension quiz | `diff-summary-quiz` |
-| Find defects, regressions, vulnerabilities, or review findings | `code-review`, `code-review-md`, or `code-review-html` |
+| Find defects, regressions, vulnerabilities, or review findings | `code-review` or `code-review-md` |
 | Display the raw patch with no explanatory analysis | `diff-viewer` |
 
 Do not attach review severity to explanatory observations. If the request combines summary and review, keep the summary cards separate from clearly labeled review findings and use the code-review workflow for those findings.

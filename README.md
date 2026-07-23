@@ -60,9 +60,8 @@ Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 
 | Command                   | Output                                                         |
 | ------------------------- | -------------------------------------------------------------- |
-| `/code-review`            | Show findings in conversation (no file)                        |
-| `/code-review-md`         | Write markdown review to `.reviews/`                            |
-| `/code-review-html`       | Write markdown + HTML review reports to `.reviews/`             |
+| `/code-review [scope]`    | Write markdown + bilingual HTML review reports to `.reviews/`   |
+| `/code-review-md [scope]` | Write a markdown-only review to `.reviews/`                      |
 | `/diff-summary [scope]`   | Explain changes in Markdown + interactive HTML under `.diff-summaries/` |
 | `/diff-summary-md [scope]` | Explain changes in Markdown only under `.diff-summaries/` (no HTML, no browser) |
 | `/diff-summary-quiz [scope]` | Same as `/diff-summary`, plus an interactive comprehension quiz in the HTML |
@@ -138,7 +137,7 @@ What is and isn't portable:
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ (for `code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite`)
+- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite`)
 
 ## License
 

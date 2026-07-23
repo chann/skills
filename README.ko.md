@@ -56,9 +56,8 @@ diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 
 | 커맨드                    | 출력                                                                  |
 | ------------------------- | --------------------------------------------------------------------- |
-| `/code-review`            | 대화에서 finding 표시 (파일 생성 안 함)                               |
-| `/code-review-md`         | `.reviews/`에 마크다운 리뷰 생성                                      |
-| `/code-review-html`       | `.reviews/`에 마크다운 + HTML 리뷰 생성                               |
+| `/code-review [scope]`    | `.reviews/`에 마크다운 + 이중언어 HTML 리뷰 생성                       |
+| `/code-review-md [scope]` | `.reviews/`에 마크다운 리뷰만 생성                                    |
 | `/diff-summary [scope]`   | `.diff-summaries/`에 설명형 마크다운 + 인터랙티브 HTML 요약 생성      |
 | `/diff-summary-md [scope]` | `.diff-summaries/`에 설명형 마크다운만 생성 (HTML·브라우저 없음)      |
 | `/diff-summary-quiz [scope]` | `/diff-summary`에 인터랙티브 이해도 퀴즈를 HTML에 추가              |
@@ -124,7 +123,7 @@ diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
 - `diff-summary`, `diff-summary-md`, `diff-summary-quiz` 사용 시 Git 2.45+
-- Python 3.10+ (`code-review-html`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `git-commit-rewrite` 사용 시 필요)
+- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `git-commit-rewrite` 사용 시 필요)
 
 ## 라이선스
 
