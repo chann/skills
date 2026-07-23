@@ -48,6 +48,18 @@
       --positive-soft: #d9eee3;
       --destructive-soft: color-mix(in srgb, var(--destructive) 14%, var(--card));
       --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+      --code-bg: #ffffff;
+      --code-fg: #1f2328;
+      --code-muted: #6e7781;
+      --code-add-text: #116329;
+      --code-del-text: #a40e26;
+      --code-hunk-text: #3150a8;
+      --tok-kw: #cf222e;
+      --tok-str: #0a3069;
+      --tok-num: #0550ae;
+      --tok-com: #6e7781;
+      --tok-fn: #8250df;
+      --tok-type: #953800;
       min-width: 18rem;
       min-height: 100vh;
       margin: 0;
@@ -83,6 +95,18 @@
       --positive: #7ecba7;
       --positive-soft: #193b30;
       --shadow: none;
+      --code-bg: #0d1117;
+      --code-fg: #c9d1d9;
+      --code-muted: #6e7681;
+      --code-add-text: #8fe3a7;
+      --code-del-text: #ffb3ba;
+      --code-hunk-text: #a9c2ff;
+      --tok-kw: #ff7b72;
+      --tok-str: #a5d6ff;
+      --tok-num: #79c0ff;
+      --tok-com: #8b949e;
+      --tok-fn: #d2a8ff;
+      --tok-type: #ffa657;
       color-scheme: dark;
     }
 
@@ -116,6 +140,18 @@
         --positive: #7ecba7;
         --positive-soft: #193b30;
         --shadow: none;
+        --code-bg: #0d1117;
+        --code-fg: #c9d1d9;
+        --code-muted: #6e7681;
+        --code-add-text: #8fe3a7;
+        --code-del-text: #ffb3ba;
+        --code-hunk-text: #a9c2ff;
+        --tok-kw: #ff7b72;
+        --tok-str: #a5d6ff;
+        --tok-num: #79c0ff;
+        --tok-com: #8b949e;
+        --tok-fn: #d2a8ff;
+        --tok-type: #ffa657;
         color-scheme: dark;
       }
     }
@@ -520,7 +556,7 @@
     }
 
     .metadata-cell {
-      flex: 1 1 11rem;
+      flex: 0 1 auto;
       min-width: 0;
       padding: 8px 10px;
       border: 1px solid var(--border);
@@ -530,7 +566,7 @@
     }
 
     .metadata-cell--wide {
-      flex-basis: 20rem;
+      flex: 1 1 20rem;
     }
 
     .metadata-cell dt {
@@ -549,6 +585,13 @@
       font-weight: 600;
     }
 
+    .metadata-cell dd code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font-size: 11.5px;
+    }
+
     #report-main {
       width: 100%;
       max-width: 980px;
@@ -557,11 +600,9 @@
     }
 
     #report-main > h2 {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 0.75rem;
-      align-items: center;
       margin: 44px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
       font-family: var(--font-sans);
       font-size: 21px;
       font-weight: 700;
@@ -569,25 +610,19 @@
       line-height: 1.3;
     }
 
-    #report-main > h2::after {
-      height: 1px;
-      content: "";
-      background: var(--input);
-    }
-
     #report-main > h3 {
-      margin: 2.8rem 0 1rem;
-      color: var(--primary);
-      font-size: 0.78rem;
-      font-weight: 820;
-      letter-spacing: 0.15em;
+      margin: 30px 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
       text-transform: uppercase;
     }
 
     #report-main > p,
     .card-content > p {
       max-width: 72ch;
-      margin: 0 0 1.1rem;
+      margin: 0 0 12px;
     }
 
     #report-main > ul,
@@ -595,7 +630,7 @@
     .card-content > ul,
     .card-content > ol {
       max-width: 70ch;
-      margin: 0.4rem 0 1.25rem;
+      margin: 6px 0 14px;
       padding-left: 1.35rem;
     }
 
@@ -606,49 +641,44 @@
     p code,
     li code,
     dd code {
-      padding: 0.1em 0.32em;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      padding: 2px 6px;
+      border-radius: calc(var(--radius) - 2px);
       background: var(--muted);
+      font-size: 12.5px;
       overflow-wrap: anywhere;
     }
 
     .table-scroll {
-      margin: 1.2rem 0 2rem;
+      max-width: 100%;
+      margin: 1.2rem 0 20px;
       overflow-x: auto;
-      border: 1px solid var(--input);
-      background: var(--card);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.84rem;
+      font-size: 13px;
     }
 
     th,
     td {
-      padding: 0.7rem 0.8rem;
-      border-right: 1px solid var(--border);
+      padding: 9px 13px;
       border-bottom: 1px solid var(--border);
       text-align: left;
     }
 
-    th:last-child,
-    td:last-child {
-      border-right: 0;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: 0;
-    }
-
     th {
-      background: var(--primary);
-      color: var(--primary-foreground);
-      font-size: 0.66rem;
-      letter-spacing: 0.1em;
+      background: var(--muted);
+      color: var(--foreground);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
+    }
+
+    tbody tr:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
     }
 
     .align-center {
@@ -726,9 +756,9 @@
       min-width: 0;
       overflow-wrap: anywhere;
       font-family: var(--font-sans);
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
     .card-badges {
@@ -737,6 +767,7 @@
       grid-row: 1;
       flex-wrap: wrap;
       gap: 0.35rem;
+      align-items: center;
       justify-content: flex-end;
     }
 
@@ -744,20 +775,20 @@
     .comment-count {
       display: inline-flex;
       align-items: center;
-      min-height: 1.55rem;
-      padding: 0.18rem 0.48rem;
-      border: 1px solid var(--input);
-      border-radius: calc(var(--radius) - 0.125rem);
-      font-size: 0.61rem;
-      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: var(--radius);
+      font-size: 10px;
+      font-weight: 700;
       letter-spacing: 0.06em;
-      line-height: 1;
+      line-height: 1.5;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .badge--category {
-      background: var(--accent);
-      color: var(--accent-foreground);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted-foreground);
     }
 
     .badge--impact {
@@ -766,15 +797,20 @@
     }
 
     .summary-card.impact-high .badge--impact {
-      border-color: var(--impact-high);
-      background: var(--card);
-      color: var(--impact-high);
+      background: var(--impact-high);
+      color: var(--background);
     }
 
     .comment-count {
-      min-width: 1.55rem;
+      min-width: 1.4rem;
       justify-content: center;
-      background: var(--muted);
+      border-radius: 999px;
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .comment-count[data-count="0"] {
+      display: none;
     }
 
     .card-panel {
@@ -787,17 +823,26 @@
       padding-top: 0;
     }
 
+    .code-block-wrapper {
+      position: relative;
+      margin: 12px 0 16px;
+    }
+
     .code-block {
-      margin: 1rem 0 1.35rem;
-      padding: 1rem;
+      margin: 12px 0 16px;
+      padding: 14px 16px;
       overflow: auto;
-      border: 1px solid var(--input);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      background: #18181b;
-      color: #fafafa;
-      font-size: 0.78rem;
+      background: var(--code-bg);
+      color: var(--code-fg);
+      font-size: 12.5px;
       line-height: 1.55;
       tab-size: 2;
+    }
+
+    .code-block-wrapper > .code-block {
+      margin: 0;
     }
 
     .code-block code {
@@ -806,46 +851,88 @@
       font-size: inherit;
     }
 
+    .code-copy-btn {
+      position: absolute;
+      z-index: 1;
+      top: 7px;
+      right: 7px;
+      padding: 3px 9px;
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
+      background: color-mix(in srgb, var(--code-bg) 88%, var(--code-fg));
+      color: var(--code-muted);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .code-copy-btn:hover {
+      color: var(--code-fg);
+    }
+
+    .code-copy-btn.copied {
+      border-color: var(--positive);
+      color: var(--positive);
+    }
+
+    .tok-kw { color: var(--tok-kw); }
+    .tok-str { color: var(--tok-str); }
+    .tok-num { color: var(--tok-num); }
+    .tok-com { color: var(--tok-com); font-style: italic; }
+    .tok-fn { color: var(--tok-fn); }
+    .tok-type { color: var(--tok-type); }
+
+    .code-block:has(.diff-line) {
+      padding-inline: 0;
+    }
+
+    .code-block:has(.diff-line) code {
+      white-space: normal;
+    }
+
     .diff-line {
       display: block;
       min-height: 1.55em;
-      padding-inline: 0.45rem;
+      padding-inline: 16px;
       white-space: pre;
     }
 
     .diff-line--add {
-      background: rgba(66, 164, 112, 0.2);
-      color: #b4ebcd;
+      background: color-mix(in srgb, var(--code-bg) 82%, #2da44e);
+      color: var(--code-add-text);
     }
 
     .diff-line--delete {
-      background: rgba(218, 87, 71, 0.2);
-      color: #ffc1b7;
+      background: color-mix(in srgb, var(--code-bg) 82%, #cf222e);
+      color: var(--code-del-text);
     }
 
     .diff-line--hunk {
-      background: rgba(83, 126, 221, 0.22);
-      color: #b9ccff;
+      background: color-mix(in srgb, var(--code-bg) 88%, #2563eb);
+      color: var(--code-hunk-text);
+      font-style: italic;
     }
 
     .diff-line--meta {
-      color: #efbd6d;
+      color: var(--code-muted);
+      font-weight: 600;
     }
 
     .card-files {
-      display: grid;
-      grid-template-columns: 6rem minmax(0, 1fr);
-      gap: 1rem;
-      margin-top: 1.2rem;
-      padding: 0.9rem 0;
-      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      align-items: baseline;
+      margin-top: 14px;
     }
 
     .card-files-title {
       margin: 0;
       color: var(--muted-foreground);
-      font-size: 0.65rem;
-      letter-spacing: 0.14em;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
@@ -983,7 +1070,8 @@
     .file-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.35rem 0.55rem;
+      gap: 4px 6px;
+      min-width: 0;
       margin: 0;
       padding: 0;
       list-style: none;
@@ -997,18 +1085,20 @@
     .file-list code {
       display: inline-block;
       max-width: 100%;
-      padding: 0.2rem 0.38rem;
+      padding: 2px 6px;
       overflow-wrap: anywhere;
       border: 1px solid var(--border);
+      border-radius: calc(var(--radius) - 2px);
       background: var(--muted);
-      font-size: 0.68rem;
+      font-size: 11px;
     }
 
     .card-toolbar {
       display: flex;
-      gap: 0.45rem;
-      justify-content: flex-end;
-      padding-top: 0.9rem;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 10px;
       border-top: 1px solid var(--border);
     }
 
@@ -1018,14 +1108,13 @@
       gap: 1rem;
       width: 100%;
       max-width: 980px;
-      margin: 5rem auto 0;
-      padding-top: 1rem;
-      border-top: 1px solid var(--input);
+      margin: 40px auto 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
       color: var(--muted-foreground);
       font-family: var(--font-sans);
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-size: 12px;
+      font-style: italic;
     }
 
     .status-region {
@@ -1272,11 +1361,6 @@
         justify-content: flex-start;
       }
 
-      .card-files {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-      }
-
       .card-toolbar {
         align-items: stretch;
         flex-direction: column;
@@ -1337,6 +1421,18 @@
         --positive-soft: #d9eee3;
         --destructive-soft: color-mix(in srgb, var(--destructive) 14%, var(--card));
         --shadow: none;
+        --code-bg: #ffffff;
+        --code-fg: #1f2328;
+        --code-muted: #6e7781;
+        --code-add-text: #116329;
+        --code-del-text: #a40e26;
+        --code-hunk-text: #3150a8;
+        --tok-kw: #cf222e;
+        --tok-str: #0a3069;
+        --tok-num: #0550ae;
+        --tok-com: #6e7781;
+        --tok-fn: #8250df;
+        --tok-type: #953800;
         color-scheme: light;
         background: var(--background);
         color: var(--foreground);
@@ -1357,6 +1453,7 @@
       .comment-editor,
       .comment-panel,
       .comment-count,
+      .code-copy-btn,
       .manual-copy-backdrop,
       .status-region {
         display: none !important;
@@ -1956,6 +2053,7 @@
           const count = cardElement.querySelector("[data-comment-count]");
           if (count) {
             count.textContent = String(cardComments.length);
+            count.setAttribute("data-count", String(cardComments.length));
             count.setAttribute("aria-label", strings.commentCount(cardComments.length));
           }
         });
@@ -2749,6 +2847,446 @@
           }),
         });
       }
+    })();
+  </script>
+  <script data-diff-summary-highlight>
+    (() => {
+      "use strict";
+
+      if (typeof document === "undefined" || !document.querySelectorAll) {
+        return;
+      }
+
+      const MAX_SOURCE_LENGTH = 200000;
+      const korean = (document.documentElement.lang || "")
+        .toLowerCase()
+        .startsWith("ko");
+      const strings = korean
+        ? { copy: "복사", copied: "복사됨!", copyLabel: "코드 블록 복사" }
+        : { copy: "Copy", copied: "Copied!", copyLabel: "Copy code block" };
+
+      function words(list) {
+        return new Set(list.split(" "));
+      }
+
+      const LITERALS = words("true false null undefined None True False nil NULL");
+      const KEYWORDS = {
+        python: words(
+          "False None True and as assert async await break class continue def del " +
+          "elif else except finally for from global if import in is lambda nonlocal " +
+          "not or pass raise return try while with yield match case",
+        ),
+        javascript: words(
+          "abstract as async await break case catch class const continue debugger " +
+          "declare default delete do else enum export extends finally for from " +
+          "function get if implements import in infer instanceof interface is keyof " +
+          "let namespace new of package private protected public readonly return " +
+          "satisfies set static super switch this throw try type typeof var void " +
+          "while with yield",
+        ),
+        go: words(
+          "break case chan const continue default defer else fallthrough for func " +
+          "go goto if import interface map package range return select struct " +
+          "switch type var",
+        ),
+        java: words(
+          "abstract assert break case catch class const continue default do else " +
+          "enum extends final finally for goto if implements import instanceof " +
+          "interface native new package permits private protected public record " +
+          "return sealed static strictfp super switch synchronized this throw " +
+          "throws transient try var void volatile while yield",
+        ),
+        kotlin: words(
+          "abstract actual annotation as break by catch class companion const " +
+          "constructor continue crossinline data do dynamic else enum expect " +
+          "external final finally for fun get if import in infix init inline inner " +
+          "interface internal is lateinit noinline object open operator out " +
+          "override package private protected public reified return sealed set " +
+          "super suspend tailrec this throw try typealias val var vararg when " +
+          "where while",
+        ),
+        swift: words(
+          "actor as associatedtype async await break case catch class continue " +
+          "convenience default defer deinit do dynamic else enum extension " +
+          "fallthrough fileprivate final for func get guard if import in indirect " +
+          "infix init inout internal is lazy let mutating nonmutating open " +
+          "operator optional override postfix prefix private protocol public " +
+          "repeat required rethrows return set some static struct subscript super " +
+          "switch throw throws try typealias unowned var weak where while",
+        ),
+        rust: words(
+          "as async await break const continue crate dyn else enum extern fn for " +
+          "if impl in let loop match mod move mut pub ref return static struct " +
+          "super trait type unsafe use where while",
+        ),
+        c: words(
+          "auto break case char const continue default do double else enum extern " +
+          "float for goto if inline int long register restrict return short " +
+          "signed sizeof static struct switch typedef union unsigned void " +
+          "volatile while",
+        ),
+        cpp: words(
+          "alignas alignof auto bool break case catch char class concept const " +
+          "consteval constexpr constinit const_cast continue decltype default " +
+          "delete do double dynamic_cast else enum explicit export extern float " +
+          "for friend goto if inline int long mutable namespace new noexcept " +
+          "operator private protected public register reinterpret_cast requires " +
+          "return short signed sizeof static static_assert static_cast struct " +
+          "switch template this thread_local throw try typedef typeid typename " +
+          "union unsigned using virtual void volatile wchar_t while",
+        ),
+        csharp: words(
+          "abstract as async await base bool break byte case catch char checked " +
+          "class const continue decimal default delegate do double else enum " +
+          "event explicit extern finally fixed float for foreach get goto if " +
+          "implicit in init int interface internal is lock long namespace new " +
+          "object operator out override params partial private protected public " +
+          "readonly record ref required return sbyte sealed set short sizeof " +
+          "static string struct switch this throw try typeof uint ulong unsafe " +
+          "ushort using var virtual void volatile when where while yield",
+        ),
+        ruby: words(
+          "BEGIN END alias and attr_accessor attr_reader attr_writer begin break " +
+          "case class def do else elsif end ensure for if in module next not or " +
+          "redo require require_relative rescue retry return self super then " +
+          "undef unless until when while yield",
+        ),
+        php: words(
+          "abstract and array as break callable case catch class clone const " +
+          "continue declare default do echo else elseif empty enum extends final " +
+          "finally fn for foreach function global goto if implements include " +
+          "instanceof insteadof interface isset list match namespace new or print " +
+          "private protected public readonly require return static switch throw " +
+          "trait try unset use var while xor yield",
+        ),
+        shell: words(
+          "alias break case cd continue coproc declare do done echo elif else " +
+          "esac eval exec exit export fi for function if in local printf read " +
+          "readonly return select set shift source test then time trap typeset " +
+          "unset until while",
+        ),
+        sql: words(
+          "ADD ALL ALTER AND AS ASC BEGIN BETWEEN BY CASCADE CASE CHECK COLUMN " +
+          "COMMIT CONSTRAINT CREATE CROSS DEFAULT DELETE DESC DISTINCT DROP ELSE " +
+          "END EXISTS FOREIGN FROM FULL GROUP HAVING IN INDEX INNER INSERT INTO " +
+          "IS JOIN KEY LEFT LIKE LIMIT NOT NULL OFFSET ON OR ORDER OUTER PRIMARY " +
+          "REFERENCES RETURNING RIGHT ROLLBACK SELECT SET TABLE THEN TRANSACTION " +
+          "UNION UNIQUE UPDATE VALUES VIEW WHEN WHERE WITH",
+        ),
+        yaml: words("true false null yes no on off"),
+      };
+
+      const RX = {
+        blockComment: /\/\*[^]*?(?:\*\/|$)/,
+        lineSlash: /\/\/[^\n]*/,
+        lineHash: /#[^\n]*/,
+        lineDashes: /--[^\n]*/,
+        lineSemicolon: /;[^\n]*/,
+        markupComment: /<!--[^]*?(?:-->|$)/,
+        markupTag: /<\/?[A-Za-z][\w.:-]*|\/?>/,
+        entity: /&[A-Za-z#\d]+;/,
+        triple: /[RrBbUuFf]{0,2}(?:"""[^]*?(?:"""|$)|'''[^]*?(?:'''|$))/,
+        backtick: /`(?:\\[^]|[^`\\])*(?:`|$)/,
+        doubleQuote: /"(?:\\.|[^"\\\n])*"/,
+        singleQuote: /'(?:\\.|[^'\\\n])*'/,
+        jsonKey: /"(?:\\.|[^"\\\n])*"(?=[ \t]*:)/,
+        yamlKey: /(?<=^|\n)[ \t]*(?:-[ \t]+)?["']?[\w.$-]+["']?(?=[ \t]*:(?:[ \t]|\n|$))/,
+        tomlSection: /(?<=^|\n)[ \t]*\[[^\]\n]*\]/,
+        tomlKey: /(?<=^|\n)[ \t]*[\w.-]+(?=[ \t]*=)/,
+        preprocessor: /(?<=^|\n)[ \t]*#[ \t]*[A-Za-z]+/,
+        decorator: /@[A-Za-z_][\w.]*/,
+        cssAtRule: /@[\w-]+/,
+        cssProperty: /(?<=^|[;{\n])[ \t]*-{0,2}[A-Za-z][\w-]*(?=[ \t]*:)/,
+        hexColor: /#[0-9A-Fa-f]{3,8}\b/,
+        variable: /\$\{[^}\n]*\}|\$[A-Za-z_]\w*|\$\d+/,
+        rubySymbol: /:[A-Za-z_]\w*/,
+        number: /\b0[xXoObB][\dA-Fa-f_]+n?\b|(?:\b\d[\d_]*(?:\.[\d_]+)?|\B\.\d[\d_]*)(?:[eE][+-]?\d+)?[a-zA-Z%]*/,
+        word: /[A-Za-z_$][\w$]*/,
+      };
+
+      const LANGUAGES = {
+        python: { comments: [RX.lineHash], strings: [RX.triple], extras: [[RX.decorator, "tok-fn"]] },
+        javascript: {
+          comments: [RX.blockComment, RX.lineSlash],
+          strings: [RX.backtick],
+          extras: [[RX.decorator, "tok-fn"]],
+        },
+        go: { comments: [RX.blockComment, RX.lineSlash], strings: [RX.backtick] },
+        java: { comments: [RX.blockComment, RX.lineSlash], extras: [[RX.decorator, "tok-fn"]] },
+        kotlin: { comments: [RX.blockComment, RX.lineSlash], extras: [[RX.decorator, "tok-fn"]] },
+        swift: { comments: [RX.blockComment, RX.lineSlash], extras: [[RX.decorator, "tok-fn"]] },
+        rust: { comments: [RX.blockComment, RX.lineSlash] },
+        c: { comments: [RX.blockComment, RX.lineSlash], extras: [[RX.preprocessor, "tok-kw"]] },
+        cpp: { comments: [RX.blockComment, RX.lineSlash], extras: [[RX.preprocessor, "tok-kw"]] },
+        csharp: { comments: [RX.blockComment, RX.lineSlash], extras: [[RX.preprocessor, "tok-kw"]] },
+        ruby: { comments: [RX.lineHash], extras: [[RX.rubySymbol, "tok-num"]] },
+        php: {
+          comments: [RX.blockComment, RX.lineSlash, RX.lineHash],
+          extras: [[RX.variable, "tok-num"]],
+        },
+        shell: { comments: [RX.lineHash], extras: [[RX.variable, "tok-num"]] },
+        sql: { comments: [RX.blockComment, RX.lineDashes], caseInsensitive: true },
+        yaml: {
+          comments: [RX.lineHash],
+          extras: [[RX.yamlKey, "tok-kw"]],
+        },
+        json: { extras: [[RX.jsonKey, "tok-kw"]] },
+        toml: {
+          comments: [RX.lineHash],
+          extras: [[RX.tomlSection, "tok-type"], [RX.tomlKey, "tok-kw"]],
+        },
+        ini: {
+          comments: [RX.lineSemicolon, RX.lineHash],
+          extras: [[RX.tomlSection, "tok-type"], [RX.tomlKey, "tok-kw"]],
+        },
+        markup: { markup: true },
+        css: {
+          comments: [RX.blockComment],
+          extras: [
+            [RX.cssAtRule, "tok-kw"],
+            [RX.cssProperty, "tok-type"],
+            [RX.hexColor, "tok-num"],
+          ],
+        },
+      };
+
+      const ALIASES = {
+        py: "python",
+        python3: "python",
+        js: "javascript",
+        jsx: "javascript",
+        mjs: "javascript",
+        cjs: "javascript",
+        ts: "javascript",
+        tsx: "javascript",
+        typescript: "javascript",
+        golang: "go",
+        kt: "kotlin",
+        kts: "kotlin",
+        rs: "rust",
+        "c++": "cpp",
+        cc: "cpp",
+        cxx: "cpp",
+        hpp: "cpp",
+        h: "c",
+        cs: "csharp",
+        "c#": "csharp",
+        rb: "ruby",
+        sh: "shell",
+        bash: "shell",
+        zsh: "shell",
+        console: "shell",
+        shellsession: "shell",
+        yml: "yaml",
+        jsonc: "json",
+        json5: "json",
+        html: "markup",
+        xml: "markup",
+        svg: "markup",
+        vue: "markup",
+        scss: "css",
+        less: "css",
+      };
+
+      function buildPatterns(name, spec) {
+        if (spec.markup) {
+          return [
+            [RX.markupComment, "tok-com"],
+            [RX.doubleQuote, "tok-str"],
+            [RX.singleQuote, "tok-str"],
+            [RX.markupTag, "tok-kw"],
+            [RX.entity, "tok-num"],
+            [RX.number, "tok-num"],
+          ];
+        }
+        const patterns = [];
+        (spec.comments || []).forEach((comment) => patterns.push([comment, "tok-com"]));
+        (spec.strings || []).forEach((string) => patterns.push([string, "tok-str"]));
+        (spec.extras || []).forEach(([extra, className]) => {
+          if (extra === RX.jsonKey || extra === RX.yamlKey) {
+            patterns.push([extra, className]);
+          }
+        });
+        patterns.push([RX.doubleQuote, "tok-str"], [RX.singleQuote, "tok-str"]);
+        (spec.extras || []).forEach(([extra, className]) => {
+          if (extra !== RX.jsonKey && extra !== RX.yamlKey) {
+            patterns.push([extra, className]);
+          }
+        });
+        patterns.push([RX.number, "tok-num"], [RX.word, "word"]);
+        return patterns;
+      }
+
+      function classifyWord(text, spec, nextCharacter) {
+        if (LITERALS.has(text)) {
+          return "tok-num";
+        }
+        const keywords = KEYWORDS[spec.keywordSet] || null;
+        if (keywords) {
+          if (spec.caseInsensitive ? keywords.has(text.toUpperCase()) : keywords.has(text)) {
+            return "tok-kw";
+          }
+        }
+        if (/^[A-Z][A-Z0-9_]+$/.test(text)) {
+          return "tok-num";
+        }
+        if (/^[A-Z]/.test(text)) {
+          return "tok-type";
+        }
+        if (nextCharacter === "(") {
+          return "tok-fn";
+        }
+        return null;
+      }
+
+      function tokenize(source, patterns, spec) {
+        const master = new RegExp(
+          patterns.map(([pattern]) => "(" + pattern.source + ")").join("|"),
+          "g",
+        );
+        const tokens = [];
+        let last = 0;
+        let match;
+        while ((match = master.exec(source)) !== null) {
+          if (match.index > last) {
+            tokens.push([source.slice(last, match.index), null]);
+          }
+          let className = null;
+          for (let index = 0; index < patterns.length; index += 1) {
+            if (match[index + 1] !== undefined) {
+              className = patterns[index][1];
+              break;
+            }
+          }
+          if (className === "word") {
+            let cursor = master.lastIndex;
+            while (cursor < source.length && (source[cursor] === " " || source[cursor] === "\t")) {
+              cursor += 1;
+            }
+            className = classifyWord(match[0], spec, source[cursor] || "");
+          }
+          tokens.push([match[0], className]);
+          if (master.lastIndex === match.index) {
+            master.lastIndex += 1;
+          }
+          last = master.lastIndex;
+        }
+        if (last < source.length) {
+          tokens.push([source.slice(last), null]);
+        }
+        return tokens;
+      }
+
+      function highlightElement(code, name) {
+        const spec = LANGUAGES[name];
+        if (!spec) {
+          return;
+        }
+        const source = code.textContent || "";
+        if (!source || source.length > MAX_SOURCE_LENGTH) {
+          return;
+        }
+        let tokens;
+        try {
+          tokens = tokenize(source, buildPatterns(name, spec), {
+            keywordSet: name,
+            caseInsensitive: Boolean(spec.caseInsensitive),
+          });
+        } catch (error) {
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        tokens.forEach(([text, className]) => {
+          if (className) {
+            const span = document.createElement("span");
+            span.className = className;
+            span.textContent = text;
+            fragment.appendChild(span);
+          } else {
+            fragment.appendChild(document.createTextNode(text));
+          }
+        });
+        code.replaceChildren(fragment);
+      }
+
+      function languageOf(code) {
+        const match = /(?:^|\s)language-([\w#+.-]+)/.exec(code.className || "");
+        if (!match) {
+          return null;
+        }
+        const name = match[1].toLowerCase();
+        return ALIASES[name] || name;
+      }
+
+      async function copyText(text) {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          try {
+            await navigator.clipboard.writeText(text);
+            return true;
+          } catch (error) {
+            // Fall through to the textarea fallback.
+          }
+        }
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.setAttribute("aria-hidden", "true");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        let copied = false;
+        try {
+          textarea.select();
+          copied = document.execCommand("copy") === true;
+        } catch (error) {
+          copied = false;
+        } finally {
+          textarea.remove();
+        }
+        return copied;
+      }
+
+      function attachCopyButton(pre) {
+        const parent = pre.parentNode;
+        if (!parent) {
+          return;
+        }
+        const wrapper = document.createElement("div");
+        wrapper.className = "code-block-wrapper";
+        parent.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "code-copy-btn";
+        button.textContent = strings.copy;
+        button.setAttribute("aria-label", strings.copyLabel);
+        let restoreTimer = null;
+        button.addEventListener("click", async () => {
+          const copied = await copyText(pre.textContent || "");
+          if (!copied) {
+            return;
+          }
+          button.classList.add("copied");
+          button.textContent = strings.copied;
+          if (restoreTimer !== null) {
+            clearTimeout(restoreTimer);
+          }
+          restoreTimer = setTimeout(() => {
+            button.classList.remove("copied");
+            button.textContent = strings.copy;
+            restoreTimer = null;
+          }, 1500);
+        });
+        wrapper.appendChild(button);
+      }
+
+      document.querySelectorAll("pre.code-block > code").forEach((code) => {
+        const name = languageOf(code);
+        if (name && name !== "diff") {
+          highlightElement(code, name);
+        }
+      });
+      document.querySelectorAll("pre.code-block").forEach(attachCopyButton);
     })();
   </script>
 </body>

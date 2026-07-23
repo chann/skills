@@ -687,7 +687,7 @@ def _render_card(card: SummaryCard, headings: _HeadingIndex) -> str:
         f'<span class="badge badge--category" data-category="{category}">{category}</span>'
         f'<span class="badge badge--impact" data-impact="{impact}">{impact}</span>'
         f'<span class="comment-count" data-comment-count="{card_id}" '
-        'aria-label="0 comments">0</span>'
+        'data-count="0" aria-label="0 comments">0</span>'
         "</span>\n"
         "</summary>\n"
         '<div class="card-panel">\n'

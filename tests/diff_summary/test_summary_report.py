@@ -1784,12 +1784,13 @@ class HtmlAssemblyTests(unittest.TestCase):
         inventory.feed(rendered)
         scripts = [attrs for tag, attrs in inventory.elements if tag == "script"]
 
-        self.assertEqual(len(scripts), 4)
+        self.assertEqual(len(scripts), 5)
         self.assertTrue(
             all(attrs.get("type") == "application/json" for attrs in scripts[:3])
         )
         self.assertIn("data-diff-summary-runtime", scripts[3])
-        self.assertNotIn("src", scripts[3])
+        self.assertIn("data-diff-summary-highlight", scripts[4])
+        self.assertTrue(all("src" not in attrs for attrs in scripts))
         self.assertEqual(extract_json_script(rendered, "raw-markdown"), hostile)
         self.assertNotIn(hostile_text, rendered)
 
@@ -2830,7 +2831,7 @@ class QuizRenderingTests(unittest.TestCase):
         inventory.feed(rendered)
         scripts = [attrs for tag, attrs in inventory.elements if tag == "script"]
 
-        self.assertEqual(len(scripts), 4)
+        self.assertEqual(len(scripts), 5)
         self.assertIn('href="#quiz"', rendered)
         self.assertNotRegex(rendered, re.compile(r"(?i)https?://"))
         self.assertNotRegex(
