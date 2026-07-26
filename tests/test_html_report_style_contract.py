@@ -479,6 +479,53 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     EXPECTED_DARK_THEME,
                 )
 
+    def test_every_html_report_ships_the_shared_accessibility_shell(self) -> None:
+        skip_targets = {
+            "diff-summary": "#report-main",
+            "diff-viewer": "#top",
+            "code-review": "#top",
+        }
+        for name, source in self.templates.items():
+            with self.subTest(template=name, contract="skip-link"):
+                self.assertRegex(
+                    source,
+                    rf'<a class="skip-link" href="{re.escape(skip_targets[name])}"',
+                )
+                rule = css_rule(source, ".skip-link")
+                self.assertRegex(rule, r"position:\s*fixed\s*;")
+                self.assertRegex(rule, r"transform:\s*translateY\(-200%\)\s*;")
+                self.assertRegex(
+                    css_rule(source, ".skip-link:focus"),
+                    r"transform:\s*translateY\(0\)\s*;",
+                )
+            with self.subTest(template=name, contract="live-region"):
+                self.assertEqual(source.count('role="status"'), 1)
+                self.assertIn('aria-live="polite"', source)
+                self.assertIn('aria-atomic="true"', source)
+                self.assertRegex(
+                    css_rule(source, ".status-region"),
+                    r"position:\s*fixed\s*;",
+                )
+            with self.subTest(template=name, contract="reduced-motion"):
+                self.assertIn("@media (prefers-reduced-motion: reduce)", source)
+                reduced = css_rule(source, "@media (prefers-reduced-motion: reduce)")
+                self.assertRegex(reduced, r"scroll-behavior:\s*auto\s*!important\s*;")
+                self.assertRegex(
+                    reduced,
+                    r"transition-duration:\s*0\.01ms\s*!important\s*;",
+                )
+            with self.subTest(template=name, contract="print"):
+                printed = css_rule(source, "@media print")
+                self.assertIn(".status-region", printed)
+            with self.subTest(template=name, contract="ring-reserved-for-focus"):
+                self.assertEqual(source.count("var(--ring)"), 1)
+
+    def test_every_report_runtime_announces_outcomes_to_the_live_region(self) -> None:
+        for name, source in self.templates.items():
+            with self.subTest(template=name):
+                self.assertRegex(source, r"function\s+announce\s*\(")
+                self.assertIn('getElementById("report-status")', source)
+
     def test_no_html_report_uses_a_placeholder_glyph_as_an_affordance(self) -> None:
         """Code points inherit text metrics and render per platform; icons do not."""
         for name, source in self.templates.items():

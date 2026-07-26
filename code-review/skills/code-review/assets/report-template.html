@@ -818,6 +818,44 @@
     }
     .btn-comment.btn-save:hover { opacity: 0.9; }
 
+    /* Skip link is the first focusable element and only visible while focused. */
+    .skip-link {
+      position: fixed;
+      z-index: 20;
+      top: 0.75rem;
+      left: 0.75rem;
+      padding: 0.55rem 0.8rem;
+      transform: translateY(-200%);
+      border: 1px solid var(--foreground);
+      background: var(--card);
+      color: var(--foreground);
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    /* One polite live region reports copy, comment, and storage outcomes. */
+    .status-region {
+      position: fixed;
+      z-index: 10;
+      right: 1rem;
+      bottom: 1rem;
+      max-width: min(28rem, calc(100vw - 2rem));
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--foreground);
+      pointer-events: none;
+    }
+
+    .status-region:not(:empty) {
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
+      box-shadow: var(--shadow);
+    }
+
     .report-footer {
       margin-top: 40px;
       padding-top: 16px;
@@ -842,6 +880,17 @@
       main { padding: 18px; }
       .controls { justify-content: flex-start; }
       .diff-table { font-size: 11px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
     }
 
     @media print {
@@ -883,7 +932,8 @@
         color-scheme: light;
       }
 
-      aside, .controls, .sidebar-expand, .finding-toolbar, .copy-btn, .diff-header { display: none !important; }
+      aside, .controls, .sidebar-expand, .finding-toolbar, .copy-btn, .diff-header,
+      .skip-link, .status-region { display: none !important; }
       .layout { display: block; }
       main { padding: 0; }
       details.finding { break-inside: avoid; box-shadow: none; }
@@ -896,6 +946,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#top" data-i18n="skipToReport">Skip to report</a>
   <button class="sidebar-expand" type="button" data-sidebar-expand title="Show sidebar" aria-label="Show sidebar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></button>
   <div class="layout">
     <aside data-sidebar>
@@ -963,6 +1014,7 @@
     </main>
   </div>
 
+  <div id="report-status" class="status-region" role="status" aria-live="polite" aria-atomic="true"></div>
   <script type="application/json" id="findings-data">__FINDINGS_JSON__</script>
   <script type="application/json" id="raw-md-data">__RAW_MD_JSON__</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
@@ -984,6 +1036,8 @@
         theme: "테마", code: "코드", language: "언어",
         placeholder: "리뷰 코멘트를 입력하세요…", save: "저장", cancel: "취소", edit: "수정", delete: "삭제",
         copied: "복사됨!", clearConfirm: "이 리포트의 모든 코멘트를 비울까요?",
+        skipToReport: "리포트로 건너뛰기", copyFailed: "복사하지 못했습니다. 텍스트를 직접 선택해 복사하세요.",
+        commentsCleared: "코멘트를 모두 비웠습니다.",
         feedbackTitle: "코드 리뷰 재생성 요청",
         feedbackIntro: "아래 리뷰어 코멘트를 반영해 코드 리뷰를 다시 작성해주세요. 각 항목의 지적을 우선 반영하고, 동일한 형식(한/영 마크다운 + HTML)으로 다시 생성합니다.",
         feedbackOriginal: "원본 리포트", feedbackGenerated: "생성", feedbackComment: "리뷰어 코멘트",
@@ -995,12 +1049,24 @@
         theme: "Theme", code: "Code", language: "Lang",
         placeholder: "Write a review comment…", save: "Save", cancel: "Cancel", edit: "Edit", delete: "Delete",
         copied: "Copied!", clearConfirm: "Clear all comments for this report?",
+        skipToReport: "Skip to report", copyFailed: "Copy failed. Select and copy the text manually.",
+        commentsCleared: "All comments were cleared.",
         feedbackTitle: "Code Review Regeneration Request",
         feedbackIntro: "Please regenerate the code review incorporating the reviewer comments below. Address each item first, then re-emit in the same format (bilingual markdown + HTML).",
         feedbackOriginal: "Original report", feedbackGenerated: "Generated", feedbackComment: "Reviewer comment",
         feedbackEmpty: "No comments recorded."
       }
     };
+
+
+    /* ---------------- Live region ---------------- */
+    const statusRegion = document.getElementById("report-status");
+
+    function announce(message, tone = "info") {
+      if (!statusRegion) return;
+      statusRegion.textContent = message;
+      statusRegion.dataset.tone = tone;
+    }
 
     let activeLang = defaults.lang;
     function t(key) {
@@ -1218,7 +1284,10 @@
     }
     function copyText(text, btn) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => flashCopied(btn), () => fallbackCopy(text, btn));
+        navigator.clipboard.writeText(text).then(
+          () => { flashCopied(btn); announce(t("copied"), "success"); },
+          () => fallbackCopy(text, btn)
+        );
       } else { fallbackCopy(text, btn); }
     }
     function fallbackCopy(text, btn) {
@@ -1228,9 +1297,15 @@
       ta.style.left = "-9999px";
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand("copy"); } catch (e) { /* ignore */ }
+      let copied = false;
+      try { copied = document.execCommand("copy") === true; } catch (e) { copied = false; }
       document.body.removeChild(ta);
-      flashCopied(btn);
+      if (copied) {
+        flashCopied(btn);
+        announce(t("copied"), "success");
+      } else {
+        announce(t("copyFailed"), "error");
+      }
     }
 
     /* ---------------- Comments (keyed by finding id, language-independent) ---------------- */
@@ -1549,6 +1624,7 @@
         saveComments([]);
         closeInput();
         renderComments();
+        announce(t("commentsCleared"), "success");
       });
 
       // Controls
