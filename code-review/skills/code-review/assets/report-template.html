@@ -397,12 +397,15 @@
     /* ---------------- Main ---------------- */
     main { min-width: 0; padding: 24px 32px 64px; }
 
+    /* Controls share the report's measure so they sit above the text column
+       instead of drifting to the viewport edge on a wide window. */
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: flex-end;
-      margin-bottom: 18px;
+      max-width: 980px;
+      margin: 0 auto 18px;
     }
 
     .control {
@@ -446,7 +449,7 @@
     .clear-comments-btn:disabled { cursor: default; }
 
     /* ---------------- Language bodies ---------------- */
-    .lang-body { display: none; max-width: 980px; }
+    .lang-body { display: none; max-width: 980px; margin-inline: auto; }
     .lang-body.is-active { display: block; }
 
     h1 { font-size: 27px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.02em; }

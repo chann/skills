@@ -1344,6 +1344,22 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             r"max-width:\s*980px\s*;",
         )
 
+    def test_report_body_and_controls_share_one_centered_measure(self) -> None:
+        """Controls must sit above the text column, not float off at the viewport edge."""
+        for name, selectors in (
+            ("diff-summary", ("#report-main", ".topbar", ".report-footer")),
+            ("code-review", (".lang-body", ".controls")),
+        ):
+            source = self.templates[name]
+            for selector in selectors:
+                rule = css_rule(source, selector)
+                with self.subTest(template=name, selector=selector):
+                    self.assertRegex(rule, r"max-width:\s*980px\s*;")
+                    self.assertRegex(
+                        rule,
+                        r"margin(?:-inline)?:[^;]*auto[^;]*;",
+                    )
+
     def test_diff_summary_small_sidebar_labels_use_accessible_foreground(self) -> None:
         sidebar_label_selectors = (
             ".brand",
