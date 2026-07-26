@@ -15,25 +15,25 @@
     :root {
       color-scheme: light;
       --sidebar-width: 220px;
-      --background: #ffffff;
-      --foreground: #09090b;
+      --background: #f5f7fa;
+      --foreground: #1e293b;
       --card: #ffffff;
-      --card-foreground: #09090b;
+      --card-foreground: #1e293b;
       --popover: #ffffff;
-      --popover-foreground: #09090b;
-      --muted: #f4f4f5;
-      --muted-foreground: #71717a;
-      --primary: #18181b;
-      --primary-foreground: #fafafa;
-      --secondary: #f4f4f5;
-      --secondary-foreground: #18181b;
-      --accent: #f4f4f5;
-      --accent-foreground: #18181b;
-      --destructive: #dc2626;
-      --destructive-foreground: #fafafa;
-      --border: #e4e4e7;
-      --input: #e4e4e7;
-      --ring: #18181b;
+      --popover-foreground: #1e293b;
+      --muted: #eef2f6;
+      --muted-foreground: #5f6b7a;
+      --primary: #2f5d8c;
+      --primary-foreground: #ffffff;
+      --secondary: #e8eef5;
+      --secondary-foreground: #26384d;
+      --accent: #e3edf7;
+      --accent-foreground: #244f7a;
+      --destructive: #b4233a;
+      --destructive-foreground: #ffffff;
+      --border: #d6dee8;
+      --input: #c8d3e0;
+      --ring: #3d6f9e;
       --radius: 0.5rem;
       /* Severity hues */
       --critical: #dc2626;
@@ -42,9 +42,9 @@
       --low: #2563eb;
       --info: #6b7280;
       /* Code area defaults — overridden per scheme in JS via applyHljsTheme(). */
-      --code-bg: #ffffff;
-      --code-fg: #1f2328;
-      --code-muted: #8c959f;
+      --code-bg: #f8fafc;
+      --code-fg: #1e293b;
+      --code-muted: #728095;
       /* Diff hues used by color-mix() so add/del/hunk overlays adapt to any --code-bg. */
       --add-hue: #2da44e;
       --del-hue: #cf222e;
@@ -52,39 +52,39 @@
       --code-add-text: #116329;
       --code-del-text: #a40e26;
       --code-hunk-text: #3150a8;
-      --selection-bg: rgba(37, 99, 235, 0.18);
-      --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+      --selection-bg: rgba(47, 93, 140, 0.18);
+      --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
       --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
 
     html[data-page-theme="dark"] {
       color-scheme: dark;
-      --background: #09090b;
-      --foreground: #fafafa;
-      --card: #09090b;
-      --card-foreground: #fafafa;
-      --popover: #18181b;
-      --popover-foreground: #fafafa;
-      --muted: #27272a;
-      --muted-foreground: #a1a1aa;
-      --primary: #fafafa;
-      --primary-foreground: #18181b;
-      --secondary: #27272a;
-      --secondary-foreground: #fafafa;
-      --accent: #27272a;
-      --accent-foreground: #fafafa;
-      --destructive: #7f1d1d;
-      --destructive-foreground: #fafafa;
-      --border: #27272a;
-      --input: #27272a;
-      --ring: #d4d4d8;
+      --background: #10151c;
+      --foreground: #e7edf5;
+      --card: #151c25;
+      --card-foreground: #e7edf5;
+      --popover: #1a222d;
+      --popover-foreground: #e7edf5;
+      --muted: #202a36;
+      --muted-foreground: #a8b3c2;
+      --primary: #8fb7de;
+      --primary-foreground: #102235;
+      --secondary: #202a36;
+      --secondary-foreground: #dce5ef;
+      --accent: #24364a;
+      --accent-foreground: #dcebfa;
+      --destructive: #8e2f3d;
+      --destructive-foreground: #ffd9de;
+      --border: #2d3948;
+      --input: #39485a;
+      --ring: #91b9e0;
       --critical: #f87171;
       --high: #fb923c;
       --medium: #fbbf24;
       --low: #7aa2ff;
       --info: #9aa4b2;
-      --selection-bg: rgba(122, 162, 255, 0.28);
+      --selection-bg: rgba(143, 183, 222, 0.28);
       --shadow: none;
     }
 
@@ -783,6 +783,34 @@
     }
 
     @media print {
+      :root,
+      html[data-page-theme="dark"] {
+        --background: #ffffff;
+        --foreground: #1e293b;
+        --card: #ffffff;
+        --card-foreground: #1e293b;
+        --popover: #ffffff;
+        --popover-foreground: #1e293b;
+        --muted: #eef2f6;
+        --muted-foreground: #5f6b7a;
+        --primary: #2f5d8c;
+        --primary-foreground: #ffffff;
+        --secondary: #e8eef5;
+        --secondary-foreground: #26384d;
+        --accent: #e3edf7;
+        --accent-foreground: #244f7a;
+        --destructive: #b4233a;
+        --destructive-foreground: #ffffff;
+        --border: #d6dee8;
+        --input: #c8d3e0;
+        --ring: #3d6f9e;
+        --shadow: none;
+        --code-bg: #ffffff;
+        --code-fg: #1e293b;
+        --code-muted: #728095;
+        color-scheme: light;
+      }
+
       aside, .controls, .sidebar-expand, .finding-toolbar, .copy-btn, .diff-header { display: none !important; }
       .layout { display: block; }
       main { padding: 0; }

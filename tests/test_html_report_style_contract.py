@@ -111,47 +111,76 @@ TOKENS = (
 THEME_COLOR_TOKENS = TOKENS[:-3]
 ROOT_TOKENS = TOKENS[-3:]
 EXPECTED_LIGHT_THEME = {
-    "background": "#ffffff",
-    "foreground": "#09090b",
+    "background": "#f5f7fa",
+    "foreground": "#1e293b",
     "card": "#ffffff",
-    "card-foreground": "#09090b",
+    "card-foreground": "#1e293b",
     "popover": "#ffffff",
-    "popover-foreground": "#09090b",
-    "muted": "#f4f4f5",
-    "muted-foreground": "#71717a",
-    "primary": "#18181b",
-    "primary-foreground": "#fafafa",
-    "secondary": "#f4f4f5",
-    "secondary-foreground": "#18181b",
-    "accent": "#f4f4f5",
-    "accent-foreground": "#18181b",
-    "destructive": "#dc2626",
-    "destructive-foreground": "#fafafa",
-    "border": "#e4e4e7",
-    "input": "#e4e4e7",
-    "ring": "#18181b",
+    "popover-foreground": "#1e293b",
+    "muted": "#eef2f6",
+    "muted-foreground": "#5f6b7a",
+    "primary": "#2f5d8c",
+    "primary-foreground": "#ffffff",
+    "secondary": "#e8eef5",
+    "secondary-foreground": "#26384d",
+    "accent": "#e3edf7",
+    "accent-foreground": "#244f7a",
+    "destructive": "#b4233a",
+    "destructive-foreground": "#ffffff",
+    "border": "#d6dee8",
+    "input": "#c8d3e0",
+    "ring": "#3d6f9e",
 }
 EXPECTED_DARK_THEME = {
-    "background": "#09090b",
-    "foreground": "#fafafa",
-    "card": "#09090b",
-    "card-foreground": "#fafafa",
-    "popover": "#18181b",
-    "popover-foreground": "#fafafa",
-    "muted": "#27272a",
-    "muted-foreground": "#a1a1aa",
-    "primary": "#fafafa",
-    "primary-foreground": "#18181b",
-    "secondary": "#27272a",
-    "secondary-foreground": "#fafafa",
-    "accent": "#27272a",
-    "accent-foreground": "#fafafa",
-    "destructive": "#7f1d1d",
-    "destructive-foreground": "#fafafa",
-    "border": "#27272a",
-    "input": "#27272a",
-    "ring": "#d4d4d8",
+    "background": "#10151c",
+    "foreground": "#e7edf5",
+    "card": "#151c25",
+    "card-foreground": "#e7edf5",
+    "popover": "#1a222d",
+    "popover-foreground": "#e7edf5",
+    "muted": "#202a36",
+    "muted-foreground": "#a8b3c2",
+    "primary": "#8fb7de",
+    "primary-foreground": "#102235",
+    "secondary": "#202a36",
+    "secondary-foreground": "#dce5ef",
+    "accent": "#24364a",
+    "accent-foreground": "#dcebfa",
+    "destructive": "#8e2f3d",
+    "destructive-foreground": "#ffd9de",
+    "border": "#2d3948",
+    "input": "#39485a",
+    "ring": "#91b9e0",
 }
+EXPECTED_LIGHT_SHADOW = "0 1px 2px rgba(15, 34, 58, 0.08)"
+EXPECTED_DARK_SHADOW = "none"
+EXPECTED_PRINT_THEME = {
+    **EXPECTED_LIGHT_THEME,
+    "background": "#ffffff",
+}
+PRINT_THEME_SELECTORS = {
+    "diff-summary": (
+        "body,\n"
+        '      body[data-default-theme="dark"]:not([data-theme]),\n'
+        '      body[data-theme="dark"],\n'
+        '      body[data-default-theme="auto"]:not([data-theme])'
+    ),
+    "diff-viewer": ':root,\n      html[data-page-theme="dark"]',
+    "code-review": ':root,\n      html[data-page-theme="dark"]',
+}
+LEGACY_ZINC_VALUES = (
+    "#09090b",
+    "#f4f4f5",
+    "#71717a",
+    "#18181b",
+    "#fafafa",
+    "#e4e4e7",
+    "#27272a",
+    "#a1a1aa",
+    "#d4d4d8",
+    "#dc2626",
+    "#7f1d1d",
+)
 EXPECTED_ROOT_TOKENS = {
     "radius": "0.5rem",
     "font-sans": (
@@ -285,6 +314,61 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     ),
                     EXPECTED_DARK_THEME,
                 )
+
+    def test_cool_editorial_palette_separates_report_surfaces(self) -> None:
+        for name, source in self.templates.items():
+            light_selector, dark_selector = THEME_SELECTORS[name]
+            light = custom_properties(css_rule(source, light_selector))
+            dark = custom_properties(css_rule(source, dark_selector))
+
+            with self.subTest(template=name, theme="light"):
+                self.assertNotEqual(light["background"], light["card"])
+                self.assertNotEqual(light["muted"], light["secondary"])
+                self.assertNotEqual(light["secondary"], light["accent"])
+                self.assertNotEqual(light["border"], light["input"])
+                self.assertEqual(light["shadow"], EXPECTED_LIGHT_SHADOW)
+            with self.subTest(template=name, theme="dark"):
+                self.assertNotEqual(dark["background"], dark["card"])
+                self.assertNotEqual(dark["card"], dark["popover"])
+                self.assertNotEqual(dark["border"], dark["input"])
+                self.assertEqual(dark["shadow"], EXPECTED_DARK_SHADOW)
+
+    def test_every_html_report_prints_with_cool_editorial_light_palette(
+        self,
+    ) -> None:
+        for name, source in self.templates.items():
+            printed = css_rule(source, "@media print")
+            palette = css_rule(printed, PRINT_THEME_SELECTORS[name])
+            declarations = custom_properties(palette)
+
+            with self.subTest(template=name):
+                self.assertEqual(
+                    selected_properties(declarations, THEME_COLOR_TOKENS),
+                    EXPECTED_PRINT_THEME,
+                )
+                self.assertEqual(declarations["shadow"], "none")
+                self.assertRegex(palette, r"color-scheme:\s*light\s*;")
+
+    def test_no_core_theme_token_declares_a_legacy_zinc_value(self) -> None:
+        for name, source in self.templates.items():
+            light_selector, dark_selector = THEME_SELECTORS[name]
+            printed = css_rule(source, "@media print")
+            rules = {
+                "light": css_rule(source, light_selector),
+                "dark": css_rule(source, dark_selector),
+                "print": css_rule(printed, PRINT_THEME_SELECTORS[name]),
+            }
+            for theme, rule in rules.items():
+                declarations = custom_properties(rule)
+                core = selected_properties(declarations, THEME_COLOR_TOKENS)
+                for token, value in core.items():
+                    with self.subTest(template=name, theme=theme, token=token):
+                        self.assertNotIn(value, LEGACY_ZINC_VALUES)
+                with self.subTest(template=name, theme=theme, token="shadow"):
+                    self.assertNotIn(
+                        "rgba(16, 24, 40, 0.06)",
+                        declarations["shadow"],
+                    )
 
     def test_diff_summary_uses_exact_identical_explicit_and_auto_dark_values(
         self,
@@ -1193,11 +1277,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
         self.assertEqual(
             selected_properties(declarations, THEME_COLOR_TOKENS),
-            EXPECTED_LIGHT_THEME,
+            EXPECTED_PRINT_THEME,
         )
-        self.assertEqual(declarations["impact-high"], "#92400e")
-        self.assertEqual(declarations["positive"], "#216849")
-        self.assertEqual(declarations["positive-soft"], "#d9eee3")
         self.assertEqual(declarations["shadow"], "none")
         self.assertRegex(palette, r"color-scheme:\s*light\s*;")
 
