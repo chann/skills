@@ -43,10 +43,21 @@
       --border: #d6dee8;
       --input: #c8d3e0;
       --ring: #3d6f9e;
-      --impact-high: #92400e;
-      --positive: #216849;
-      --positive-soft: #d9eee3;
-      --destructive-soft: color-mix(in srgb, var(--destructive) 14%, var(--card));
+      --status-success: #24734d;
+      --status-success-soft: #ddf3e7;
+      --status-warning: #7a5900;
+      --status-warning-soft: #f7ebc6;
+      --status-danger: #b4233a;
+      --status-danger-soft: #fce4e7;
+      --status-info: #2f5d8c;
+      --status-info-soft: #e3edf7;
+      --impact-high: var(--status-warning);
+      --positive: var(--status-success);
+      --positive-soft: var(--status-success-soft);
+      --destructive-soft: var(--status-danger-soft);
+      --add-hue: var(--status-success);
+      --del-hue: var(--status-danger);
+      --hunk-hue: var(--status-info);
       --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
       --code-bg: #f8fafc;
       --code-fg: #1e293b;
@@ -91,9 +102,21 @@
       --border: #2d3948;
       --input: #39485a;
       --ring: #91b9e0;
-      --impact-high: #fbbf24;
-      --positive: #7ecba7;
-      --positive-soft: #193b30;
+      --status-success: #74c69d;
+      --status-success-soft: #183b2d;
+      --status-warning: #e9c46a;
+      --status-warning-soft: #3f3416;
+      --status-danger: #ff8a99;
+      --status-danger-soft: #4a2028;
+      --status-info: #9cc4ea;
+      --status-info-soft: #21364b;
+      --impact-high: var(--status-warning);
+      --positive: var(--status-success);
+      --positive-soft: var(--status-success-soft);
+      --destructive-soft: var(--status-danger-soft);
+      --add-hue: var(--status-success);
+      --del-hue: var(--status-danger);
+      --hunk-hue: var(--status-info);
       --shadow: none;
       --code-bg: #0d1117;
       --code-fg: #c9d1d9;
@@ -136,9 +159,21 @@
         --border: #2d3948;
         --input: #39485a;
         --ring: #91b9e0;
-        --impact-high: #fbbf24;
-        --positive: #7ecba7;
-        --positive-soft: #193b30;
+        --status-success: #74c69d;
+        --status-success-soft: #183b2d;
+        --status-warning: #e9c46a;
+        --status-warning-soft: #3f3416;
+        --status-danger: #ff8a99;
+        --status-danger-soft: #4a2028;
+        --status-info: #9cc4ea;
+        --status-info-soft: #21364b;
+        --impact-high: var(--status-warning);
+        --positive: var(--status-success);
+        --positive-soft: var(--status-success-soft);
+        --destructive-soft: var(--status-danger-soft);
+        --add-hue: var(--status-success);
+        --del-hue: var(--status-danger);
+        --hunk-hue: var(--status-info);
         --shadow: none;
         --code-bg: #0d1117;
         --code-fg: #c9d1d9;
@@ -959,17 +994,17 @@
     }
 
     .diff-line--add {
-      background: color-mix(in srgb, var(--code-bg) 82%, #2da44e);
+      background: color-mix(in srgb, var(--code-bg) 82%, var(--add-hue));
       color: var(--code-add-text);
     }
 
     .diff-line--delete {
-      background: color-mix(in srgb, var(--code-bg) 82%, #cf222e);
+      background: color-mix(in srgb, var(--code-bg) 82%, var(--del-hue));
       color: var(--code-del-text);
     }
 
     .diff-line--hunk {
-      background: color-mix(in srgb, var(--code-bg) 88%, #2563eb);
+      background: color-mix(in srgb, var(--code-bg) 88%, var(--hunk-hue));
       color: var(--code-hunk-text);
       font-style: italic;
     }
@@ -1476,10 +1511,21 @@
         --border: #d6dee8;
         --input: #c8d3e0;
         --ring: #3d6f9e;
-        --impact-high: #92400e;
-        --positive: #216849;
-        --positive-soft: #d9eee3;
-        --destructive-soft: color-mix(in srgb, var(--destructive) 14%, var(--card));
+        --status-success: #24734d;
+        --status-success-soft: #ddf3e7;
+        --status-warning: #7a5900;
+        --status-warning-soft: #f7ebc6;
+        --status-danger: #b4233a;
+        --status-danger-soft: #fce4e7;
+        --status-info: #2f5d8c;
+        --status-info-soft: #e3edf7;
+        --impact-high: var(--status-warning);
+        --positive: var(--status-success);
+        --positive-soft: var(--status-success-soft);
+        --destructive-soft: var(--status-danger-soft);
+        --add-hue: var(--status-success);
+        --del-hue: var(--status-danger);
+        --hunk-hue: var(--status-info);
         --shadow: none;
         --code-bg: #ffffff;
         --code-fg: #1e293b;

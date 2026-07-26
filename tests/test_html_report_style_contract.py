@@ -57,7 +57,10 @@ PRIMARY_CONTROL_SELECTORS = {
     ),
 }
 DESTRUCTIVE_CONTROL_SELECTORS = {
-    "diff-viewer": (".clear-comments-btn:hover:not(:disabled)",),
+    "diff-viewer": (
+        ".clear-comments-btn:hover:not(:disabled)",
+        ".btn-comment.btn-delete:hover",
+    ),
     "code-review": (
         ".clear-comments-btn:hover:not(:disabled)",
         ".btn-comment.btn-delete:hover",
@@ -168,6 +171,82 @@ PRINT_THEME_SELECTORS = {
     "diff-viewer": ':root,\n      html[data-page-theme="dark"]',
     "code-review": ':root,\n      html[data-page-theme="dark"]',
 }
+STATUS_TOKENS = (
+    "status-success",
+    "status-success-soft",
+    "status-warning",
+    "status-warning-soft",
+    "status-danger",
+    "status-danger-soft",
+    "status-info",
+    "status-info-soft",
+)
+EXPECTED_LIGHT_STATUS = {
+    "status-success": "#24734d",
+    "status-success-soft": "#ddf3e7",
+    "status-warning": "#7a5900",
+    "status-warning-soft": "#f7ebc6",
+    "status-danger": "#b4233a",
+    "status-danger-soft": "#fce4e7",
+    "status-info": "#2f5d8c",
+    "status-info-soft": "#e3edf7",
+}
+EXPECTED_DARK_STATUS = {
+    "status-success": "#74c69d",
+    "status-success-soft": "#183b2d",
+    "status-warning": "#e9c46a",
+    "status-warning-soft": "#3f3416",
+    "status-danger": "#ff8a99",
+    "status-danger-soft": "#4a2028",
+    "status-info": "#9cc4ea",
+    "status-info-soft": "#21364b",
+}
+SOFT_STATUS_PAIRS = (
+    ("status-success", "status-success-soft"),
+    ("status-warning", "status-warning-soft"),
+    ("status-danger", "status-danger-soft"),
+    ("status-info", "status-info-soft"),
+)
+REPORT_STATUS_ALIASES = {
+    "code-review": {
+        "critical": "status-danger",
+        "medium": "status-warning",
+        "low": "status-info",
+        "info": "muted-foreground",
+        "add-hue": "status-success",
+        "del-hue": "status-danger",
+        "hunk-hue": "status-info",
+    },
+    "diff-summary": {
+        "impact-high": "status-warning",
+        "positive": "status-success",
+        "positive-soft": "status-success-soft",
+        "destructive-soft": "status-danger-soft",
+        "add-hue": "status-success",
+        "del-hue": "status-danger",
+        "hunk-hue": "status-info",
+    },
+    "diff-viewer": {
+        "add-text": "status-success",
+        "add-line": "status-success-soft",
+        "del-text": "status-danger",
+        "del-line": "status-danger-soft",
+        "add-hue": "status-success",
+        "del-hue": "status-danger",
+        "hunk-hue": "status-info",
+    },
+}
+EXPECTED_HIGH_SEVERITY = {
+    "light": {"high": "#a84413", "high-soft": "#f8e7dd"},
+    "dark": {"high": "#f5a367", "high-soft": "#472919"},
+}
+SEVERITY_BADGE_PAIRS = {
+    "critical": ("status-danger", "status-danger-soft"),
+    "high": ("high", "high-soft"),
+    "medium": ("status-warning", "status-warning-soft"),
+    "low": ("status-info", "status-info-soft"),
+    "info": ("muted-foreground", "muted"),
+}
 LEGACY_ZINC_VALUES = (
     "#09090b",
     "#f4f4f5",
@@ -246,6 +325,40 @@ def selected_properties(
     names: tuple[str, ...],
 ) -> dict[str, str]:
     return {name: value for name, value in declarations.items() if name in names}
+
+
+def color_mix_expressions(source: str) -> list[str]:
+    """Extract every complete color-mix(...) expression, nested parens included."""
+    expressions: list[str] = []
+    for match in re.finditer(r"color-mix\(", source):
+        depth = 0
+        cursor = match.end() - 1
+        while cursor < len(source):
+            if source[cursor] == "(":
+                depth += 1
+            elif source[cursor] == ")":
+                depth -= 1
+                if depth == 0:
+                    expressions.append(source[match.start() : cursor + 1])
+                    break
+            cursor += 1
+        else:
+            raise AssertionError(f"unterminated color-mix at offset {match.start()}")
+    return expressions
+
+
+def resolve_token(value: str, declarations: dict[str, str]) -> str:
+    seen: set[str] = set()
+    current = value
+    while True:
+        token_match = re.fullmatch(r"var\(--([\w-]+)\)", current)
+        if token_match is None:
+            return current
+        token = token_match.group(1)
+        if token in seen:
+            raise AssertionError(f"cyclic CSS token alias: {token}")
+        seen.add(token)
+        current = declarations[token]
 
 
 def contrast_ratio(first: str, second: str) -> float:
@@ -368,6 +481,159 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     self.assertNotIn(
                         "rgba(16, 24, 40, 0.06)",
                         declarations["shadow"],
+                    )
+
+    def test_every_html_report_uses_exact_shared_status_palette(self) -> None:
+        for name, source in self.templates.items():
+            light_selector, dark_selector = THEME_SELECTORS[name]
+            for theme, selector, expected in (
+                ("light", light_selector, EXPECTED_LIGHT_STATUS),
+                ("dark", dark_selector, EXPECTED_DARK_STATUS),
+            ):
+                declarations = custom_properties(css_rule(source, selector))
+                with self.subTest(template=name, theme=theme, contract="exact"):
+                    self.assertEqual(
+                        selected_properties(declarations, STATUS_TOKENS),
+                        expected,
+                    )
+                for base, soft in SOFT_STATUS_PAIRS:
+                    with self.subTest(
+                        template=name,
+                        theme=theme,
+                        contract="soft-contrast",
+                        pair=base,
+                    ):
+                        self.assertGreaterEqual(
+                            contrast_ratio(
+                                declarations[base],
+                                declarations[soft],
+                            ),
+                            4.5,
+                        )
+
+    def test_every_html_report_prints_the_light_status_palette(self) -> None:
+        for name, source in self.templates.items():
+            printed = css_rule(source, "@media print")
+            declarations = custom_properties(
+                css_rule(printed, PRINT_THEME_SELECTORS[name])
+            )
+            with self.subTest(template=name):
+                self.assertEqual(
+                    selected_properties(declarations, STATUS_TOKENS),
+                    EXPECTED_LIGHT_STATUS,
+                )
+
+    def test_report_specific_colors_alias_the_shared_status_palette(self) -> None:
+        for name, aliases in REPORT_STATUS_ALIASES.items():
+            source = self.templates[name]
+            light_selector, dark_selector = THEME_SELECTORS[name]
+            root_declarations = custom_properties(css_rule(source, ":root"))
+            for theme, selector in (
+                ("light", light_selector),
+                ("dark", dark_selector),
+            ):
+                declarations = {
+                    **root_declarations,
+                    **custom_properties(css_rule(source, selector)),
+                }
+                for alias, target in aliases.items():
+                    with self.subTest(template=name, theme=theme, alias=alias):
+                        self.assertEqual(
+                            declarations[alias],
+                            f"var(--{target})",
+                        )
+                        self.assertEqual(
+                            resolve_token(declarations[alias], declarations),
+                            declarations[target],
+                        )
+
+    def test_code_review_high_severity_stays_a_distinct_accessible_family(
+        self,
+    ) -> None:
+        source = self.templates["code-review"]
+        light_selector, dark_selector = THEME_SELECTORS["code-review"]
+        for theme, selector in (("light", light_selector), ("dark", dark_selector)):
+            declarations = {
+                **custom_properties(css_rule(source, ":root")),
+                **custom_properties(css_rule(source, selector)),
+            }
+            expected = EXPECTED_HIGH_SEVERITY[theme]
+            with self.subTest(theme=theme, contract="exact"):
+                self.assertEqual(
+                    selected_properties(declarations, ("high", "high-soft")),
+                    expected,
+                )
+            with self.subTest(theme=theme, contract="distinct"):
+                self.assertNotEqual(
+                    declarations["high"],
+                    declarations["status-warning"],
+                )
+                self.assertNotEqual(
+                    declarations["high"],
+                    declarations["status-danger"],
+                )
+            with self.subTest(theme=theme, contract="contrast"):
+                self.assertGreaterEqual(
+                    contrast_ratio(
+                        declarations["high"],
+                        declarations["high-soft"],
+                    ),
+                    4.5,
+                )
+
+    def test_code_review_severity_badges_use_accessible_soft_status_pairs(
+        self,
+    ) -> None:
+        source = self.templates["code-review"]
+        light_selector, dark_selector = THEME_SELECTORS["code-review"]
+        self.assertNotRegex(
+            css_rule(source, ".badge"),
+            r"color:\s*#fff(?:fff)?\s*;",
+        )
+        for severity, (foreground, background) in SEVERITY_BADGE_PAIRS.items():
+            rule = css_rule(source, f".badge-{severity}")
+            with self.subTest(severity=severity, contract="tokens"):
+                self.assertRegex(rule, rf"color:\s*var\(--{foreground}\)\s*;")
+                self.assertRegex(rule, rf"background:\s*var\(--{background}\)\s*;")
+            for theme, selector in (
+                ("light", light_selector),
+                ("dark", dark_selector),
+            ):
+                declarations = {
+                    **custom_properties(css_rule(source, ":root")),
+                    **custom_properties(css_rule(source, selector)),
+                }
+                with self.subTest(severity=severity, theme=theme, contract="contrast"):
+                    self.assertGreaterEqual(
+                        contrast_ratio(
+                            resolve_token(declarations[foreground], declarations),
+                            resolve_token(declarations[background], declarations),
+                        ),
+                        4.5,
+                    )
+
+    def test_every_diff_overlay_derives_from_a_shared_hue_token(self) -> None:
+        """Diff add/delete/hunk overlays must mix a token, never a raw literal.
+
+        A literal inside color-mix() would silently introduce a second green,
+        red, or blue family that no theme or print override can reach.
+        """
+        for name, source in self.templates.items():
+            expressions = color_mix_expressions(source)
+            with self.subTest(template=name, contract="present"):
+                self.assertTrue(expressions)
+            for expression in expressions:
+                with self.subTest(template=name, expression=expression):
+                    self.assertNotRegex(expression, r"#[0-9A-Fa-f]{3,8}\b")
+
+    def test_every_html_report_binds_diff_overlays_to_hue_tokens(self) -> None:
+        for name, source in self.templates.items():
+            expressions = color_mix_expressions(source)
+            for token in ("add-hue", "del-hue", "hunk-hue"):
+                with self.subTest(template=name, token=token):
+                    self.assertTrue(
+                        any(f"var(--{token})" in expr for expr in expressions),
+                        f"no color-mix() in {name} mixes var(--{token})",
                     )
 
     def test_diff_summary_uses_exact_identical_explicit_and_auto_dark_values(
@@ -1292,15 +1558,14 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         ):
             with self.subTest(theme=theme):
                 self.assertIn("impact-high", declarations)
-                self.assertNotEqual(declarations["impact-high"], declarations["ring"])
-                self.assertNotEqual(
-                    declarations["impact-high"], declarations["primary"]
+                impact_high = resolve_token(
+                    declarations["impact-high"],
+                    declarations,
                 )
+                self.assertNotEqual(impact_high, declarations["ring"])
+                self.assertNotEqual(impact_high, declarations["primary"])
                 self.assertGreaterEqual(
-                    contrast_ratio(
-                        declarations["impact-high"],
-                        declarations["card"],
-                    ),
+                    contrast_ratio(impact_high, declarations["card"]),
                     4.5,
                 )
 

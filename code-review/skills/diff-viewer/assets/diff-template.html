@@ -35,23 +35,32 @@
       --input: #c8d3e0;
       --ring: #3d6f9e;
       --radius: 0.5rem;
+      /* Shared semantic status palette — the single source for every accent. */
+      --status-success: #24734d;
+      --status-success-soft: #ddf3e7;
+      --status-warning: #7a5900;
+      --status-warning-soft: #f7ebc6;
+      --status-danger: #b4233a;
+      --status-danger-soft: #fce4e7;
+      --status-info: #2f5d8c;
+      --status-info-soft: #e3edf7;
       /* Page-theme diff colors — used outside the code area (metric badges, button hover). */
-      --add-text: #116329;
-      --add-line: #c6ead3;
-      --del-text: #a40e26;
-      --del-line: #f6c7ca;
+      --add-text: var(--status-success);
+      --add-line: var(--status-success-soft);
+      --del-text: var(--status-danger);
+      --del-line: var(--status-danger-soft);
       /* Code area defaults — overridden per scheme in JS via applyHljsTheme(). */
       --code-bg: #f8fafc;
       --code-fg: #1e293b;
       --code-muted: #728095;
       /* Diff hues used by color-mix() so add/del/hunk overlays adapt to any --code-bg. */
-      --add-hue: #2da44e;
-      --del-hue: #cf222e;
-      --hunk-hue: #2563eb;
+      --add-hue: var(--status-success);
+      --del-hue: var(--status-danger);
+      --hunk-hue: var(--status-info);
       /* Text colors on diff lines — flipped by data-code-tone (light vs dark code area). */
-      --code-add-text: #116329;
-      --code-del-text: #a40e26;
-      --code-hunk-text: #3150a8;
+      --code-add-text: var(--status-success);
+      --code-del-text: var(--status-danger);
+      --code-hunk-text: var(--status-info);
       --selection-bg: rgba(47, 93, 140, 0.18);
       --selection-fg: var(--primary);
       --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
@@ -80,10 +89,14 @@
       --border: #2d3948;
       --input: #39485a;
       --ring: #91b9e0;
-      --add-text: #8fe3a7;
-      --add-line: #1e5433;
-      --del-text: #ffb3ba;
-      --del-line: #64252d;
+      --status-success: #74c69d;
+      --status-success-soft: #183b2d;
+      --status-warning: #e9c46a;
+      --status-warning-soft: #3f3416;
+      --status-danger: #ff8a99;
+      --status-danger-soft: #4a2028;
+      --status-info: #9cc4ea;
+      --status-info-soft: #21364b;
       --selection-bg: rgba(143, 183, 222, 0.28);
       --selection-fg: var(--primary);
       --shadow: none;
@@ -717,7 +730,13 @@
     }
 
     .btn-comment.btn-edit:hover { color: var(--accent-foreground); border-color: var(--input); }
-    .btn-comment.btn-delete:hover { color: var(--del-text); border-color: var(--del-line); }
+
+    .btn-comment.btn-delete:hover {
+      background: var(--destructive);
+      color: var(--destructive-foreground);
+      border-color: var(--destructive);
+    }
+
     .btn-comment.btn-save:hover { opacity: 0.9; }
 
     body.resizing-sidebar,
@@ -767,6 +786,14 @@
         --border: #d6dee8;
         --input: #c8d3e0;
         --ring: #3d6f9e;
+        --status-success: #24734d;
+        --status-success-soft: #ddf3e7;
+        --status-warning: #7a5900;
+        --status-warning-soft: #f7ebc6;
+        --status-danger: #b4233a;
+        --status-danger-soft: #fce4e7;
+        --status-info: #2f5d8c;
+        --status-info-soft: #e3edf7;
         --shadow: none;
         --code-bg: #ffffff;
         --code-fg: #1e293b;

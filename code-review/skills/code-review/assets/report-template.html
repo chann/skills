@@ -35,23 +35,33 @@
       --input: #c8d3e0;
       --ring: #3d6f9e;
       --radius: 0.5rem;
-      /* Severity hues */
-      --critical: #dc2626;
-      --high: #ea580c;
-      --medium: #d97706;
-      --low: #2563eb;
-      --info: #6b7280;
+      /* Shared semantic status palette — the single source for every accent. */
+      --status-success: #24734d;
+      --status-success-soft: #ddf3e7;
+      --status-warning: #7a5900;
+      --status-warning-soft: #f7ebc6;
+      --status-danger: #b4233a;
+      --status-danger-soft: #fce4e7;
+      --status-info: #2f5d8c;
+      --status-info-soft: #e3edf7;
+      /* Severity hues map onto the shared palette; high keeps its own orange. */
+      --critical: var(--status-danger);
+      --high: #a84413;
+      --high-soft: #f8e7dd;
+      --medium: var(--status-warning);
+      --low: var(--status-info);
+      --info: var(--muted-foreground);
       /* Code area defaults — overridden per scheme in JS via applyHljsTheme(). */
       --code-bg: #f8fafc;
       --code-fg: #1e293b;
       --code-muted: #728095;
       /* Diff hues used by color-mix() so add/del/hunk overlays adapt to any --code-bg. */
-      --add-hue: #2da44e;
-      --del-hue: #cf222e;
-      --hunk-hue: #2563eb;
-      --code-add-text: #116329;
-      --code-del-text: #a40e26;
-      --code-hunk-text: #3150a8;
+      --add-hue: var(--status-success);
+      --del-hue: var(--status-danger);
+      --hunk-hue: var(--status-info);
+      --code-add-text: var(--status-success);
+      --code-del-text: var(--status-danger);
+      --code-hunk-text: var(--status-info);
       --selection-bg: rgba(47, 93, 140, 0.18);
       --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
       --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -79,11 +89,16 @@
       --border: #2d3948;
       --input: #39485a;
       --ring: #91b9e0;
-      --critical: #f87171;
-      --high: #fb923c;
-      --medium: #fbbf24;
-      --low: #7aa2ff;
-      --info: #9aa4b2;
+      --status-success: #74c69d;
+      --status-success-soft: #183b2d;
+      --status-warning: #e9c46a;
+      --status-warning-soft: #3f3416;
+      --status-danger: #ff8a99;
+      --status-danger-soft: #4a2028;
+      --status-info: #9cc4ea;
+      --status-info-soft: #21364b;
+      --high: #f5a367;
+      --high-soft: #472919;
       --selection-bg: rgba(143, 183, 222, 0.28);
       --shadow: none;
     }
@@ -302,7 +317,11 @@
 
     .copy-md-btn:hover { opacity: 0.92; }
     .copy-md-btn.secondary:hover { color: var(--accent-foreground); border-color: var(--input); opacity: 1; }
-    .copy-md-btn.copied { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .copy-md-btn.copied {
+      background: var(--status-success);
+      color: var(--status-success-soft);
+      border-color: var(--status-success);
+    }
     .copy-md-btn .count {
       background: rgba(255, 255, 255, 0.25);
       border-radius: 999px;
@@ -429,7 +448,7 @@
     p { margin: 0 0 12px; }
     strong { font-weight: 600; }
 
-    /* Badges */
+    /* Badges — soft status surface with matching status text, never white on light. */
     .badge {
       display: inline-block;
       padding: 2px 9px;
@@ -438,14 +457,13 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #fff;
       vertical-align: middle;
     }
-    .badge-critical { background: var(--critical); }
-    .badge-high { background: var(--high); }
-    .badge-medium { background: var(--medium); }
-    .badge-low { background: var(--low); }
-    .badge-info { background: var(--info); }
+    .badge-critical { color: var(--status-danger); background: var(--status-danger-soft); }
+    .badge-high { color: var(--high); background: var(--high-soft); }
+    .badge-medium { color: var(--status-warning); background: var(--status-warning-soft); }
+    .badge-low { color: var(--status-info); background: var(--status-info-soft); }
+    .badge-info { color: var(--muted-foreground); background: var(--muted); }
 
     hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
@@ -595,7 +613,7 @@
       cursor: pointer;
     }
     .copy-btn:hover { color: var(--code-fg); }
-    .copy-btn.copied { color: #16a34a; border-color: #16a34a; }
+    .copy-btn.copied { color: var(--status-success); border-color: var(--status-success); }
 
     /* ---------------- Diff blocks (adapt to code scheme via color-mix) ---------------- */
     .diff-container {
@@ -642,7 +660,7 @@
       border-radius: calc(var(--radius) - 2px);
     }
     .diff-copy-btn:hover { color: var(--code-fg); }
-    .diff-copy-btn.copied { color: #16a34a; border-color: #16a34a; }
+    .diff-copy-btn.copied { color: var(--status-success); border-color: var(--status-success); }
 
     .diff-body { overflow-x: auto; }
 
@@ -804,6 +822,16 @@
         --border: #d6dee8;
         --input: #c8d3e0;
         --ring: #3d6f9e;
+        --status-success: #24734d;
+        --status-success-soft: #ddf3e7;
+        --status-warning: #7a5900;
+        --status-warning-soft: #f7ebc6;
+        --status-danger: #b4233a;
+        --status-danger-soft: #fce4e7;
+        --status-info: #2f5d8c;
+        --status-info-soft: #e3edf7;
+        --high: #a84413;
+        --high-soft: #f8e7dd;
         --shadow: none;
         --code-bg: #ffffff;
         --code-fg: #1e293b;
