@@ -1457,10 +1457,36 @@
       overflow-wrap: anywhere;
     }
 
+    /* Same disclosure marker as the summary cards, so the report has one
+       expand affordance instead of a custom chevron next to a native triangle. */
     .quiz-explanation summary {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
       color: var(--muted-foreground);
       font-size: 0.88rem;
       cursor: pointer;
+      list-style: none;
+    }
+
+    .quiz-explanation summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .quiz-explanation summary::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      flex-shrink: 0;
+      border-right: 2px solid var(--muted-foreground);
+      border-bottom: 2px solid var(--muted-foreground);
+      border-radius: 1px;
+      transform: rotate(-45deg);
+      transition: transform 140ms ease;
+    }
+
+    .quiz-explanation[open] summary::before {
+      transform: rotate(45deg);
     }
 
     .quiz-explanation p {

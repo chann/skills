@@ -662,6 +662,39 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     r"transform:\s*rotate\(45deg\)\s*;",
                 )
 
+    def test_every_details_element_uses_the_shared_disclosure_marker(self) -> None:
+        """One expand affordance per report — no native triangle beside a custom one."""
+        for name, selectors in (
+            ("diff-summary", (".card-summary", ".quiz-explanation summary")),
+            ("code-review", ("details.finding > summary",)),
+        ):
+            source = self.templates[name]
+            for selector in selectors:
+                with self.subTest(template=name, selector=selector):
+                    rule = css_rule(source, selector)
+                    self.assertRegex(rule, r"list-style:\s*none\s*;")
+                    self.assertRegex(
+                        source,
+                        rf"{re.escape(selector)}::-webkit-details-marker\s*\{{"
+                        r"[^}]*display:\s*none",
+                    )
+        marker = css_rule(
+            self.templates["diff-summary"],
+            ".quiz-explanation summary::before",
+        )
+        self.assertRegex(
+            marker,
+            r"border-right:\s*2px\s+solid\s+var\(--muted-foreground\)\s*;",
+        )
+        self.assertRegex(marker, r"transform:\s*rotate\(-45deg\)\s*;")
+        self.assertRegex(
+            css_rule(
+                self.templates["diff-summary"],
+                ".quiz-explanation[open] summary::before",
+            ),
+            r"transform:\s*rotate\(45deg\)\s*;",
+        )
+
     def test_no_html_report_stylesheet_references_an_external_resource(self) -> None:
         """Every report must render identically with no network access."""
         for name, source in self.templates.items():
