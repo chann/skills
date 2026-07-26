@@ -144,7 +144,32 @@ For the skill's default write path, invoke the same script with `--bilingual-jso
 | `-o`, `--output` | output HTML path | `.diffs/<YYYY-MM-DD>_<tag>.html` |
 | `--view` | `unified`, `split` | `unified` |
 | `--theme` | `auto`, `light`, `dark` | `auto` |
+| `--language` | `auto`, `en`, `ko` | `auto` |
 | `--code-scheme` | `github`, `atom-one`, `monokai`, `dracula`, `nord`, `tokyo-night`, `solarized`, `gruvbox` | `github` |
+
+`--language` sets the initial interface language; `auto` follows the browser. The
+report's Korean/English toggle switches every label, file status, summary
+caption, comment control, and exported Markdown heading, and persists the choice
+in `localStorage`. Diff content is code and is never translated.
+
+### Shared HTML report interface
+
+`code-review`, `diff-summary`, `diff-summary-quiz`, and `diff-viewer` render
+different content through one deliberately shared interface. Each report is a
+single self-contained file that needs no web server and no network connection.
+
+| Capability | Behavior |
+|---|---|
+| Language | Korean/English toggle on every report; the choice persists per browser |
+| Theme | Light, dark, and system, with a light palette forced for printing |
+| Color | One `--status-*` vocabulary — success, warning, danger, info — behind every severity, impact, and diff accent, at 4.5:1 or better in both themes |
+| Typography | Korean faces after the Latin system faces, and Korean prose broken on 어절 boundaries while code and paths still break anywhere |
+| Icons | Inline SVG on one 24-grid with 2px round strokes; no icon font and no network request |
+| Keyboard | Skip link as the first focusable element, visible focus rings, and a polite live region for copy and comment outcomes |
+| Motion | Honors `prefers-reduced-motion: reduce` |
+
+`tests/test_html_report_style_contract.py` enforces this shared contract across
+the templates, so the reports cannot drift apart.
 
 ### git-skill
 

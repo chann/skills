@@ -113,7 +113,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 4. 마크다운 리포트 작성 및 기본 이중언어 HTML 흐름을 위한 영문 형제 파일 생성
 5. `/code-review-md`가 아닌 경우 HTML 리포트 생성 후 브라우저에서 열기
 
-`/diff-viewer`는 별도 동작입니다. `git diff HEAD`를 캡처해 unified/split HTML diff viewer를 만들고 브라우저로 열며, 코드 분석은 하지 않습니다.
+`/diff-viewer`는 별도 동작입니다. `git diff HEAD`를 캡처해 unified/split HTML diff viewer를 만들고 브라우저로 열며, 코드 분석은 하지 않습니다. 다른 보고서와 같은 한국어/영어 토글을 제공해 모든 라벨, 파일 상태, 요약 캡션, 내보낸 마크다운 제목이 함께 바뀝니다. diff 본문은 코드이므로 번역하지 않습니다.
 
 `/diff-summary`는 별도의 설명형 흐름을 따릅니다:
 

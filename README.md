@@ -72,6 +72,8 @@ spells out both explicit selectors.
 
 `diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Its default output is an aligned Korean/English pair with Korean shown first; explicitly request one language for single-language mode. Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
+Every HTML report — review, summary, quiz, and raw diff — shares one interface: a Korean/English toggle, light/dark/system themes with a light print palette, one semantic status palette held at WCAG AA in both themes, Korean-aware typography that breaks prose on 어절 boundaries, and a keyboard shell with a skip link and a live region. Each report stays a single self-contained file that works with no server and no network.
+
 
 ### doc-skill → [details](doc-skill/README.md)
 

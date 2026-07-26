@@ -114,7 +114,7 @@ If a prompt asks for both a summary and a review, run both workflows and keep th
 4. Write the Markdown report, plus its English sibling for the default bilingual HTML flow
 5. Generate and open the HTML report, unless `/code-review-md` requested Markdown only
 
-`/diff-viewer` is separate: it captures `git diff HEAD`, renders unified and split diff views to HTML, opens the report, and does not analyze the code.
+`/diff-viewer` is separate: it captures `git diff HEAD`, renders unified and split diff views to HTML, opens the report, and does not analyze the code. Its interface is bilingual like the other reports — the Korean/English toggle switches every label, file status, summary caption, and exported Markdown heading, while diff content stays untranslated because it is code.
 
 `/diff-summary` follows a separate explanatory flow:
 
