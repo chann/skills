@@ -262,14 +262,54 @@ LEGACY_ZINC_VALUES = (
 )
 EXPECTED_ROOT_TOKENS = {
     "radius": "0.5rem",
+    # Korean faces follow the Latin system faces, so Latin glyphs keep their
+    # platform metrics and only Korean text falls through to a Korean face.
     "font-sans": (
         'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", '
+        '"Apple SD Gothic Neo", Pretendard, "Noto Sans KR", "Malgun Gothic", '
         "sans-serif"
     ),
     "font-mono": (
         'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", '
-        '"Courier New", monospace'
+        '"Courier New", D2Coding, monospace'
     ),
+}
+KOREAN_FACES = ('"Apple SD Gothic Neo"', "Pretendard", '"Noto Sans KR"', '"Malgun Gothic"')
+PROSE_KEEP_ALL_SELECTORS = {
+    "diff-summary": (
+        "#report-main > h2",
+        "#report-main > p",
+        ".summary-title",
+        ".comment-text",
+        ".quiz-option-text",
+    ),
+    "diff-viewer": (
+        "h1",
+        ".metric span",
+        ".comment-body",
+        ".empty-state h2",
+    ),
+    "code-review": (
+        "h2",
+        "p",
+        ".finding-summary-text",
+        ".comment-body",
+    ),
+}
+# keep-all must never reach code: a broken identifier is worse than an overflow.
+CODE_SELECTOR_MARKERS = (
+    "pre",
+    "code",
+    ".diff-line",
+    ".code-line",
+    ".diff-code",
+    ".repo",
+    ".language-badge",
+)
+TABULAR_NUMERAL_SELECTORS = {
+    "diff-summary": (".align-right",),
+    "diff-viewer": (".line-no", ".metric strong"),
+    "code-review": (".diff-ln",),
 }
 
 
@@ -325,6 +365,17 @@ def selected_properties(
     names: tuple[str, ...],
 ) -> dict[str, str]:
     return {name: value for name, value in declarations.items() if name in names}
+
+
+def css_rule_containing_declaration(source: str, declaration: str) -> dict[str, str]:
+    """Return the selector list and body of the rule declaring ``declaration``."""
+    match = re.search(
+        rf"([^{{}}]*)\{{([^{{}}]*{re.escape(declaration)}[^{{}}]*)\}}",
+        source,
+    )
+    if match is None:
+        raise AssertionError(f"no CSS rule declares: {declaration}")
+    return {"selector": match.group(1).strip(), "body": match.group(2)}
 
 
 def color_mix_expressions(source: str) -> list[str]:
@@ -427,6 +478,70 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     ),
                     EXPECTED_DARK_THEME,
                 )
+
+    def test_every_html_report_declares_the_korean_aware_font_stacks(self) -> None:
+        for name, source in self.templates.items():
+            declarations = custom_properties(css_rule(source, ":root"))
+            with self.subTest(template=name, contract="exact"):
+                self.assertEqual(
+                    selected_properties(declarations, ROOT_TOKENS),
+                    EXPECTED_ROOT_TOKENS,
+                )
+            for face in KOREAN_FACES:
+                with self.subTest(template=name, face=face):
+                    self.assertIn(face, declarations["font-sans"])
+            with self.subTest(template=name, contract="latin-first"):
+                stack = declarations["font-sans"]
+                self.assertLess(
+                    stack.index("ui-sans-serif"),
+                    stack.index('"Apple SD Gothic Neo"'),
+                )
+
+    def test_every_html_report_breaks_korean_prose_on_word_boundaries(self) -> None:
+        for name, selectors in PROSE_KEEP_ALL_SELECTORS.items():
+            source = self.templates[name]
+            prose_rule = css_rule_containing_declaration(
+                source,
+                "word-break: keep-all",
+            )
+            for selector in selectors:
+                with self.subTest(template=name, selector=selector):
+                    self.assertIn(selector, prose_rule["selector"])
+            with self.subTest(template=name, contract="escape-hatch"):
+                self.assertRegex(
+                    prose_rule["body"],
+                    r"overflow-wrap:\s*break-word\s*;",
+                )
+
+    def test_korean_word_breaking_never_reaches_code(self) -> None:
+        for name, source in self.templates.items():
+            for rule_selector in re.findall(
+                r"([^{}]*)\{[^{}]*word-break:\s*keep-all",
+                source,
+            ):
+                selectors = [part.strip() for part in rule_selector.split(",")]
+                for selector in selectors:
+                    for marker in CODE_SELECTOR_MARKERS:
+                        with self.subTest(
+                            template=name,
+                            selector=selector,
+                            marker=marker,
+                        ):
+                            self.assertNotEqual(selector, marker)
+                            self.assertFalse(
+                                selector.endswith(" " + marker),
+                                f"{selector} applies keep-all to code",
+                            )
+
+    def test_numeric_report_surfaces_use_tabular_numerals(self) -> None:
+        for name, selectors in TABULAR_NUMERAL_SELECTORS.items():
+            source = self.templates[name]
+            for selector in selectors:
+                with self.subTest(template=name, selector=selector):
+                    self.assertRegex(
+                        css_rule(source, selector),
+                        r"font-variant-numeric:\s*tabular-nums\s*;",
+                    )
 
     def test_cool_editorial_palette_separates_report_surfaces(self) -> None:
         for name, source in self.templates.items():

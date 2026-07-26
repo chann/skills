@@ -64,8 +64,8 @@
       --code-hunk-text: var(--status-info);
       --selection-bg: rgba(47, 93, 140, 0.18);
       --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
-      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", Pretendard, "Noto Sans KR", "Malgun Gothic", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", D2Coding, monospace;
     }
 
     html[data-page-theme="dark"] {
@@ -143,6 +143,32 @@
     :focus-visible {
       outline: 2px solid var(--ring);
       outline-offset: 2px;
+    }
+
+    /* Korean sets prose by 어절, so keep-all prevents the mid-word breaks Latin
+       rules allow; break-word remains the escape hatch for long Latin tokens.
+       Diff tables are code and are excluded. */
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    li,
+    .finding-summary-text,
+    .comment-body,
+    .comment-panel-title,
+    table:not(.diff-table) th,
+    table:not(.diff-table) td {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    /* word-break inherits, so code inside prose must opt back out or long paths
+       and identifiers stop breaking and overflow their container. */
+    pre,
+    code,
+    .repo {
+      word-break: normal;
     }
 
     button:disabled,
@@ -684,6 +710,7 @@
       text-align: right;
       color: var(--code-muted);
       font-size: 12px;
+      font-variant-numeric: tabular-nums;
       user-select: none;
       background: color-mix(in srgb, var(--code-bg) 94%, var(--code-fg));
       border-right: 1px solid color-mix(in srgb, var(--code-bg) 85%, var(--code-fg));
