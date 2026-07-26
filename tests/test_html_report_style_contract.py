@@ -479,6 +479,81 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     EXPECTED_DARK_THEME,
                 )
 
+    def test_no_html_report_uses_a_placeholder_glyph_as_an_affordance(self) -> None:
+        """Code points inherit text metrics and render per platform; icons do not."""
+        for name, source in self.templates.items():
+            for glyph in ("&#9776;", "&#x276E;", "&#x276F;", "▶", "&#9660;"):
+                with self.subTest(template=name, glyph=glyph):
+                    self.assertNotIn(glyph, source)
+
+    def test_every_inline_icon_is_decorative_and_shares_one_geometry(self) -> None:
+        for name, source in self.templates.items():
+            icons = re.findall(r"<svg\b[^>]*>", source)
+            with self.subTest(template=name, contract="present"):
+                self.assertTrue(icons)
+            for icon in icons:
+                with self.subTest(template=name, icon=icon[:70]):
+                    self.assertIn('aria-hidden="true"', icon)
+                    self.assertIn('focusable="false"', icon)
+                    self.assertIn('viewBox="0 0 24 24"', icon)
+                    self.assertIn('fill="none"', icon)
+                    self.assertIn('stroke="currentColor"', icon)
+                    self.assertIn('stroke-width="2"', icon)
+                    self.assertIn('stroke-linecap="round"', icon)
+                    self.assertIn('stroke-linejoin="round"', icon)
+
+    def test_every_html_report_sizes_icons_from_one_rule(self) -> None:
+        for name, source in self.templates.items():
+            with self.subTest(template=name):
+                rule = css_rule(source, ".icon")
+                self.assertRegex(rule, r"width:\s*14px\s*;")
+                self.assertRegex(rule, r"height:\s*14px\s*;")
+                self.assertRegex(rule, r"flex:\s*0\s+0\s+auto\s*;")
+
+    def test_disclosure_indicators_stay_css_only(self) -> None:
+        """<details> must open without JavaScript, so the marker is drawn in CSS.
+
+        A 2px border angle also matches the inline icons' stroke weight, which a
+        filled ▶ glyph never could.
+        """
+        for name, selector, open_selector in (
+            (
+                "diff-summary",
+                ".card-summary::before",
+                ".summary-card[open] .card-summary::before",
+            ),
+            (
+                "code-review",
+                ".finding-summary-text::before",
+                "details.finding[open] > summary .finding-summary-text::before",
+            ),
+        ):
+            source = self.templates[name]
+            rule = css_rule(source, selector)
+            with self.subTest(template=name, contract="geometry"):
+                self.assertRegex(rule, r'content:\s*""\s*;')
+                self.assertRegex(
+                    rule,
+                    r"border-right:\s*2px\s+solid\s+var\(--muted-foreground\)\s*;",
+                )
+                self.assertRegex(
+                    rule,
+                    r"border-bottom:\s*2px\s+solid\s+var\(--muted-foreground\)\s*;",
+                )
+                self.assertRegex(rule, r"transform:\s*rotate\(-45deg\)\s*;")
+                self.assertRegex(rule, r"transition:\s*transform")
+            with self.subTest(template=name, contract="open"):
+                self.assertRegex(
+                    css_rule(source, open_selector),
+                    r"transform:\s*rotate\(45deg\)\s*;",
+                )
+
+    def test_no_html_report_stylesheet_references_an_external_resource(self) -> None:
+        """Every report must render identically with no network access."""
+        for name, source in self.templates.items():
+            with self.subTest(template=name):
+                self.assertNotIn("url(", source)
+
     def test_every_html_report_declares_the_korean_aware_font_stacks(self) -> None:
         for name, source in self.templates.items():
             declarations = custom_properties(css_rule(source, ":root"))
@@ -1328,11 +1403,11 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(summary, r"min-width:\s*0\s*;")
         self.assertRegex(summary, r"min-height:\s*0\s*;")
         chevron = css_rule(self.template, ".card-summary::before")
-        self.assertRegex(chevron, r'content:\s*"▶"\s*;')
+        self.assertRegex(chevron, r'content:\s*""\s*;')
         self.assertRegex(chevron, r"transition:\s*transform")
         self.assertRegex(
             css_rule(self.template, ".summary-card[open] .card-summary::before"),
-            r"transform:\s*rotate\(90deg\)\s*;",
+            r"transform:\s*rotate\(45deg\)\s*;",
         )
 
     def test_diff_summary_card_tools_use_shared_muted_control_skin(self) -> None:
