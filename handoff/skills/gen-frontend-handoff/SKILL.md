@@ -1,6 +1,6 @@
 ---
 name: gen-frontend-handoff
-description: Use when backend API changes, server behavior changes, git diffs, commit ranges, branch comparisons, or current session context need to be turned into a handoff for frontend, mobile, SDK, or other client developers and coding agents
+description: Use when backend API changes, server behavior changes, git diffs, commit ranges, branch comparisons, or current session context need to be turned into a handoff for frontend, mobile, SDK, or other client developers and coding agents, including explicit "/gen-frontend-handoff" or "$gen-frontend-handoff"
 ---
 
 # Frontend Handoff Generator

@@ -1,6 +1,6 @@
 ---
 name: git-commit-push
-description: Use when the user asks to commit working-tree changes AND push to the remote. Trigger on phrases like "commit and push", "커밋하고 푸시해줘", "/git-commit-push", "push my commits". Runs the git-commit workflow, then `git push` (never `--force`). For commit-only use `git-commit`; for history rewrite use `git-commit-rewrite`.
+description: Use when the user asks to commit working-tree changes AND push to the remote. Trigger on phrases like "commit and push", "커밋하고 푸시해줘", "/git-commit-push", "$git-commit-push", or "push my commits". Runs the git-commit workflow, then `git push` (never `--force`). For commit-only use `git-commit`; for history rewrite use `git-commit-rewrite`.
 ---
 
 # Git Commit + Push

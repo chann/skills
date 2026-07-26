@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review code changes and generate bilingual reports"
+  default_prompt: "Use $code-review to review the current code changes and generate the default report artifacts."

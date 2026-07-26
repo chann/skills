@@ -1,0 +1,4 @@
+interface:
+  display_name: "Long Task"
+  short_description: "Run autonomous multi-milestone implementation work"
+  default_prompt: "Use $long-task to implement the requested project end to end across verified milestones."

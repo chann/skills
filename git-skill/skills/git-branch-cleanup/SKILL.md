@@ -1,6 +1,6 @@
 ---
 name: git-branch-cleanup
-description: Use when the user asks to clean up, prune, or delete local branches that have already been merged. Trigger on phrases like "clean up local branches", "merged 브랜치 정리", "이미 머지된 브랜치 삭제", "prune merged branches", "/git-branch-cleanup". Deletes local branches whose tip is reachable from at least one protected branch (`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`), excluding the protected list and the current branch. Uses `git branch -d` (safe delete) only — never `-D`.
+description: Use when the user asks to clean up, prune, or delete local branches that have already been merged. Trigger on phrases like "clean up local branches", "merged 브랜치 정리", "이미 머지된 브랜치 삭제", "prune merged branches", "/git-branch-cleanup", or "$git-branch-cleanup". Deletes local branches whose tip is reachable from at least one protected branch (`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`), excluding the protected list and the current branch. Uses `git branch -d` (safe delete) only — never `-D`.
 ---
 
 # Git Branch Cleanup

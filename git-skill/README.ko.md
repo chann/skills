@@ -6,7 +6,7 @@ Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 
 
 ## 주요 기능
 
-- **Commit / Push / Live / Rewrite** — staged + unstaged 변경을 의미 단위(feat / fix / docs / ...)로 그룹핑해 단일 Conventional Commit 생성, 선택적 push, 구현 중 검증된 결과 단위별 반복 commit·push, 비순응 subject 재작성
+- **Commit / Push / Realtime / Rewrite** — staged + unstaged 변경을 의미 단위(feat / fix / docs / ...)로 그룹핑해 단일 Conventional Commit 생성, 선택적 push, 구현 중 검증된 결과 단위별 반복 commit·push, 비순응 subject 재작성
 - 절대 `git add .` 사용 안 함, 항상 명시 경로로 staging
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고 (정확한 파일명 `.env.example`은 예외)
 - `git filter-branch` 로 비순응 커밋 subject 만 재작성, 기존 body는 보존
@@ -22,7 +22,7 @@ Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 
 npx skills add -y -g chann/skills \
   --skill git-commit \
   --skill git-commit-push \
-  --skill git-commit-push-live \
+  --skill git-commit-push-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
@@ -35,7 +35,7 @@ npx skills add -y -g chann/skills \
 npx skills add chann/skills \
   --skill git-commit \
   --skill git-commit-push \
-  --skill git-commit-push-live \
+  --skill git-commit-push-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
@@ -53,17 +53,18 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 
 ## 사용 방법
 
-커밋 / 머지 / 브랜치 정리 작업을 요청하면 자동으로 트리거되거나, 명시적 커맨드를 사용할 수 있습니다:
+자연어로 요청하면 알맞은 워크플로우가 자동으로 트리거됩니다. 명시 호출은
+Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 
-| 커맨드                  | 스킬                  | 동작                                                                           |
-| ----------------------- | --------------------- | ------------------------------------------------------------------------------ |
-| `/git-commit`           | `git-commit`          | staged + unstaged 변경을 의미 단위로 분리해 unit 마다 Conventional Commit 생성 |
-| `/git-commit-push`      | `git-commit-push`     | 위 작업 후 `git push` 까지 진행 (force 안 함)                                  |
-| `/git-commit-push-live` | `git-commit-push-live` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                     |
-| `/git-commit-rewrite`   | `git-commit-rewrite`  | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                       |
-| `/git-merge-to-main`    | `git-merge-to-main`   | 현재 브랜치를 `main` 으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제        |
-| `/git-merge-to-dev`     | `git-merge-to-dev`    | 현재 브랜치를 `dev` (없으면 `develop`) 으로 머지 후 보호 브랜치가 아니면 삭제  |
-| `/git-branch-cleanup`   | `git-branch-cleanup`  | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                |
+| Claude Code                     | Codex                        | 동작                                                                           |
+| ------------------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| `/git-commit`                   | `$git-commit`                | staged + unstaged 변경을 의미 단위로 분리해 unit마다 Conventional Commit 생성  |
+| `/git-commit-push`              | `$git-commit-push`           | 위 작업 후 `git push`까지 진행 (force 안 함)                                   |
+| `/git-commit-push-realtime`     | `$git-commit-push-realtime`  | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                      |
+| `/git-commit-rewrite`           | `$git-commit-rewrite`        | 최근 비순응 커밋 subject를 Conventional 형식으로 재작성                        |
+| `/git-merge-to-main`            | `$git-merge-to-main`         | 현재 브랜치를 `main`으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제         |
+| `/git-merge-to-dev`             | `$git-merge-to-dev`          | 현재 브랜치를 `dev`(없으면 `develop`)로 머지 후 보호 브랜치가 아니면 삭제      |
+| `/git-branch-cleanup`           | `$git-branch-cleanup`        | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                |
 
 **예시:**
 
@@ -72,6 +73,7 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 > commit my changes
 > /git-commit-push
 > 작업 중간중간 의미 있는 단위마다 커밋하고 푸시해줘
+> $git-commit-push-realtime
 > /git-commit-rewrite
 > dev에 머지해줘
 > 머지된 브랜치 다 정리해줘
@@ -91,7 +93,7 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 
 기본 워크플로우 실행 후 `git push`. `--force` / `--force-with-lease` 절대 사용 안 함. push 가 거부되면(non-fast-forward) 자동 해결 시도 없이 즉시 에러를 사용자에게 노출하고 중단.
 
-### `/git-commit-push-live`
+### `/git-commit-push-realtime`
 
 1. 수정 전에 브랜치, upstream, 기존 커밋, 작업 트리, 비밀 경로 위험 점검
 2. 결과 중심 checkpoint 계획 수립 (경과 시간, 파일 수, 토큰 압력으로 분리하지 않음)
@@ -188,7 +190,7 @@ git-skill/
 ├── commands/
 │   ├── git-commit.md                     # /git-commit (기본)
 │   ├── git-commit-push.md                # /git-commit-push 커맨드
-│   ├── git-commit-push-live.md           # /git-commit-push-live 커맨드
+│   ├── git-commit-push-realtime.md       # /git-commit-push-realtime 커맨드
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite 커맨드
 │   ├── git-merge-to-main.md              # /git-merge-to-main 커맨드
 │   ├── git-merge-to-dev.md               # /git-merge-to-dev 커맨드
@@ -200,7 +202,7 @@ git-skill/
     │       └── rewrite_msg.py            # rewrite 용 filter-branch 헬퍼
     ├── git-commit-push/                  # push 변형
     │   └── SKILL.md
-    ├── git-commit-push-live/             # 검증된 live checkpoint 변형
+    ├── git-commit-push-realtime/         # 검증된 realtime checkpoint 변형
     │   ├── SKILL.md
     │   └── evals/evals.json
     ├── git-commit-rewrite/               # rewrite 변형

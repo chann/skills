@@ -38,6 +38,10 @@ ln -s "$(pwd)/skills/doc-skill/skills/gen-docs" ~/.claude/skills/gen-docs
 
 ## 빠른 시작
 
+| Claude Code | Codex |
+|---|---|
+| `/gen-docs [project-root]` | `$gen-docs [project-root]` |
+
 프로젝트 루트에서:
 
 ```text

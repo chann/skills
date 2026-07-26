@@ -1,0 +1,4 @@
+interface:
+  display_name: "Markdown Code Review"
+  short_description: "Review code changes as a Markdown-only report"
+  default_prompt: "Use $code-review-md to review the current code changes and write a Markdown-only report."

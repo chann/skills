@@ -47,17 +47,19 @@ helper 는 `~/.claude/settings.json` 을 안전하게 patch 하며 멱등적으�
 
 ## 사용 방법
 
-*"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 문구로 자동 트리거되거나, 명시적으로 호출할 수 있습니다:
+*"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*,
+*"long task 돌려줘"* 같은 문구로 자동 트리거됩니다. 명시 selector는 다음과
+같습니다:
 
-| 커맨드                          | 동작                                                                    |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| `/long-task <objective>`        | 목표 지정 후 Phase 1 셋업 → 자율 오케스트레이션                          |
-| `/long-task`                    | 활성 task 가 있으면 상태 출력, 없으면 Phase 1 인터뷰 시작                |
-| `/long-task status`             | 현재 상태, phase, 경과 시간, runaway 카운터, `progress.md` 끝부분 표시   |
-| `/long-task pause`              | Stop hook 자동 이어가기 일시 정지                                        |
-| `/long-task resume`             | 재개, runaway 카운터 초기화                                              |
-| `/long-task clear`              | `.agent/state.md` 만 삭제 (다른 `.agent/*.md` 는 보존)                   |
-| `/long-task complete`           | `.agent/audit.md` 템플릿 작성, 완료 표시, Stop hook 해제                 |
+| Claude Code                  | Codex                     | 동작                                                                   |
+| ---------------------------- | ------------------------- | ---------------------------------------------------------------------- |
+| `/long-task <objective>`     | `$long-task <objective>`  | 목표 지정 후 Phase 1 셋업 → 자율 오케스트레이션                        |
+| `/long-task`                 | `$long-task`              | 활성 task가 있으면 상태 출력, 없으면 Phase 1 인터뷰 시작                |
+| `/long-task status`          | `$long-task status`       | 현재 상태, phase, 경과 시간, runaway 카운터, `progress.md` 끝부분 표시  |
+| `/long-task pause`           | `$long-task pause`        | Stop hook 자동 이어가기 일시 정지                                       |
+| `/long-task resume`          | `$long-task resume`       | 재개, runaway 카운터 초기화                                             |
+| `/long-task clear`           | `$long-task clear`        | `.agent/state.md`만 삭제 (다른 `.agent/*.md`는 보존)                    |
+| `/long-task complete`        | `$long-task complete`     | `.agent/audit.md` 템플릿 작성, 완료 표시, Stop hook 해제                |
 
 **예시:**
 

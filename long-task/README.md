@@ -47,17 +47,19 @@ The helper safely patches `~/.claude/settings.json` and is idempotent. The hook 
 
 ## Usage
 
-The skill triggers automatically on phrases like *"build this whole project end-to-end"*, *"do this autonomously"*, *"run a long task"*, or you can invoke it explicitly:
+The skill triggers automatically on phrases like *"build this whole project
+end-to-end"*, *"do this autonomously"*, or *"run a long task"*. Explicit
+selectors are:
 
-| Command                      | Action                                                                              |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| `/long-task <objective>`     | Phase 1 setup with this objective, then enter autonomous orchestration loop         |
-| `/long-task`                 | Status if active, otherwise Phase 1 interactive setup                               |
-| `/long-task status`          | Current state, phase, elapsed time, runaway counter, and `.agent/progress.md` tail |
-| `/long-task pause`           | Disarm Stop hook auto-continuation until resumed                                    |
-| `/long-task resume`          | Resume auto-continuation; runaway counter resets                                    |
-| `/long-task clear`           | Delete `.agent/state.md`; preserves the rest of `.agent/*.md` for reference         |
-| `/long-task complete`        | Write `.agent/audit.md` template, mark complete, disarm Stop hook                   |
+| Claude Code                  | Codex                     | Action                                                                             |
+| ---------------------------- | ------------------------- | ---------------------------------------------------------------------------------- |
+| `/long-task <objective>`     | `$long-task <objective>`  | Phase 1 setup with this objective, then enter autonomous orchestration loop        |
+| `/long-task`                 | `$long-task`              | Status if active, otherwise Phase 1 interactive setup                              |
+| `/long-task status`          | `$long-task status`       | Current state, phase, elapsed time, runaway counter, and `.agent/progress.md` tail |
+| `/long-task pause`           | `$long-task pause`        | Disarm Stop hook auto-continuation until resumed                                   |
+| `/long-task resume`          | `$long-task resume`       | Resume auto-continuation; runaway counter resets                                   |
+| `/long-task clear`           | `$long-task clear`        | Delete `.agent/state.md`; preserve the rest of `.agent/*.md` for reference         |
+| `/long-task complete`        | `$long-task complete`     | Write `.agent/audit.md` template, mark complete, disarm Stop hook                  |
 
 **Examples:**
 

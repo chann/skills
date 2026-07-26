@@ -1,5 +1,5 @@
 {
-  "skill_name": "git-commit-push-live",
+  "skill_name": "git-commit-push-realtime",
   "evals": [
     {
       "id": 1,
@@ -29,7 +29,7 @@
       "expected_output": "Stops on the moved upstream, surfaces the exact ahead/behind or rejection evidence, and asks how to reconcile without pulling, rebasing, merging, or forcing.",
       "files": [],
       "assertions": [
-        "A non-fast-forward or moved upstream stops the live workflow.",
+        "A non-fast-forward or moved upstream stops the realtime workflow.",
         "The workflow does not auto-pull, merge, rebase, or force-push.",
         "No next checkpoint begins until upstream parity is restored explicitly."
       ]

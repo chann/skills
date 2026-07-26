@@ -1,6 +1,6 @@
 ---
 name: git-merge-to-main
-description: Use when the user asks to merge the current branch into `main` and delete the merged source branch unless the source is protected. Trigger on phrases like "merge to main", "main에 머지", "main 브랜치에 합쳐줘", "merge this branch into main and delete it", "/git-merge-to-main". Refuses to force-delete or to operate on a dirty working tree. For `dev` use `git-merge-to-dev`; to bulk-clean already-merged branches use `git-branch-cleanup`.
+description: Use when the user asks to merge the current branch into `main` and delete the merged source branch unless the source is protected. Trigger on phrases like "merge to main", "main에 머지", "main 브랜치에 합쳐줘", "merge this branch into main and delete it", "/git-merge-to-main", or "$git-merge-to-main". Refuses to force-delete or to operate on a dirty working tree. For `dev` use `git-merge-to-dev`; to bulk-clean already-merged branches use `git-branch-cleanup`.
 ---
 
 # Git Merge to Main

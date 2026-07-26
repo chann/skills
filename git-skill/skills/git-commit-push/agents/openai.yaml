@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit and Push"
+  short_description: "Commit logical changes and push them to the remote"
+  default_prompt: "Use $git-commit-push to commit the current changes in logical units and push them."

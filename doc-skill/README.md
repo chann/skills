@@ -38,6 +38,10 @@ ln -s "$(pwd)/skills/doc-skill/skills/gen-docs" ~/.claude/skills/gen-docs
 
 ## Quick start
 
+| Claude Code | Codex |
+|---|---|
+| `/gen-docs [project-root]` | `$gen-docs [project-root]` |
+
 From a project root:
 
 ```text

@@ -52,51 +52,54 @@ diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 
 ## 빠른 참조
 
+Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명시 호출합니다.
+아래 표는 모든 스킬의 두 플랫폼 selector를 함께 표시합니다.
+
 ### code-review → [상세](code-review/README.ko.md)
 
-| 커맨드                    | 출력                                                                  |
-| ------------------------- | --------------------------------------------------------------------- |
-| `/code-review [scope]`    | `.reviews/`에 마크다운 + 이중언어 HTML 리뷰 생성                       |
-| `/code-review-md [scope]` | `.reviews/`에 마크다운 리뷰만 생성                                    |
-| `/diff-summary [scope]`   | `.diff-summaries/`에 정렬된 한·영 마크다운 + 이중언어 인터랙티브 HTML 요약 생성 |
-| `/diff-summary-md [scope]` | `.diff-summaries/`에 정렬된 한·영 마크다운만 생성 (HTML·브라우저 없음) |
-| `/diff-summary-quiz [scope]` | `/diff-summary`에 한·영 정렬 이해도 퀴즈를 추가                    |
-| `/diff-viewer`            | 작업 트리 원본 diff를 `.diffs/` HTML로 렌더링                         |
+| Claude Code                      | Codex                        | 출력                                                                        |
+| -------------------------------- | ---------------------------- | --------------------------------------------------------------------------- |
+| `/code-review [scope]`           | `$code-review [scope]`       | `.reviews/`에 마크다운 + 이중언어 HTML 리뷰 생성                            |
+| `/code-review-md [scope]`        | `$code-review-md [scope]`    | `.reviews/`에 마크다운 리뷰만 생성                                          |
+| `/diff-summary [scope]`          | `$diff-summary [scope]`      | `.diff-summaries/`에 정렬된 한·영 마크다운 + 이중언어 HTML 요약 생성        |
+| `/diff-summary-md [scope]`       | `$diff-summary-md [scope]`   | `.diff-summaries/`에 정렬된 한·영 마크다운만 생성 (HTML·브라우저 없음)      |
+| `/diff-summary-quiz [scope]`     | `$diff-summary-quiz [scope]` | `/diff-summary`에 한·영 정렬 이해도 퀴즈를 추가                             |
+| `/diff-viewer`                   | `$diff-viewer`               | 작업 트리 원본 diff를 `.diffs/` HTML로 렌더링                               |
 
 `diff-summary`는 “코드를 요약해줘”, “마지막 커밋 코드를 요약해줘”, “main..dev 변경 요약” 같은 요청에도 자동으로 활성화됩니다. 기본 출력은 한국어를 먼저 보여주는 정렬된 한·영 보고서이며, 한 언어만 명시적으로 요청하면 단일 언어 모드를 사용합니다. “마크다운 요약만 저장”은 `diff-summary-md`, “이 변경 이해했는지 퀴즈로 확인”은 `diff-summary-quiz`로 연결됩니다. 세 스킬 모두 명시한 `..`/`...` 범위를 정확히 보존합니다. 결함 탐색은 `code-review`, 원본 패치 확인은 `diff-viewer`를 사용하세요.
 
 ### doc-skill → [상세](doc-skill/README.ko.md)
 
-| 커맨드      | 동작                                                                        |
-| ----------- | --------------------------------------------------------------------------- |
-| `/gen-docs`   | README, 한국어 README, 아키텍처, 사용법 문서를 생성 또는 갱신               |
+| Claude Code | Codex       | 동작                                                              |
+| ----------- | ----------- | ----------------------------------------------------------------- |
+| `/gen-docs` | `$gen-docs` | README, 한국어 README, 아키텍처, 사용법 문서를 생성 또는 갱신      |
 
 ### git-skill → [상세](git-skill/README.ko.md)
 
-| 커맨드                | 동작                                                                            |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `/git-commit`         | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
-| `/git-commit-push`    | 위 작업 후 `git push` 까지 진행 (`--force` 안 함)                               |
-| `/git-commit-push-live` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                     |
-| `/git-commit-rewrite` | 최근 비순응 커밋 subject 를 Conventional 형식으로 재작성                        |
-| `/git-merge-to-main`  | 현재 브랜치를 `main` 으로 머지 후 소스 브랜치를 `git branch -d` 로 삭제         |
-| `/git-merge-to-dev`   | 현재 브랜치를 `dev` (없으면 `develop`) 으로 머지 후 소스 브랜치 삭제            |
-| `/git-branch-cleanup` | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                 |
+| Claude Code                    | Codex                       | 동작                                                                            |
+| ------------------------------ | --------------------------- | ------------------------------------------------------------------------------- |
+| `/git-commit`                  | `$git-commit`               | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
+| `/git-commit-push`             | `$git-commit-push`          | 위 작업 후 `git push`까지 진행 (`--force` 안 함)                                |
+| `/git-commit-push-realtime`    | `$git-commit-push-realtime` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                       |
+| `/git-commit-rewrite`          | `$git-commit-rewrite`       | 최근 비순응 커밋 subject를 Conventional 형식으로 재작성                         |
+| `/git-merge-to-main`           | `$git-merge-to-main`        | 현재 브랜치를 `main`으로 머지 후 소스 브랜치를 `git branch -d`로 삭제           |
+| `/git-merge-to-dev`            | `$git-merge-to-dev`         | 현재 브랜치를 `dev`(없으면 `develop`)로 머지 후 소스 브랜치 삭제                |
+| `/git-branch-cleanup`          | `$git-branch-cleanup`       | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                 |
 
 ### long-task → [상세](long-task/README.ko.md)
 
-| 커맨드       | 동작                                                                                          |
-| ------------ | --------------------------------------------------------------------------------------------- |
-| `/long-task` | 병렬 worktree 서브에이전트 + 마일스톤 리뷰로 프로젝트를 처음부터 끝까지 자율적으로 구현       |
+| Claude Code  | Codex        | 동작                                                                                          |
+| ------------ | ------------ | --------------------------------------------------------------------------------------------- |
+| `/long-task` | `$long-task` | 병렬 worktree 서브에이전트 + 마일스톤 리뷰로 프로젝트를 처음부터 끝까지 자율적으로 구현       |
 
 *"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 문구에도 자동 트리거됩니다.
 
 ### handoff → [상세](handoff/README.ko.md)
 
-| 커맨드                    | 동작                                                                                 |
-| ------------------------- | ------------------------------------------------------------------------------------ |
-| `/gen-frontend-handoff`   | 백엔드 API diff, 범위, 세션 컨텍스트에서 프론트엔드/클라이언트 핸드오프 작성        |
-| `/gen-backend-handoff`    | 코드, API, DB, job, rollout 변경사항에서 백엔드/서버 핸드오프 작성                  |
+| Claude Code               | Codex                    | 동작                                                                                 |
+| ------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | 백엔드 API diff, 범위, 세션 컨텍스트에서 프론트엔드/클라이언트 핸드오프 작성        |
+| `/gen-backend-handoff`    | `$gen-backend-handoff`   | 코드, API, DB, job, rollout 변경사항에서 백엔드/서버 핸드오프 작성                  |
 
 ## 문서
 

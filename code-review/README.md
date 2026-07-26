@@ -51,16 +51,18 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## Usage
 
-The matching skill triggers automatically from natural language, or you can use an explicit command:
+The matching skill triggers automatically from natural language. For explicit
+invocation, use the slash selector in Claude Code or the dollar selector in
+Codex:
 
-| Command                      | Skill               | Output                                                                  |
-| ---------------------------- | ------------------- | ----------------------------------------------------------------------- |
-| `/code-review [scope]`       | `code-review`       | Markdown + self-contained bilingual HTML review under `.reviews/`       |
-| `/code-review-md [scope]`    | `code-review-md`    | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`          |
-| `/diff-summary [scope]`      | `diff-summary`      | Korean + English Markdown and bilingual HTML under `.diff-summaries/`   |
-| `/diff-summary-md [scope]`   | `diff-summary-md`   | Korean + English Markdown only under `.diff-summaries/`                  |
-| `/diff-summary-quiz [scope]` | `diff-summary-quiz` | Bilingual artifacts plus aligned `## Quiz` comprehension sections       |
-| `/diff-viewer`               | `diff-viewer`       | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`                    |
+| Claude Code                     | Codex                        | Output                                                                  |
+| ------------------------------- | ---------------------------- | ----------------------------------------------------------------------- |
+| `/code-review [scope]`          | `$code-review [scope]`       | Markdown + self-contained bilingual HTML review under `.reviews/`       |
+| `/code-review-md [scope]`       | `$code-review-md [scope]`    | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`          |
+| `/diff-summary [scope]`         | `$diff-summary [scope]`      | Korean + English Markdown and bilingual HTML under `.diff-summaries/`   |
+| `/diff-summary-md [scope]`      | `$diff-summary-md [scope]`   | Korean + English Markdown only under `.diff-summaries/`                 |
+| `/diff-summary-quiz [scope]`    | `$diff-summary-quiz [scope]` | Bilingual artifacts plus aligned `## Quiz` comprehension sections       |
+| `/diff-viewer`                  | `$diff-viewer`               | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`                    |
 
 **Examples:**
 

@@ -1,6 +1,6 @@
 ---
 name: diff-summary-md
-description: Use when the user wants a Markdown-only diff or change summary artifact without an HTML report, including "요약을 마크다운 파일로만 저장해줘", "마크다운 요약만 저장", "마크다운 요약만 만들어줘", "diff 요약 마크다운으로", "markdown-only diff summary", "summarize the changes into a markdown file", "summary file without HTML", or "/diff-summary-md". For the interactive HTML report use diff-summary; for a summary with a comprehension quiz use diff-summary-quiz; for defects use code-review.
+description: Use when the user wants a Markdown-only diff or change summary artifact without an HTML report, including "요약을 마크다운 파일로만 저장해줘", "마크다운 요약만 저장", "마크다운 요약만 만들어줘", "diff 요약 마크다운으로", "markdown-only diff summary", "summarize the changes into a markdown file", "summary file without HTML", "/diff-summary-md", or "$diff-summary-md". For the interactive HTML report use diff-summary; for a summary with a comprehension quiz use diff-summary-quiz; for defects use code-review.
 ---
 
 # Diff Summary (Markdown Only)

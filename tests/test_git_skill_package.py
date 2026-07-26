@@ -5,6 +5,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GIT_SKILL = ROOT / "git-skill"
+REALTIME_SKILL_NAME = "git-commit-push-realtime"
+REALTIME_SKILL = GIT_SKILL / "skills" / REALTIME_SKILL_NAME
 
 PROTECTED_BRANCH_LIST = (
     "`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`"
@@ -12,32 +14,22 @@ PROTECTED_BRANCH_LIST = (
 
 
 class GitSkillPackageTests(unittest.TestCase):
-    def test_live_commit_push_skill_is_packaged_with_command(self) -> None:
-        skill = (
-            GIT_SKILL
-            / "skills"
-            / "git-commit-push-live"
-            / "SKILL.md"
-        )
-        command = GIT_SKILL / "commands" / "git-commit-push-live.md"
+    def test_realtime_commit_push_skill_is_packaged_with_command(self) -> None:
+        skill = REALTIME_SKILL / "SKILL.md"
+        command = GIT_SKILL / "commands" / f"{REALTIME_SKILL_NAME}.md"
 
         self.assertTrue(skill.is_file())
         self.assertTrue(command.is_file())
 
         skill_text = skill.read_text(encoding="utf-8")
         command_text = command.read_text(encoding="utf-8")
-        self.assertIn("name: git-commit-push-live", skill_text)
+        self.assertIn(f"name: {REALTIME_SKILL_NAME}", skill_text)
         self.assertIn("<plugin-root>/skills/git-commit/SKILL.md", skill_text)
         self.assertIn("<plugin-root>/skills/git-commit-push/SKILL.md", skill_text)
-        self.assertIn("**git-commit-push-live** skill", command_text)
+        self.assertIn(f"**{REALTIME_SKILL_NAME}** skill", command_text)
 
-    def test_live_commit_push_uses_green_outcome_checkpoints(self) -> None:
-        skill = (
-            GIT_SKILL
-            / "skills"
-            / "git-commit-push-live"
-            / "SKILL.md"
-        ).read_text(encoding="utf-8")
+    def test_realtime_commit_push_uses_green_outcome_checkpoints(self) -> None:
+        skill = (REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
 
         for contract in (
             "Do not split work by file count, elapsed time, token pressure",
@@ -49,13 +41,8 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(contract=contract):
                 self.assertIn(contract, skill)
 
-    def test_live_commit_push_pushes_each_checkpoint_and_stops_on_drift(self) -> None:
-        skill = (
-            GIT_SKILL
-            / "skills"
-            / "git-commit-push-live"
-            / "SKILL.md"
-        ).read_text(encoding="utf-8")
+    def test_realtime_commit_push_pushes_each_checkpoint_and_stops_on_drift(self) -> None:
+        skill = (REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
 
         for contract in (
             "After each checkpoint commit succeeds, push it before starting the next unit",
@@ -67,23 +54,17 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(contract=contract):
                 self.assertIn(contract, skill)
 
-    def test_live_commit_push_evals_cover_checkpoint_safety(self) -> None:
-        eval_path = (
-            GIT_SKILL
-            / "skills"
-            / "git-commit-push-live"
-            / "evals"
-            / "evals.json"
-        )
+    def test_realtime_commit_push_evals_cover_checkpoint_safety(self) -> None:
+        eval_path = REALTIME_SKILL / "evals" / "evals.json"
         payload = json.loads(eval_path.read_text(encoding="utf-8"))
 
-        self.assertEqual("git-commit-push-live", payload["skill_name"])
+        self.assertEqual(REALTIME_SKILL_NAME, payload["skill_name"])
         self.assertEqual([1, 2, 3], [item["id"] for item in payload["evals"]])
         prompts = " ".join(item["prompt"] for item in payload["evals"])
         self.assertIn("will not compile", prompts)
         self.assertIn("remote advances", prompts)
 
-    def test_live_commit_push_is_documented_across_package_surfaces(self) -> None:
+    def test_realtime_commit_push_is_documented_across_package_surfaces(self) -> None:
         package_readmes = [
             GIT_SKILL / "README.md",
             GIT_SKILL / "README.ko.md",
@@ -98,13 +79,34 @@ class GitSkillPackageTests(unittest.TestCase):
         for path in package_readmes:
             with self.subTest(path=path):
                 text = path.read_text(encoding="utf-8")
-                self.assertEqual(2, text.count("--skill git-commit-push-live"))
-                self.assertIn("/git-commit-push-live", text)
+                self.assertEqual(2, text.count(f"--skill {REALTIME_SKILL_NAME}"))
+                self.assertIn(f"/{REALTIME_SKILL_NAME}", text)
+                self.assertIn(f"${REALTIME_SKILL_NAME}", text)
 
         for path in command_docs:
             with self.subTest(path=path):
                 self.assertIn(
-                    "git-commit-push-live",
+                    REALTIME_SKILL_NAME,
+                    path.read_text(encoding="utf-8"),
+                )
+
+    def test_legacy_live_selector_is_removed_from_published_sources(self) -> None:
+        legacy_selector = "git-commit-push-" + "live"
+        checked_suffixes = {".json", ".md", ".py", ".yaml"}
+
+        for path in ROOT.rglob("*"):
+            relative_path = path.relative_to(ROOT)
+            if (
+                not path.is_file()
+                or path.suffix not in checked_suffixes
+                or ".git" in path.parts
+                or "__pycache__" in path.parts
+                or any(part.startswith(".") for part in relative_path.parts)
+            ):
+                continue
+            with self.subTest(path=relative_path):
+                self.assertNotIn(
+                    legacy_selector,
                     path.read_text(encoding="utf-8"),
                 )
 
@@ -122,7 +124,7 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(phrase, path.read_text(encoding="utf-8"))
 
-    def test_plugin_metadata_publishes_live_checkpoint_support(self) -> None:
+    def test_plugin_metadata_publishes_realtime_checkpoint_support(self) -> None:
         metadata = json.loads(
             (GIT_SKILL / ".claude-plugin" / "plugin.json").read_text(
                 encoding="utf-8"
@@ -130,8 +132,8 @@ class GitSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.4.0", metadata["version"])
-        self.assertIn("live checkpoint pushes", metadata["description"])
+        self.assertEqual("0.5.0", metadata["version"])
+        self.assertIn("realtime checkpoint pushes", metadata["description"])
 
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
         expected_contracts = {

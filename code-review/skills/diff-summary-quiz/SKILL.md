@@ -1,6 +1,6 @@
 ---
 name: diff-summary-quiz
-description: Use when the user wants a change summary plus a self-test quiz about a diff, branch, commit, or PR, including "diff 퀴즈 만들어줘", "변경사항 퀴즈", "요약하고 퀴즈로 확인해줘", "이 변경 이해했는지 퀴즈로 확인", "quiz me on this diff", "diff summary with quiz", "test my understanding of this change", or "/diff-summary-quiz". For a summary without a quiz use diff-summary; for a Markdown-only artifact use diff-summary-md; for defects use code-review.
+description: Use when the user wants a change summary plus a self-test quiz about a diff, branch, commit, or PR, including "diff 퀴즈 만들어줘", "변경사항 퀴즈", "요약하고 퀴즈로 확인해줘", "이 변경 이해했는지 퀴즈로 확인", "quiz me on this diff", "diff summary with quiz", "test my understanding of this change", "/diff-summary-quiz", or "$diff-summary-quiz". For a summary without a quiz use diff-summary; for a Markdown-only artifact use diff-summary-md; for defects use code-review.
 ---
 
 # Diff Summary (Comprehension Quiz)

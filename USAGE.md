@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-live`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Live checkpoint install: `npx skills add chann/skills --skill git-commit-push-live`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -49,12 +49,37 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /diff-summary-md main..dev               # Korean + English Markdown only
 > /diff-summary-quiz main..dev             # bilingual summary + aligned quiz
 > /git-commit                               # group changes into Conventional Commits
-> /git-commit-push-live                     # push each verified outcome while working
+> /git-commit-push-realtime                 # push each verified outcome while working
 > /gen-docs                                   # generate/update project docs
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
 > /long-task build a CLI todo app end to end
 ```
+
+### Explicit selectors
+
+Claude Code uses slash commands; Codex uses dollar-prefixed skill selectors.
+These are the exact names published by every package:
+
+| Workflow | Claude Code | Codex |
+|---|---|---|
+| Default code review | `/code-review` | `$code-review` |
+| Markdown-only code review | `/code-review-md` | `$code-review-md` |
+| Diff summary | `/diff-summary` | `$diff-summary` |
+| Markdown-only diff summary | `/diff-summary-md` | `$diff-summary-md` |
+| Diff summary quiz | `/diff-summary-quiz` | `$diff-summary-quiz` |
+| Raw diff viewer | `/diff-viewer` | `$diff-viewer` |
+| Project docs | `/gen-docs` | `$gen-docs` |
+| Git commit | `/git-commit` | `$git-commit` |
+| Git commit and push | `/git-commit-push` | `$git-commit-push` |
+| Realtime commit and push | `/git-commit-push-realtime` | `$git-commit-push-realtime` |
+| Commit-message rewrite | `/git-commit-rewrite` | `$git-commit-rewrite` |
+| Merge to main | `/git-merge-to-main` | `$git-merge-to-main` |
+| Merge to dev | `/git-merge-to-dev` | `$git-merge-to-dev` |
+| Merged-branch cleanup | `/git-branch-cleanup` | `$git-branch-cleanup` |
+| Frontend handoff | `/gen-frontend-handoff` | `$gen-frontend-handoff` |
+| Backend handoff | `/gen-backend-handoff` | `$gen-backend-handoff` |
+| Autonomous long task | `/long-task` | `$long-task` |
 
 ## Command reference
 
@@ -127,13 +152,13 @@ For the skill's default write path, invoke the same script with `--bilingual-jso
 |---|---|
 | `/git-commit` | Group working-tree changes into Conventional Commits, one per logical unit |
 | `/git-commit-push` | Same, then `git push` (never `--force`) |
-| `/git-commit-push-live` | During implementation, verify, commit, and immediately push each meaningful outcome |
+| `/git-commit-push-realtime` | During implementation, verify, commit, and immediately push each meaningful outcome |
 | `/git-commit-rewrite` | Rewrite recent non-Conventional commit subjects |
 | `/git-merge-to-main` | Merge the current branch into `main`, then `git branch -d` the source |
 | `/git-merge-to-dev` | Merge into `dev` (fallback `develop`), then `git branch -d` the source |
 | `/git-branch-cleanup` | Delete every local branch already merged into a protected branch |
 
-Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the live invocation pre-authorizes its displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`. `/git-commit-push-live` commits only green, outcome-based checkpoints, pushes each one before starting the next, and stops rather than auto-reconciling upstream drift. A bare `--force` push is used only by `/git-commit-rewrite` in its explicit force path, which prefers `--force-with-lease`.
+Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the realtime invocation pre-authorizes its displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`. `/git-commit-push-realtime` commits only green, outcome-based checkpoints, pushes each one before starting the next, and stops rather than auto-reconciling upstream drift. A bare `--force` push is used only by `/git-commit-rewrite` in its explicit force path, which prefers `--force-with-lease`.
 
 ### doc-skill
 
@@ -202,7 +227,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 > /git-commit-push
 
 # Build a longer change and publish each verified outcome as it completes
-> /git-commit-push-live
+> /git-commit-push-realtime
 
 # Refresh this repo's docs (root from cwd, or pass a path)
 > /gen-docs

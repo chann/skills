@@ -1,6 +1,6 @@
 ---
 name: gen-docs
-description: Use when a software project needs README, README.ko, ARCHITECTURE, or USAGE documentation created, refreshed, reorganized, translated, or kept in sync without clobbering existing prose
+description: Use when a software project needs README, README.ko, ARCHITECTURE, or USAGE documentation created, refreshed, reorganized, translated, or kept in sync without clobbering existing prose, including explicit "/gen-docs" or "$gen-docs"
 ---
 
 # Documentation Generator

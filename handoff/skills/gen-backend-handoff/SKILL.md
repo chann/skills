@@ -1,6 +1,6 @@
 ---
 name: gen-backend-handoff
-description: Use when code changes, API changes, database changes, jobs, queues, auth behavior, git diffs, commit ranges, branch comparisons, or current session context need to be turned into a handoff for backend developers, platform engineers, or server-side coding agents
+description: Use when code changes, API changes, database changes, jobs, queues, auth behavior, git diffs, commit ranges, branch comparisons, or current session context need to be turned into a handoff for backend developers, platform engineers, or server-side coding agents, including explicit "/gen-backend-handoff" or "$gen-backend-handoff"
 ---
 
 # Backend Handoff Generator

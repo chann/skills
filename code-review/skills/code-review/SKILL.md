@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Use when the user asks to review code, review changes, review a commit, review a PR, audit code quality, check for security issues, or generate a code review report. Trigger on phrases like "review my changes", "코드 리뷰", "check my code", "review the last commit", "what do you think of this diff", "compare branches", "code audit", "HTML 리뷰 보고서", "styled review report" — even if they don't say "code review" explicitly. Produces severity-tagged findings as a Markdown report plus a self-contained bilingual HTML report under `.reviews/`, opened in a browser. For a Markdown-only artifact use `code-review-md`.
+description: Use when the user asks to review code, review changes, review a commit, review a PR, audit code quality, check for security issues, or generate a code review report. Trigger on phrases like "review my changes", "코드 리뷰", "check my code", "review the last commit", "what do you think of this diff", "compare branches", "code audit", "HTML 리뷰 보고서", "styled review report", "/code-review", or "$code-review" — even if they don't say "code review" explicitly. Produces severity-tagged findings as a Markdown report plus a self-contained bilingual HTML report under `.reviews/`, opened in a browser. For a Markdown-only artifact use `code-review-md`.
 ---
 
 # Code Review Skill

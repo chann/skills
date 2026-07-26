@@ -51,16 +51,17 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 
 ## 사용 방법
 
-설치 후 자연어 의도에 맞는 스킬이 자동으로 트리거되며, 명시적 커맨드도 사용할 수 있습니다:
+설치 후 자연어 의도에 맞는 스킬이 자동으로 트리거됩니다. 명시적으로 호출할
+때는 Claude Code의 슬래시 selector 또는 Codex의 달러 selector를 사용합니다:
 
-| 커맨드                          | 스킬                  | 출력                                                             |
-| ---------------------------- | ------------------- | -------------------------------------------------------------- |
-| `/code-review [scope]`       | `code-review`       | `.reviews/`에 마크다운 + 자체 완결형 이중언어 HTML 리뷰                   |
-| `/code-review-md [scope]`    | `code-review-md`    | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운만 생성                 |
-| `/diff-summary [scope]`      | `diff-summary`      | `.diff-summaries/`에 한·영 마크다운 + 이중언어 HTML 요약                 |
-| `/diff-summary-md [scope]`   | `diff-summary-md`   | `.diff-summaries/`에 한·영 마크다운만 (HTML 없음)                        |
-| `/diff-summary-quiz [scope]` | `diff-summary-quiz` | 이중언어 산출물 + 정렬된 `## Quiz` 이해도 섹션                            |
-| `/diff-viewer`               | `diff-viewer`       | `.diffs/<YYYY-MM-DD>_<tag>.html`에 HTML diff viewer             |
+| Claude Code                     | Codex                        | 출력                                                                    |
+| ------------------------------- | ---------------------------- | ----------------------------------------------------------------------- |
+| `/code-review [scope]`          | `$code-review [scope]`       | `.reviews/`에 마크다운 + 자체 완결형 이중언어 HTML 리뷰                  |
+| `/code-review-md [scope]`       | `$code-review-md [scope]`    | `.reviews/<YYYY-MM-DD>_<short-sha>.md`에 마크다운만 생성                 |
+| `/diff-summary [scope]`         | `$diff-summary [scope]`      | `.diff-summaries/`에 한·영 마크다운 + 이중언어 HTML 요약                 |
+| `/diff-summary-md [scope]`      | `$diff-summary-md [scope]`   | `.diff-summaries/`에 한·영 마크다운만 (HTML 없음)                        |
+| `/diff-summary-quiz [scope]`    | `$diff-summary-quiz [scope]` | 이중언어 산출물 + 정렬된 `## Quiz` 이해도 섹션                           |
+| `/diff-viewer`                  | `$diff-viewer`               | `.diffs/<YYYY-MM-DD>_<tag>.html`에 HTML diff viewer                     |
 
 **예시:**
 

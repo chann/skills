@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Branch Cleanup"
+  short_description: "Safely delete local branches that are already merged"
+  default_prompt: "Use $git-branch-cleanup to safely clean up local branches that are already merged."

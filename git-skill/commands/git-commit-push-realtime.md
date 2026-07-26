@@ -2,7 +2,7 @@
 description: Commit and push verified outcome checkpoints continuously while working
 ---
 
-Use the **git-commit-push-live** skill for the requested implementation.
+Use the **git-commit-push-realtime** skill for the requested implementation.
 
 Plan meaningful, outcome-based checkpoints before the first commit. Complete and
 verify one coherent unit, stage only its explicit paths, create a Conventional

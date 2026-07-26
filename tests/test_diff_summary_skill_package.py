@@ -155,7 +155,13 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                         for path in variant.rglob("*")
                         if path.is_file()
                     ),
-                    sorted([Path("SKILL.md"), *canonical_files]),
+                    sorted(
+                        [
+                            Path("SKILL.md"),
+                            Path("agents/openai.yaml"),
+                            *canonical_files,
+                        ]
+                    ),
                 )
                 for relative_path, canonical_text in canonical_files.items():
                     self.assertEqual(
@@ -169,7 +175,7 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
             (CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text()
         )
 
-        self.assertEqual(metadata["version"], "2.4.0")
+        self.assertEqual(metadata["version"], "2.5.0")
         self.assertIn("diff-summary", metadata["description"])
         self.assertIn("diff-summary-md", metadata["description"])
         self.assertIn("diff-summary-quiz", metadata["description"])

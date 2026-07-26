@@ -1,6 +1,6 @@
 ---
 name: diff-summary
-description: Use when the user wants an explanatory code, diff, branch, commit, or PR change summary, including "코드를 요약해줘", "변경사항을 요약해줘", "diff 요약", "main..dev 코드를 요약해줘", "브랜치 변경 요약", "PR 변경 요약", "summarize the code changes", "summarize this diff", "change summary", "main..dev summary", "what changed between branches", or "summarize this PR". Produces evidence-based purpose, behavior, architecture, patterns, contracts, tests, and operations in Markdown and interactive HTML. Use diff-summary-md for a Markdown-only artifact, diff-summary-quiz for a comprehension quiz, code-review for defects and risks, and diff-viewer for a raw patch; when both summary and review are requested, run distinct workflows.
+description: Use when the user wants an explanatory code, diff, branch, commit, or PR change summary, including "코드를 요약해줘", "변경사항을 요약해줘", "diff 요약", "main..dev 코드를 요약해줘", "브랜치 변경 요약", "PR 변경 요약", "summarize the code changes", "summarize this diff", "change summary", "main..dev summary", "what changed between branches", "summarize this PR", "/diff-summary", or "$diff-summary". Produces evidence-based purpose, behavior, architecture, patterns, contracts, tests, and operations in Markdown and interactive HTML. Use diff-summary-md for a Markdown-only artifact, diff-summary-quiz for a comprehension quiz, code-review for defects and risks, and diff-viewer for a raw patch; when both summary and review are requested, run distinct workflows.
 ---
 
 # Diff Summary

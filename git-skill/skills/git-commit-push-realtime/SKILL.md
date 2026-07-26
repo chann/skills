@@ -1,9 +1,9 @@
 ---
-name: git-commit-push-live
-description: Use when the user wants an implementation committed and pushed continuously at meaningful checkpoints instead of only once at the end. Trigger on phrases like "commit and push as you work", "keep committing and pushing", "작업 중간중간 커밋 푸시", "의미 있는 단위마다 푸시", or "/git-commit-push-live". Runs verified, outcome-based Conventional Commit checkpoints and pushes each one immediately without force.
+name: git-commit-push-realtime
+description: Use when the user wants an implementation committed and pushed continuously at meaningful checkpoints instead of only once at the end. Trigger on phrases like "commit and push as you work", "keep committing and pushing", "작업 중간중간 커밋 푸시", "의미 있는 단위마다 푸시", "/git-commit-push-realtime", or "$git-commit-push-realtime". Runs verified, outcome-based Conventional Commit checkpoints and pushes each one immediately without force.
 ---
 
-# Git Commit + Push Live
+# Git Commit + Push Realtime
 
 ## Overview
 
@@ -19,7 +19,7 @@ The user's invocation pre-authorizes repeated commits and ordinary pushes for th
 requested task. It does not authorize history rewrites, force pushes, unrelated
 changes, releases, or new branches unless the user requested those separately.
 
-**Announce at start:** "I'm using the git-commit-push-live skill to create and
+**Announce at start:** "I'm using the git-commit-push-realtime skill to create and
 push verified checkpoints as I work."
 
 ## Required shared workflow
@@ -32,7 +32,7 @@ Before starting, read both shared skills:
 2. `<plugin-root>/skills/git-commit-push/SKILL.md` for ordinary push behavior
    and non-fast-forward failure handling.
 
-Apply their safety rules throughout this workflow. Where this skill adds live
+Apply their safety rules throughout this workflow. Where this skill adds realtime
 behavior, the rules below define when a unit is ready to commit and when work
 continues without a commit.
 
@@ -75,7 +75,7 @@ git rev-list --left-right --count HEAD...@{u}
 
 Break the requested work into the smallest sequence of independently reviewable
 outcomes. Show the initial checkpoint plan before the first commit so the user
-can object. The live invocation authorizes proceeding through that plan without
+can object. The realtime invocation authorizes proceeding through that plan without
 pausing for approval at every checkpoint unless the user asks for interactive
 approval.
 

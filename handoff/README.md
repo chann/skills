@@ -38,10 +38,10 @@ Backend-only selector form: `npx skills add chann/skills --skill gen-backend-han
 
 ## Usage
 
-| Command | Skill | Output |
+| Claude Code | Codex | Output |
 |---|---|---|
-| `/gen-frontend-handoff` | `gen-frontend-handoff` | Frontend/client handoff at `.handoffs/<date>_<scope>_frontend.md` |
-| `/gen-backend-handoff` | `gen-backend-handoff` | Backend/server handoff at `.handoffs/<date>_<scope>_backend.md` |
+| `/gen-frontend-handoff` | `$gen-frontend-handoff` | Frontend/client handoff at `.handoffs/<date>_<scope>_frontend.md` |
+| `/gen-backend-handoff` | `$gen-backend-handoff` | Backend/server handoff at `.handoffs/<date>_<scope>_backend.md` |
 
 Examples:
 

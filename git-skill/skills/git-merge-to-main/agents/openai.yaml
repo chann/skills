@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Merge to Main"
+  short_description: "Merge the current branch into main safely"
+  default_prompt: "Use $git-merge-to-main to merge the current branch into main safely."

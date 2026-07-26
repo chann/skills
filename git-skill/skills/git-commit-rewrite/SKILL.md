@@ -1,6 +1,6 @@
 ---
 name: git-commit-rewrite
-description: Use when the user asks to rewrite recent non-Conventional commit subjects, fix existing commit messages, or clean up commit history. Trigger on phrases like "rewrite commit history", "fix these commit messages", "커밋 메시지 다시 써줘", "/git-commit-rewrite", or whenever the user shows a non-Conventional `git log` and asks for help. For new commits use `git-commit`; for commit + push use `git-commit-push`.
+description: Use when the user asks to rewrite recent non-Conventional commit subjects, fix existing commit messages, or clean up commit history. Trigger on phrases like "rewrite commit history", "fix these commit messages", "커밋 메시지 다시 써줘", "/git-commit-rewrite", "$git-commit-rewrite", or whenever the user shows a non-Conventional `git log` and asks for help. For new commits use `git-commit`; for commit + push use `git-commit-push`.
 ---
 
 # Git Commit Rewrite

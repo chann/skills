@@ -1,6 +1,6 @@
 ---
 name: code-review-md
-description: Use when the user asks for a Markdown-only code review artifact, a review file without HTML, or a review report in `.reviews/` with no browser output. Trigger on phrases like "review my changes and save as markdown", "마크다운 리뷰 보고서만", "리뷰 결과 마크다운 파일로 저장", "markdown-only review", "/code-review-md". For the default markdown + HTML review use the `code-review` skill.
+description: Use when the user asks for a Markdown-only code review artifact, a review file without HTML, or a review report in `.reviews/` with no browser output. Trigger on phrases like "review my changes and save as markdown", "마크다운 리뷰 보고서만", "리뷰 결과 마크다운 파일로 저장", "markdown-only review", "/code-review-md", or "$code-review-md". For the default markdown + HTML review use the `code-review` skill.
 ---
 
 # Code Review (Markdown Report)

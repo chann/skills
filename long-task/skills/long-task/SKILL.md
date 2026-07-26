@@ -1,6 +1,6 @@
 ---
 name: long-task
-description: Use when the user asks to build a project end-to-end, run autonomous multi-hour or multi-day development, or orchestrate multi-milestone work without human intervention. Trigger phrases include "build this whole project", "implement this end-to-end", "do this autonomously", "run a long task", "long-running agent", "build it from scratch and don't ask", or the explicit `/long-task` command. Also use for lifecycle subcommands such as `/long-task status`, `/long-task pause`, `/long-task resume`, `/long-task clear`, and `/long-task complete`.
+description: Use when the user asks to build a project end-to-end, run autonomous multi-hour or multi-day development, or orchestrate multi-milestone work without human intervention. Trigger phrases include "build this whole project", "implement this end-to-end", "do this autonomously", "run a long task", "long-running agent", "build it from scratch and don't ask", "/long-task", or "$long-task". Also use for lifecycle subcommands such as `/long-task status`, `/long-task pause`, `/long-task resume`, `/long-task clear`, and `/long-task complete`.
 ---
 
 # Long-Task Orchestrator

@@ -352,6 +352,6 @@ class CodeReviewSkillPackageTests(unittest.TestCase):
             (CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text()
         )
 
-        self.assertEqual(metadata["version"], "2.4.0")
+        self.assertEqual(metadata["version"], "2.5.0")
         self.assertIn("diff-viewer", metadata["description"])
         self.assertIn("diff-summary", metadata["description"])

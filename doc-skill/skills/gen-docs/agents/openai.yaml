@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Project Docs"
+  short_description: "Generate or update the project documentation set"
+  default_prompt: "Use $gen-docs to generate or update the current project's documentation."

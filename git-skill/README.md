@@ -6,7 +6,7 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 
 ## What it does
 
-- **Commit / Push / Live / Rewrite** — group staged + unstaged changes into logical Conventional Commits, optionally push, keep committing and pushing verified outcomes during implementation, or rewrite non-conformant subjects in place
+- **Commit / Push / Realtime / Rewrite** — group staged + unstaged changes into logical Conventional Commits, optionally push, keep committing and pushing verified outcomes during implementation, or rewrite non-conformant subjects in place
 - Creates each commit with explicit `git add <paths>` — never `git add .`
 - Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
 - Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
@@ -22,7 +22,7 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 npx skills add -y -g chann/skills \
   --skill git-commit \
   --skill git-commit-push \
-  --skill git-commit-push-live \
+  --skill git-commit-push-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
@@ -35,7 +35,7 @@ npx skills add -y -g chann/skills \
 npx skills add chann/skills \
   --skill git-commit \
   --skill git-commit-push \
-  --skill git-commit-push-live \
+  --skill git-commit-push-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
@@ -53,17 +53,18 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 
 ## Usage
 
-Triggers when you ask Claude Code to commit / merge / clean up your branches, or via explicit commands:
+Natural-language requests trigger the matching workflow. Explicit invocation
+uses `/name` in Claude Code and `$name` in Codex:
 
-| Command                    | Skill                  | Action                                                                                      |
-| -------------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
-| `/git-commit`              | `git-commit`           | Group staged + unstaged changes into logical units; create one Conventional Commit per unit |
-| `/git-commit-push`         | `git-commit-push`      | Same as above, then `git push` (no force)                                                   |
-| `/git-commit-push-live`    | `git-commit-push-live` | During implementation, commit and immediately push each verified, meaningful outcome        |
-| `/git-commit-rewrite`      | `git-commit-rewrite`   | Rewrite recent non-conformant commit subjects to Conventional format                        |
-| `/git-merge-to-main`       | `git-merge-to-main`    | Merge current branch into `main`, then delete the source unless protected                   |
-| `/git-merge-to-dev`        | `git-merge-to-dev`     | Merge current branch into `dev` (fallback `develop`), then delete the source unless protected |
-| `/git-branch-cleanup`      | `git-branch-cleanup`   | Delete every local branch already merged into a protected branch                            |
+| Claude Code                     | Codex                        | Action                                                                                         |
+| ------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| `/git-commit`                   | `$git-commit`                | Group staged + unstaged changes into logical units; create one Conventional Commit per unit    |
+| `/git-commit-push`              | `$git-commit-push`           | Same as above, then `git push` (no force)                                                      |
+| `/git-commit-push-realtime`     | `$git-commit-push-realtime`  | During implementation, commit and immediately push each verified, meaningful outcome           |
+| `/git-commit-rewrite`           | `$git-commit-rewrite`        | Rewrite recent non-conformant commit subjects to Conventional format                           |
+| `/git-merge-to-main`            | `$git-merge-to-main`         | Merge current branch into `main`, then delete the source unless protected                      |
+| `/git-merge-to-dev`             | `$git-merge-to-dev`          | Merge current branch into `dev` (fallback `develop`), then delete the source unless protected  |
+| `/git-branch-cleanup`           | `$git-branch-cleanup`        | Delete every local branch already merged into a protected branch                               |
 
 **Examples:**
 
@@ -72,6 +73,7 @@ Triggers when you ask Claude Code to commit / merge / clean up your branches, or
 > 변경사항 의미 단위로 커밋해줘
 > /git-commit-push
 > keep committing and pushing meaningful checkpoints as you work
+> $git-commit-push-realtime
 > /git-commit-rewrite
 > dev에 머지해줘
 > 머지된 브랜치 다 정리해줘
@@ -91,7 +93,7 @@ Triggers when you ask Claude Code to commit / merge / clean up your branches, or
 
 Runs the default workflow, then `git push`. Never `--force` or `--force-with-lease`. If the push is rejected, the skill stops and surfaces the error rather than auto-resolving.
 
-### `/git-commit-push-live`
+### `/git-commit-push-realtime`
 
 1. Inspect the branch, upstream, existing commits, working tree, and secret-path risks before editing
 2. Plan outcome-based checkpoints; do not split work by elapsed time, file count, or token pressure
@@ -188,7 +190,7 @@ git-skill/
 ├── commands/
 │   ├── git-commit.md                     # /git-commit (default)
 │   ├── git-commit-push.md                # /git-commit-push command
-│   ├── git-commit-push-live.md           # /git-commit-push-live command
+│   ├── git-commit-push-realtime.md       # /git-commit-push-realtime command
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite command
 │   ├── git-merge-to-main.md              # /git-merge-to-main command
 │   ├── git-merge-to-dev.md               # /git-merge-to-dev command
@@ -200,7 +202,7 @@ git-skill/
     │       └── rewrite_msg.py            # filter-branch helper for rewrite
     ├── git-commit-push/                  # Push variant
     │   └── SKILL.md
-    ├── git-commit-push-live/             # Verified live-checkpoint variant
+    ├── git-commit-push-realtime/         # Verified realtime-checkpoint variant
     │   ├── SKILL.md
     │   └── evals/evals.json
     ├── git-commit-rewrite/               # Rewrite variant

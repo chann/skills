@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use when the user asks to commit changes, organize commits, write commit messages, or split working-tree changes into Conventional Commits. Trigger on phrases like "commit my changes", "커밋해줘", "커밋 분리", "make commits", "/git-commit", or whenever the user wants to turn current changes into Conventional Commit-style commits. For commit + push use `git-commit-push`; for rewriting non-Conventional commit history use `git-commit-rewrite`.
+description: Use when the user asks to commit changes, organize commits, write commit messages, or split working-tree changes into Conventional Commits. Trigger on phrases like "commit my changes", "커밋해줘", "커밋 분리", "make commits", "/git-commit", "$git-commit", or whenever the user wants to turn current changes into Conventional Commit-style commits. For commit + push use `git-commit-push`; for rewriting non-Conventional commit history use `git-commit-rewrite`.
 ---
 
 # Git Commit Skill

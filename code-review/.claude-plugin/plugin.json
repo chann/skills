@@ -1,5 +1,5 @@
 {
   "name": "code-review",
   "description": "Automated code review and change intelligence from git diffs, including explanatory diff summaries (diff-summary, diff-summary-md, diff-summary-quiz) and a raw diff viewer (diff-viewer).",
-  "version": "2.4.0"
+  "version": "2.5.0"
 }

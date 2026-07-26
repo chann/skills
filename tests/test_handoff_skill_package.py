@@ -44,7 +44,7 @@ class HandoffSkillPackageTests(unittest.TestCase):
         backend_command = (HANDOFF / "commands" / "gen-backend-handoff.md").read_text(encoding="utf-8")
 
         self.assertEqual(metadata["name"], "handoff")
-        self.assertEqual(metadata["version"], "0.1.0")
+        self.assertEqual(metadata["version"], "0.2.0")
         self.assertIn("handoff", metadata["description"].lower())
         self.assertIn("Use the **gen-frontend-handoff** skill", frontend_command)
         self.assertIn("Use the **gen-backend-handoff** skill", backend_command)

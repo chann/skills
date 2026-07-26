@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import subprocess
@@ -10,6 +11,16 @@ LONG_TASK = ROOT / "long-task"
 
 
 class LongTaskSkillPackageTests(unittest.TestCase):
+    def test_long_task_plugin_metadata_version(self) -> None:
+        metadata = json.loads(
+            (LONG_TASK / ".claude-plugin" / "plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(metadata["name"], "long-task")
+        self.assertEqual(metadata["version"], "0.3.0")
+
     def test_skills_cli_discovers_long_task(self) -> None:
         env = os.environ.copy()
         env.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})

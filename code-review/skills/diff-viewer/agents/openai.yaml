@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diff Viewer"
+  short_description: "Render the working-tree diff as interactive HTML"
+  default_prompt: "Use $diff-viewer to render the current working-tree diff as an interactive HTML report."

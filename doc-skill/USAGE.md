@@ -39,10 +39,10 @@ Generate or update docs for a different project:
 
 ## Command reference
 
-| Command | Effect |
-|---|---|
-| `/gen-docs` | Use the current working directory as the target project root |
-| `/gen-docs <project-root>` | Use `<project-root>` as the target project root |
+| Claude Code | Codex | Effect |
+|---|---|---|
+| `/gen-docs` | `$gen-docs` | Use the current working directory as the target project root |
+| `/gen-docs <project-root>` | `$gen-docs <project-root>` | Use `<project-root>` as the target project root |
 
 The command always targets this documentation set:
 

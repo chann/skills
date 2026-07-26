@@ -32,6 +32,22 @@ ROOT_DIFF_SUMMARY_DOCS = [
     ROOT / "ARCHITECTURE.md",
 ]
 
+ROOT_SELECTOR_DOCS = [
+    ROOT / "README.md",
+    ROOT / "README.ko.md",
+    ROOT / "USAGE.md",
+]
+
+
+def frontmatter_value(skill_path: Path, key: str) -> str:
+    text = skill_path.read_text(encoding="utf-8")
+    frontmatter = text.split("---", 2)[1]
+    prefix = f"{key}: "
+    for line in frontmatter.splitlines():
+        if line.startswith(prefix):
+            return line.removeprefix(prefix)
+    raise AssertionError(f"{skill_path.relative_to(ROOT)} is missing {key}")
+
 
 class InstallationDocsTests(unittest.TestCase):
     def test_npx_install_examples_use_skill_option_not_at_selector(self) -> None:
@@ -57,6 +73,66 @@ class InstallationDocsTests(unittest.TestCase):
                         2,
                         f"{path.relative_to(ROOT)} must include {selector} in global and local installs",
                     )
+
+    def test_every_skill_declares_claude_code_and_codex_interfaces(self) -> None:
+        skill_paths = sorted(ROOT.glob("*/skills/*/SKILL.md"))
+        self.assertEqual(17, len(skill_paths))
+
+        for skill_path in skill_paths:
+            selector = skill_path.parent.name
+            plugin_root = skill_path.parents[2]
+            command_path = plugin_root / "commands" / f"{selector}.md"
+            openai_interface_path = skill_path.parent / "agents" / "openai.yaml"
+            description = frontmatter_value(skill_path, "description")
+
+            with self.subTest(skill=selector):
+                self.assertEqual(selector, frontmatter_value(skill_path, "name"))
+                self.assertTrue(
+                    command_path.is_file(),
+                    f"missing Claude Code command wrapper: {command_path.relative_to(ROOT)}",
+                )
+                self.assertIn(f"/{selector}", description)
+                self.assertIn(f"${selector}", description)
+                self.assertTrue(
+                    openai_interface_path.is_file(),
+                    "missing Codex interface metadata: "
+                    f"{openai_interface_path.relative_to(ROOT)}",
+                )
+                openai_interface = openai_interface_path.read_text(encoding="utf-8")
+                interface_lines = [
+                    line for line in openai_interface.splitlines() if line.strip()
+                ]
+                self.assertEqual("interface:", interface_lines[0])
+                fields = set()
+                for line in interface_lines[1:]:
+                    match = re.fullmatch(r'  ([a-z_]+): ".+"', line)
+                    self.assertIsNotNone(
+                        match,
+                        f"invalid Codex interface entry: {line}",
+                    )
+                    if match:
+                        fields.add(match.group(1))
+                self.assertEqual(
+                    {"display_name", "short_description", "default_prompt"},
+                    fields,
+                )
+                self.assertIn(f"${selector}", openai_interface)
+
+    def test_root_and_package_readmes_publish_both_platform_selectors(self) -> None:
+        for skill_path in sorted(ROOT.glob("*/skills/*/SKILL.md")):
+            selector = skill_path.parent.name
+            plugin_root = skill_path.parents[2]
+            docs = [
+                *ROOT_SELECTOR_DOCS,
+                plugin_root / "README.md",
+                plugin_root / "README.ko.md",
+            ]
+
+            for path in docs:
+                text = path.read_text(encoding="utf-8")
+                with self.subTest(skill=selector, doc=path.relative_to(ROOT)):
+                    self.assertIn(f"/{selector}", text)
+                    self.assertIn(f"${selector}", text)
 
     def test_root_docs_publish_diff_summary_command_and_generated_path(self) -> None:
         for path in ROOT_DIFF_SUMMARY_DOCS:

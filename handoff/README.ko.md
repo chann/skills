@@ -38,10 +38,10 @@ npx skills add chann/skills \
 
 ## 사용 방법
 
-| 커맨드 | 스킬 | 출력 |
+| Claude Code | Codex | 출력 |
 |---|---|---|
-| `/gen-frontend-handoff` | `gen-frontend-handoff` | `.handoffs/<date>_<scope>_frontend.md`에 프론트엔드/클라이언트 핸드오프 생성 |
-| `/gen-backend-handoff` | `gen-backend-handoff` | `.handoffs/<date>_<scope>_backend.md`에 백엔드/서버 핸드오프 생성 |
+| `/gen-frontend-handoff` | `$gen-frontend-handoff` | `.handoffs/<date>_<scope>_frontend.md`에 프론트엔드/클라이언트 핸드오프 생성 |
+| `/gen-backend-handoff` | `$gen-backend-handoff` | `.handoffs/<date>_<scope>_backend.md`에 백엔드/서버 핸드오프 생성 |
 
 예시:
 

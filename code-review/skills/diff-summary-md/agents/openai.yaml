@@ -1,0 +1,4 @@
+interface:
+  display_name: "Markdown Diff Summary"
+  short_description: "Summarize code changes as Markdown only"
+  default_prompt: "Use $diff-summary-md to summarize the current code changes as Korean and English Markdown."

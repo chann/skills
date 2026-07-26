@@ -52,7 +52,7 @@ class DocSkillPackageTests(unittest.TestCase):
         command = (DOC_SKILL / "commands" / "gen-docs.md").read_text(encoding="utf-8")
 
         self.assertEqual(metadata["name"], "doc-skill")
-        self.assertEqual(metadata["version"], "0.1.0")
+        self.assertEqual(metadata["version"], "0.2.0")
         self.assertIn("documentation", metadata["description"].lower())
         self.assertIn("Use the **gen-docs** skill", command)
         self.assertIn("README.md", command)

@@ -55,17 +55,20 @@ Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 
 ## Quick reference
 
+Use `/skill-name` in Claude Code and `$skill-name` in Codex. Every row below
+spells out both explicit selectors.
+
 ### code-review → [details](code-review/README.md)
 
 
-| Command                   | Output                                                         |
-| ------------------------- | -------------------------------------------------------------- |
-| `/code-review [scope]`    | Write markdown + bilingual HTML review reports to `.reviews/`   |
-| `/code-review-md [scope]` | Write a markdown-only review to `.reviews/`                      |
-| `/diff-summary [scope]`   | Explain changes in Korean + English Markdown and one bilingual interactive HTML under `.diff-summaries/` |
-| `/diff-summary-md [scope]` | Explain changes in Korean + English Markdown only under `.diff-summaries/` (no HTML, no browser) |
-| `/diff-summary-quiz [scope]` | Same as `/diff-summary`, plus aligned interactive comprehension quizzes |
-| `/diff-viewer`            | Render the raw working-tree diff to `.diffs/`                   |
+| Claude Code                      | Codex                       | Output                                                                                          |
+| -------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
+| `/code-review [scope]`           | `$code-review [scope]`      | Write markdown + bilingual HTML review reports to `.reviews/`                                    |
+| `/code-review-md [scope]`        | `$code-review-md [scope]`   | Write a markdown-only review to `.reviews/`                                                       |
+| `/diff-summary [scope]`          | `$diff-summary [scope]`     | Explain changes in Korean + English Markdown and one bilingual interactive HTML under `.diff-summaries/` |
+| `/diff-summary-md [scope]`       | `$diff-summary-md [scope]`  | Explain changes in Korean + English Markdown only under `.diff-summaries/` (no HTML, no browser) |
+| `/diff-summary-quiz [scope]`     | `$diff-summary-quiz [scope]` | Same as `/diff-summary`, plus aligned interactive comprehension quizzes                          |
+| `/diff-viewer`                   | `$diff-viewer`              | Render the raw working-tree diff to `.diffs/`                                                    |
 
 `diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Its default output is an aligned Korean/English pair with Korean shown first; explicitly request one language for single-language mode. Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
@@ -73,31 +76,31 @@ Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 ### doc-skill → [details](doc-skill/README.md)
 
 
-| Command     | Action                                                                    |
-| ----------- | ------------------------------------------------------------------------- |
-| `/gen-docs`   | Generate or update README, Korean README, architecture, and usage docs    |
+| Claude Code | Codex       | Action                                                                 |
+| ----------- | ----------- | ---------------------------------------------------------------------- |
+| `/gen-docs` | `$gen-docs` | Generate or update README, Korean README, architecture, and usage docs |
 
 
 ### git-skill → [details](git-skill/README.md)
 
 
-| Command               | Action                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------- |
-| `/git-commit`         | Group working-tree changes into Conventional Commits                                  |
-| `/git-commit-push`    | Same, then `git push` (no `--force`)                                                  |
-| `/git-commit-push-live` | Commit and push each verified, meaningful outcome while implementation continues    |
-| `/git-commit-rewrite` | Rewrite recent non-Conventional commit subjects                                       |
-| `/git-merge-to-main`  | Merge current branch into `main`, then `git branch -d` the source                     |
-| `/git-merge-to-dev`   | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
-| `/git-branch-cleanup` | Delete every local branch already merged into a protected branch                      |
+| Claude Code                      | Codex                       | Action                                                                                |
+| -------------------------------- | --------------------------- | ------------------------------------------------------------------------------------- |
+| `/git-commit`                    | `$git-commit`               | Group working-tree changes into Conventional Commits                                  |
+| `/git-commit-push`               | `$git-commit-push`          | Same, then `git push` (no `--force`)                                                   |
+| `/git-commit-push-realtime`      | `$git-commit-push-realtime` | Commit and push each verified, meaningful outcome while implementation continues      |
+| `/git-commit-rewrite`            | `$git-commit-rewrite`       | Rewrite recent non-Conventional commit subjects                                       |
+| `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |
+| `/git-merge-to-dev`              | `$git-merge-to-dev`         | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
+| `/git-branch-cleanup`            | `$git-branch-cleanup`       | Delete every local branch already merged into a protected branch                      |
 
 
 ### long-task → [details](long-task/README.md)
 
 
-| Command      | Action                                                                                       |
-| ------------ | -------------------------------------------------------------------------------------------- |
-| `/long-task` | Autonomously build a project end-to-end with parallel worktree subagents + milestone reviews |
+| Claude Code  | Codex        | Action                                                                                       |
+| ------------ | ------------ | -------------------------------------------------------------------------------------------- |
+| `/long-task` | `$long-task` | Autonomously build a project end-to-end with parallel worktree subagents + milestone reviews |
 
 
 Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
@@ -105,10 +108,10 @@ Also triggers on phrases like *"build this whole project"*, *"do this autonomous
 ### handoff → [details](handoff/README.md)
 
 
-| Command                   | Action                                                                            |
-| ------------------------- | --------------------------------------------------------------------------------- |
-| `/gen-frontend-handoff`   | Write a frontend/client handoff from backend API diffs, ranges, or session context |
-| `/gen-backend-handoff`    | Write a backend/server handoff from code, API, DB, job, or rollout changes         |
+| Claude Code               | Codex                    | Action                                                                            |
+| ------------------------- | ------------------------ | --------------------------------------------------------------------------------- |
+| `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | Write a frontend/client handoff from backend API diffs, ranges, or session context |
+| `/gen-backend-handoff`    | `$gen-backend-handoff`   | Write a backend/server handoff from code, API, DB, job, or rollout changes         |
 
 ## Documentation
 

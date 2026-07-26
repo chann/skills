@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit Rewrite"
+  short_description: "Rewrite recent commit subjects in Conventional format"
+  default_prompt: "Use $git-commit-rewrite to rewrite recent non-Conventional commit subjects."

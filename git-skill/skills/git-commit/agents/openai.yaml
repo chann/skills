@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit"
+  short_description: "Group changes into logical Conventional Commits"
+  default_prompt: "Use $git-commit to group the current changes into logical Conventional Commits."

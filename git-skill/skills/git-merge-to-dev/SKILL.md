@@ -1,6 +1,6 @@
 ---
 name: git-merge-to-dev
-description: Use when the user asks to merge the current branch into the dev branch (`dev`, falling back to `develop`) and delete the merged source branch unless the source is protected. Trigger on phrases like "merge to dev", "dev에 머지", "develop에 합쳐줘", "merge this into dev and delete it", "/git-merge-to-dev". For `main` use `git-merge-to-main`; to bulk-clean already-merged branches use `git-branch-cleanup`.
+description: Use when the user asks to merge the current branch into the dev branch (`dev`, falling back to `develop`) and delete the merged source branch unless the source is protected. Trigger on phrases like "merge to dev", "dev에 머지", "develop에 합쳐줘", "merge this into dev and delete it", "/git-merge-to-dev", or "$git-merge-to-dev". For `main` use `git-merge-to-main`; to bulk-clean already-merged branches use `git-branch-cleanup`.
 ---
 
 # Git Merge to Dev

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit and Push Realtime"
+  short_description: "Push verified commits at meaningful checkpoints"
+  default_prompt: "Use $git-commit-push-realtime to commit and push each verified outcome while working."
