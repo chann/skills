@@ -19,6 +19,17 @@ from typing import Dict, List, Optional, Sequence, Tuple
 SCRIPT_DIR = Path(__file__).resolve().parent
 TEMPLATE_PATH = SCRIPT_DIR.parent / "assets" / "diff-template.html"
 
+LANGUAGES = ("en", "ko")
+LANGUAGE_LABELS = {"en": "English", "ko": "한국어"}
+# Server-rendered English text carries the key the runtime uses to translate it,
+# so a report opened without JavaScript still reads as a complete document.
+STATUS_I18N_KEYS = {
+    "modified": "statusModified",
+    "added": "statusAdded",
+    "deleted": "statusDeleted",
+    "renamed": "statusRenamed",
+}
+
 FILE_HEADER_RE = re.compile(r"^diff --git a/(?P<old>.+?) b/(?P<new>.+)$")
 HUNK_HEADER_RE = re.compile(
     r"^@@ -(?P<old_start>\d+)(?:,(?P<old_count>\d+))? "
@@ -535,6 +546,13 @@ def render_split_table(
     )
 
 
+def render_file_status(status: str) -> str:
+    key = STATUS_I18N_KEYS.get(status)
+    if key is None:
+        return "<p>{}</p>".format(escape(status))
+    return '<p data-i18n="{}">{}</p>'.format(escape(key), escape(status))
+
+
 def render_file_diff(file_diff: FileDiff, index: int) -> str:
     language = detect_language(file_diff.new_path if file_diff.new_path != "/dev/null" else file_diff.old_path)
     anchor = file_anchor(file_diff, index)
@@ -544,7 +562,9 @@ def render_file_diff(file_diff: FileDiff, index: int) -> str:
             anchor=escape(anchor), language=escape(language)
         )
         + '<header class="file-header">'
-        + '<div><h2>{}</h2><p>{}</p></div>'.format(escape(title), escape(file_diff.status))
+        + '<div><h2>{}</h2>{}</div>'.format(
+            escape(title), render_file_status(file_diff.status)
+        )
         + '<span class="language-badge">{}</span>'.format(escape(language))
         + "</header>"
         + '<div class="diff-view unified-view" data-view="unified">'
@@ -601,9 +621,24 @@ def fill_template(template: str, replacements: Dict[str, str]) -> str:
     return pattern.sub(lambda match: replacements[match.group(0)], template)
 
 
+def render_language_control() -> str:
+    buttons = "".join(
+        '<button type="button" data-set-lang="{code}">{label}</button>'.format(
+            code=escape(code), label=escape(LANGUAGE_LABELS[code])
+        )
+        for code in LANGUAGES
+    )
+    return (
+        '<div class="control" role="group" data-i18n-label="language" '
+        'aria-label="Language">'
+        '<span class="control-label" data-i18n="language">Lang</span>'
+        "{buttons}</div>"
+    ).format(buttons=buttons)
+
+
 def render_nav(files: List[FileDiff]) -> str:
     if not files:
-        return '<li><a href="#top">No changes</a></li>'
+        return '<li><a href="#top" data-i18n="noChanges">No changes</a></li>'
     items: List[str] = []
     for index, file_diff in enumerate(files):
         items.append(
@@ -619,8 +654,9 @@ def render_body(files: List[FileDiff]) -> str:
     if not files:
         return (
             '<section class="empty-state">'
-            "<h2>No working-tree diff</h2>"
-            "<p>The current repository has no staged or unstaged changes against HEAD.</p>"
+            '<h2 data-i18n="emptyTitle">No working-tree diff</h2>'
+            '<p data-i18n="emptyBody">The current repository has no staged or '
+            "unstaged changes against HEAD.</p>"
             "</section>"
         )
     return "".join(render_file_diff(file_diff, index) for index, file_diff in enumerate(files))
@@ -706,9 +742,11 @@ def assemble_html(
     default_theme: str = "auto",
     default_code_scheme: str = "github",
     report_path: Optional[Path] = None,
+    default_language: str = "auto",
 ) -> str:
     summary = render_summary(files)
     created_at = datetime.now().astimezone()
+    language = default_language if default_language in LANGUAGES else "auto"
     replacements = {
         "__REPORT_TITLE__": "Working Tree Diff",
         "__REPO_PATH__": escape(str(root)),
@@ -718,10 +756,13 @@ def assemble_html(
         "__SUMMARY_DELETIONS__": str(summary["deletions"]),
         "__FILE_NAV__": render_nav(files),
         "__REPORT_BODY__": render_body(files),
+        "__LANGUAGE_CONTROL__": render_language_control(),
         "__HIGHLIGHT_SEEDS__": render_highlight_seeds(files),
         "__DEFAULT_VIEW__": json_for_script(default_view),
         "__DEFAULT_THEME__": json_for_script(default_theme),
         "__DEFAULT_CODE_SCHEME__": json_for_script(default_code_scheme),
+        "__DEFAULT_LANG__": json_for_script(language),
+        "__LANG_CODES__": json_for_script(list(LANGUAGES)),
         "__COMMENT_STORAGE_SCOPE__": json_for_script(
             build_comment_storage_scope(root, report_path, created_at)
         ),
@@ -742,6 +783,12 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     parser.add_argument("--view", choices=("unified", "split"), default="unified")
     parser.add_argument("--theme", choices=("auto", "light", "dark"), default="auto")
     parser.add_argument("--code-scheme", choices=CODE_SCHEMES, default="github")
+    parser.add_argument(
+        "--language",
+        choices=("auto",) + LANGUAGES,
+        default="auto",
+        help="initial report language (auto follows the browser)",
+    )
     return parser.parse_args(argv)
 
 
@@ -755,7 +802,15 @@ def main(argv: List[str]) -> int:
         output_path = args.output if args.output else default_output_path(root, summary)
         if not output_path.is_absolute():
             output_path = root / output_path
-        html_text = assemble_html(files, root, args.view, args.theme, args.code_scheme, output_path)
+        html_text = assemble_html(
+            files,
+            root,
+            args.view,
+            args.theme,
+            args.code_scheme,
+            output_path,
+            args.language,
+        )
         write_report(html_text, output_path)
     except Exception as exc:  # noqa: BLE001 - CLI should report concise errors.
         print("diff-viewer: {}".format(exc), file=sys.stderr)

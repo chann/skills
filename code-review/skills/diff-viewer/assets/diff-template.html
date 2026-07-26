@@ -826,34 +826,34 @@
   </style>
 </head>
 <body>
-  <button class="sidebar-expand" type="button" data-sidebar-expand title="Show sidebar" aria-label="Show sidebar">&#9776;</button>
+  <button class="sidebar-expand" type="button" data-sidebar-expand data-i18n-label="showSidebar" title="Show sidebar" aria-label="Show sidebar">&#9776;</button>
   <div class="layout">
     <aside data-sidebar>
       <div class="sidebar-header">
-        <button class="icon-btn" type="button" data-sidebar-toggle title="Collapse sidebar" aria-label="Collapse sidebar">&#x276E;</button>
+        <button class="icon-btn" type="button" data-sidebar-toggle data-i18n-label="collapseSidebar" title="Collapse sidebar" aria-label="Collapse sidebar">&#x276E;</button>
         <span class="brand">Diff Viewer</span>
       </div>
       <div class="sidebar-body">
         <div class="repo">__REPO_PATH__</div>
-        <nav aria-label="Changed files">
+        <nav data-i18n-label="changedFiles" aria-label="Changed files">
           <ul class="nav-list">
             __FILE_NAV__
           </ul>
         </nav>
-        <div class="comment-panel" aria-label="Review comments">
-          <p class="comment-panel-title">Comments</p>
+        <div class="comment-panel" data-i18n-label="comments" aria-label="Review comments">
+          <p class="comment-panel-title" data-i18n="comments">Comments</p>
           <ul class="comment-list" data-comment-list>
-            <li class="comment-empty">No comments</li>
+            <li class="comment-empty" data-i18n="noComments">No comments</li>
           </ul>
         </div>
       </div>
       <div class="sidebar-footer">
-        <button class="copy-md-btn" type="button" data-copy-markdown aria-label="Copy review markdown">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <button class="copy-md-btn" type="button" data-copy-markdown data-i18n-label="copyMarkdownLabel" aria-label="Copy review markdown">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
           </svg>
-          <span class="label">Copy Markdown</span>
+          <span class="label" data-i18n="copyMarkdown">Copy Markdown</span>
           <span class="count" data-comment-count hidden>0</span>
         </button>
       </div>
@@ -863,26 +863,27 @@
     <main id="top">
       <div class="topbar">
         <div>
-          <h1>__REPORT_TITLE__</h1>
-          <div class="meta">Generated __CREATED_AT__</div>
+          <h1 data-i18n="reportTitle">__REPORT_TITLE__</h1>
+          <div class="meta"><span data-i18n="generated">Generated</span> <time>__CREATED_AT__</time></div>
         </div>
-        <div class="controls" aria-label="Display controls">
-          <div class="control" role="group" aria-label="Diff view">
-            <span class="control-label">View</span>
-            <button type="button" data-set-view="unified">Unified</button>
-            <button type="button" data-set-view="split">Split</button>
+        <div class="controls" data-i18n-label="displayControls" aria-label="Display controls">
+          __LANGUAGE_CONTROL__
+          <div class="control" role="group" data-i18n-label="diffView" aria-label="Diff view">
+            <span class="control-label" data-i18n="view">View</span>
+            <button type="button" data-set-view="unified" data-i18n="unified">Unified</button>
+            <button type="button" data-set-view="split" data-i18n="split">Split</button>
           </div>
           <label class="control">
-            <span class="control-label">Theme</span>
-            <select data-theme-select>
-              <option value="auto">Auto</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+            <span class="control-label" data-i18n="theme">Theme</span>
+            <select data-theme-select data-i18n-label="theme" aria-label="Theme">
+              <option value="auto" data-i18n="themeAuto">Auto</option>
+              <option value="light" data-i18n="themeLight">Light</option>
+              <option value="dark" data-i18n="themeDark">Dark</option>
             </select>
           </label>
           <label class="control">
-            <span class="control-label">Code</span>
-            <select data-code-scheme-select>
+            <span class="control-label" data-i18n="code">Code</span>
+            <select data-code-scheme-select data-i18n-label="code" aria-label="Code">
               <option value="github">GitHub</option>
               <option value="atom-one">Atom One</option>
               <option value="monokai">Monokai</option>
@@ -893,14 +894,14 @@
               <option value="gruvbox">Gruvbox</option>
             </select>
           </label>
-          <button class="clear-comments-btn" type="button" data-clear-comments disabled>Clear comments</button>
+          <button class="clear-comments-btn" type="button" data-clear-comments data-i18n="clearComments" disabled>Clear comments</button>
         </div>
       </div>
 
-      <div class="summary" aria-label="Diff summary">
-        <div class="metric"><strong>__SUMMARY_FILES__</strong><span>files changed</span></div>
-        <div class="metric add"><strong>+__SUMMARY_ADDITIONS__</strong><span>additions</span></div>
-        <div class="metric del"><strong>-__SUMMARY_DELETIONS__</strong><span>deletions</span></div>
+      <div class="summary" data-i18n-label="diffSummary" aria-label="Diff summary">
+        <div class="metric"><strong>__SUMMARY_FILES__</strong><span data-i18n="filesChanged">files changed</span></div>
+        <div class="metric add"><strong>+__SUMMARY_ADDITIONS__</strong><span data-i18n="additions">additions</span></div>
+        <div class="metric del"><strong>-__SUMMARY_DELETIONS__</strong><span data-i18n="deletions">deletions</span></div>
       </div>
 
       __REPORT_BODY__
@@ -914,8 +915,122 @@
       view: __DEFAULT_VIEW__,
       theme: __DEFAULT_THEME__,
       codeScheme: __DEFAULT_CODE_SCHEME__,
-      commentScope: __COMMENT_STORAGE_SCOPE__
+      commentScope: __COMMENT_STORAGE_SCOPE__,
+      lang: __DEFAULT_LANG__,
+      langCodes: __LANG_CODES__
     };
+
+    /* ---------------- Language (chrome only — diff content is code) ---------------- */
+    const I18N = {
+      en: {
+        reportTitle: "Working Tree Diff", generated: "Generated",
+        displayControls: "Display controls", language: "Lang",
+        diffView: "Diff view", view: "View", unified: "Unified", split: "Split",
+        theme: "Theme", themeAuto: "Auto", themeLight: "Light", themeDark: "Dark",
+        code: "Code", diffSummary: "Diff summary",
+        filesChanged: "files changed", additions: "additions", deletions: "deletions",
+        changedFiles: "Changed files", noChanges: "No changes",
+        emptyTitle: "No working-tree diff",
+        emptyBody: "The current repository has no staged or unstaged changes against HEAD.",
+        statusModified: "modified", statusAdded: "added",
+        statusDeleted: "deleted", statusRenamed: "renamed",
+        comments: "Comments", noComments: "No comments",
+        copyMarkdown: "Copy Markdown", copyMarkdownLabel: "Copy review markdown",
+        clearComments: "Clear comments",
+        showSidebar: "Show sidebar", collapseSidebar: "Collapse sidebar",
+        placeholder: "Write a review comment…",
+        save: "Save", cancel: "Cancel", edit: "Edit", delete: "Delete",
+        copied: "Copied!",
+        clearConfirm: "Clear all comments for this report?",
+        line: (n) => "Line " + n,
+        lines: (from, to) => "Lines " + from + "-" + to,
+        feedbackTitle: "Code Review Feedback",
+        feedbackIntro:
+          "The following review comments reference specific files and line numbers " +
+          "in the working-tree diff. Please address each item.",
+        feedbackRepository: "Repository", feedbackGenerated: "Generated",
+        feedbackEmpty: "No review comments recorded yet."
+      },
+      ko: {
+        reportTitle: "작업 트리 Diff", generated: "생성",
+        displayControls: "화면 설정", language: "언어",
+        diffView: "Diff 보기", view: "보기", unified: "통합", split: "분할",
+        theme: "테마", themeAuto: "자동", themeLight: "밝게", themeDark: "어둡게",
+        code: "코드", diffSummary: "변경 요약",
+        filesChanged: "변경된 파일", additions: "추가", deletions: "삭제",
+        changedFiles: "변경된 파일", noChanges: "변경 사항 없음",
+        emptyTitle: "작업 트리 변경 사항이 없습니다",
+        emptyBody: "현재 저장소에는 HEAD와 비교해 스테이징되거나 스테이징되지 않은 변경이 없습니다.",
+        statusModified: "수정", statusAdded: "추가",
+        statusDeleted: "삭제", statusRenamed: "이름 변경",
+        comments: "코멘트", noComments: "코멘트 없음",
+        copyMarkdown: "마크다운 복사", copyMarkdownLabel: "리뷰 마크다운 복사",
+        clearComments: "코멘트 비우기",
+        showSidebar: "사이드바 열기", collapseSidebar: "사이드바 접기",
+        placeholder: "리뷰 코멘트를 입력하세요…",
+        save: "저장", cancel: "취소", edit: "수정", delete: "삭제",
+        copied: "복사됨!",
+        clearConfirm: "이 리포트의 코멘트를 모두 비울까요?",
+        line: (n) => n + "번째 줄",
+        lines: (from, to) => from + "-" + to + "번째 줄",
+        feedbackTitle: "코드 리뷰 피드백",
+        feedbackIntro:
+          "아래 리뷰 코멘트는 작업 트리 diff의 특정 파일과 줄 번호를 가리킵니다. " +
+          "각 항목을 반영해주세요.",
+        feedbackRepository: "저장소", feedbackGenerated: "생성",
+        feedbackEmpty: "기록된 리뷰 코멘트가 없습니다."
+      }
+    };
+
+    function resolveLang(value) {
+      if (defaults.langCodes.includes(value)) return value;
+      const navigatorLang = (navigator.language || "").toLowerCase();
+      const matched = defaults.langCodes.find((code) => navigatorLang.startsWith(code));
+      return matched || defaults.langCodes[0];
+    }
+
+    let activeLang = resolveLang(defaults.lang);
+
+    function t(key) {
+      const table = I18N[activeLang] || I18N.en;
+      const value = table[key];
+      return value === undefined ? (I18N.en[key] === undefined ? key : I18N.en[key]) : value;
+    }
+
+    function formatRange(startLine, endLine) {
+      return startLine === endLine ? t("line")(startLine) : t("lines")(startLine, endLine);
+    }
+
+    function applyI18n() {
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const value = t(el.dataset.i18n);
+        if (typeof value === "string") el.textContent = value;
+      });
+      document.querySelectorAll("[data-i18n-label]").forEach((el) => {
+        const value = t(el.dataset.i18nLabel);
+        if (typeof value === "string") {
+          el.setAttribute("aria-label", value);
+          if (el.hasAttribute("title")) el.setAttribute("title", value);
+        }
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const value = t(el.dataset.i18nPlaceholder);
+        if (typeof value === "string") el.placeholder = value;
+      });
+      document.title = t("reportTitle");
+    }
+
+    function setLang(lang) {
+      activeLang = resolveLang(lang);
+      document.documentElement.setAttribute("lang", activeLang);
+      document.documentElement.dataset.reportLang = activeLang;
+      localStorage.setItem("diff-viewer:lang", activeLang);
+      document.querySelectorAll("[data-set-lang]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.setLang === activeLang));
+      });
+      applyI18n();
+      if (typeof window.renderDiffComments === "function") window.renderDiffComments();
+    }
 
     const HLJS_BASE = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/";
     // Each scheme defines a light and a dark variant. The variant controls both the
@@ -1006,6 +1121,9 @@
     document.querySelectorAll("[data-set-view]").forEach((button) => {
       button.addEventListener("click", () => setView(button.dataset.setView));
     });
+    document.querySelectorAll("[data-set-lang]").forEach((button) => {
+      button.addEventListener("click", () => setLang(button.dataset.setLang));
+    });
     document.querySelector("[data-theme-select]").addEventListener("change", (event) => {
       setTheme(event.target.value);
     });
@@ -1019,6 +1137,7 @@
     setView(localStorage.getItem("diff-viewer:view") || defaults.view);
     setTheme(localStorage.getItem("diff-viewer:theme") || defaults.theme);
     setCodeScheme(localStorage.getItem("diff-viewer:code-scheme") || defaults.codeScheme);
+    setLang(localStorage.getItem("diff-viewer:lang") || defaults.lang);
 
     // Sidebar collapse / expand / resize
     (function () {
@@ -1404,10 +1523,6 @@
           .join("\n");
       }
 
-      function formatRange(startLine, endLine) {
-        return startLine === endLine ? "Line " + startLine : "Lines " + startLine + "-" + endLine;
-      }
-
       function sortedComments(list) {
         return list.slice().sort((a, b) => {
           if (a.file !== b.file) return a.file.localeCompare(b.file);
@@ -1509,7 +1624,8 @@
         meta.textContent = file + " · " + range + " (" + side + ")";
 
         const ta = document.createElement("textarea");
-        ta.placeholder = "Write a review comment…";
+        ta.dataset.i18nPlaceholder = "placeholder";
+        ta.placeholder = t("placeholder");
 
         const actions = document.createElement("div");
         actions.className = "comment-input-actions";
@@ -1517,13 +1633,15 @@
         const cancel = document.createElement("button");
         cancel.type = "button";
         cancel.className = "btn-comment btn-cancel";
-        cancel.textContent = "Cancel";
+        cancel.dataset.i18n = "cancel";
+        cancel.textContent = t("cancel");
         cancel.addEventListener("click", closeInput);
 
         const save = document.createElement("button");
         save.type = "button";
         save.className = "btn-comment btn-save";
-        save.textContent = "Save";
+        save.dataset.i18n = "save";
+        save.textContent = t("save");
         save.addEventListener("click", () => {
           const text = ta.value.trim();
           if (!text) { ta.focus(); return; }
@@ -1598,7 +1716,8 @@
         const cancel = document.createElement("button");
         cancel.type = "button";
         cancel.className = "btn-comment btn-cancel";
-        cancel.textContent = "Cancel";
+        cancel.dataset.i18n = "cancel";
+        cancel.textContent = t("cancel");
         cancel.addEventListener("click", () => {
           form.remove();
           body.hidden = false;
@@ -1608,7 +1727,8 @@
         const save = document.createElement("button");
         save.type = "button";
         save.className = "btn-comment btn-save";
-        save.textContent = "Save";
+        save.dataset.i18n = "save";
+        save.textContent = t("save");
         save.addEventListener("click", () => {
           const text = textarea.value.trim();
           if (!text) { textarea.focus(); return; }
@@ -1629,6 +1749,10 @@
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
       }
 
+      function commentLocale() {
+        return activeLang === "ko" ? "ko-KR" : "en-US";
+      }
+
       function buildThread(file, startLine, endLine, side, group) {
         const wrap = document.createElement("div");
         wrap.className = "comment-thread";
@@ -1641,7 +1765,8 @@
           const meta = document.createElement("div");
           meta.className = "comment-meta";
           const when = new Date(c.createdAt);
-          meta.textContent = rangeLabel + " (" + side + ") · " + when.toLocaleString();
+          meta.textContent =
+            rangeLabel + " (" + side + ") · " + when.toLocaleString(commentLocale());
 
           const body = document.createElement("div");
           body.className = "comment-body";
@@ -1652,13 +1777,15 @@
           const edit = document.createElement("button");
           edit.type = "button";
           edit.className = "btn-comment btn-edit";
-          edit.textContent = "Edit";
+          edit.dataset.i18n = "edit";
+          edit.textContent = t("edit");
           edit.addEventListener("click", () => editComment(c));
 
           const del = document.createElement("button");
           del.type = "button";
           del.className = "btn-comment btn-delete";
-          del.textContent = "Delete";
+          del.dataset.i18n = "delete";
+          del.textContent = t("delete");
           del.addEventListener("click", () => {
             saveComments(loadComments().filter((x) => x.id !== c.id));
             renderComments();
@@ -1681,7 +1808,8 @@
         if (!all.length) {
           const empty = document.createElement("li");
           empty.className = "comment-empty";
-          empty.textContent = "No comments";
+          empty.dataset.i18n = "noComments";
+          empty.textContent = t("noComments");
           list.appendChild(empty);
           return;
         }
@@ -1770,15 +1898,14 @@
       function commentsToMarkdown() {
         const all = loadComments();
         const header =
-          "# Code Review Feedback\n\n" +
-          "The following review comments reference specific files and line numbers " +
-          "in the working-tree diff. Please address each item.\n\n" +
-          (repoPath ? "**Repository:** `" + repoPath + "`\n\n" : "") +
-          "**Generated:** " + new Date().toISOString() + "\n\n" +
+          "# " + t("feedbackTitle") + "\n\n" +
+          t("feedbackIntro") + "\n\n" +
+          (repoPath ? "**" + t("feedbackRepository") + ":** `" + repoPath + "`\n\n" : "") +
+          "**" + t("feedbackGenerated") + ":** " + new Date().toISOString() + "\n\n" +
           "---\n\n";
 
         if (!all.length) {
-          return header + "_No review comments recorded yet._\n";
+          return header + "_" + t("feedbackEmpty") + "_\n";
         }
 
         const byFile = new Map();
@@ -1798,8 +1925,7 @@
           });
           const lang = inferLang(file);
           list.forEach((c, idx) => {
-            const range = c.startLine === c.endLine ? "Line " + c.startLine : "Lines " + c.startLine + "-" + c.endLine;
-            md += "### " + range + " (" + c.side + ")\n\n";
+            md += "### " + formatRange(c.startLine, c.endLine) + " (" + c.side + ")\n\n";
             const fence = escapeFence(c.code || "");
             md += fence + lang + "\n" + (c.code || "") + "\n" + fence + "\n\n";
             md += c.text + "\n\n";
@@ -1811,11 +1937,10 @@
 
       function flashCopied(btn) {
         const label = btn.querySelector(".label");
-        const orig = label ? label.textContent : "";
-        if (label) label.textContent = "Copied!";
+        if (label) label.textContent = t("copied");
         btn.classList.add("copied");
         setTimeout(() => {
-          if (label) label.textContent = orig;
+          if (label) label.textContent = t("copyMarkdown");
           btn.classList.remove("copied");
         }, 1500);
       }
@@ -1850,7 +1975,7 @@
         clearBtn.addEventListener("click", () => {
           const count = loadComments().length;
           if (!count) return;
-          if (!window.confirm("Clear all comments for this report?")) return;
+          if (!window.confirm(t("clearConfirm"))) return;
           saveComments([]);
           closeInput();
           renderComments();
@@ -1859,6 +1984,14 @@
 
       annotateLines();
       renderComments();
+      // setLang() calls this so range labels and actions follow the language. The
+      // open editor composes its label once, so it is dismissed rather than left
+      // showing the previous language.
+      window.renderDiffComments = () => {
+        closeInput();
+        renderComments();
+      };
+      setLang(activeLang);
     })();
   </script>
 </body>

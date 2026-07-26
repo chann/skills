@@ -9,13 +9,18 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 from generate_diff_report import (  # noqa: E402
     FileDiff,
+    LANGUAGES,
     assemble_html,
     build_comment_storage_scope,
     build_highlight_seeds,
     detect_language,
+    parse_args,
     parse_git_diff,
+    render_body,
     render_highlight_seeds,
     render_file_diff,
+    render_language_control,
+    render_nav,
     render_split_table,
     render_summary,
 )
@@ -195,6 +200,181 @@ index 1111111..2222222 100644
     html = assemble_html(files, tmp_path, report_path=tmp_path / ".diffs" / "tokens.html")
 
     assert "__COMMENT_STORAGE_SCOPE__ __DEFAULT_VIEW__" in html
+
+
+def test_supported_languages_are_korean_and_english():
+    assert LANGUAGES == ("en", "ko")
+
+
+def test_parse_args_accepts_a_language_choice():
+    assert parse_args([]).language == "auto"
+    assert parse_args(["--language", "ko"]).language == "ko"
+    assert parse_args(["--language", "en"]).language == "en"
+
+
+def test_language_control_is_a_labelled_group_of_pressable_buttons():
+    control = render_language_control()
+
+    assert 'role="group"' in control
+    assert 'data-i18n-label="language"' in control
+    for code in LANGUAGES:
+        assert f'data-set-lang="{code}"' in control
+    assert control.count('type="button"') == len(LANGUAGES)
+    assert "한국어" in control
+    assert "English" in control
+
+
+def test_assemble_html_embeds_language_defaults_and_control(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    assert "__DEFAULT_LANG__" not in html
+    assert "__LANG_CODES__" not in html
+    assert "__LANGUAGE_CONTROL__" not in html
+    assert 'data-set-lang="ko"' in html
+    assert 'data-set-lang="en"' in html
+    assert '"en", "ko"' in html or '"en","ko"' in html
+
+
+def test_assemble_html_honors_the_requested_default_language(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    korean = assemble_html(files, tmp_path, default_language="ko")
+    auto = assemble_html(files, tmp_path)
+
+    assert 'lang: "ko"' in korean
+    assert 'lang: "auto"' in auto
+
+
+def test_file_status_carries_a_translation_key(load_fixture):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = render_file_diff(files[0], index=0)
+
+    assert 'data-i18n="statusModified"' in html
+    assert ">modified<" in html
+
+
+def test_every_file_status_maps_to_a_translation_key():
+    diff_text = """diff --git a/added.py b/added.py
+new file mode 100644
+--- /dev/null
++++ b/added.py
+@@ -0,0 +1 @@
++x = 1
+diff --git a/removed.py b/removed.py
+deleted file mode 100644
+--- a/removed.py
++++ /dev/null
+@@ -1 +0,0 @@
+-y = 2
+"""
+    files = parse_git_diff(diff_text)
+
+    html = render_body(files)
+
+    assert 'data-i18n="statusAdded"' in html
+    assert 'data-i18n="statusDeleted"' in html
+
+
+def test_empty_states_carry_translation_keys():
+    assert 'data-i18n="noChanges"' in render_nav([])
+    body = render_body([])
+    assert 'data-i18n="emptyTitle"' in body
+    assert 'data-i18n="emptyBody"' in body
+
+
+def test_summary_captions_carry_translation_keys(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    for key in ("filesChanged", "additions", "deletions"):
+        assert f'data-i18n="{key}"' in html
+
+
+def test_runtime_declares_korean_and_english_message_tables(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    assert "const I18N = {" in html
+    assert "function setLang(lang)" in html
+    assert 'localStorage.setItem("diff-viewer:lang"' in html
+    for key in (
+        "filesChanged",
+        "additions",
+        "deletions",
+        "comments",
+        "noComments",
+        "copyMarkdown",
+        "clearComments",
+        "statusModified",
+        "statusRenamed",
+        "placeholder",
+        "save",
+        "cancel",
+        "edit",
+        "delete",
+    ):
+        assert f"{key}:" in html
+    for korean in ("변경된 파일", "코멘트", "마크다운 복사", "저장", "취소"):
+        assert korean in html
+
+
+def test_runtime_localizes_labels_placeholders_and_document_language(
+    load_fixture,
+    tmp_path,
+):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    assert "[data-i18n]" in html
+    assert "[data-i18n-label]" in html
+    assert "[data-i18n-placeholder]" in html
+    # setLang persists the *resolved* code, never the literal "auto" it may receive.
+    assert 'setAttribute("lang", activeLang)' in html
+    assert 'localStorage.setItem("diff-viewer:lang", activeLang)' in html
+
+
+def test_changing_language_rerenders_threads_and_dismisses_the_open_editor(
+    load_fixture,
+    tmp_path,
+):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    assert "window.renderDiffComments = () => {" in html
+    assert "closeInput();" in html
+    assert 'if (typeof window.renderDiffComments === "function") window.renderDiffComments();' in html
+
+
+def test_line_range_labels_are_language_specific(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    assert '"Line " + n' in html
+    assert '"번째 줄"' in html
+    assert "function formatRange(startLine, endLine)" in html
+    assert html.count("function formatRange(") == 1
+
+
+def test_exported_markdown_headings_follow_the_active_language(
+    load_fixture,
+    tmp_path,
+):
+    files = parse_git_diff(load_fixture("simple.diff"))
+
+    html = assemble_html(files, tmp_path)
+
+    assert '"# Code Review Feedback\\n\\n"' not in html
+    assert 't("feedbackTitle")' in html
+    assert "feedbackTitle:" in html
+    assert "리뷰 피드백" in html
 
 
 def test_assemble_html_exposes_comment_management_controls(load_fixture, tmp_path):

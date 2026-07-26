@@ -28,14 +28,16 @@ Render the current working-tree diff as an HTML report. This is a viewer only: i
 python3 <skill-path>/scripts/generate_diff_report.py \
   --view unified \
   --theme auto \
+  --language auto \
   --code-scheme github \
   -o .diffs/my-diff.html
 ```
 
-Valid `--view` values are `unified` and `split`. Valid `--theme` values are `auto`, `light`, and `dark`. Valid `--code-scheme` values are `github`, `atom-one`, `monokai`, `dracula`, `nord`, `tokyo-night`, `solarized`, `gruvbox` — each ships a light and a dark variant that follows the page theme automatically and drives both the syntax-token colors and the code-area background. The browser controls can change these later and persist choices in `localStorage`.
+Valid `--view` values are `unified` and `split`. Valid `--theme` values are `auto`, `light`, and `dark`. Valid `--language` values are `auto`, `en`, and `ko`; `auto` follows the browser. Valid `--code-scheme` values are `github`, `atom-one`, `monokai`, `dracula`, `nord`, `tokyo-night`, `solarized`, `gruvbox` — each ships a light and a dark variant that follows the page theme automatically and drives both the syntax-token colors and the code-area background. The browser controls can change these later and persist choices in `localStorage`.
 
 ## Browser features
 
+- **Korean/English toggle** in the top-right controls switches every label, file status, summary caption, comment control, and exported Markdown heading. Diff content is code and is never translated. The choice persists in `localStorage`.
 - **Within-line word diff highlighting** marks changed tokens inside modified lines in both unified and split views.
 - **Drag line numbers** to select a range, then leave a single review comment that spans those lines.
 - **Review comments are scoped to the generated HTML report**, so comments from an older report should not reappear when a new report is generated for the same repository.
