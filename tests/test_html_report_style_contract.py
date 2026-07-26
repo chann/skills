@@ -56,6 +56,11 @@ PRIMARY_CONTROL_SELECTORS = {
         ".btn-comment.btn-save",
     ),
 }
+PRESSED_CONTROL_SELECTORS = {
+    "diff-summary": '.control button[aria-pressed="true"]',
+    "diff-viewer": 'button[aria-pressed="true"]',
+    "code-review": '.control button[aria-pressed="true"]',
+}
 DESTRUCTIVE_CONTROL_SELECTORS = {
     "diff-viewer": (
         ".clear-comments-btn:hover:not(:disabled)",
@@ -478,6 +483,68 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     ),
                     EXPECTED_DARK_THEME,
                 )
+
+    def test_theme_switches_through_one_segmented_control_idiom(self) -> None:
+        """A menu hides the active mode; a segmented group shows it at a glance."""
+        for name, source in self.templates.items():
+            with self.subTest(template=name, contract="group"):
+                self.assertRegex(
+                    source,
+                    r'<div class="control control--theme" role="group"'
+                    r'[^>]*aria-label="Theme">',
+                )
+            for mode in ("auto", "light", "dark"):
+                with self.subTest(template=name, mode=mode):
+                    self.assertRegex(
+                        source,
+                        rf'<button type="button" data-set-theme="{mode}"',
+                    )
+            with self.subTest(template=name, contract="no-menu-or-cycle"):
+                self.assertNotIn("data-theme-select", source)
+                self.assertNotIn("data-theme-toggle", source)
+            with self.subTest(template=name, contract="pressed"):
+                # diff-viewer styles every pressed button; the other two scope to
+                # .control. Either way exactly one segment reads as selected.
+                rule = css_rule(source, PRESSED_CONTROL_SELECTORS[name])
+                self.assertRegex(rule, r"background:\s*var\(--primary\)\s*;")
+                self.assertRegex(rule, r"color:\s*var\(--primary-foreground\)\s*;")
+            with self.subTest(template=name, contract="icon-and-label"):
+                self.assertRegex(
+                    css_rule(source, ".control--theme button"),
+                    r"display:\s*inline-flex\s*;",
+                )
+                self.assertEqual(source.count('class="control-text"'), 3)
+
+    def test_every_translation_key_in_markup_exists_in_both_tables(self) -> None:
+        """A key with no entry renders as the key itself — e.g. a "themeAuto" button."""
+        for name in ("diff-viewer", "code-review"):
+            source = self.templates[name]
+            keys = set(
+                re.findall(
+                    r'data-i18n(?:-label|-placeholder)?="([\w.]+)"',
+                    source,
+                )
+            )
+            with self.subTest(template=name, contract="keys-found"):
+                self.assertTrue(keys)
+            for key in sorted(keys):
+                with self.subTest(template=name, key=key):
+                    # One declaration per language table, at minimum.
+                    self.assertGreaterEqual(
+                        len(re.findall(rf"\b{re.escape(key)}:", source)),
+                        2,
+                        f"{key} is not declared in both I18N tables",
+                    )
+
+    def test_every_report_runtime_marks_exactly_one_pressed_theme(self) -> None:
+        for name, source in self.templates.items():
+            with self.subTest(template=name):
+                self.assertRegex(
+                    source,
+                    r'"aria-pressed",\s*\n?\s*String\(\s*\n?\s*'
+                    r'(?:button|mode)[^)]*\)',
+                )
+                self.assertIn("[data-set-theme]", source)
 
     def test_every_html_report_ships_the_shared_accessibility_shell(self) -> None:
         skip_targets = {

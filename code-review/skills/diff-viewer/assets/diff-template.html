@@ -472,6 +472,19 @@
       color: var(--primary-foreground);
     }
 
+    /* Segmented mode controls: exactly one button pressed, so the active theme or
+       language reads at a glance instead of hiding inside a menu. */
+    .control--theme,
+    .control--language {
+      gap: 2px;
+    }
+
+    .control--theme button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
     .clear-comments-btn {
       border: 1px solid var(--border);
       color: var(--muted-foreground);
@@ -960,14 +973,11 @@
             <button type="button" data-set-view="unified" data-i18n="unified">Unified</button>
             <button type="button" data-set-view="split" data-i18n="split">Split</button>
           </div>
-          <label class="control">
-            <span class="control-label" data-i18n="theme">Theme</span>
-            <select data-theme-select data-i18n-label="theme" aria-label="Theme">
-              <option value="auto" data-i18n="themeAuto">Auto</option>
-              <option value="light" data-i18n="themeLight">Light</option>
-              <option value="dark" data-i18n="themeDark">Dark</option>
-            </select>
-          </label>
+          <div class="control control--theme" role="group" data-i18n-label="theme" aria-label="Theme">
+            <button type="button" data-set-theme="auto" data-i18n-label="themeAuto" aria-label="Auto"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg><span class="control-text" data-i18n="themeAuto">Auto</span></button>
+            <button type="button" data-set-theme="light" data-i18n-label="themeLight" aria-label="Light"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="control-text" data-i18n="themeLight">Light</span></button>
+            <button type="button" data-set-theme="dark" data-i18n-label="themeDark" aria-label="Dark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span class="control-text" data-i18n="themeDark">Dark</span></button>
+          </div>
           <label class="control">
             <span class="control-label" data-i18n="code">Code</span>
             <select data-code-scheme-select data-i18n-label="code" aria-label="Code">
@@ -1205,11 +1215,19 @@
       });
     }
 
+    const THEME_MODES = ["auto", "light", "dark"];
+    let currentTheme = "auto";
+
     function setTheme(value) {
-      document.documentElement.dataset.pageTheme = preferred(value);
-      localStorage.setItem("diff-viewer:theme", value);
-      const sel = document.querySelector("[data-theme-select]");
-      if (sel) sel.value = value;
+      currentTheme = THEME_MODES.includes(value) ? value : "auto";
+      document.documentElement.dataset.pageTheme = preferred(currentTheme);
+      localStorage.setItem("diff-viewer:theme", currentTheme);
+      document.querySelectorAll("[data-set-theme]").forEach((button) => {
+        button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.setTheme === currentTheme)
+        );
+      });
       applyHljsTheme();
     }
 
@@ -1228,15 +1246,13 @@
     document.querySelectorAll("[data-set-lang]").forEach((button) => {
       button.addEventListener("click", () => setLang(button.dataset.setLang));
     });
-    document.querySelector("[data-theme-select]").addEventListener("change", (event) => {
-      setTheme(event.target.value);
+    document.querySelectorAll("[data-set-theme]").forEach((button) => {
+      button.addEventListener("click", () => setTheme(button.dataset.setTheme));
     });
     document.querySelector("[data-code-scheme-select]").addEventListener("change", (event) => {
       setCodeScheme(event.target.value);
     });
-    media.addEventListener("change", () => {
-      setTheme(localStorage.getItem("diff-viewer:theme") || defaults.theme);
-    });
+    media.addEventListener("change", () => setTheme(currentTheme));
 
     setView(localStorage.getItem("diff-viewer:view") || defaults.view);
     setTheme(localStorage.getItem("diff-viewer:theme") || defaults.theme);

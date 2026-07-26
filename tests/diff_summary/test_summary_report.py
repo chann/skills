@@ -1650,9 +1650,18 @@ class HtmlAssemblyTests(unittest.TestCase):
         )
         self.assertEqual(navigation.get("class"), "sidebar-nav")
         self.assertEqual(len(headings), 1)
-        self.assertEqual(rendered.count('<div class="control">'), 4)
+        self.assertEqual(rendered.count('<div class="control">'), 3)
+        self.assertRegex(
+            rendered,
+            r'<div class="control control--theme" role="group"[^>]*aria-label="Theme">',
+        )
+        for mode in ("auto", "light", "dark"):
+            with self.subTest(mode=mode):
+                self.assertRegex(
+                    rendered,
+                    rf'<button type="button" data-set-theme="{mode}"',
+                )
         for hook in (
-            "data-theme-toggle",
             "data-copy-feedback",
             "data-copy-report",
             "data-print-report",
@@ -1811,7 +1820,9 @@ class HtmlAssemblyTests(unittest.TestCase):
         self.assertIn('<main id="report-main"', rendered)
         self.assertIn('role="status"', rendered)
         self.assertIn('aria-live="polite"', rendered)
-        self.assertIn("data-theme-toggle", rendered)
+        self.assertIn('data-set-theme="auto"', rendered)
+        self.assertIn('data-set-theme="light"', rendered)
+        self.assertIn('data-set-theme="dark"', rendered)
         self.assertIn("data-sidebar-toggle", rendered)
         self.assertIn('data-default-theme="auto"', rendered)
         self.assertIn("@media print", rendered)

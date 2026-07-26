@@ -594,10 +594,23 @@
       font-weight: 600;
     }
 
-    .control--language button[aria-pressed="true"] {
+    /* Segmented mode controls: exactly one button pressed, so the active theme or
+       language reads at a glance instead of hiding inside a menu. */
+    .control--theme,
+    .control--language {
+      gap: 2px;
+    }
+
+    .control button[aria-pressed="true"] {
       border-color: var(--foreground);
       background: var(--primary);
       color: var(--primary-foreground);
+    }
+
+    .control--theme button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .language-part[hidden] {
@@ -1706,8 +1719,10 @@
       <div class="topbar">
         <div class="controls" aria-label="Display controls">
           __LANGUAGE_CONTROL__
-          <div class="control">
-            <button type="button" data-theme-toggle aria-label="Change color theme">Theme</button>
+          <div class="control control--theme" role="group" data-i18n-label="theme" aria-label="Theme">
+            <button type="button" data-set-theme="auto" data-i18n-label="themeAuto" aria-label="Auto"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg><span class="control-text" data-i18n="themeAuto">Auto</span></button>
+            <button type="button" data-set-theme="light" data-i18n-label="themeLight" aria-label="Light"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="control-text" data-i18n="themeLight">Light</span></button>
+            <button type="button" data-set-theme="dark" data-i18n-label="themeDark" aria-label="Dark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span class="control-text" data-i18n="themeDark">Dark</span></button>
           </div>
           <div class="control">
             <button type="button" data-copy-feedback aria-label="Copy reviewer feedback">Copy feedback</button>
@@ -1744,7 +1759,6 @@
       const statusRegion = document.getElementById("report-status");
       const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
       const sidebarExpand = document.querySelector("[data-sidebar-expand]");
-      const themeToggle = document.querySelector("[data-theme-toggle]");
       const sidebarResizer = document.querySelector("[data-sidebar-resizer]");
       let language = (root.lang || "").toLowerCase().startsWith("ko")
         ? "ko"
@@ -1824,15 +1838,16 @@
           quizOptionLabel: (quizId, letter, text) =>
             `Answer option ${letter} for ${quizId}: ${text}`,
           quizCorrectAnswerLabel: (optionLabel) => `${optionLabel}. Correct answer.`,
+          themeGroup: "Theme",
           theme: {
-            auto: "Theme: Auto",
-            light: "Theme: Light",
-            dark: "Theme: Dark",
+            auto: "Auto",
+            light: "Light",
+            dark: "Dark",
           },
           themeLabel: {
-            auto: "Color theme is automatic. Activate for light theme.",
-            light: "Color theme is light. Activate for dark theme.",
-            dark: "Color theme is dark. Activate for automatic theme.",
+            auto: "Follow the system color theme",
+            light: "Use the light color theme",
+            dark: "Use the dark color theme",
           },
         },
         ko: {
@@ -1908,15 +1923,16 @@
           quizOptionLabel: (quizId, letter, text) =>
             `${quizId} 선택지 ${letter}: ${text}`,
           quizCorrectAnswerLabel: (optionLabel) => `${optionLabel}. 정답입니다.`,
+          themeGroup: "테마",
           theme: {
-            auto: "테마: 자동",
-            light: "테마: 밝게",
-            dark: "테마: 어둡게",
+            auto: "자동",
+            light: "밝게",
+            dark: "어둡게",
           },
           themeLabel: {
-            auto: "자동 테마입니다. 밝은 테마로 바꾸려면 누르세요.",
-            light: "밝은 테마입니다. 어두운 테마로 바꾸려면 누르세요.",
-            dark: "어두운 테마입니다. 자동 테마로 바꾸려면 누르세요.",
+            auto: "시스템 색상 테마를 따릅니다",
+            light: "밝은 색상 테마를 사용합니다",
+            dark: "어두운 색상 테마를 사용합니다",
           },
         },
       };
@@ -2818,10 +2834,17 @@
         } else {
           body.dataset.theme = theme;
         }
-        if (themeToggle) {
-          themeToggle.textContent = strings.theme[theme];
-          themeToggle.setAttribute("aria-label", strings.themeLabel[theme]);
-        }
+        document.querySelectorAll("[data-set-theme]").forEach((button) => {
+          const mode = button.dataset.setTheme;
+          const text = button.querySelector(".control-text");
+          button.setAttribute("aria-pressed", String(mode === theme));
+          if (text && strings.theme[mode]) {
+            text.textContent = strings.theme[mode];
+          }
+          if (strings.themeLabel[mode]) {
+            button.setAttribute("aria-label", strings.themeLabel[mode]);
+          }
+        });
       }
 
       function setLanguage(nextLanguage, persist = true) {
@@ -2901,6 +2924,7 @@
         const controls = document.querySelector(".controls");
         const skipLink = document.querySelector(".skip-link");
         const languageControl = document.querySelector(".control--language");
+        const themeControl = document.querySelector(".control--theme");
         const languageLabel = document.querySelector("[data-language-label]");
         const navigation = document.getElementById("report-sections");
         const navigationLabel = document.querySelector("[data-sidebar-navigation-title]");
@@ -2920,6 +2944,9 @@
         }
         if (languageControl) {
           languageControl.setAttribute("aria-label", strings.language);
+        }
+        if (themeControl) {
+          themeControl.setAttribute("aria-label", strings.themeGroup);
         }
         if (languageLabel) {
           languageLabel.textContent = strings.language;
@@ -3040,9 +3067,8 @@
           answerQuiz(target.dataset.quizId, Number(target.dataset.quizOption));
         } else if (target.matches("[data-clear-comments]")) {
           clearComments();
-        } else if (target.matches("[data-theme-toggle]")) {
-          const nextIndex = (THEME_ORDER.indexOf(currentTheme) + 1) % THEME_ORDER.length;
-          applyTheme(THEME_ORDER[nextIndex]);
+        } else if (target.matches("[data-set-theme]")) {
+          applyTheme(target.dataset.setTheme);
           safeStorageSet(THEME_KEY, currentTheme);
         } else if (target.matches("[data-set-lang]")) {
           setLanguage(target.dataset.setLang);
