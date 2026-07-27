@@ -133,12 +133,11 @@
       outline-offset: 2px;
     }
 
-    /* One geometry for every inline icon: 24-grid, 2px round strokes, currentColor. */
+    /* Bracket affordances are text, sized by the surrounding control. */
     .icon {
-      width: 14px;
-      height: 14px;
       flex: 0 0 auto;
       display: block;
+      font-variant-ligatures: none;
     }
 
     /* Korean sets prose by 어절, so keep-all prevents the mid-word breaks Latin
@@ -790,24 +789,18 @@
       display: none;
     }
 
-    /* Disclosure marker is a 2px border angle: no glyph, no asset, and the same
-       stroke weight as the inline icons. Rotates in place when the card opens. */
+    /* Brackets are the icon set: the marker is text, so it inherits the
+       report's one monospaced face and needs no asset or glyph coverage. */
     .card-summary::before {
       grid-column: 1;
       grid-row: 1;
-      content: "";
-      width: 6px;
-      height: 6px;
+      content: "[+]";
       margin-left: 2px;
-      border-right: 2px solid var(--muted-foreground);
-      border-bottom: 2px solid var(--muted-foreground);
-      border-radius: 1px;
-      transform: rotate(-45deg);
-      transition: transform 140ms ease;
+      color: var(--muted-foreground);
     }
 
     .summary-card[open] .card-summary::before {
-      transform: rotate(45deg);
+      content: "[-]";
     }
 
     .card-heading {
@@ -1385,19 +1378,12 @@
     }
 
     .quiz-explanation summary::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      flex-shrink: 0;
-      border-right: 2px solid var(--muted-foreground);
-      border-bottom: 2px solid var(--muted-foreground);
-      border-radius: 1px;
-      transform: rotate(-45deg);
-      transition: transform 140ms ease;
+      content: "[+]";
+      color: var(--muted-foreground);
     }
 
     .quiz-explanation[open] summary::before {
-      transform: rotate(45deg);
+      content: "[-]";
     }
 
     .quiz-explanation p {
@@ -1627,11 +1613,11 @@
 </head>
 <body data-default-theme="__DEFAULT_THEME__">
   <a class="skip-link" href="#report-main">Skip to report</a>
-  <button class="sidebar-expand" type="button" data-sidebar-expand aria-controls="report-sections" aria-expanded="true" title="Expand report sidebar" aria-label="Expand report sidebar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></button>
+  <button class="sidebar-expand" type="button" data-sidebar-expand aria-controls="report-sections" aria-expanded="true" title="Expand report sidebar" aria-label="Expand report sidebar"><span class="icon" aria-hidden="true">[&gt;]</span></button>
   <div class="layout">
     <aside data-sidebar aria-label="Report sidebar">
       <div class="sidebar-header">
-        <button class="icon-btn" type="button" data-sidebar-toggle aria-controls="report-sections" aria-expanded="true" title="Collapse report sidebar" aria-label="Collapse report sidebar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg></button>
+        <button class="icon-btn" type="button" data-sidebar-toggle aria-controls="report-sections" aria-expanded="true" title="Collapse report sidebar" aria-label="Collapse report sidebar"><span class="icon" aria-hidden="true">[&lt;]</span></button>
         <span class="brand">Diff Summary</span>
       </div>
       <div class="sidebar-body">
@@ -1658,9 +1644,9 @@
         <div class="controls" aria-label="Display controls">
           __LANGUAGE_CONTROL__
           <div class="control control--theme" role="group" data-i18n-label="theme" aria-label="Theme">
-            <button type="button" data-set-theme="auto" data-i18n-label="themeAuto" aria-label="Auto"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg><span class="control-text" data-i18n="themeAuto">Auto</span></button>
-            <button type="button" data-set-theme="light" data-i18n-label="themeLight" aria-label="Light"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="control-text" data-i18n="themeLight">Light</span></button>
-            <button type="button" data-set-theme="dark" data-i18n-label="themeDark" aria-label="Dark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span class="control-text" data-i18n="themeDark">Dark</span></button>
+            <button type="button" data-set-theme="auto" data-i18n-label="themeAuto" aria-label="Auto"><span class="control-text" data-i18n="themeAuto">Auto</span></button>
+            <button type="button" data-set-theme="light" data-i18n-label="themeLight" aria-label="Light"><span class="control-text" data-i18n="themeLight">Light</span></button>
+            <button type="button" data-set-theme="dark" data-i18n-label="themeDark" aria-label="Dark"><span class="control-text" data-i18n="themeDark">Dark</span></button>
           </div>
           <div class="control">
             <button type="button" data-copy-feedback aria-label="Copy reviewer feedback">Copy feedback</button>

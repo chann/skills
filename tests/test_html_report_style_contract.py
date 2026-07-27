@@ -636,35 +636,41 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 with self.subTest(template=name, glyph=glyph):
                     self.assertNotIn(glyph, source)
 
-    def test_every_inline_icon_is_decorative_and_shares_one_geometry(self) -> None:
-        for name, source in self.templates.items():
-            icons = re.findall(r"<svg\b[^>]*>", source)
-            with self.subTest(template=name, contract="present"):
-                self.assertTrue(icons)
-            for icon in icons:
-                with self.subTest(template=name, icon=icon[:70]):
-                    self.assertIn('aria-hidden="true"', icon)
-                    self.assertIn('focusable="false"', icon)
-                    self.assertIn('viewBox="0 0 24 24"', icon)
-                    self.assertIn('fill="none"', icon)
-                    self.assertIn('stroke="currentColor"', icon)
-                    self.assertIn('stroke-width="2"', icon)
-                    self.assertIn('stroke-linecap="round"', icon)
-                    self.assertIn('stroke-linejoin="round"', icon)
-
-    def test_every_html_report_sizes_icons_from_one_rule(self) -> None:
+    def test_no_html_report_ships_a_vector_icon(self) -> None:
+        """Brackets are the icon set, so no <svg> may appear in any report."""
         for name, source in self.templates.items():
             with self.subTest(template=name):
+                self.assertNotIn("<svg", source)
+
+    def test_every_bracket_affordance_is_decorative_text(self) -> None:
+        """The two icon-only sidebar toggles carry a bracket, not a glyph asset.
+
+        Every other control already names itself in text, so it needs no mark at
+        all. The bracket is hidden from assistive tech because the button's own
+        aria-label already says what it does.
+        """
+        for name, source in self.templates.items():
+            for marker, bracket in (
+                ("data-sidebar-expand", "[&gt;]"),
+                ("data-sidebar-toggle", "[&lt;]"),
+            ):
+                with self.subTest(template=name, marker=marker):
+                    self.assertIn(
+                        f'<span class="icon" aria-hidden="true">{bracket}</span>',
+                        source,
+                    )
+            with self.subTest(template=name, contract="count"):
+                self.assertEqual(source.count('class="icon"'), 2)
+            with self.subTest(template=name, contract="sized-by-text"):
                 rule = css_rule(source, ".icon")
-                self.assertRegex(rule, r"width:\s*14px\s*;")
-                self.assertRegex(rule, r"height:\s*14px\s*;")
-                self.assertRegex(rule, r"flex:\s*0\s+0\s+auto\s*;")
+                self.assertNotRegex(rule, r"width:")
+                self.assertNotRegex(rule, r"height:")
 
     def test_disclosure_indicators_stay_css_only(self) -> None:
         """<details> must open without JavaScript, so the marker is drawn in CSS.
 
-        A 2px border angle also matches the inline icons' stroke weight, which a
-        filled ▶ glyph never could.
+        A bracket pair also states the state in the report's own vocabulary:
+        [+] is closed, [-] is open, and both are plain text in the one face.
         """
         for name, selector, open_selector in (
             (
@@ -679,24 +685,15 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             ),
         ):
             source = self.templates[name]
-            rule = css_rule(source, selector)
-            with self.subTest(template=name, contract="geometry"):
-                self.assertRegex(rule, r'content:\s*""\s*;')
-                self.assertRegex(
-                    rule,
-                    r"border-right:\s*2px\s+solid\s+var\(--muted-foreground\)\s*;",
-                )
-                self.assertRegex(
-                    rule,
-                    r"border-bottom:\s*2px\s+solid\s+var\(--muted-foreground\)\s*;",
-                )
-                self.assertRegex(rule, r"transform:\s*rotate\(-45deg\)\s*;")
-                self.assertRegex(rule, r"transition:\s*transform")
+            with self.subTest(template=name, contract="closed"):
+                self.assertRegex(css_rule(source, selector), r'content:\s*"\[\+\]"\s*;')
             with self.subTest(template=name, contract="open"):
                 self.assertRegex(
                     css_rule(source, open_selector),
-                    r"transform:\s*rotate\(45deg\)\s*;",
+                    r'content:\s*"\[-\]"\s*;',
                 )
+            with self.subTest(template=name, contract="no-drawn-angle"):
+                self.assertNotRegex(css_rule(source, selector), r"transform:\s*rotate")
 
     def test_every_details_element_uses_the_shared_disclosure_marker(self) -> None:
         """One expand affordance per report — no native triangle beside a custom one."""
@@ -714,21 +711,19 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         rf"{re.escape(selector)}::-webkit-details-marker\s*\{{"
                         r"[^}]*display:\s*none",
                     )
-        marker = css_rule(
-            self.templates["diff-summary"],
-            ".quiz-explanation summary::before",
-        )
         self.assertRegex(
-            marker,
-            r"border-right:\s*2px\s+solid\s+var\(--muted-foreground\)\s*;",
+            css_rule(
+                self.templates["diff-summary"],
+                ".quiz-explanation summary::before",
+            ),
+            r'content:\s*"\[\+\]"\s*;',
         )
-        self.assertRegex(marker, r"transform:\s*rotate\(-45deg\)\s*;")
         self.assertRegex(
             css_rule(
                 self.templates["diff-summary"],
                 ".quiz-explanation[open] summary::before",
             ),
-            r"transform:\s*rotate\(45deg\)\s*;",
+            r'content:\s*"\[-\]"\s*;',
         )
 
     def test_no_html_report_stylesheet_references_an_external_resource(self) -> None:
@@ -810,10 +805,9 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         """Sharp containers, 4px interactive elements, and nothing in between.
 
         A literal radius is how a third shape sneaks in, so every rule has to
-        name one of the two tokens. The 1px angles are the CSS-drawn disclosure
-        markers, which are stroke geometry rather than a container corner.
+        name one of the two tokens.
         """
-        allowed = {"var(--radius)", "var(--radius-control)", "0", "1px"}
+        allowed = {"var(--radius)", "var(--radius-control)", "0"}
         for name, source in self.templates.items():
             for value in re.findall(r"border-radius:\s*([^;]+);", source):
                 with self.subTest(template=name, value=value.strip()):
@@ -1697,12 +1691,12 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(summary, r"padding:\s*12px\s+16px\s*;")
         self.assertRegex(summary, r"min-width:\s*0\s*;")
         self.assertRegex(summary, r"min-height:\s*0\s*;")
-        chevron = css_rule(self.template, ".card-summary::before")
-        self.assertRegex(chevron, r'content:\s*""\s*;')
-        self.assertRegex(chevron, r"transition:\s*transform")
+        marker = css_rule(self.template, ".card-summary::before")
+        self.assertRegex(marker, r'content:\s*"\[\+\]"\s*;')
+        self.assertRegex(marker, r"color:\s*var\(--muted-foreground\)\s*;")
         self.assertRegex(
             css_rule(self.template, ".summary-card[open] .card-summary::before"),
-            r"transform:\s*rotate\(45deg\)\s*;",
+            r'content:\s*"\[-\]"\s*;',
         )
 
     def test_diff_summary_card_tools_use_shared_muted_control_skin(self) -> None:

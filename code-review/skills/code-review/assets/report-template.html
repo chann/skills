@@ -116,12 +116,11 @@
       outline-offset: 2px;
     }
 
-    /* One geometry for every inline icon: 24-grid, 2px round strokes, currentColor. */
+    /* Bracket affordances are text, sized by the surrounding control. */
     .icon {
-      width: 14px;
-      height: 14px;
       flex: 0 0 auto;
       display: block;
+      font-variant-ligatures: none;
     }
 
     /* Korean sets prose by 어절, so keep-all prevents the mid-word breaks Latin
@@ -547,20 +546,15 @@
     }
     details.finding > summary::-webkit-details-marker { display: none; }
     .finding-summary-text { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-    /* Disclosure marker is a 2px border angle: no glyph, no asset, and the same
-       stroke weight as the inline icons. Rotates in place when the card opens. */
+    /* Brackets are the icon set: the marker is text, so it inherits the
+       report's one monospaced face and needs no asset or glyph coverage. */
     .finding-summary-text::before {
-      content: "";
-      width: 6px;
-      height: 6px;
-      border-right: 2px solid var(--muted-foreground);
-      border-bottom: 2px solid var(--muted-foreground);
-      border-radius: 1px;
-      transform: rotate(-45deg);
-      transition: transform 0.2s;
-      flex-shrink: 0;
+      content: "[+]";
+      color: var(--muted-foreground);
     }
-    details.finding[open] > summary .finding-summary-text::before { transform: rotate(45deg); }
+    details.finding[open] > summary .finding-summary-text::before {
+      content: "[-]";
+    }
 
     .finding-comment-chip {
       flex-shrink: 0;
@@ -930,11 +924,11 @@
 </head>
 <body>
   <a class="skip-link" href="#top" data-i18n="skipToReport">Skip to report</a>
-  <button class="sidebar-expand" type="button" data-sidebar-expand title="Show sidebar" aria-label="Show sidebar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></button>
+  <button class="sidebar-expand" type="button" data-sidebar-expand title="Show sidebar" aria-label="Show sidebar"><span class="icon" aria-hidden="true">[&gt;]</span></button>
   <div class="layout">
     <aside data-sidebar>
       <div class="sidebar-header">
-        <button class="icon-btn" type="button" data-sidebar-toggle title="Collapse sidebar" aria-label="Collapse sidebar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg></button>
+        <button class="icon-btn" type="button" data-sidebar-toggle title="Collapse sidebar" aria-label="Collapse sidebar"><span class="icon" aria-hidden="true">[&lt;]</span></button>
         <span class="brand">Code Review</span>
       </div>
       <div class="sidebar-body">
@@ -951,9 +945,6 @@
       </div>
       <div class="sidebar-footer">
         <button class="copy-md-btn" type="button" data-copy-feedback aria-label="Copy review feedback">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
           <span class="label" data-i18n="copyFeedback">Copy feedback</span>
           <span class="count" data-comment-count hidden>0</span>
         </button>
@@ -968,9 +959,9 @@
       <div class="controls" aria-label="Display controls">
         __LANG_CONTROL__
         <div class="control control--theme" role="group" data-i18n-label="theme" aria-label="Theme">
-          <button type="button" data-set-theme="auto" data-i18n-label="themeAuto" aria-label="Auto"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg><span class="control-text" data-i18n="themeAuto">Auto</span></button>
-          <button type="button" data-set-theme="light" data-i18n-label="themeLight" aria-label="Light"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="control-text" data-i18n="themeLight">Light</span></button>
-          <button type="button" data-set-theme="dark" data-i18n-label="themeDark" aria-label="Dark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span class="control-text" data-i18n="themeDark">Dark</span></button>
+          <button type="button" data-set-theme="auto" data-i18n-label="themeAuto" aria-label="Auto"><span class="control-text" data-i18n="themeAuto">Auto</span></button>
+          <button type="button" data-set-theme="light" data-i18n-label="themeLight" aria-label="Light"><span class="control-text" data-i18n="themeLight">Light</span></button>
+          <button type="button" data-set-theme="dark" data-i18n-label="themeDark" aria-label="Dark"><span class="control-text" data-i18n="themeDark">Dark</span></button>
         </div>
         <label class="control">
           <span class="control-label" data-i18n="code">Code</span>
