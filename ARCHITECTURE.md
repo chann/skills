@@ -19,7 +19,7 @@ default prompt.
 |---|---|---|---|
 | `code-review` | 2.5.0 | `code-review`, `code-review-md`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` | Explain changes across code and architecture; review diffs for defects; emit Markdown/HTML reports; render standalone raw HTML diffs |
 | `doc-skill` | 0.2.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
-| `git-skill` | 0.5.0 | `git-commit`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, one-shot or realtime checkpoint pushes, history rewrite, guarded merges, and merged-branch cleanup |
+| `git-skill` | 0.6.0 | `git-commit`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, one-shot or realtime checkpoint pushes, history rewrite, guarded merges, and merged-branch cleanup |
 | `handoff` | 0.2.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
 | `long-task` | 0.3.0 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 
@@ -150,9 +150,9 @@ skills/
 │   │   ├── SKILL.md
 │   │   └── templates/                # README.md.tmpl, README.ko.md.tmpl, ARCHITECTURE.md.tmpl, USAGE.md.tmpl
 │   └── README.md · README.ko.md
-├── git-skill/                        # plugin (v0.5.0)
+├── git-skill/                        # plugin (v0.6.0)
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/                     # seven git-* commands
+│   ├── commands/                     # seven git-* commands + the /gcpr alias
 │   ├── skills/
 │   │   ├── git-commit/               # SKILL.md + scripts/rewrite_msg.py (shared by the rewrite flow)
 │   │   ├── git-commit-push/SKILL.md
@@ -197,7 +197,12 @@ skills/
 - **Platform names are explicit and paired.** Every skill directory name matches
   its `SKILL.md` frontmatter name, every Claude Code command wrapper uses
   `/name`, and every `agents/openai.yaml` publishes a Codex display name plus a
-  `$name` default prompt. Package tests enforce all three surfaces.
+  `$name` default prompt. Package tests enforce all three surfaces. Short
+  aliases are the single additive exception: `commands/gcpr.md` republishes
+  `/git-commit-push-realtime` as `/gcpr` with a byte-identical body and adds no
+  skill, so the alias cannot drift into a weaker contract than the name it
+  shortens. A flat `npx skills` install carries no `commands/`, so the alias is
+  also advertised in that skill's `description` and reaches Codex as `$gcpr`.
 - **Evidence, analysis, and presentation are separate boundaries.** `collect_diff_evidence.py` is the only Git/GitHub runtime and emits bounded JSON; `diff-summary/SKILL.md` treats it as inert evidence and authors the Markdown contract; the bundled renderer never invokes Git or invents analytical prose. This keeps the exact scope and verified/unverified boundary visible in the source report.
 - **Generated reports stay local.** `.reviews/`, `.diff-summaries/`, and `.diffs/` are ignored in this repository. Skills may suggest an ignore entry in target repositories, but do not mutate their `.gitignore` automatically.
 - **Sample vulnerabilities live outside the plugins.** Demo fixtures sit in repo-root `samples/` and are excluded via `.snyk`, so a published plugin neither ships exploitable code nor trips SAST scanners.

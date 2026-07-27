@@ -7,10 +7,23 @@ ROOT = Path(__file__).resolve().parents[1]
 GIT_SKILL = ROOT / "git-skill"
 REALTIME_SKILL_NAME = "git-commit-push-realtime"
 REALTIME_SKILL = GIT_SKILL / "skills" / REALTIME_SKILL_NAME
+REALTIME_ALIAS = "gcpr"
 
 PROTECTED_BRANCH_LIST = (
     "`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`"
 )
+
+
+def frontmatter(path: Path) -> str:
+    """Return the YAML frontmatter block of a Markdown file."""
+    text = path.read_text(encoding="utf-8")
+    return text.split("---\n", 2)[1] if text.startswith("---\n") else ""
+
+
+def body(path: Path) -> str:
+    """Return a Markdown file's content with its YAML frontmatter removed."""
+    text = path.read_text(encoding="utf-8")
+    return text.split("---\n", 2)[2] if text.startswith("---\n") else text
 
 
 class GitSkillPackageTests(unittest.TestCase):
@@ -27,6 +40,45 @@ class GitSkillPackageTests(unittest.TestCase):
         self.assertIn("<plugin-root>/skills/git-commit/SKILL.md", skill_text)
         self.assertIn("<plugin-root>/skills/git-commit-push/SKILL.md", skill_text)
         self.assertIn(f"**{REALTIME_SKILL_NAME}** skill", command_text)
+
+    def test_realtime_commit_push_publishes_a_short_alias_command(self) -> None:
+        alias = GIT_SKILL / "commands" / f"{REALTIME_ALIAS}.md"
+
+        self.assertTrue(alias.is_file())
+
+        alias_text = alias.read_text(encoding="utf-8")
+        self.assertIn(f"**{REALTIME_SKILL_NAME}** skill", alias_text)
+        self.assertIn(f"Alias for `/{REALTIME_SKILL_NAME}`", frontmatter(alias))
+
+    def test_short_alias_command_body_matches_the_canonical_command(self) -> None:
+        canonical = GIT_SKILL / "commands" / f"{REALTIME_SKILL_NAME}.md"
+        alias = GIT_SKILL / "commands" / f"{REALTIME_ALIAS}.md"
+
+        self.assertEqual(body(canonical), body(alias))
+
+    def test_short_alias_is_discoverable_from_the_skill_description(self) -> None:
+        description = frontmatter(REALTIME_SKILL / "SKILL.md")
+
+        for token in (f'"/{REALTIME_ALIAS}"', f'"${REALTIME_ALIAS}"'):
+            with self.subTest(token=token):
+                self.assertIn(token, description)
+
+    def test_short_alias_is_documented_across_package_surfaces(self) -> None:
+        documented = [
+            ROOT / "README.md",
+            ROOT / "README.ko.md",
+            ROOT / "USAGE.md",
+            ROOT / "ARCHITECTURE.md",
+            GIT_SKILL / "README.md",
+            GIT_SKILL / "README.ko.md",
+        ]
+
+        for path in documented:
+            with self.subTest(path=path):
+                self.assertIn(
+                    f"`/{REALTIME_ALIAS}`",
+                    path.read_text(encoding="utf-8"),
+                )
 
     def test_realtime_commit_push_uses_green_outcome_checkpoints(self) -> None:
         skill = (REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
@@ -132,7 +184,7 @@ class GitSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.5.0", metadata["version"])
+        self.assertEqual("0.6.0", metadata["version"])
         self.assertIn("realtime checkpoint pushes", metadata["description"])
 
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:

@@ -50,6 +50,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /diff-summary-quiz main..dev             # bilingual summary + aligned quiz
 > /git-commit                               # group changes into Conventional Commits
 > /git-commit-push-realtime                 # push each verified outcome while working
+> /gcpr                                      # same workflow, short alias
 > /gen-docs                                   # generate/update project docs
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
@@ -72,7 +73,7 @@ These are the exact names published by every package:
 | Project docs | `/gen-docs` | `$gen-docs` |
 | Git commit | `/git-commit` | `$git-commit` |
 | Git commit and push | `/git-commit-push` | `$git-commit-push` |
-| Realtime commit and push | `/git-commit-push-realtime` | `$git-commit-push-realtime` |
+| Realtime commit and push | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` |
 | Commit-message rewrite | `/git-commit-rewrite` | `$git-commit-rewrite` |
 | Merge to main | `/git-merge-to-main` | `$git-merge-to-main` |
 | Merge to dev | `/git-merge-to-dev` | `$git-merge-to-dev` |
@@ -177,7 +178,7 @@ the templates, so the reports cannot drift apart.
 |---|---|
 | `/git-commit` | Group working-tree changes into Conventional Commits, one per logical unit |
 | `/git-commit-push` | Same, then `git push` (never `--force`) |
-| `/git-commit-push-realtime` | During implementation, verify, commit, and immediately push each meaningful outcome |
+| `/git-commit-push-realtime` · `/gcpr` | During implementation, verify, commit, and immediately push each meaningful outcome |
 | `/git-commit-rewrite` | Rewrite recent non-Conventional commit subjects |
 | `/git-merge-to-main` | Merge the current branch into `main`, then `git branch -d` the source |
 | `/git-merge-to-dev` | Merge into `dev` (fallback `develop`), then `git branch -d` the source |

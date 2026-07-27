@@ -90,7 +90,7 @@ Every HTML report — review, summary, quiz, and raw diff — shares one interfa
 | -------------------------------- | --------------------------- | ------------------------------------------------------------------------------------- |
 | `/git-commit`                    | `$git-commit`               | Group working-tree changes into Conventional Commits                                  |
 | `/git-commit-push`               | `$git-commit-push`          | Same, then `git push` (no `--force`)                                                   |
-| `/git-commit-push-realtime`      | `$git-commit-push-realtime` | Commit and push each verified, meaningful outcome while implementation continues      |
+| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` | Commit and push each verified, meaningful outcome while implementation continues |
 | `/git-commit-rewrite`            | `$git-commit-rewrite`       | Rewrite recent non-Conventional commit subjects                                       |
 | `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |
 | `/git-merge-to-dev`              | `$git-merge-to-dev`         | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |

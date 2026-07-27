@@ -1,6 +1,6 @@
 ---
 name: git-commit-push-realtime
-description: Use when the user wants an implementation committed and pushed continuously at meaningful checkpoints instead of only once at the end. Trigger on phrases like "commit and push as you work", "keep committing and pushing", "작업 중간중간 커밋 푸시", "의미 있는 단위마다 푸시", "/git-commit-push-realtime", or "$git-commit-push-realtime". Runs verified, outcome-based Conventional Commit checkpoints and pushes each one immediately without force.
+description: Use when the user wants an implementation committed and pushed continuously at meaningful checkpoints instead of only once at the end. Trigger on phrases like "commit and push as you work", "keep committing and pushing", "작업 중간중간 커밋 푸시", "의미 있는 단위마다 푸시", "/git-commit-push-realtime", "$git-commit-push-realtime", or the short aliases "/gcpr" and "$gcpr". Runs verified, outcome-based Conventional Commit checkpoints and pushes each one immediately without force.
 ---
 
 # Git Commit + Push Realtime

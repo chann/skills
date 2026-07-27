@@ -60,7 +60,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 | ------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------- |
 | `/git-commit`                   | `$git-commit`                | Group staged + unstaged changes into logical units; create one Conventional Commit per unit    |
 | `/git-commit-push`              | `$git-commit-push`           | Same as above, then `git push` (no force)                                                      |
-| `/git-commit-push-realtime`     | `$git-commit-push-realtime`  | During implementation, commit and immediately push each verified, meaningful outcome           |
+| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime`  | During implementation, commit and immediately push each verified, meaningful outcome     |
 | `/git-commit-rewrite`           | `$git-commit-rewrite`        | Rewrite recent non-conformant commit subjects to Conventional format                           |
 | `/git-merge-to-main`            | `$git-merge-to-main`         | Merge current branch into `main`, then delete the source unless protected                      |
 | `/git-merge-to-dev`             | `$git-merge-to-dev`          | Merge current branch into `dev` (fallback `develop`), then delete the source unless protected  |
@@ -93,7 +93,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 
 Runs the default workflow, then `git push`. Never `--force` or `--force-with-lease`. If the push is rejected, the skill stops and surfaces the error rather than auto-resolving.
 
-### `/git-commit-push-realtime`
+### `/git-commit-push-realtime` (alias `/gcpr`)
 
 1. Inspect the branch, upstream, existing commits, working tree, and secret-path risks before editing
 2. Plan outcome-based checkpoints; do not split work by elapsed time, file count, or token pressure
@@ -191,6 +191,7 @@ git-skill/
 │   ├── git-commit.md                     # /git-commit (default)
 │   ├── git-commit-push.md                # /git-commit-push command
 │   ├── git-commit-push-realtime.md       # /git-commit-push-realtime command
+│   ├── gcpr.md                           # /gcpr — short alias, same body
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite command
 │   ├── git-merge-to-main.md              # /git-merge-to-main command
 │   ├── git-merge-to-dev.md               # /git-merge-to-dev command
