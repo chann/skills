@@ -214,6 +214,28 @@ STATUS_FOREGROUNDS = (
     "status-danger",
     "status-info",
 )
+CODE_DIFF_TEXT_TOKENS = (
+    "code-add-text",
+    "code-del-text",
+    "code-hunk-text",
+)
+EXPECTED_LIGHT_CODE_DIFF_TEXT = {
+    "code-add-text": "var(--status-success)",
+    "code-del-text": "var(--status-danger)",
+    "code-hunk-text": "var(--status-info)",
+}
+EXPECTED_DARK_CODE_DIFF_TEXT = {
+    "code-add-text": "#8fe3a7",
+    "code-del-text": "#ffb3ba",
+    "code-hunk-text": "#a9c2ff",
+}
+# diff-summary has no code-scheme picker, so its dark diff text follows the page
+# theme; the other two follow whichever Highlight.js tone the reader selected.
+DARK_CODE_TONE_SELECTORS = {
+    "diff-summary": 'body[data-theme="dark"]',
+    "diff-viewer": 'html[data-code-tone="dark"]',
+    "code-review": 'html[data-code-tone="dark"]',
+}
 SOFT_STATUS_PAIRS = (
     ("status-success", "status-success-soft"),
     ("status-warning", "status-warning-soft"),
@@ -991,6 +1013,33 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                             resolve_token(declarations[background], declarations),
                         ),
                         4.5,
+                    )
+
+    def test_every_html_report_shares_one_diff_text_family(self) -> None:
+        """Added, removed, and hunk text is one family across the three reports.
+
+        The overlays behind that text already mix shared hue tokens, so a
+        template that hard-codes its own green, red, and blue drifts away from
+        the palette the moment the palette moves.
+        """
+        for name, source in self.templates.items():
+            for theme, selector, expected in (
+                (
+                    "light",
+                    THEME_SELECTORS[name][0],
+                    EXPECTED_LIGHT_CODE_DIFF_TEXT,
+                ),
+                (
+                    "dark",
+                    DARK_CODE_TONE_SELECTORS[name],
+                    EXPECTED_DARK_CODE_DIFF_TEXT,
+                ),
+            ):
+                declarations = custom_properties(css_rule(source, selector))
+                with self.subTest(template=name, theme=theme):
+                    self.assertEqual(
+                        selected_properties(declarations, CODE_DIFF_TEXT_TOKENS),
+                        expected,
                     )
 
     def test_every_diff_overlay_derives_from_a_shared_hue_token(self) -> None:
