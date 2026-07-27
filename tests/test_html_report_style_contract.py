@@ -121,29 +121,29 @@ ROOT_TOKENS = TOKENS[-3:]
 # One row per token, (light, dark). Templates declare the pair once through
 # CSS light-dark(), so these are the only two values that can ever apply.
 EXPECTED_THEME = {
-    "background": ("#f5f7fa", "#10151c"),
-    "foreground": ("#1e293b", "#e7edf5"),
-    "card": ("#ffffff", "#151c25"),
-    "card-foreground": ("#1e293b", "#e7edf5"),
-    "popover": ("#ffffff", "#1a222d"),
-    "popover-foreground": ("#1e293b", "#e7edf5"),
-    "muted": ("#eef2f6", "#202a36"),
-    "muted-foreground": ("#5f6b7a", "#a8b3c2"),
-    "primary": ("#2f5d8c", "#8fb7de"),
-    "primary-foreground": ("#ffffff", "#102235"),
-    "secondary": ("#e8eef5", "#202a36"),
-    "secondary-foreground": ("#26384d", "#dce5ef"),
-    "accent": ("#e3edf7", "#24364a"),
-    "accent-foreground": ("#244f7a", "#dcebfa"),
-    "destructive": ("#b4233a", "#8e2f3d"),
-    "destructive-foreground": ("#ffffff", "#ffd9de"),
-    "border": ("#d6dee8", "#2d3948"),
-    "input": ("#c8d3e0", "#39485a"),
-    "ring": ("#3d6f9e", "#91b9e0"),
+    "background": ("#fdfcfc", "#201d1d"),
+    "foreground": ("#201d1d", "#fdfcfc"),
+    "card": ("#fdfcfc", "#201d1d"),
+    "card-foreground": ("#201d1d", "#fdfcfc"),
+    "popover": ("#fdfcfc", "#302c2c"),
+    "popover-foreground": ("#201d1d", "#fdfcfc"),
+    "muted": ("#f8f7f7", "#302c2c"),
+    "muted-foreground": ("#646262", "#9a9898"),
+    "primary": ("#201d1d", "#fdfcfc"),
+    "primary-foreground": ("#fdfcfc", "#201d1d"),
+    "secondary": ("#f1eeee", "#302c2c"),
+    "secondary-foreground": ("#302c2c", "#fdfcfc"),
+    "accent": ("#f1eeee", "#302c2c"),
+    "accent-foreground": ("#201d1d", "#fdfcfc"),
+    "destructive": ("#d70015", "#ff3b30"),
+    "destructive-foreground": ("#fdfcfc", "#201d1d"),
+    "border": ("#e0dede", "#3f3c3c"),
+    "input": ("#646262", "#646262"),
+    "ring": ("#201d1d", "#fdfcfc"),
 }
 EXPECTED_LIGHT_THEME = {name: pair[0] for name, pair in EXPECTED_THEME.items()}
 EXPECTED_DARK_THEME = {name: pair[1] for name, pair in EXPECTED_THEME.items()}
-EXPECTED_LIGHT_SHADOW = "0 1px 2px rgba(15, 34, 58, 0.08)"
+EXPECTED_LIGHT_SHADOW = "none"
 EXPECTED_DARK_SHADOW = "none"
 EXPECTED_PRINT_THEME = {
     **EXPECTED_LIGHT_THEME,
@@ -274,19 +274,21 @@ LEGACY_ZINC_VALUES = (
 )
 EXPECTED_ROOT_TOKENS = {
     "radius": "0.5rem",
-    # Korean faces follow the Latin system faces, so Latin glyphs keep their
-    # platform metrics and only Korean text falls through to a Korean face.
+    # One monospaced face carries every text role. The Latin mono faces have no
+    # Hangul, so per-glyph fallback reaches the Korean mono faces for prose
+    # while Latin keeps its mono metrics.
     "font-sans": (
-        'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", '
-        '"Apple SD Gothic Neo", Pretendard, "Noto Sans KR", "Malgun Gothic", '
-        "sans-serif"
+        '"Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, '
+        "SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", "
+        'D2Coding, "Nanum Gothic Coding", "Courier New", monospace'
     ),
     "font-mono": (
-        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", '
-        '"Courier New", D2Coding, monospace'
+        '"Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, '
+        "SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", "
+        'D2Coding, "Nanum Gothic Coding", "Courier New", monospace'
     ),
 }
-KOREAN_FACES = ('"Apple SD Gothic Neo"', "Pretendard", '"Noto Sans KR"', '"Malgun Gothic"')
+KOREAN_FACES = ("D2Coding", '"Nanum Gothic Coding"')
 PROSE_KEEP_ALL_SELECTORS = {
     "diff-summary": (
         "#report-main > h2",
@@ -746,8 +748,13 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             with self.subTest(template=name, contract="latin-first"):
                 stack = declarations["font-sans"]
                 self.assertLess(
-                    stack.index("ui-sans-serif"),
-                    stack.index('"Apple SD Gothic Neo"'),
+                    stack.index("ui-monospace"),
+                    stack.index("D2Coding"),
+                )
+            with self.subTest(template=name, contract="one-face"):
+                self.assertEqual(
+                    declarations["font-sans"],
+                    declarations["font-mono"],
                 )
 
     def test_every_html_report_breaks_korean_prose_on_word_boundaries(self) -> None:
@@ -796,22 +803,31 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         r"font-variant-numeric:\s*tabular-nums\s*;",
                     )
 
-    def test_cool_editorial_palette_separates_report_surfaces(self) -> None:
-        for name, source in self.templates.items():
-            light = theme_declarations(source, name, "light")
-            dark = theme_declarations(source, name, "dark")
+    def test_every_html_report_sits_flat_on_one_canvas(self) -> None:
+        """Cards are hairline-bordered blocks on the canvas, not raised surfaces.
 
-            with self.subTest(template=name, theme="light"):
-                self.assertNotEqual(light["background"], light["card"])
-                self.assertNotEqual(light["muted"], light["secondary"])
-                self.assertNotEqual(light["secondary"], light["accent"])
-                self.assertNotEqual(light["border"], light["input"])
-                self.assertEqual(light["shadow"], EXPECTED_LIGHT_SHADOW)
-            with self.subTest(template=name, theme="dark"):
-                self.assertNotEqual(dark["background"], dark["card"])
-                self.assertNotEqual(dark["card"], dark["popover"])
-                self.assertNotEqual(dark["border"], dark["input"])
-                self.assertEqual(dark["shadow"], EXPECTED_DARK_SHADOW)
+        Nothing in the system lifts: the card fill equals the page fill and the
+        only separation is the border, so no shadow may exist in either theme.
+        """
+        for name, source in self.templates.items():
+            for theme, expected_shadow in (
+                ("light", EXPECTED_LIGHT_SHADOW),
+                ("dark", EXPECTED_DARK_SHADOW),
+            ):
+                declarations = theme_declarations(source, name, theme)
+                with self.subTest(template=name, theme=theme, contract="one-canvas"):
+                    self.assertEqual(
+                        declarations["card"],
+                        declarations["background"],
+                    )
+                with self.subTest(template=name, theme=theme, contract="tints-read"):
+                    self.assertNotEqual(
+                        declarations["muted"],
+                        declarations["background"],
+                    )
+                    self.assertNotEqual(declarations["border"], declarations["input"])
+                with self.subTest(template=name, theme=theme, contract="no-elevation"):
+                    self.assertEqual(declarations["shadow"], expected_shadow)
 
     def test_every_html_report_prints_with_cool_editorial_light_palette(
         self,
@@ -1697,7 +1713,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_diff_summary_header_uses_compact_report_scale(self) -> None:
         body = css_rule(self.template, "body")
         self.assertRegex(body, r"font-size:\s*14px\s*;")
-        self.assertRegex(body, r"line-height:\s*1\.6\s*;")
+        self.assertRegex(body, r"line-height:\s*1\.5\s*;")
 
         report_main = css_rule(self.template, "#report-main")
         self.assertRegex(report_main, r"width:\s*100%\s*;")

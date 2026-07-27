@@ -10,8 +10,8 @@
       color-scheme: light dark;
       --sidebar-width: 220px;
       --radius: 0.5rem;
-      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", Pretendard, "Noto Sans KR", "Malgun Gothic", sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", D2Coding, monospace;
+      --font-sans: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", D2Coding, "Nanum Gothic Coding", "Courier New", monospace;
+      --font-mono: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", D2Coding, "Nanum Gothic Coding", "Courier New", monospace;
       font-family: var(--font-sans);
       font-synthesis: none;
       text-rendering: optimizeLegibility;
@@ -24,25 +24,25 @@
     }
 
     body {
-      --background: light-dark(#f5f7fa, #10151c);
-      --foreground: light-dark(#1e293b, #e7edf5);
-      --card: light-dark(#ffffff, #151c25);
-      --card-foreground: light-dark(#1e293b, #e7edf5);
-      --popover: light-dark(#ffffff, #1a222d);
-      --popover-foreground: light-dark(#1e293b, #e7edf5);
-      --muted: light-dark(#eef2f6, #202a36);
-      --muted-foreground: light-dark(#5f6b7a, #a8b3c2);
-      --primary: light-dark(#2f5d8c, #8fb7de);
-      --primary-foreground: light-dark(#ffffff, #102235);
-      --secondary: light-dark(#e8eef5, #202a36);
-      --secondary-foreground: light-dark(#26384d, #dce5ef);
-      --accent: light-dark(#e3edf7, #24364a);
-      --accent-foreground: light-dark(#244f7a, #dcebfa);
-      --destructive: light-dark(#b4233a, #8e2f3d);
-      --destructive-foreground: light-dark(#ffffff, #ffd9de);
-      --border: light-dark(#d6dee8, #2d3948);
-      --input: light-dark(#c8d3e0, #39485a);
-      --ring: light-dark(#3d6f9e, #91b9e0);
+      --background: light-dark(#fdfcfc, #201d1d);
+      --foreground: light-dark(#201d1d, #fdfcfc);
+      --card: light-dark(#fdfcfc, #201d1d);
+      --card-foreground: light-dark(#201d1d, #fdfcfc);
+      --popover: light-dark(#fdfcfc, #302c2c);
+      --popover-foreground: light-dark(#201d1d, #fdfcfc);
+      --muted: light-dark(#f8f7f7, #302c2c);
+      --muted-foreground: light-dark(#646262, #9a9898);
+      --primary: light-dark(#201d1d, #fdfcfc);
+      --primary-foreground: light-dark(#fdfcfc, #201d1d);
+      --secondary: light-dark(#f1eeee, #302c2c);
+      --secondary-foreground: light-dark(#302c2c, #fdfcfc);
+      --accent: light-dark(#f1eeee, #302c2c);
+      --accent-foreground: light-dark(#201d1d, #fdfcfc);
+      --destructive: light-dark(#d70015, #ff3b30);
+      --destructive-foreground: light-dark(#fdfcfc, #201d1d);
+      --border: light-dark(#e0dede, #3f3c3c);
+      --input: light-dark(#646262, #646262);
+      --ring: light-dark(#201d1d, #fdfcfc);
       --status-success: light-dark(#008236, #7bf1a8);
       --status-success-soft: light-dark(#f0fdf4, #032e15);
       --status-warning: light-dark(#a65f00, #ffdf20);
@@ -59,17 +59,17 @@
       --add-hue: var(--status-success);
       --del-hue: var(--status-danger);
       --hunk-hue: var(--status-info);
-      --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
-      --code-bg: light-dark(#f8fafc, #0d1117);
-      --code-fg: light-dark(#1e293b, #c9d1d9);
-      --code-muted: light-dark(#728095, #6e7681);
+      --shadow: none;
+      --code-bg: light-dark(#f1eeee, #302c2c);
+      --code-fg: light-dark(#201d1d, #c9d1d9);
+      --code-muted: light-dark(#646262, #9a9898);
       --code-add-text: light-dark(var(--status-success), #8fe3a7);
       --code-del-text: light-dark(var(--status-danger), #ffb3ba);
       --code-hunk-text: light-dark(var(--status-info), #a9c2ff);
       --tok-kw: light-dark(#cf222e, #ff7b72);
       --tok-str: light-dark(#0a3069, #a5d6ff);
       --tok-num: light-dark(#0550ae, #79c0ff);
-      --tok-com: light-dark(#6e7781, #8b949e);
+      --tok-com: light-dark(#646262, #9a9898);
       --tok-fn: light-dark(#8250df, #d2a8ff);
       --tok-type: light-dark(#953800, #ffa657);
       min-width: 18rem;
@@ -79,12 +79,11 @@
       color: var(--foreground);
       font-family: var(--font-sans);
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     body[data-default-theme="dark"]:not([data-theme]),
     body[data-theme="dark"] {
-      --shadow: none;
       color-scheme: dark;
     }
 
@@ -1500,24 +1499,24 @@
       body[data-theme="dark"],
       body[data-default-theme="auto"]:not([data-theme]) {
         --background: #ffffff;
-        --foreground: #1e293b;
-        --card: #ffffff;
-        --card-foreground: #1e293b;
-        --popover: #ffffff;
-        --popover-foreground: #1e293b;
-        --muted: #eef2f6;
-        --muted-foreground: #5f6b7a;
-        --primary: #2f5d8c;
-        --primary-foreground: #ffffff;
-        --secondary: #e8eef5;
-        --secondary-foreground: #26384d;
-        --accent: #e3edf7;
-        --accent-foreground: #244f7a;
-        --destructive: #b4233a;
-        --destructive-foreground: #ffffff;
-        --border: #d6dee8;
-        --input: #c8d3e0;
-        --ring: #3d6f9e;
+        --foreground: #201d1d;
+        --card: #fdfcfc;
+        --card-foreground: #201d1d;
+        --popover: #fdfcfc;
+        --popover-foreground: #201d1d;
+        --muted: #f8f7f7;
+        --muted-foreground: #646262;
+        --primary: #201d1d;
+        --primary-foreground: #fdfcfc;
+        --secondary: #f1eeee;
+        --secondary-foreground: #302c2c;
+        --accent: #f1eeee;
+        --accent-foreground: #201d1d;
+        --destructive: #d70015;
+        --destructive-foreground: #fdfcfc;
+        --border: #e0dede;
+        --input: #646262;
+        --ring: #201d1d;
         --status-success: #008236;
         --status-success-soft: #f0fdf4;
         --status-warning: #a65f00;
@@ -1536,15 +1535,15 @@
         --hunk-hue: var(--status-info);
         --shadow: none;
         --code-bg: #ffffff;
-        --code-fg: #1e293b;
-        --code-muted: #728095;
+        --code-fg: #201d1d;
+        --code-muted: #646262;
         --code-add-text: var(--status-success);
         --code-del-text: var(--status-danger);
         --code-hunk-text: var(--status-info);
         --tok-kw: #cf222e;
         --tok-str: #0a3069;
         --tok-num: #0550ae;
-        --tok-com: #6e7781;
+        --tok-com: #646262;
         --tok-fn: #8250df;
         --tok-type: #953800;
         color-scheme: light;

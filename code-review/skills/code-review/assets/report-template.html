@@ -15,25 +15,25 @@
     :root {
       color-scheme: light;
       --sidebar-width: 220px;
-      --background: light-dark(#f5f7fa, #10151c);
-      --foreground: light-dark(#1e293b, #e7edf5);
-      --card: light-dark(#ffffff, #151c25);
-      --card-foreground: light-dark(#1e293b, #e7edf5);
-      --popover: light-dark(#ffffff, #1a222d);
-      --popover-foreground: light-dark(#1e293b, #e7edf5);
-      --muted: light-dark(#eef2f6, #202a36);
-      --muted-foreground: light-dark(#5f6b7a, #a8b3c2);
-      --primary: light-dark(#2f5d8c, #8fb7de);
-      --primary-foreground: light-dark(#ffffff, #102235);
-      --secondary: light-dark(#e8eef5, #202a36);
-      --secondary-foreground: light-dark(#26384d, #dce5ef);
-      --accent: light-dark(#e3edf7, #24364a);
-      --accent-foreground: light-dark(#244f7a, #dcebfa);
-      --destructive: light-dark(#b4233a, #8e2f3d);
-      --destructive-foreground: light-dark(#ffffff, #ffd9de);
-      --border: light-dark(#d6dee8, #2d3948);
-      --input: light-dark(#c8d3e0, #39485a);
-      --ring: light-dark(#3d6f9e, #91b9e0);
+      --background: light-dark(#fdfcfc, #201d1d);
+      --foreground: light-dark(#201d1d, #fdfcfc);
+      --card: light-dark(#fdfcfc, #201d1d);
+      --card-foreground: light-dark(#201d1d, #fdfcfc);
+      --popover: light-dark(#fdfcfc, #302c2c);
+      --popover-foreground: light-dark(#201d1d, #fdfcfc);
+      --muted: light-dark(#f8f7f7, #302c2c);
+      --muted-foreground: light-dark(#646262, #9a9898);
+      --primary: light-dark(#201d1d, #fdfcfc);
+      --primary-foreground: light-dark(#fdfcfc, #201d1d);
+      --secondary: light-dark(#f1eeee, #302c2c);
+      --secondary-foreground: light-dark(#302c2c, #fdfcfc);
+      --accent: light-dark(#f1eeee, #302c2c);
+      --accent-foreground: light-dark(#201d1d, #fdfcfc);
+      --destructive: light-dark(#d70015, #ff3b30);
+      --destructive-foreground: light-dark(#fdfcfc, #201d1d);
+      --border: light-dark(#e0dede, #3f3c3c);
+      --input: light-dark(#646262, #646262);
+      --ring: light-dark(#201d1d, #fdfcfc);
       --radius: 0.5rem;
       /* Shared semantic status palette — the single source for every accent. */
       --status-success: light-dark(#008236, #7bf1a8);
@@ -62,10 +62,10 @@
       --code-add-text: var(--status-success);
       --code-del-text: var(--status-danger);
       --code-hunk-text: var(--status-info);
-      --selection-bg: light-dark(rgba(47, 93, 140, 0.18), rgba(143, 183, 222, 0.28));
-      --shadow: 0 1px 2px rgba(15, 34, 58, 0.08);
-      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", Pretendard, "Noto Sans KR", "Malgun Gothic", sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", D2Coding, monospace;
+      --selection-bg: light-dark(rgba(32, 29, 29, 0.14), rgba(253, 252, 252, 0.22));
+      --shadow: none;
+      --font-sans: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", D2Coding, "Nanum Gothic Coding", "Courier New", monospace;
+      --font-mono: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", D2Coding, "Nanum Gothic Coding", "Courier New", monospace;
     }
 
     html[data-page-theme="dark"] {
@@ -87,7 +87,7 @@
       color: var(--foreground);
       font-family: var(--font-sans);
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     a { color: inherit; text-decoration: none; }
@@ -879,24 +879,24 @@
       :root,
       html[data-page-theme="dark"] {
         --background: #ffffff;
-        --foreground: #1e293b;
-        --card: #ffffff;
-        --card-foreground: #1e293b;
-        --popover: #ffffff;
-        --popover-foreground: #1e293b;
-        --muted: #eef2f6;
-        --muted-foreground: #5f6b7a;
-        --primary: #2f5d8c;
-        --primary-foreground: #ffffff;
-        --secondary: #e8eef5;
-        --secondary-foreground: #26384d;
-        --accent: #e3edf7;
-        --accent-foreground: #244f7a;
-        --destructive: #b4233a;
-        --destructive-foreground: #ffffff;
-        --border: #d6dee8;
-        --input: #c8d3e0;
-        --ring: #3d6f9e;
+        --foreground: #201d1d;
+        --card: #fdfcfc;
+        --card-foreground: #201d1d;
+        --popover: #fdfcfc;
+        --popover-foreground: #201d1d;
+        --muted: #f8f7f7;
+        --muted-foreground: #646262;
+        --primary: #201d1d;
+        --primary-foreground: #fdfcfc;
+        --secondary: #f1eeee;
+        --secondary-foreground: #302c2c;
+        --accent: #f1eeee;
+        --accent-foreground: #201d1d;
+        --destructive: #d70015;
+        --destructive-foreground: #fdfcfc;
+        --border: #e0dede;
+        --input: #646262;
+        --ring: #201d1d;
         --status-success: #008236;
         --status-success-soft: #f0fdf4;
         --status-warning: #a65f00;
@@ -910,7 +910,7 @@
         --shadow: none;
         --code-bg: #ffffff;
         --code-fg: #1e293b;
-        --code-muted: #728095;
+        --code-muted: #646262;
         color-scheme: light;
       }
 
