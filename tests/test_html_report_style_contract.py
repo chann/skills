@@ -118,48 +118,31 @@ TOKENS = (
 )
 THEME_COLOR_TOKENS = TOKENS[:-3]
 ROOT_TOKENS = TOKENS[-3:]
-EXPECTED_LIGHT_THEME = {
-    "background": "#f5f7fa",
-    "foreground": "#1e293b",
-    "card": "#ffffff",
-    "card-foreground": "#1e293b",
-    "popover": "#ffffff",
-    "popover-foreground": "#1e293b",
-    "muted": "#eef2f6",
-    "muted-foreground": "#5f6b7a",
-    "primary": "#2f5d8c",
-    "primary-foreground": "#ffffff",
-    "secondary": "#e8eef5",
-    "secondary-foreground": "#26384d",
-    "accent": "#e3edf7",
-    "accent-foreground": "#244f7a",
-    "destructive": "#b4233a",
-    "destructive-foreground": "#ffffff",
-    "border": "#d6dee8",
-    "input": "#c8d3e0",
-    "ring": "#3d6f9e",
+# One row per token, (light, dark). Templates declare the pair once through
+# CSS light-dark(), so these are the only two values that can ever apply.
+EXPECTED_THEME = {
+    "background": ("#f5f7fa", "#10151c"),
+    "foreground": ("#1e293b", "#e7edf5"),
+    "card": ("#ffffff", "#151c25"),
+    "card-foreground": ("#1e293b", "#e7edf5"),
+    "popover": ("#ffffff", "#1a222d"),
+    "popover-foreground": ("#1e293b", "#e7edf5"),
+    "muted": ("#eef2f6", "#202a36"),
+    "muted-foreground": ("#5f6b7a", "#a8b3c2"),
+    "primary": ("#2f5d8c", "#8fb7de"),
+    "primary-foreground": ("#ffffff", "#102235"),
+    "secondary": ("#e8eef5", "#202a36"),
+    "secondary-foreground": ("#26384d", "#dce5ef"),
+    "accent": ("#e3edf7", "#24364a"),
+    "accent-foreground": ("#244f7a", "#dcebfa"),
+    "destructive": ("#b4233a", "#8e2f3d"),
+    "destructive-foreground": ("#ffffff", "#ffd9de"),
+    "border": ("#d6dee8", "#2d3948"),
+    "input": ("#c8d3e0", "#39485a"),
+    "ring": ("#3d6f9e", "#91b9e0"),
 }
-EXPECTED_DARK_THEME = {
-    "background": "#10151c",
-    "foreground": "#e7edf5",
-    "card": "#151c25",
-    "card-foreground": "#e7edf5",
-    "popover": "#1a222d",
-    "popover-foreground": "#e7edf5",
-    "muted": "#202a36",
-    "muted-foreground": "#a8b3c2",
-    "primary": "#8fb7de",
-    "primary-foreground": "#102235",
-    "secondary": "#202a36",
-    "secondary-foreground": "#dce5ef",
-    "accent": "#24364a",
-    "accent-foreground": "#dcebfa",
-    "destructive": "#8e2f3d",
-    "destructive-foreground": "#ffd9de",
-    "border": "#2d3948",
-    "input": "#39485a",
-    "ring": "#91b9e0",
-}
+EXPECTED_LIGHT_THEME = {name: pair[0] for name, pair in EXPECTED_THEME.items()}
+EXPECTED_DARK_THEME = {name: pair[1] for name, pair in EXPECTED_THEME.items()}
 EXPECTED_LIGHT_SHADOW = "0 1px 2px rgba(15, 34, 58, 0.08)"
 EXPECTED_DARK_SHADOW = "none"
 EXPECTED_PRINT_THEME = {
@@ -188,26 +171,18 @@ STATUS_TOKENS = (
 )
 # Tailwind palette steps, following the shadcn badge custom-colors recipe:
 # light is text-{family}-700 on bg-{family}-50, dark is -300 on -950.
-EXPECTED_LIGHT_STATUS = {
-    "status-success": "#008236",
-    "status-success-soft": "#f0fdf4",
-    "status-warning": "#a65f00",
-    "status-warning-soft": "#fefce8",
-    "status-danger": "#c10007",
-    "status-danger-soft": "#fef2f2",
-    "status-info": "#1447e6",
-    "status-info-soft": "#eff6ff",
+EXPECTED_STATUS = {
+    "status-success": ("#008236", "#7bf1a8"),
+    "status-success-soft": ("#f0fdf4", "#032e15"),
+    "status-warning": ("#a65f00", "#ffdf20"),
+    "status-warning-soft": ("#fefce8", "#432004"),
+    "status-danger": ("#c10007", "#ffa2a2"),
+    "status-danger-soft": ("#fef2f2", "#460809"),
+    "status-info": ("#1447e6", "#8ec5ff"),
+    "status-info-soft": ("#eff6ff", "#162456"),
 }
-EXPECTED_DARK_STATUS = {
-    "status-success": "#7bf1a8",
-    "status-success-soft": "#032e15",
-    "status-warning": "#ffdf20",
-    "status-warning-soft": "#432004",
-    "status-danger": "#ffa2a2",
-    "status-danger-soft": "#460809",
-    "status-info": "#8ec5ff",
-    "status-info-soft": "#162456",
-}
+EXPECTED_LIGHT_STATUS = {name: pair[0] for name, pair in EXPECTED_STATUS.items()}
+EXPECTED_DARK_STATUS = {name: pair[1] for name, pair in EXPECTED_STATUS.items()}
 STATUS_FOREGROUNDS = (
     "status-success",
     "status-warning",
@@ -230,9 +205,10 @@ EXPECTED_DARK_CODE_DIFF_TEXT = {
     "code-hunk-text": "#a9c2ff",
 }
 # diff-summary has no code-scheme picker, so its dark diff text follows the page
-# theme; the other two follow whichever Highlight.js tone the reader selected.
+# theme (None — read the light-dark() pair); the other two follow whichever
+# Highlight.js tone the reader selected.
 DARK_CODE_TONE_SELECTORS = {
-    "diff-summary": 'body[data-theme="dark"]',
+    "diff-summary": None,
     "diff-viewer": 'html[data-code-tone="dark"]',
     "code-review": 'html[data-code-tone="dark"]',
 }
@@ -403,6 +379,39 @@ def selected_properties(
     return {name: value for name, value in declarations.items() if name in names}
 
 
+def resolve_scheme(value: str, theme: str) -> str:
+    """Pick one side of a light-dark() pair; pass every other value through."""
+    if not value.startswith("light-dark(") or not value.endswith(")"):
+        return value
+    inner = value[len("light-dark(") : -1]
+    depth = 0
+    for index, character in enumerate(inner):
+        if character == "(":
+            depth += 1
+        elif character == ")":
+            depth -= 1
+        elif character == "," and depth == 0:
+            side = inner[:index] if theme == "light" else inner[index + 1 :]
+            return side.strip()
+    raise AssertionError(f"malformed light-dark(): {value}")
+
+
+def theme_declarations(source: str, template: str, theme: str) -> dict[str, str]:
+    """Every token a template applies in one theme.
+
+    Colour tokens live at a single light-dark() site on the base rule; the mode
+    rule carries only what light-dark() cannot express.
+    """
+    base, mode = THEME_SELECTORS[template]
+    declared = {
+        name: resolve_scheme(value, theme)
+        for name, value in custom_properties(css_rule(source, base)).items()
+    }
+    if theme == "dark":
+        declared.update(custom_properties(css_rule(source, mode)))
+    return declared
+
+
 def css_rule_containing_declaration(source: str, declaration: str) -> dict[str, str]:
     """Return the selector list and body of the rule declaring ``declaration``."""
     match = re.search(
@@ -473,25 +482,16 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             name: path.read_text(encoding="utf-8") for name, path in TEMPLATES.items()
         }
         cls.root_declarations = custom_properties(css_rule(cls.template, ":root"))
-        cls.light_declarations = custom_properties(css_rule(cls.template, "body"))
-        cls.dark_declarations = custom_properties(
-            css_rule(cls.template, 'body[data-theme="dark"]')
-        )
-        cls.auto_dark_declarations = custom_properties(
-            css_rule(
-                cls.template,
-                'body[data-default-theme="auto"]:not([data-theme])',
-            )
-        )
+        cls.light_declarations = theme_declarations(cls.template, "diff-summary", "light")
+        cls.dark_declarations = theme_declarations(cls.template, "diff-summary", "dark")
 
     def test_every_html_report_uses_exact_shared_light_and_dark_values(
         self,
     ) -> None:
         for name, source in self.templates.items():
-            light_selector, dark_selector = THEME_SELECTORS[name]
             root_declarations = custom_properties(css_rule(source, ":root"))
-            light_declarations = custom_properties(css_rule(source, light_selector))
-            dark_declarations = custom_properties(css_rule(source, dark_selector))
+            light_declarations = theme_declarations(source, name, "light")
+            dark_declarations = theme_declarations(source, name, "dark")
 
             with self.subTest(template=name, theme="root"):
                 self.assertEqual(
@@ -798,9 +798,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
     def test_cool_editorial_palette_separates_report_surfaces(self) -> None:
         for name, source in self.templates.items():
-            light_selector, dark_selector = THEME_SELECTORS[name]
-            light = custom_properties(css_rule(source, light_selector))
-            dark = custom_properties(css_rule(source, dark_selector))
+            light = theme_declarations(source, name, "light")
+            dark = theme_declarations(source, name, "dark")
 
             with self.subTest(template=name, theme="light"):
                 self.assertNotEqual(light["background"], light["card"])
@@ -832,15 +831,15 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
     def test_no_core_theme_token_declares_a_legacy_zinc_value(self) -> None:
         for name, source in self.templates.items():
-            light_selector, dark_selector = THEME_SELECTORS[name]
             printed = css_rule(source, "@media print")
-            rules = {
-                "light": css_rule(source, light_selector),
-                "dark": css_rule(source, dark_selector),
-                "print": css_rule(printed, PRINT_THEME_SELECTORS[name]),
+            themes = {
+                "light": theme_declarations(source, name, "light"),
+                "dark": theme_declarations(source, name, "dark"),
+                "print": custom_properties(
+                    css_rule(printed, PRINT_THEME_SELECTORS[name])
+                ),
             }
-            for theme, rule in rules.items():
-                declarations = custom_properties(rule)
+            for theme, declarations in themes.items():
                 core = selected_properties(declarations, THEME_COLOR_TOKENS)
                 for token, value in core.items():
                     with self.subTest(template=name, theme=theme, token=token):
@@ -853,12 +852,11 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
     def test_every_html_report_uses_exact_shared_status_palette(self) -> None:
         for name, source in self.templates.items():
-            light_selector, dark_selector = THEME_SELECTORS[name]
-            for theme, selector, expected in (
-                ("light", light_selector, EXPECTED_LIGHT_STATUS),
-                ("dark", dark_selector, EXPECTED_DARK_STATUS),
+            for theme, expected in (
+                ("light", EXPECTED_LIGHT_STATUS),
+                ("dark", EXPECTED_DARK_STATUS),
             ):
-                declarations = custom_properties(css_rule(source, selector))
+                declarations = theme_declarations(source, name, theme)
                 with self.subTest(template=name, theme=theme, contract="exact"):
                     self.assertEqual(
                         selected_properties(declarations, STATUS_TOKENS),
@@ -899,15 +897,15 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         hue straight onto the card and the page.
         """
         for name, source in self.templates.items():
-            light_selector, dark_selector = THEME_SELECTORS[name]
             printed = css_rule(source, "@media print")
-            rules = {
-                "light": css_rule(source, light_selector),
-                "dark": css_rule(source, dark_selector),
-                "print": css_rule(printed, PRINT_THEME_SELECTORS[name]),
+            themes = {
+                "light": theme_declarations(source, name, "light"),
+                "dark": theme_declarations(source, name, "dark"),
+                "print": custom_properties(
+                    css_rule(printed, PRINT_THEME_SELECTORS[name])
+                ),
             }
-            for theme, rule in rules.items():
-                declarations = custom_properties(rule)
+            for theme, declarations in themes.items():
                 foregrounds = [*STATUS_FOREGROUNDS]
                 if "high" in declarations:
                     foregrounds.append("high")
@@ -930,15 +928,11 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_report_specific_colors_alias_the_shared_status_palette(self) -> None:
         for name, aliases in REPORT_STATUS_ALIASES.items():
             source = self.templates[name]
-            light_selector, dark_selector = THEME_SELECTORS[name]
             root_declarations = custom_properties(css_rule(source, ":root"))
-            for theme, selector in (
-                ("light", light_selector),
-                ("dark", dark_selector),
-            ):
+            for theme in ("light", "dark"):
                 declarations = {
                     **root_declarations,
-                    **custom_properties(css_rule(source, selector)),
+                    **theme_declarations(source, name, theme),
                 }
                 for alias, target in aliases.items():
                     with self.subTest(template=name, theme=theme, alias=alias):
@@ -955,12 +949,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self,
     ) -> None:
         source = self.templates["code-review"]
-        light_selector, dark_selector = THEME_SELECTORS["code-review"]
-        for theme, selector in (("light", light_selector), ("dark", dark_selector)):
-            declarations = {
-                **custom_properties(css_rule(source, ":root")),
-                **custom_properties(css_rule(source, selector)),
-            }
+        for theme in ("light", "dark"):
+            declarations = theme_declarations(source, "code-review", theme)
             expected = EXPECTED_HIGH_SEVERITY[theme]
             with self.subTest(theme=theme, contract="exact"):
                 self.assertEqual(
@@ -989,7 +979,6 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self,
     ) -> None:
         source = self.templates["code-review"]
-        light_selector, dark_selector = THEME_SELECTORS["code-review"]
         self.assertNotRegex(
             css_rule(source, ".badge"),
             r"color:\s*#fff(?:fff)?\s*;",
@@ -999,14 +988,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             with self.subTest(severity=severity, contract="tokens"):
                 self.assertRegex(rule, rf"color:\s*var\(--{foreground}\)\s*;")
                 self.assertRegex(rule, rf"background:\s*var\(--{background}\)\s*;")
-            for theme, selector in (
-                ("light", light_selector),
-                ("dark", dark_selector),
-            ):
-                declarations = {
-                    **custom_properties(css_rule(source, ":root")),
-                    **custom_properties(css_rule(source, selector)),
-                }
+            for theme in ("light", "dark"):
+                declarations = theme_declarations(source, "code-review", theme)
                 with self.subTest(severity=severity, theme=theme, contract="contrast"):
                     self.assertGreaterEqual(
                         contrast_ratio(
@@ -1024,24 +1007,27 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         the palette the moment the palette moves.
         """
         for name, source in self.templates.items():
-            for theme, selector, expected in (
-                (
-                    "light",
-                    THEME_SELECTORS[name][0],
+            with self.subTest(template=name, theme="light"):
+                self.assertEqual(
+                    selected_properties(
+                        theme_declarations(source, name, "light"),
+                        CODE_DIFF_TEXT_TOKENS,
+                    ),
                     EXPECTED_LIGHT_CODE_DIFF_TEXT,
-                ),
-                (
-                    "dark",
-                    DARK_CODE_TONE_SELECTORS[name],
+                )
+            # diff-summary has no scheme picker, so its dark family rides the
+            # page theme; the other two hang it off the selected code tone.
+            selector = DARK_CODE_TONE_SELECTORS[name]
+            dark = (
+                theme_declarations(source, name, "dark")
+                if selector is None
+                else custom_properties(css_rule(source, selector))
+            )
+            with self.subTest(template=name, theme="dark"):
+                self.assertEqual(
+                    selected_properties(dark, CODE_DIFF_TEXT_TOKENS),
                     EXPECTED_DARK_CODE_DIFF_TEXT,
-                ),
-            ):
-                declarations = custom_properties(css_rule(source, selector))
-                with self.subTest(template=name, theme=theme):
-                    self.assertEqual(
-                        selected_properties(declarations, CODE_DIFF_TEXT_TOKENS),
-                        expected,
-                    )
+                )
 
     def test_every_diff_overlay_derives_from_a_shared_hue_token(self) -> None:
         """Diff add/delete/hunk overlays must mix a token, never a raw literal.
@@ -1067,22 +1053,42 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         f"no color-mix() in {name} mixes var(--{token})",
                     )
 
-    def test_diff_summary_uses_exact_identical_explicit_and_auto_dark_values(
-        self,
-    ) -> None:
-        explicit_dark = selected_properties(
-            self.dark_declarations,
-            THEME_COLOR_TOKENS,
-        )
-        auto_dark = selected_properties(
-            self.auto_dark_declarations,
-            THEME_COLOR_TOKENS,
-        )
+    def test_every_theme_colour_is_declared_at_exactly_one_site(self) -> None:
+        """Both sides of a token live in one light-dark() pair.
 
-        self.assertEqual(explicit_dark, EXPECTED_DARK_THEME)
-        self.assertEqual(auto_dark, EXPECTED_DARK_THEME)
-        self.assertEqual(auto_dark, explicit_dark)
-        self.assertEqual(self.auto_dark_declarations, self.dark_declarations)
+        Repeating the token set per mode is what lets explicit dark and auto
+        dark disagree. A mode rule may only carry what light-dark() cannot
+        express — a shadow list — and the scheme it selects.
+        """
+        for name, source in self.templates.items():
+            base = custom_properties(css_rule(source, THEME_SELECTORS[name][0]))
+            mode_rule = css_rule(source, THEME_SELECTORS[name][1])
+            mode = custom_properties(mode_rule)
+            for token in (*THEME_COLOR_TOKENS, *STATUS_TOKENS):
+                with self.subTest(template=name, token=token, contract="paired"):
+                    self.assertTrue(
+                        base[token].startswith("light-dark("),
+                        f"{token} is not a light-dark() pair: {base[token]}",
+                    )
+                with self.subTest(template=name, token=token, contract="single-site"):
+                    self.assertNotIn(token, mode)
+            with self.subTest(template=name, contract="mode-carries-scheme"):
+                self.assertRegex(mode_rule, r"color-scheme:\s*dark\s*;")
+                self.assertLessEqual(set(mode), {"shadow"})
+
+    def test_diff_summary_auto_theme_declares_no_colour_of_its_own(self) -> None:
+        """Auto resolves through color-scheme, not through a duplicated palette."""
+        auto_rule = css_rule(
+            self.template,
+            'body[data-default-theme="auto"]:not([data-theme])',
+        )
+        self.assertRegex(auto_rule, r"color-scheme:\s*light dark\s*;")
+        self.assertEqual(custom_properties(auto_rule), {})
+        preference_rule = css_rule(
+            css_rule(self.template, "@media (prefers-color-scheme: dark)"),
+            'body[data-default-theme="auto"]:not([data-theme])',
+        )
+        self.assertLessEqual(set(custom_properties(preference_rule)), {"shadow"})
 
     def test_every_html_report_declares_and_uses_shared_semantic_tokens(
         self,
@@ -1265,11 +1271,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                             r"(?:\s*!important)?\s*;",
                         )
 
-                for theme, theme_selector in (
-                    ("light", ":root"),
-                    ("dark", 'html[data-page-theme="dark"]'),
-                ):
-                    declarations = custom_properties(css_rule(source, theme_selector))
+                for theme in ("light", "dark"):
+                    declarations = theme_declarations(source, name, theme)
                     with self.subTest(
                         template=name,
                         state="destructive-contrast",
@@ -1454,11 +1457,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 self.assertEqual(color_match.group(1), "foreground")
                 self.assertEqual(background_match.group(1), "muted")
 
-            for theme, theme_selector in (
-                ("light", ":root"),
-                ("dark", 'html[data-page-theme="dark"]'),
-            ):
-                declarations = custom_properties(css_rule(source, theme_selector))
+            for theme in ("light", "dark"):
+                declarations = theme_declarations(source, "code-review", theme)
                 with self.subTest(selector=text_selector, theme=theme):
                     self.assertGreaterEqual(
                         contrast_ratio(
@@ -1498,11 +1498,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             "var(--muted)",
         )
 
-        for theme, theme_selector in (
-            ("light", ":root"),
-            ("dark", 'html[data-page-theme="dark"]'),
-        ):
-            declarations = custom_properties(css_rule(source, theme_selector))
+        for theme in ("light", "dark"):
+            declarations = theme_declarations(source, "code-review", theme)
 
             def resolve_color(value: str) -> str:
                 token_match = re.fullmatch(r"var\(--([\w-]+)\)", value)
@@ -1628,11 +1625,8 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         r"color:\s*var\(--foreground\)\s*;",
                     )
 
-            for theme, selector in (
-                ("light", ":root"),
-                ("dark", 'html[data-page-theme="dark"]'),
-            ):
-                declarations = custom_properties(css_rule(source, selector))
+            for theme in ("light", "dark"):
+                declarations = theme_declarations(source, name, theme)
                 with self.subTest(template=name, theme=theme):
                     self.assertGreaterEqual(
                         contrast_ratio(
@@ -2001,7 +1995,6 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         for theme, declarations in (
             ("light", self.light_declarations),
             ("dark", self.dark_declarations),
-            ("auto-dark", self.auto_dark_declarations),
         ):
             with self.subTest(theme=theme):
                 self.assertIn("impact-high", declarations)
@@ -2015,11 +2008,6 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     contrast_ratio(impact_high, declarations["card"]),
                     4.5,
                 )
-
-        self.assertEqual(
-            self.auto_dark_declarations["impact-high"],
-            self.dark_declarations["impact-high"],
-        )
 
         high_card_rule = css_rule(self.template, ".summary-card.impact-high")
         self.assertRegex(
