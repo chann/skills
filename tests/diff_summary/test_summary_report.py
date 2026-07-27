@@ -1423,6 +1423,28 @@ class MarkdownRenderingTests(unittest.TestCase):
         self.assertLess(toolbar, first.index("</details>"))
         self.assertEqual(first.rstrip().rsplit("</div>", 1)[-1], "\n</details>")
 
+    def test_rendering_the_same_report_twice_is_byte_identical(self) -> None:
+        """The template decides every visual detail, so nothing varies per run.
+
+        Any per-run value — a timestamp, a hash of an unordered set, an id from
+        object identity — would make two renders of one report differ and turn
+        an artifact diff into noise.
+        """
+        template = renderer.load_template()
+        korean = parse_report(REPORT)
+        english = parse_report(ENGLISH_REPORT)
+        for label, kwargs in (
+            ("single", {}),
+            ("bilingual", {"alternate_report": english}),
+            ("quiz", {}),
+        ):
+            document = parse_report(QUIZ_REPORT) if label == "quiz" else korean
+            renders = {
+                renderer.assemble_html(document, template, **kwargs) for _ in range(3)
+            }
+            with self.subTest(report=label):
+                self.assertEqual(len(renders), 1)
+
     def test_heading_anchors_are_unique_when_titles_repeat(self) -> None:
         repeated = REPORT.replace("## Notes", "## Changes", 1)
         rendered = renderer.assemble_html(
