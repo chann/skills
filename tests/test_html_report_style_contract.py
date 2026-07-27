@@ -186,26 +186,34 @@ STATUS_TOKENS = (
     "status-info",
     "status-info-soft",
 )
+# Tailwind palette steps, following the shadcn badge custom-colors recipe:
+# light is text-{family}-700 on bg-{family}-50, dark is -300 on -950.
 EXPECTED_LIGHT_STATUS = {
-    "status-success": "#24734d",
-    "status-success-soft": "#ddf3e7",
-    "status-warning": "#7a5900",
-    "status-warning-soft": "#f7ebc6",
-    "status-danger": "#b4233a",
-    "status-danger-soft": "#fce4e7",
-    "status-info": "#2f5d8c",
-    "status-info-soft": "#e3edf7",
+    "status-success": "#008236",
+    "status-success-soft": "#f0fdf4",
+    "status-warning": "#a65f00",
+    "status-warning-soft": "#fefce8",
+    "status-danger": "#c10007",
+    "status-danger-soft": "#fef2f2",
+    "status-info": "#1447e6",
+    "status-info-soft": "#eff6ff",
 }
 EXPECTED_DARK_STATUS = {
-    "status-success": "#74c69d",
-    "status-success-soft": "#183b2d",
-    "status-warning": "#e9c46a",
-    "status-warning-soft": "#3f3416",
-    "status-danger": "#ff8a99",
-    "status-danger-soft": "#4a2028",
-    "status-info": "#9cc4ea",
-    "status-info-soft": "#21364b",
+    "status-success": "#7bf1a8",
+    "status-success-soft": "#032e15",
+    "status-warning": "#ffdf20",
+    "status-warning-soft": "#432004",
+    "status-danger": "#ffa2a2",
+    "status-danger-soft": "#460809",
+    "status-info": "#8ec5ff",
+    "status-info-soft": "#162456",
 }
+STATUS_FOREGROUNDS = (
+    "status-success",
+    "status-warning",
+    "status-danger",
+    "status-info",
+)
 SOFT_STATUS_PAIRS = (
     ("status-success", "status-success-soft"),
     ("status-warning", "status-warning-soft"),
@@ -242,8 +250,8 @@ REPORT_STATUS_ALIASES = {
     },
 }
 EXPECTED_HIGH_SEVERITY = {
-    "light": {"high": "#a84413", "high-soft": "#f8e7dd"},
-    "dark": {"high": "#f5a367", "high-soft": "#472919"},
+    "light": {"high": "#ca3500", "high-soft": "#fff7ed"},
+    "dark": {"high": "#ffb86a", "high-soft": "#441306"},
 }
 SEVERITY_BADGE_PAIRS = {
     "critical": ("status-danger", "status-danger-soft"),
@@ -859,6 +867,42 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     selected_properties(declarations, STATUS_TOKENS),
                     EXPECTED_LIGHT_STATUS,
                 )
+
+    def test_every_status_foreground_stays_legible_on_report_surfaces(self) -> None:
+        """Status hues are painted as text, so they answer to the surfaces below.
+
+        The soft-pair contract only proves a badge is readable against its own
+        tint. Severity headings, risk cells, and metric numbers put the same
+        hue straight onto the card and the page.
+        """
+        for name, source in self.templates.items():
+            light_selector, dark_selector = THEME_SELECTORS[name]
+            printed = css_rule(source, "@media print")
+            rules = {
+                "light": css_rule(source, light_selector),
+                "dark": css_rule(source, dark_selector),
+                "print": css_rule(printed, PRINT_THEME_SELECTORS[name]),
+            }
+            for theme, rule in rules.items():
+                declarations = custom_properties(rule)
+                foregrounds = [*STATUS_FOREGROUNDS]
+                if "high" in declarations:
+                    foregrounds.append("high")
+                for token in foregrounds:
+                    for surface in ("card", "background"):
+                        with self.subTest(
+                            template=name,
+                            theme=theme,
+                            token=token,
+                            surface=surface,
+                        ):
+                            self.assertGreaterEqual(
+                                contrast_ratio(
+                                    declarations[token],
+                                    declarations[surface],
+                                ),
+                                4.5,
+                            )
 
     def test_report_specific_colors_alias_the_shared_status_palette(self) -> None:
         for name, aliases in REPORT_STATUS_ALIASES.items():
