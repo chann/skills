@@ -254,6 +254,7 @@ REPORT_STATUS_ALIASES = {
     },
     "diff-summary": {
         "impact-high": "status-warning",
+        "impact-high-soft": "status-warning-soft",
         "positive": "status-success",
         "positive-soft": "status-success-soft",
         "destructive-soft": "status-danger-soft",
@@ -2029,7 +2030,13 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             self.template,
             ".summary-card.impact-high .badge--impact",
         )
-        self.assertRegex(high_badge_rule, r"var\(--impact-high\)")
+        # Same soft-tint recipe as the code-review severity badges, so the hue
+        # carries the meaning instead of a solid slab of it.
+        self.assertRegex(high_badge_rule, r"color:\s*var\(--impact-high\)\s*;")
+        self.assertRegex(
+            high_badge_rule,
+            r"background:\s*var\(--impact-high-soft\)\s*;",
+        )
         self.assertEqual(self.template.count("var(--ring)"), 1)
 
 
