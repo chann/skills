@@ -113,11 +113,12 @@ TOKENS = (
     "input",
     "ring",
     "radius",
+    "radius-control",
     "font-sans",
     "font-mono",
 )
-THEME_COLOR_TOKENS = TOKENS[:-3]
-ROOT_TOKENS = TOKENS[-3:]
+THEME_COLOR_TOKENS = TOKENS[:-4]
+ROOT_TOKENS = TOKENS[-4:]
 # One row per token, (light, dark). Templates declare the pair once through
 # CSS light-dark(), so these are the only two values that can ever apply.
 EXPECTED_THEME = {
@@ -273,7 +274,9 @@ LEGACY_ZINC_VALUES = (
     "#7f1d1d",
 )
 EXPECTED_ROOT_TOKENS = {
-    "radius": "0.5rem",
+    # Two radii and no third: containers are sharp, interactive elements are 4px.
+    "radius": "0px",
+    "radius-control": "4px",
     # One monospaced face carries every text role. The Latin mono faces have no
     # Hangul, so per-glyph fallback reaches the Korean mono faces for prose
     # while Latin keeps its mono metrics.
@@ -803,6 +806,26 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         r"font-variant-numeric:\s*tabular-nums\s*;",
                     )
 
+    def test_radius_vocabulary_is_exactly_two_tokens(self) -> None:
+        """Sharp containers, 4px interactive elements, and nothing in between.
+
+        A literal radius is how a third shape sneaks in, so every rule has to
+        name one of the two tokens. The 1px angles are the CSS-drawn disclosure
+        markers, which are stroke geometry rather than a container corner.
+        """
+        allowed = {"var(--radius)", "var(--radius-control)", "0", "1px"}
+        for name, source in self.templates.items():
+            for value in re.findall(r"border-radius:\s*([^;]+);", source):
+                with self.subTest(template=name, value=value.strip()):
+                    self.assertIn(value.strip(), allowed)
+
+    def test_no_html_report_paints_a_shadow_or_a_glow(self) -> None:
+        """Nothing lifts and nothing haloes; focus is carried by an ink border."""
+        for name, source in self.templates.items():
+            for value in re.findall(r"box-shadow:\s*([^;]+);", source):
+                with self.subTest(template=name, value=value.strip()):
+                    self.assertIn(value.strip(), {"none", "var(--shadow)"})
+
     def test_every_html_report_sits_flat_on_one_canvas(self) -> None:
         """Cards are hairline-bordered blocks on the canvas, not raised surfaces.
 
@@ -1109,7 +1132,12 @@ class HtmlReportStyleContractTests(unittest.TestCase):
     def test_every_html_report_declares_and_uses_shared_semantic_tokens(
         self,
     ) -> None:
-        single_declaration_tokens = {"radius", "font-sans", "font-mono"}
+        single_declaration_tokens = {
+            "radius",
+            "radius-control",
+            "font-sans",
+            "font-mono",
+        }
         referenced_tokens = (
             "background",
             "foreground",
@@ -1236,7 +1264,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 )
                 self.assertRegex(
                     declarations,
-                    r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+                    r"border-radius:\s*var\(--radius-control\)\s*;",
                 )
                 self.assertRegex(
                     declarations,
@@ -1685,7 +1713,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(base, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
         self.assertRegex(
             base,
-            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+            r"border-radius:\s*var\(--radius-control\)\s*;",
         )
         self.assertRegex(base, r"padding:\s*4px\s+8px\s*;")
         self.assertRegex(base, r"font-size:\s*12px\s*;")
@@ -1768,7 +1796,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(comment, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
         self.assertRegex(
             comment,
-            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+            r"border-radius:\s*var\(--radius-control\)\s*;",
         )
         self.assertRegex(comment, r"background:\s*var\(--card\)\s*;")
 
@@ -1786,7 +1814,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(textarea, r"border:\s*1px\s+solid\s+var\(--input\)\s*;")
         self.assertRegex(
             textarea,
-            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+            r"border-radius:\s*var\(--radius-control\)\s*;",
         )
         self.assertRegex(textarea, r"background:\s*var\(--card\)\s*;")
         self.assertRegex(textarea, r"color:\s*var\(--foreground\)\s*;")
@@ -1796,7 +1824,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(action, r"border:\s*1px\s+solid\s+var\(--input\)\s*;")
         self.assertRegex(
             action,
-            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+            r"border-radius:\s*var\(--radius-control\)\s*;",
         )
         self.assertRegex(action, r"background:\s*var\(--card\)\s*;")
         self.assertRegex(action, r"color:\s*var\(--foreground\)\s*;")
@@ -1832,7 +1860,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(option, r"border:\s*1px\s+solid\s+var\(--input\)\s*;")
         self.assertRegex(
             option,
-            r"border-radius:\s*calc\(var\(--radius\)\s*-\s*2px\)\s*;",
+            r"border-radius:\s*var\(--radius-control\)\s*;",
         )
         self.assertRegex(option, r"background:\s*var\(--background\)\s*;")
         self.assertRegex(option, r"color:\s*var\(--foreground\)\s*;")

@@ -34,7 +34,8 @@
       --border: light-dark(#e0dede, #3f3c3c);
       --input: light-dark(#646262, #646262);
       --ring: light-dark(#201d1d, #fdfcfc);
-      --radius: 0.5rem;
+      --radius: 0px;
+      --radius-control: 4px;
       /* Shared semantic status palette — the single source for every accent. */
       --status-success: light-dark(#008236, #7bf1a8);
       --status-success-soft: light-dark(#f0fdf4, #032e15);
@@ -96,7 +97,7 @@
     select {
       min-height: 2rem;
       border: 1px solid var(--input);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       background: var(--background);
       color: var(--foreground);
       cursor: pointer;
@@ -235,7 +236,7 @@
 
     .nav-lang a {
       display: block;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       color: var(--foreground);
       padding: 3px 6px;
       font-size: 12px;
@@ -328,7 +329,7 @@
     }
     .copy-md-btn .count {
       background: rgba(255, 255, 255, 0.25);
-      border-radius: 999px;
+      border-radius: var(--radius-control);
       padding: 1px 6px;
       font-size: 10px;
       font-weight: 700;
@@ -384,7 +385,7 @@
       gap: 4px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-control);
       padding: 4px 5px;
       box-shadow: var(--shadow);
     }
@@ -471,7 +472,7 @@
     .badge {
       display: inline-block;
       padding: 2px 9px;
-      border-radius: var(--radius);
+      border-radius: var(--radius-control);
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
@@ -565,7 +566,7 @@
       flex-shrink: 0;
       background: var(--primary);
       color: var(--primary-foreground);
-      border-radius: 999px;
+      border-radius: var(--radius-control);
       font-size: 10px;
       font-weight: 700;
       padding: 1px 7px;
@@ -586,7 +587,7 @@
       border: 1px solid var(--border);
       background: var(--muted);
       color: var(--foreground);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       padding: 3px 10px;
       font-size: 11px;
       font-weight: 500;
@@ -601,7 +602,7 @@
     code:not(pre code) {
       background: var(--muted);
       padding: 2px 6px;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       font-family: var(--font-mono);
       font-size: 12.5px;
     }
@@ -631,7 +632,7 @@
       padding: 3px 9px;
       background: color-mix(in srgb, var(--code-bg) 80%, var(--code-fg));
       border: 1px solid var(--border);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       color: var(--code-muted);
       font-family: var(--font-sans);
       font-size: 11px;
@@ -658,7 +659,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .diff-toggles { display: flex; gap: 0; background: color-mix(in srgb, var(--code-bg) 85%, var(--code-fg)); border-radius: calc(var(--radius) - 2px); padding: 2px; }
+    .diff-toggles { display: flex; gap: 0; background: color-mix(in srgb, var(--code-bg) 85%, var(--code-fg)); border-radius: var(--radius-control); padding: 2px; }
 
     .diff-toggle {
       padding: 3px 12px;
@@ -669,7 +670,7 @@
       font-family: var(--font-sans);
       font-weight: 500;
       cursor: pointer;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
     }
     .diff-toggle:hover { color: var(--code-fg); }
     .diff-toggle.active { background: var(--primary); color: var(--primary-foreground); }
@@ -682,7 +683,7 @@
       font-size: 11px;
       font-family: var(--font-sans);
       cursor: pointer;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
     }
     .diff-copy-btn:hover { color: var(--code-fg); }
     .diff-copy-btn.copied { color: var(--status-success); border-color: var(--status-success); }
@@ -744,7 +745,7 @@
       flex-direction: column;
       gap: 4px;
     }
-    .comment.comment-focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--selection-bg); }
+    .comment.comment-focus { border-color: var(--primary); }
     .comment-meta { color: var(--foreground); font-size: 11px; }
     .comment-body { white-space: pre-wrap; word-break: break-word; font-size: 13px; }
     .comment-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px; }
@@ -753,7 +754,7 @@
       background: var(--popover);
       color: var(--popover-foreground);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-control);
       padding: 8px 10px;
       display: flex;
       flex-direction: column;
@@ -768,7 +769,7 @@
       background: var(--background);
       color: var(--foreground);
       border: 1px solid var(--input);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       padding: 6px 8px;
       font-family: var(--font-sans);
       font-size: 13px;
@@ -779,7 +780,7 @@
 
     .btn-comment {
       padding: 4px 12px;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;

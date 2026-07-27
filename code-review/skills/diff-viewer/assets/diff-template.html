@@ -34,7 +34,8 @@
       --border: light-dark(#e0dede, #3f3c3c);
       --input: light-dark(#646262, #646262);
       --ring: light-dark(#201d1d, #fdfcfc);
-      --radius: 0.5rem;
+      --radius: 0px;
+      --radius-control: 4px;
       /* Shared semantic status palette — the single source for every accent. */
       --status-success: light-dark(#008236, #7bf1a8);
       --status-success-soft: light-dark(#f0fdf4, #032e15);
@@ -96,7 +97,7 @@
     select {
       min-height: 2rem;
       border: 1px solid var(--input);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       background: var(--background);
       color: var(--foreground);
       cursor: pointer;
@@ -234,7 +235,7 @@
 
     .nav-list a {
       display: block;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       color: var(--foreground);
       padding: 2px 6px;
       font-size: 12px;
@@ -323,7 +324,7 @@
     .copy-md-btn.copied { background: var(--add-text); }
     .copy-md-btn .count {
       background: rgba(255, 255, 255, 0.25);
-      border-radius: 999px;
+      border-radius: var(--radius-control);
       padding: 1px 6px;
       font-size: 10px;
       font-weight: 700;
@@ -427,7 +428,7 @@
       gap: 6px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-control);
       padding: 5px;
       box-shadow: var(--shadow);
     }
@@ -508,7 +509,7 @@
 
     .language-badge {
       border: 1px solid var(--border);
-      border-radius: 999px;
+      border-radius: var(--radius-control);
       color: var(--muted-foreground);
       font-family: var(--font-mono);
       font-size: 11px;
@@ -601,7 +602,7 @@
     .code-line.line-del .line-sign { color: var(--code-del-text); }
 
     .inline-diff {
-      border-radius: 2px;
+      border-radius: var(--radius-control);
       box-decoration-break: clone;
       -webkit-box-decoration-break: clone;
       padding: 0 1px;
@@ -697,7 +698,6 @@
 
     .comment.comment-focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--selection-bg);
     }
 
     .comment-actions {
@@ -711,7 +711,7 @@
       background: var(--popover);
       color: var(--popover-foreground);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-control);
       padding: 8px 10px;
       display: flex;
       flex-direction: column;
@@ -727,7 +727,7 @@
       background: var(--background);
       color: var(--foreground);
       border: 1px solid var(--input);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       padding: 6px 8px;
       font-family: var(--font-sans);
       font-size: 13px;
@@ -748,7 +748,7 @@
       background: var(--background);
       color: var(--foreground);
       border: 1px solid var(--input);
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       padding: 6px 8px;
       font-family: var(--font-sans);
       font-size: 13px;
@@ -764,7 +764,7 @@
 
     .btn-comment {
       padding: 4px 12px;
-      border-radius: calc(var(--radius) - 2px);
+      border-radius: var(--radius-control);
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
