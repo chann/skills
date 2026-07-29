@@ -8,6 +8,9 @@ GIT_SKILL = ROOT / "git-skill"
 REALTIME_SKILL_NAME = "git-commit-push-realtime"
 REALTIME_SKILL = GIT_SKILL / "skills" / REALTIME_SKILL_NAME
 REALTIME_ALIAS = "gcpr"
+LOCAL_REALTIME_SKILL_NAME = "git-commit-realtime"
+LOCAL_REALTIME_SKILL = GIT_SKILL / "skills" / LOCAL_REALTIME_SKILL_NAME
+LOCAL_REALTIME_ALIAS = "gcr"
 
 PROTECTED_BRANCH_LIST = (
     "`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`"
@@ -142,6 +145,120 @@ class GitSkillPackageTests(unittest.TestCase):
                     path.read_text(encoding="utf-8"),
                 )
 
+    def test_local_realtime_commit_skill_is_packaged_with_command(self) -> None:
+        skill = LOCAL_REALTIME_SKILL / "SKILL.md"
+        command = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_SKILL_NAME}.md"
+
+        self.assertTrue(skill.is_file())
+        self.assertTrue(command.is_file())
+
+        skill_text = skill.read_text(encoding="utf-8")
+        command_text = command.read_text(encoding="utf-8")
+        self.assertIn(f"name: {LOCAL_REALTIME_SKILL_NAME}", skill_text)
+        self.assertIn("<plugin-root>/skills/git-commit/SKILL.md", skill_text)
+        self.assertNotIn("<plugin-root>/skills/git-commit-push/SKILL.md", skill_text)
+        self.assertIn(f"**{LOCAL_REALTIME_SKILL_NAME}** skill", command_text)
+
+    def test_local_realtime_commit_publishes_a_short_alias_command(self) -> None:
+        alias = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_ALIAS}.md"
+
+        self.assertTrue(alias.is_file())
+
+        alias_text = alias.read_text(encoding="utf-8")
+        self.assertIn(f"**{LOCAL_REALTIME_SKILL_NAME}** skill", alias_text)
+        self.assertIn(f"Alias for `/{LOCAL_REALTIME_SKILL_NAME}`", frontmatter(alias))
+
+    def test_local_alias_command_body_matches_the_canonical_command(self) -> None:
+        canonical = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_SKILL_NAME}.md"
+        alias = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_ALIAS}.md"
+
+        self.assertEqual(body(canonical), body(alias))
+
+    def test_local_alias_is_discoverable_from_the_skill_description(self) -> None:
+        description = frontmatter(LOCAL_REALTIME_SKILL / "SKILL.md")
+
+        for token in (f'"/{LOCAL_REALTIME_ALIAS}"', f'"${LOCAL_REALTIME_ALIAS}"'):
+            with self.subTest(token=token):
+                self.assertIn(token, description)
+
+    def test_local_alias_is_documented_across_package_surfaces(self) -> None:
+        documented = [
+            ROOT / "README.md",
+            ROOT / "README.ko.md",
+            ROOT / "USAGE.md",
+            ROOT / "ARCHITECTURE.md",
+            GIT_SKILL / "README.md",
+            GIT_SKILL / "README.ko.md",
+        ]
+
+        for path in documented:
+            with self.subTest(path=path):
+                self.assertIn(
+                    f"`/{LOCAL_REALTIME_ALIAS}`",
+                    path.read_text(encoding="utf-8"),
+                )
+
+    def test_local_realtime_commit_uses_green_outcome_checkpoints(self) -> None:
+        skill = (LOCAL_REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
+
+        for contract in (
+            "Do not split work by file count, elapsed time, token pressure",
+            "leaves the repository in a usable state",
+            "Do not create `WIP`, `tmp`, or generic checkpoint commits",
+            "Run the narrowest relevant tests and repository-required checks",
+            "git diff --check",
+        ):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, skill)
+
+    def test_local_realtime_commit_keeps_checkpoints_local(self) -> None:
+        skill = (LOCAL_REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
+
+        for contract in (
+            "After each checkpoint commit succeeds, record its hash and leave it local",
+            "Do not run `git push`",
+            "Publication stays a separate, explicit user request",
+            "Never push, pull, merge, rebase, or rewrite history from this workflow",
+        ):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, skill)
+
+    def test_local_realtime_commit_evals_cover_checkpoint_safety(self) -> None:
+        eval_path = LOCAL_REALTIME_SKILL / "evals" / "evals.json"
+        payload = json.loads(eval_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(LOCAL_REALTIME_SKILL_NAME, payload["skill_name"])
+        self.assertEqual([1, 2, 3], [item["id"] for item in payload["evals"]])
+        prompts = " ".join(item["prompt"] for item in payload["evals"])
+        self.assertIn("will not compile", prompts)
+        self.assertIn("without pushing", prompts)
+
+    def test_local_realtime_commit_is_documented_across_package_surfaces(self) -> None:
+        package_readmes = [
+            GIT_SKILL / "README.md",
+            GIT_SKILL / "README.ko.md",
+        ]
+        command_docs = [
+            ROOT / "README.md",
+            ROOT / "README.ko.md",
+            ROOT / "USAGE.md",
+            ROOT / "ARCHITECTURE.md",
+        ]
+
+        for path in package_readmes:
+            with self.subTest(path=path):
+                text = path.read_text(encoding="utf-8")
+                self.assertEqual(2, text.count(f"--skill {LOCAL_REALTIME_SKILL_NAME}"))
+                self.assertIn(f"/{LOCAL_REALTIME_SKILL_NAME}", text)
+                self.assertIn(f"${LOCAL_REALTIME_SKILL_NAME}", text)
+
+        for path in command_docs:
+            with self.subTest(path=path):
+                self.assertIn(
+                    LOCAL_REALTIME_SKILL_NAME,
+                    path.read_text(encoding="utf-8"),
+                )
+
     def test_legacy_live_selector_is_removed_from_published_sources(self) -> None:
         legacy_selector = "git-commit-push-" + "live"
         checked_suffixes = {".json", ".md", ".py", ".yaml"}
@@ -164,13 +281,13 @@ class GitSkillPackageTests(unittest.TestCase):
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
         packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(17, len(packaged_skills))
+        self.assertEqual(18, len(packaged_skills))
 
         expected_counts = {
-            ROOT / "README.md": "17 practical agent skills",
-            ROOT / "README.ko.md": "17개의 실용적인 에이전트 스킬",
-            ROOT / "USAGE.md": "17 independently discoverable skills",
-            ROOT / "ARCHITECTURE.md": "expose 17 skills",
+            ROOT / "README.md": "18 practical agent skills",
+            ROOT / "README.ko.md": "18개의 실용적인 에이전트 스킬",
+            ROOT / "USAGE.md": "18 independently discoverable skills",
+            ROOT / "ARCHITECTURE.md": "expose 18 skills",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path):
@@ -184,8 +301,8 @@ class GitSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.6.0", metadata["version"])
-        self.assertIn("realtime checkpoint pushes", metadata["description"])
+        self.assertEqual("0.7.0", metadata["version"])
+        self.assertIn("realtime checkpoint commits and pushes", metadata["description"])
 
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
         expected_contracts = {

@@ -76,7 +76,7 @@ class InstallationDocsTests(unittest.TestCase):
 
     def test_every_skill_declares_claude_code_and_codex_interfaces(self) -> None:
         skill_paths = sorted(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(17, len(skill_paths))
+        self.assertEqual(18, len(skill_paths))
 
         for skill_path in skill_paths:
             selector = skill_path.parent.name

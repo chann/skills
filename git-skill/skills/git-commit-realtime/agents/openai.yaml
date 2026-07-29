@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit Realtime"
+  short_description: "Commit verified checkpoints locally while working"
+  default_prompt: "Use $git-commit-realtime to commit each verified outcome locally while working, without pushing."

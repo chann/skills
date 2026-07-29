@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 17 independently discoverable skills across five workflow plugins.
+This repository exposes 18 independently discoverable skills across five workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -51,6 +51,8 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /git-commit                               # group changes into Conventional Commits
 > /git-commit-push-realtime                 # push each verified outcome while working
 > /gcpr                                      # same workflow, short alias
+> /git-commit-realtime                      # commit each verified outcome locally, no push
+> /gcr                                       # same local workflow, short alias
 > /gen-docs                                   # generate/update project docs
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
@@ -74,6 +76,7 @@ These are the exact names published by every package:
 | Git commit | `/git-commit` | `$git-commit` |
 | Git commit and push | `/git-commit-push` | `$git-commit-push` |
 | Realtime commit and push | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` |
+| Realtime local commit | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` |
 | Commit-message rewrite | `/git-commit-rewrite` | `$git-commit-rewrite` |
 | Merge to main | `/git-merge-to-main` | `$git-merge-to-main` |
 | Merge to dev | `/git-merge-to-dev` | `$git-merge-to-dev` |
@@ -179,12 +182,13 @@ the templates, so the reports cannot drift apart.
 | `/git-commit` | Group working-tree changes into Conventional Commits, one per logical unit |
 | `/git-commit-push` | Same, then `git push` (never `--force`) |
 | `/git-commit-push-realtime` · `/gcpr` | During implementation, verify, commit, and immediately push each meaningful outcome |
+| `/git-commit-realtime` · `/gcr` | During implementation, verify and commit each meaningful outcome locally — never push |
 | `/git-commit-rewrite` | Rewrite recent non-Conventional commit subjects |
 | `/git-merge-to-main` | Merge the current branch into `main`, then `git branch -d` the source |
 | `/git-merge-to-dev` | Merge into `dev` (fallback `develop`), then `git branch -d` the source |
 | `/git-branch-cleanup` | Delete every local branch already merged into a protected branch |
 
-Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the realtime invocation pre-authorizes its displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`. `/git-commit-push-realtime` commits only green, outcome-based checkpoints, pushes each one before starting the next, and stops rather than auto-reconciling upstream drift. A bare `--force` push is used only by `/git-commit-rewrite` in its explicit force path, which prefers `--force-with-lease`.
+Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the realtime invocation pre-authorizes its displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`. `/git-commit-push-realtime` commits only green, outcome-based checkpoints, pushes each one before starting the next, and stops rather than auto-reconciling upstream drift. `/git-commit-realtime` holds the same green-checkpoint bar but keeps every checkpoint local; publication stays a separate, explicit request. A bare `--force` push is used only by `/git-commit-rewrite` in its explicit force path, which prefers `--force-with-lease`.
 
 ### doc-skill
 

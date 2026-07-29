@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 17 practical agent skills for software engineering workflows.
+A collection of 18 practical agent skills for software engineering workflows.
 
 ## Skills
 
@@ -11,7 +11,7 @@ A collection of 17 practical agent skills for software engineering workflows.
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.md)** | Git change intelligence — explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs without clobbering prose                |
-| **[git-skill](git-skill/README.md)**     | Conventional Commits, live checkpoint pushes, history rewrite, merge to main/dev, and merged-branch cleanup    |
+| **[git-skill](git-skill/README.md)**     | Conventional Commits, realtime checkpoint commits or pushes, history rewrite, merge to main/dev, and merged-branch cleanup    |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
 | **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
 
@@ -91,6 +91,7 @@ Every HTML report — review, summary, quiz, and raw diff — shares one interfa
 | `/git-commit`                    | `$git-commit`               | Group working-tree changes into Conventional Commits                                  |
 | `/git-commit-push`               | `$git-commit-push`          | Same, then `git push` (no `--force`)                                                   |
 | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` | Commit and push each verified, meaningful outcome while implementation continues |
+| `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | Commit each verified, meaningful outcome locally while implementation continues — no push |
 | `/git-commit-rewrite`            | `$git-commit-rewrite`       | Rewrite recent non-Conventional commit subjects                                       |
 | `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |
 | `/git-merge-to-dev`              | `$git-merge-to-dev`         | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |

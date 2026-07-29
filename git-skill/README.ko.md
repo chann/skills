@@ -2,11 +2,11 @@
 
 [English](README.md) · [← 메인으로](../README.ko.md)
 
-Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 분리해 커밋하고, 한 번만 푸시하거나 구현 중 의미 있는 checkpoint마다 계속 푸시 / 비순응 히스토리 재작성 / `main` 또는 `dev` 브랜치로 머지 후 보호 브랜치가 아닌 소스 브랜치 삭제 / 이미 머지된 로컬 브랜치 일괄 정리까지 지원합니다.
+Git 워크플로우 스킬 모음입니다. 작업 디렉터리 변경사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 분리해 커밋하고, 한 번만 푸시하거나 구현 중 의미 있는 checkpoint마다 계속 푸시 / 푸시 없이 checkpoint를 로컬에만 유지 / 비순응 히스토리 재작성 / `main` 또는 `dev` 브랜치로 머지 후 보호 브랜치가 아닌 소스 브랜치 삭제 / 이미 머지된 로컬 브랜치 일괄 정리까지 지원합니다.
 
 ## 주요 기능
 
-- **Commit / Push / Realtime / Rewrite** — staged + unstaged 변경을 의미 단위(feat / fix / docs / ...)로 그룹핑해 단일 Conventional Commit 생성, 선택적 push, 구현 중 검증된 결과 단위별 반복 commit·push, 비순응 subject 재작성
+- **Commit / Push / Realtime / Rewrite** — staged + unstaged 변경을 의미 단위(feat / fix / docs / ...)로 그룹핑해 단일 Conventional Commit 생성, 선택적 push, 구현 중 검증된 결과 단위별 반복 commit (즉시 push 하거나 전부 로컬 유지), 비순응 subject 재작성
 - 절대 `git add .` 사용 안 함, 항상 명시 경로로 staging
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 의심 파일은 기본 제외 + 경고 (정확한 파일명 `.env.example`은 예외)
 - `git filter-branch` 로 비순응 커밋 subject 만 재작성, 기존 body는 보존
@@ -23,6 +23,7 @@ npx skills add -y -g chann/skills \
   --skill git-commit \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
+  --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
@@ -36,6 +37,7 @@ npx skills add chann/skills \
   --skill git-commit \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
+  --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
@@ -61,6 +63,7 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 | `/git-commit`                   | `$git-commit`                | staged + unstaged 변경을 의미 단위로 분리해 unit마다 Conventional Commit 생성  |
 | `/git-commit-push`              | `$git-commit-push`           | 위 작업 후 `git push`까지 진행 (force 안 함)                                   |
 | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime`  | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
+| `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 — 푸시하지 않음           |
 | `/git-commit-rewrite`           | `$git-commit-rewrite`        | 최근 비순응 커밋 subject를 Conventional 형식으로 재작성                        |
 | `/git-merge-to-main`            | `$git-merge-to-main`         | 현재 브랜치를 `main`으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제         |
 | `/git-merge-to-dev`             | `$git-merge-to-dev`          | 현재 브랜치를 `dev`(없으면 `develop`)로 머지 후 보호 브랜치가 아니면 삭제      |
@@ -74,6 +77,8 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 > /git-commit-push
 > 작업 중간중간 의미 있는 단위마다 커밋하고 푸시해줘
 > $git-commit-push-realtime
+> 푸시 없이 의미 단위마다 커밋만 해줘
+> /gcr
 > /git-commit-rewrite
 > dev에 머지해줘
 > 머지된 브랜치 다 정리해줘
@@ -102,6 +107,16 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 5. 즉시 push하고 다음 단위 시작 전에 `HEAD...@{u}`가 `0 0`인지 증명
 6. upstream 이동이나 push 거부 시 중단 (자동 pull, merge, rebase, force 금지)
 7. 전체 범위 검증, checkpoint 이력, 원격 parity 근거로 종료
+
+### `/git-commit-realtime` (별칭 `/gcr`)
+
+`/git-commit-push-realtime` 과 같은 checkpoint 규율에서 원격 접근만 제외한 워크플로우:
+
+1. 수정 전에 브랜치, 기존 커밋, 작업 트리, 비밀 경로 위험 점검
+2. 결과 중심 checkpoint 계획 수립 후 하나의 응집된 단위를 완성·검증
+3. 명시 경로만 stage하고 단위마다 정확한 Conventional Commit 생성
+4. 커밋 해시를 기록하고 로컬에만 유지 — `git push`, pull, merge, rebase 절대 안 함
+5. 전체 범위 검증, checkpoint 이력, 미푸시 커밋 보고로 종료; 푸시는 별도 요청(`/git-commit-push`, `/gcpr`)으로만 진행
 
 ### `/git-commit-rewrite`
 
@@ -192,6 +207,8 @@ git-skill/
 │   ├── git-commit-push.md                # /git-commit-push 커맨드
 │   ├── git-commit-push-realtime.md       # /git-commit-push-realtime 커맨드
 │   ├── gcpr.md                           # /gcpr — 본문이 같은 짧은 별칭
+│   ├── git-commit-realtime.md            # /git-commit-realtime 커맨드
+│   ├── gcr.md                            # /gcr — 본문이 같은 짧은 별칭
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite 커맨드
 │   ├── git-merge-to-main.md              # /git-merge-to-main 커맨드
 │   ├── git-merge-to-dev.md               # /git-merge-to-dev 커맨드
@@ -204,6 +221,9 @@ git-skill/
     ├── git-commit-push/                  # push 변형
     │   └── SKILL.md
     ├── git-commit-push-realtime/         # 검증된 realtime checkpoint 변형
+    │   ├── SKILL.md
+    │   └── evals/evals.json
+    ├── git-commit-realtime/              # 로컬 전용 realtime checkpoint 변형
     │   ├── SKILL.md
     │   └── evals/evals.json
     ├── git-commit-rewrite/               # rewrite 변형

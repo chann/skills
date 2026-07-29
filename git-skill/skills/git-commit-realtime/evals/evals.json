@@ -1,0 +1,38 @@
+{
+  "skill_name": "git-commit-realtime",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build the new cursor-pagination API and keep committing as you work without pushing anything. The types, endpoint, and tests can be completed in separate meaningful units.",
+      "expected_output": "Plans outcome-based checkpoints, verifies each complete unit, commits only explicit paths, records each commit hash, and never runs git push.",
+      "files": [],
+      "assertions": [
+        "Checkpoint boundaries follow complete outcomes instead of time or file count.",
+        "Each commit is verified before work begins on the next checkpoint.",
+        "No checkpoint is pushed; progress reports include local commit hashes."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the parser and create local checkpoints while you go. Halfway through the rename the project will not compile, but the final parser and regression tests will pass.",
+      "expected_output": "Does not commit the broken halfway state and waits until the refactor plus required tests form a green, reviewable checkpoint.",
+      "files": [],
+      "assertions": [
+        "Known-broken intermediate work is not committed.",
+        "Dependent rename and consumer changes remain together until the repository is usable.",
+        "The completed refactor is labeled with a truthful Conventional Commit."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Keep making meaningful local commits without pushing during this feature. The branch has an upstream, and the remote advances while you work.",
+      "expected_output": "Keeps committing locally, notes the upstream drift without pulling, merging, rebasing, or pushing, and reports the unpushed checkpoint sequence at the end.",
+      "files": [],
+      "assertions": [
+        "The workflow never runs git push, pull, merge, or rebase.",
+        "Upstream drift is reported instead of reconciled automatically.",
+        "The completion report states which commits remain unpushed."
+      ]
+    }
+  ]
+}
