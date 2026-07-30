@@ -4,6 +4,20 @@
 
 A collection of 18 practical agent skills for software engineering workflows.
 
+## Website
+
+The interactive catalog in [`website/`](website/README.md) explains every skill,
+shows the exact Claude Code and Codex selectors, and provides copyable install
+and usage examples.
+
+```bash
+npm --prefix website ci
+npm --prefix website run dev
+```
+
+Run `npm --prefix website run build` for a deployable static bundle under
+`website/dist/`.
+
 ## Skills
 
 

@@ -4,6 +4,19 @@
 
 소프트웨어 엔지니어링 워크플로우를 위한 18개의 실용적인 에이전트 스킬 모음입니다.
 
+## Website
+
+[`website/`](website/README.md)의 대화형 카탈로그에서 모든 스킬의 역할을
+살펴보고, Claude Code와 Codex selector 및 설치 명령을 바로 복사할 수 있습니다.
+
+```bash
+npm --prefix website ci
+npm --prefix website run dev
+```
+
+배포 가능한 정적 번들은 `npm --prefix website run build`로
+`website/dist/`에 생성합니다.
+
 ## 스킬 목록
 
 | 스킬                                                | 설명                                                                                          |
