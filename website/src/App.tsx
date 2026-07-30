@@ -127,6 +127,8 @@ export function App() {
           >
             <img
               src="./assets/skill-system-hero.webp"
+              srcSet="./assets/skill-system-hero-768.webp 768w, ./assets/skill-system-hero.webp 1536w"
+              sizes="(max-width: 767px) calc(100vw - 32px), 58vw"
               alt="코발트색 실로 연결된 종이 모듈과 금속 클립"
               width="1536"
               height="1024"
