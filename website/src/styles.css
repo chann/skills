@@ -7,7 +7,7 @@
   --surface-blue: #e6eef1;
   --ink: #1d1e1b;
   --ink-soft: #5e605b;
-  --ink-faint: #767871;
+  --ink-faint: #686a64;
   --line: #d9d9d3;
   --line-strong: #b7b9b2;
   --accent: #315d70;
@@ -594,7 +594,7 @@ h1 {
 }
 
 .filters button.is-active span {
-  color: color-mix(in srgb, var(--page) 72%, transparent);
+  color: var(--page);
 }
 
 .explorer__count {
