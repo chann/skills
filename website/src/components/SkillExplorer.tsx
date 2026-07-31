@@ -1,11 +1,10 @@
 import {
   ArrowUpRight,
   MagnifyingGlass,
-  Package,
   X,
 } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   categoryMeta,
   categoryOrder,
@@ -21,6 +20,7 @@ export function SkillExplorer() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(skills[0].id);
   const reduceMotion = useReducedMotion();
+  const detailRef = useRef<HTMLElement>(null);
 
   const filtered = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -41,6 +41,18 @@ export function SkillExplorer() {
 
   const selected =
     filtered.find((skill) => skill.id === selectedId) ?? filtered[0] ?? null;
+
+  const selectSkill = (id: string) => {
+    setSelectedId(id);
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+
+    window.requestAnimationFrame(() => {
+      detailRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  };
 
   return (
     <div className="explorer">
@@ -71,6 +83,7 @@ export function SkillExplorer() {
             type="button"
             className={filter === "all" ? "is-active" : ""}
             onClick={() => setFilter("all")}
+            aria-pressed={filter === "all"}
           >
             전체 <span>{skills.length}</span>
           </button>
@@ -80,6 +93,7 @@ export function SkillExplorer() {
               type="button"
               className={filter === category ? "is-active" : ""}
               onClick={() => setFilter(category)}
+              aria-pressed={filter === category}
             >
               {categoryMeta[category].label}
               <span>
@@ -88,11 +102,20 @@ export function SkillExplorer() {
             </button>
           ))}
         </div>
+
+        <p className="explorer__count" role="status" aria-live="polite">
+          <strong>{filtered.length}</strong>개 스킬
+        </p>
       </div>
 
       {selected ? (
         <div className="explorer__body">
-          <div className="skill-list" role="group" aria-label="스킬 목록">
+          <div
+            className="skill-list"
+            id="skill-list"
+            role="group"
+            aria-label="스킬 목록"
+          >
             <AnimatePresence initial={false} mode="popLayout">
               {filtered.map((skill) => (
                 <motion.button
@@ -102,12 +125,13 @@ export function SkillExplorer() {
                   className={`skill-row${
                     selected.id === skill.id ? " is-selected" : ""
                   }`}
-                  onClick={() => setSelectedId(skill.id)}
+                  onClick={() => selectSkill(skill.id)}
                   initial={reduceMotion ? false : { opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
                   transition={{ duration: reduceMotion ? 0 : 0.2 }}
                   aria-pressed={selected.id === skill.id}
+                  aria-controls="skill-detail"
                 >
                   <span className="skill-row__main">
                     <span>{skill.title}</span>
@@ -124,6 +148,8 @@ export function SkillExplorer() {
 
           <AnimatePresence mode="wait">
             <motion.article
+              ref={detailRef}
+              id="skill-detail"
               key={selected.id}
               className="skill-detail"
               initial={reduceMotion ? false : { opacity: 0, x: 14 }}
@@ -133,7 +159,6 @@ export function SkillExplorer() {
             >
               <div className="skill-detail__header">
                 <span className="skill-detail__package">
-                  <Package size={17} weight="bold" aria-hidden="true" />
                   {categoryMeta[selected.category].label}
                 </span>
                 <h3>{selected.title}</h3>

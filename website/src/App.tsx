@@ -1,5 +1,4 @@
 import {
-  ArrowDown,
   ArrowRight,
   CheckCircle,
   GithubLogo,
@@ -23,24 +22,28 @@ const outcomes = [
     description: "결함은 review로 찾고, 의도와 구조는 summary로 이해합니다.",
     selector: "$code-review",
     icon: ShieldCheck,
+    tone: "blue",
   },
   {
     title: "맥락을 설명한다",
     description: "원본 diff부터 이중언어 보고서와 이해도 퀴즈까지 이어집니다.",
     selector: "$diff-summary",
     icon: NotePencil,
+    tone: "plain",
   },
   {
     title: "Git을 안전하게 움직인다",
     description: "명시적 스테이징, 검증, push parity를 하나의 계약으로 묶습니다.",
     selector: "$git-commit-push-realtime",
     icon: GitPullRequest,
+    tone: "plain",
   },
   {
     title: "큰 작업을 끝까지 운영한다",
     description: "마일스톤, 작업 분리, 리뷰, 완료 감사를 한 흐름으로 유지합니다.",
     selector: "$long-task",
     icon: Sparkle,
+    tone: "muted",
   },
 ];
 
@@ -78,7 +81,7 @@ export function App() {
             rel="noreferrer"
             aria-label="GitHub에서 보기"
           >
-            <GithubLogo size={20} weight="bold" aria-hidden="true" />
+            <GithubLogo size={19} weight="bold" aria-hidden="true" />
           </a>
         </div>
       </header>
@@ -87,10 +90,10 @@ export function App() {
         <section className="hero" aria-labelledby="hero-title">
           <motion.div
             className="hero__copy"
-            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: reduceMotion ? 0 : 0.72,
+              duration: reduceMotion ? 0 : 0.6,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
@@ -107,29 +110,29 @@ export function App() {
             <div className="hero__actions">
               <a className="button button--primary" href="#explore">
                 스킬 찾기
-                <ArrowDown size={18} weight="bold" aria-hidden="true" />
+                <ArrowRight size={17} weight="bold" aria-hidden="true" />
               </a>
               <a className="button button--secondary" href="#install">
-                설치하기
+                설치
               </a>
             </div>
           </motion.div>
 
           <motion.figure
             className="hero__visual"
-            initial={reduceMotion ? false : { opacity: 0, scale: 0.97, x: 24 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
+            initial={reduceMotion ? false : { opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{
-              duration: reduceMotion ? 0 : 0.9,
-              delay: reduceMotion ? 0 : 0.08,
+              duration: reduceMotion ? 0 : 0.72,
+              delay: reduceMotion ? 0 : 0.06,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
             <img
-              src="./assets/skill-system-hero.webp"
-              srcSet="./assets/skill-system-hero-768.webp 768w, ./assets/skill-system-hero.webp 1536w"
-              sizes="(max-width: 767px) calc(100vw - 32px), 58vw"
-              alt="코발트색 실로 연결된 종이 모듈과 금속 클립"
+              src="./assets/catalog-hero-minimal.webp"
+              srcSet="./assets/catalog-hero-minimal-768.webp 768w, ./assets/catalog-hero-minimal.webp 1536w"
+              sizes="(max-width: 767px) calc(100vw - 32px), 56vw"
+              alt="빈 종이 카드와 금속 클립을 잇는 잿빛 파란 실"
               width="1536"
               height="1024"
               fetchPriority="high"
@@ -138,11 +141,11 @@ export function App() {
         </section>
 
         <section className="outcomes section" aria-labelledby="outcomes-title">
-          <Reveal className="section-heading section-heading--stacked">
-            <h2 id="outcomes-title">도구가 아니라, 끝낼 일을 고르세요.</h2>
+          <Reveal className="section-heading">
+            <h2 id="outcomes-title">도구보다, 끝낼 일을 고르세요.</h2>
             <p>
-              각 스킬은 한 가지 결과를 약속합니다. 호출 조건, 안전 규칙,
-              산출물이 SKILL.md에 함께 들어 있습니다.
+              각 스킬은 호출 조건, 안전 규칙, 확인 가능한 산출물을 하나의 계약으로
+              묶습니다.
             </p>
           </Reveal>
 
@@ -152,13 +155,17 @@ export function App() {
               return (
                 <Reveal
                   key={outcome.title}
-                  className="outcome"
-                  delay={index * 0.06}
+                  className={`outcome outcome--${outcome.tone}`}
+                  delay={index * 0.05}
                 >
-                  <Icon size={26} weight="duotone" aria-hidden="true" />
-                  <h3>{outcome.title}</h3>
-                  <p>{outcome.description}</p>
-                  <code>{outcome.selector}</code>
+                  <div className="outcome__top">
+                    <Icon size={24} weight="duotone" aria-hidden="true" />
+                    <code>{outcome.selector}</code>
+                  </div>
+                  <div>
+                    <h3>{outcome.title}</h3>
+                    <p>{outcome.description}</p>
+                  </div>
                 </Reveal>
               );
             })}
@@ -170,14 +177,14 @@ export function App() {
           id="explore"
           aria-labelledby="explore-title"
         >
-          <Reveal className="section-heading section-heading--stacked">
-            <h2 id="explore-title">18개 스킬을 한 자리에서.</h2>
+          <Reveal className="section-heading">
+            <h2 id="explore-title">18개 스킬을, 한 자리에서.</h2>
             <p>
-              작업 이름으로 검색하거나 패키지로 좁힌 뒤, 플랫폼에 맞는 selector를
+              작업이나 산출물로 검색하고, 플랫폼에 맞는 selector를 바로
               복사하세요.
             </p>
           </Reveal>
-          <Reveal delay={0.08}>
+          <Reveal delay={0.06}>
             <SkillExplorer />
           </Reveal>
         </section>
@@ -189,34 +196,34 @@ export function App() {
         >
           <Reveal className="usage__image">
             <img
-              src="./assets/workflow-trays.webp"
-              alt="초안에서 정리된 카드와 완성 문서로 이어지는 세 개의 작업 트레이"
-              width="1126"
-              height="1408"
+              src="./assets/workflow-trays-minimal.webp"
+              alt="빈 메모, 정리된 카드, 완성 문서가 차례로 놓인 세 개의 종이 트레이"
+              width="1122"
+              height="1402"
               loading="lazy"
             />
           </Reveal>
 
           <div className="usage__content">
-            <Reveal className="section-heading section-heading--stacked">
+            <Reveal className="section-heading">
               <h2 id="usage-title">평소 말하듯 요청하세요.</h2>
               <p>
-                명시적으로 selector를 쓰면 정확하고, 자연어로 말하면 조건에 맞는
-                스킬이 선택됩니다.
+                selector를 쓰면 정확하고, 자연어로 말하면 조건에 맞는 스킬이
+                선택됩니다.
               </p>
             </Reveal>
 
             <div className="usage-flow">
-              <Reveal className="usage-flow__item" delay={0.06}>
+              <Reveal className="usage-flow__item" delay={0.04}>
                 <span>요청을 말한다</span>
                 <p>“마지막 커밋을 리뷰하고 HTML 보고서로 보여줘.”</p>
               </Reveal>
-              <Reveal className="usage-flow__item" delay={0.12}>
-                <span>스킬이 계약을 읽는다</span>
+              <Reveal className="usage-flow__item" delay={0.08}>
+                <span>계약을 읽는다</span>
                 <p>범위, 안전 규칙, 도구, 결과 형식을 SKILL.md에서 불러옵니다.</p>
               </Reveal>
-              <Reveal className="usage-flow__item" delay={0.18}>
-                <span>산출물로 증명한다</span>
+              <Reveal className="usage-flow__item" delay={0.12}>
+                <span>결과로 증명한다</span>
                 <p>보고서, 커밋, 핸드오프, 검증 로그처럼 확인 가능한 결과를 남깁니다.</p>
               </Reveal>
             </div>
@@ -224,23 +231,25 @@ export function App() {
         </section>
 
         <section className="selectors section" aria-labelledby="selectors-title">
-          <Reveal className="section-heading section-heading--stacked">
-            <h2 id="selectors-title">플랫폼마다 표기만 다릅니다.</h2>
-            <p>같은 스킬 이름 앞에 Codex는 $, Claude Code는 /를 붙입니다.</p>
+          <Reveal className="section-heading">
+            <h2 id="selectors-title">이름은 같고, prefix만 다릅니다.</h2>
+            <p>Codex는 $, Claude Code는 /를 스킬 이름 앞에 붙입니다.</p>
           </Reveal>
 
-          <div className="selector-showcase">
-            <Reveal className="selector-showcase__item">
-              <span>Codex</span>
+          <div className="selector-ledger">
+            <Reveal className="selector-ledger__row">
+              <div>
+                <span>Codex</span>
+                <strong>$</strong>
+              </div>
               <code tabIndex={0}>$diff-summary main..dev</code>
               <CopyButton value="$diff-summary main..dev" />
             </Reveal>
-            <Reveal className="selector-showcase__connector" delay={0.06}>
-              <ArrowRight size={28} aria-hidden="true" />
-              <span>동일한 워크플로</span>
-            </Reveal>
-            <Reveal className="selector-showcase__item" delay={0.12}>
-              <span>Claude Code</span>
+            <Reveal className="selector-ledger__row" delay={0.06}>
+              <div>
+                <span>Claude Code</span>
+                <strong>/</strong>
+              </div>
               <code tabIndex={0}>/diff-summary main..dev</code>
               <CopyButton value="/diff-summary main..dev" />
             </Reveal>
@@ -253,10 +262,10 @@ export function App() {
           aria-labelledby="install-title"
         >
           <Reveal className="install__content">
-            <div className="section-heading section-heading--stacked">
-              <h2 id="install-title">한 번 설치하고, 필요한 순간 호출하세요.</h2>
+            <div className="section-heading">
+              <h2 id="install-title">한 번 설치하고, 바로 호출하세요.</h2>
               <p>
-                공식 installer의 symlink 방식으로 Claude Code와 Codex에 함께
+                installer의 symlink 방식으로 Claude Code와 Codex에 함께
                 연결합니다.
               </p>
             </div>
@@ -267,26 +276,26 @@ export function App() {
               <CopyButton value={installCommand} label="명령 복사" />
             </div>
 
-            <div className="install-notes">
-              <p>
-                <CheckCircle size={19} weight="fill" aria-hidden="true" />
-                모든 18개 스킬 설치
-              </p>
-              <p>
-                <CheckCircle size={19} weight="fill" aria-hidden="true" />
-                전역 symlink 유지
-              </p>
-              <p>
-                <CheckCircle size={19} weight="fill" aria-hidden="true" />
-                Claude Code와 Codex 명시
-              </p>
-            </div>
+            <ul className="install-notes" aria-label="설치 결과">
+              <li>
+                <CheckCircle size={18} weight="fill" aria-hidden="true" />
+                18개 스킬
+              </li>
+              <li>
+                <CheckCircle size={18} weight="fill" aria-hidden="true" />
+                전역 symlink
+              </li>
+              <li>
+                <CheckCircle size={18} weight="fill" aria-hidden="true" />
+                두 플랫폼
+              </li>
+            </ul>
           </Reveal>
 
-          <Reveal className="install__image" delay={0.1}>
+          <Reveal className="install__image" delay={0.08}>
             <img
-              src="./assets/installation-rail.webp"
-              alt="다섯 장의 빈 카드가 코발트색 실과 금속 레일로 연결된 모습"
+              src="./assets/installation-rail-minimal.webp"
+              alt="금속 레일과 잿빛 파란 끈으로 연결된 다섯 장의 빈 카드"
               width="1254"
               height="1254"
               loading="lazy"
@@ -297,9 +306,7 @@ export function App() {
         <section className="closing section" aria-labelledby="closing-title">
           <Reveal>
             <h2 id="closing-title">반복하지 말고, 호출하세요.</h2>
-            <p>
-              매번 다시 설명하던 팀의 기준을 설치 가능한 워크플로로 바꿔보세요.
-            </p>
+            <p>팀의 기준을 설치 가능한 워크플로로 남겨두세요.</p>
             <a
               className="button button--primary"
               href="https://github.com/chann/skills"
@@ -307,7 +314,7 @@ export function App() {
               rel="noreferrer"
             >
               GitHub에서 보기
-              <ArrowRight size={18} weight="bold" aria-hidden="true" />
+              <ArrowRight size={17} weight="bold" aria-hidden="true" />
             </a>
           </Reveal>
         </section>
@@ -329,11 +336,9 @@ export function App() {
           rel="noreferrer"
         >
           GitHub에서 보기
-          <ArrowRight size={16} weight="bold" aria-hidden="true" />
+          <ArrowRight size={15} weight="bold" aria-hidden="true" />
         </a>
       </footer>
-
-      <div className="sr-only" aria-live="polite" aria-atomic="true" />
     </>
   );
 }
