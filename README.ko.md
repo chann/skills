@@ -6,16 +6,16 @@
 
 ## Website
 
-[`website/`](website/README.md)의 대화형 카탈로그에서 모든 스킬의 역할을
-살펴보고, Claude Code와 Codex selector 및 설치 명령을 바로 복사할 수 있습니다.
+[배포된 대화형 카탈로그](https://chann.github.io/skills/)에서 모든 스킬의
+역할을 살펴보고, Claude Code와 Codex selector 및 설치 명령을 바로 복사할 수
+있습니다. 소스와 관리 방법은 [`website/`](website/README.md)에 있습니다.
 
 ```bash
 npm --prefix website ci
 npm --prefix website run dev
 ```
 
-배포 가능한 정적 번들은 `npm --prefix website run build`로
-`website/dist/`에 생성합니다.
+`main` 브랜치에 푸시하면 `website/dist/` 번들을 GitHub Pages에 배포합니다.
 
 ## 스킬 목록
 

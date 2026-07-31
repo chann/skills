@@ -3,6 +3,8 @@
 `chann/skills`의 18개 에이전트 워크플로를 검색하고 비교하고 설치하는 정적
 웹사이트입니다.
 
+배포 주소: <https://chann.github.io/skills/>
+
 ## Local development
 
 저장소 루트에서 실행:
@@ -38,14 +40,19 @@ npm --prefix website run build
 | `public/assets/` | generated editorial WebP artwork |
 | `scripts/verify-catalog.mjs` | package and catalog parity gate |
 
-## Static hosting
+## GitHub Pages
 
 ```bash
 npm --prefix website run build
 ```
 
-`website/dist/`은 base path에 의존하지 않는 정적 bundle입니다. GitHub Pages,
-Cloudflare Pages, Netlify, Vercel의 static output으로 배포할 수 있습니다.
+`main` 브랜치에 푸시하면
+[`pages.yml`](../.github/workflows/pages.yml)이 catalog 일치 여부와 TypeScript를
+검사하고 `website/dist/`을 빌드한 뒤 GitHub Pages에 배포합니다.
+
+이 저장소는 프로젝트 사이트이므로 Vite base path를 `/skills/`로 설정합니다.
+다른 경로에 배포하려면 [`vite.config.ts`](vite.config.ts)의 `base`도 함께
+변경해야 합니다.
 
 ## Content maintenance
 
