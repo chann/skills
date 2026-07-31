@@ -1024,6 +1024,11 @@ h1 span {
   color: var(--ink-soft);
 }
 
+.skill-row.is-selected .skill-row__category,
+.skill-row.is-selected > svg {
+  color: var(--ink-soft);
+}
+
 .skill-row__main {
   display: flex;
   min-width: 0;
