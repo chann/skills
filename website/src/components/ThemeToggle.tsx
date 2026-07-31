@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 type Theme = "system" | "light" | "dark";
 
-const themes: Theme[] = ["system", "light", "dark"];
+const themes: Theme[] = ["dark", "light", "system"];
 const labels: Record<Theme, string> = {
   system: "시스템",
   light: "라이트",
@@ -13,12 +13,26 @@ const labels: Record<Theme, string> = {
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("skills-theme");
-    return themes.includes(saved as Theme) ? (saved as Theme) : "system";
+    return themes.includes(saved as Theme) ? (saved as Theme) : "dark";
   });
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("skills-theme", theme);
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncThemeColor = () => {
+      const isDark = theme === "dark" || (theme === "system" && media.matches);
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", isDark ? "#090a09" : "#f4f3ef");
+    };
+
+    syncThemeColor();
+    if (theme !== "system") return;
+
+    media.addEventListener("change", syncThemeColor);
+    return () => media.removeEventListener("change", syncThemeColor);
   }, [theme]);
 
   const nextTheme = () => {
