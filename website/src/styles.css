@@ -1020,6 +1020,10 @@ h1 span {
   background: var(--surface-active);
 }
 
+.skill-row.is-selected .skill-row__main code {
+  color: var(--ink-soft);
+}
+
 .skill-row__main {
   display: flex;
   min-width: 0;

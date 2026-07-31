@@ -220,7 +220,12 @@ export function App() {
             </p>
           </Reveal>
 
-          <div className="outcome-track">
+          <div
+            className="outcome-track"
+            role="region"
+            aria-label="워크플로 결과 카드"
+            tabIndex={0}
+          >
             {outcomes.map((outcome, index) => {
               const Icon = outcome.icon;
               return (
