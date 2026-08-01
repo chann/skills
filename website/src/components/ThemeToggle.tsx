@@ -25,7 +25,7 @@ export function ThemeToggle() {
       const isDark = theme === "dark" || (theme === "system" && media.matches);
       document
         .querySelector('meta[name="theme-color"]')
-        ?.setAttribute("content", isDark ? "#090a09" : "#f4f3ef");
+        ?.setAttribute("content", isDark ? "#080908" : "#f7f6f3");
     };
 
     syncThemeColor();
@@ -51,7 +51,7 @@ export function ThemeToggle() {
       title={`테마: ${labels[theme]}`}
     >
       <Icon size={18} weight="bold" aria-hidden="true" />
-      <span>{labels[theme]}</span>
+      <span className="sr-only">{labels[theme]}</span>
     </button>
   );
 }

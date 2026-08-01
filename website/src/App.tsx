@@ -5,76 +5,140 @@ import {
   GitPullRequest,
   NotePencil,
   ShieldCheck,
-  Sparkle,
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import { CopyButton } from "./components/CopyButton";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { skills } from "./data/skills";
 
 const installCommand =
   "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
 
-const heroRails = [
-  { selector: "$review-me", tone: "lime" },
-  { selector: "$code-review", tone: "sky" },
-  { selector: "$diff-summary", tone: "violet" },
-  { selector: "$gen-docs", tone: "coral" },
-  { selector: "$git-commit", tone: "amber" },
-  { selector: "$gen-frontend-handoff", tone: "mint" },
-  { selector: "$long-task", tone: "rose" },
-  { selector: "$git-commit-realtime", tone: "blue" },
-];
-
 const outcomes = [
   {
-    title: "결정을 끝까지 검토한다",
-    description: "계획의 모든 하위 선택을 leaf까지 따라가고 확인합니다.",
+    title: "결정의 끝까지 검토",
+    description:
+      "상위 계획만 훑지 않고, 실제로 선택해야 하는 마지막 갈림길까지 따라갑니다.",
     selector: "$review-me",
     icon: ShieldCheck,
-    tone: "sky",
   },
   {
-    title: "맥락을 설명한다",
-    description: "원본 diff부터 이중언어 보고서와 이해도 퀴즈까지 이어집니다.",
+    title: "맥락이 남는 설명",
+    description:
+      "원본 diff에서 시작해 이중언어 보고서, 다이어그램, 이해도 확인까지 연결합니다.",
     selector: "$diff-summary",
     icon: NotePencil,
-    tone: "violet",
   },
   {
-    title: "Git을 안전하게 움직인다",
-    description: "명시적 스테이징, 검증, push parity를 하나의 계약으로 묶습니다.",
+    title: "증명 가능한 실행",
+    description:
+      "테스트, 명시적 스테이징, push parity를 실행 계약 안에 함께 넣습니다.",
     selector: "$git-commit-push-realtime",
     icon: GitPullRequest,
-    tone: "coral",
-  },
-  {
-    title: "큰 작업을 끝까지 운영한다",
-    description: "마일스톤, 작업 분리, 리뷰, 완료 감사를 한 흐름으로 유지합니다.",
-    selector: "$long-task",
-    icon: Sparkle,
-    tone: "mint",
   },
 ];
 
 const workflowSteps = [
   {
     number: "01",
-    title: "요청을 말한다.",
+    label: "Request",
+    title: "목표를 말합니다",
     description: "마지막 커밋을 리뷰하고 HTML 보고서로 보여줘.",
   },
   {
     number: "02",
-    title: "계약을 읽는다.",
-    description: "스킬이 범위, 안전 규칙, 도구와 결과 형식을 불러옵니다.",
+    label: "Contract",
+    title: "스킬이 계약을 읽습니다",
+    description: "범위, 안전 규칙, 검증 방법과 결과 형식을 불러옵니다.",
   },
   {
     number: "03",
-    title: "결과로 증명한다.",
-    description: "보고서, 커밋, 핸드오프와 검증 로그를 확인할 수 있습니다.",
+    label: "Proof",
+    title: "결과로 증명합니다",
+    description: "보고서, 테스트, 커밋과 원격 상태를 확인합니다.",
   },
 ];
+
+function BrandMark({ large = false }: { large?: boolean }) {
+  return (
+    <span className={`brand-mark${large ? " brand-mark--large" : ""}`} aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </span>
+  );
+}
+
+function ProductPreview() {
+  return (
+    <div className="product-window">
+      <div className="product-window__chrome">
+        <span className="window-dots" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span>skills / workspace</span>
+        <code>ready</code>
+      </div>
+
+      <div className="product-window__body">
+        <aside className="product-sidebar" aria-label="스킬 예시 목록">
+          <div className="product-sidebar__heading">
+            <span>Packaged skills</span>
+            <strong>{skills.length}</strong>
+          </div>
+          <ul>
+            <li className="is-active">
+              <span>Review Me</span>
+              <code>$review-me</code>
+            </li>
+            <li>
+              <span>Code Review</span>
+              <code>$code-review</code>
+            </li>
+            <li>
+              <span>Diff Summary</span>
+              <code>$diff-summary</code>
+            </li>
+            <li>
+              <span>Long Task</span>
+              <code>$long-task</code>
+            </li>
+          </ul>
+        </aside>
+
+        <div className="product-editor">
+          <div className="product-editor__tab">
+            <span>review-me</span>
+            <code>SKILL.md</code>
+          </div>
+          <div className="product-editor__content">
+            <p className="product-kicker">DECISION REVIEW</p>
+            <h2>계획의 모든 선택을<br />끝까지 검토합니다.</h2>
+            <p className="product-editor__lede">
+              전제부터 leaf decision까지 추적하고, 확인된 근거와 남은 위험을
+              분리해 보여줍니다.
+            </p>
+
+            <div className="run-card">
+              <span className="run-card__prompt">›</span>
+              <code>$review-me review our billing migration plan</code>
+            </div>
+
+            <div className="proof-row">
+              <span><i /> 12 decisions traced</span>
+              <span><i /> 3 risks surfaced</span>
+              <span><i /> report ready</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function App() {
   const reduceMotion = useReducedMotion();
@@ -85,209 +149,150 @@ export function App() {
         본문으로 건너뛰기
       </a>
 
-      <aside className="announcement" aria-label="프로젝트 안내">
-        <p>
-          <span>Open source</span>
-          Claude Code와 Codex를 위한 19개 packaged workflow
-        </p>
-        <a
-          href="https://github.com/chann/skills"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub에서 보기
-          <ArrowRight size={14} weight="bold" aria-hidden="true" />
-        </a>
-      </aside>
-
       <header className="site-header">
-        <a className="brand" href="#main" aria-label="skills 홈">
-          <span className="brand__mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          <span>skills</span>
-        </a>
-
-        <nav aria-label="주요 메뉴">
-          <a href="#explore">스킬 찾기</a>
-          <a href="#usage">사용법</a>
-          <a href="#install">설치</a>
-        </nav>
-
-        <div className="header-actions">
-          <ThemeToggle />
-          <a
-            className="github-link"
-            href="https://github.com/chann/skills"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub에서 보기"
-          >
-            <GithubLogo size={19} weight="bold" aria-hidden="true" />
+        <div className="site-header__inner">
+          <a className="brand" href="#main" aria-label="skills 홈">
+            <BrandMark />
+            <span>skills</span>
           </a>
-          <a className="header-install" href="#install">
-            설치
-          </a>
+
+          <nav aria-label="주요 메뉴">
+            <a href="#why">소개</a>
+            <a href="#explore">스킬 찾기</a>
+            <a href="#install">설치</a>
+          </nav>
+
+          <div className="header-actions">
+            <ThemeToggle />
+            <a
+              className="icon-link"
+              href="https://github.com/chann/skills"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub에서 보기"
+            >
+              <GithubLogo size={18} weight="fill" aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </header>
 
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
           <motion.div
-            className="hero-spectrum"
-            aria-hidden="true"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: reduceMotion ? 0 : 0.45 }}
-          >
-            {heroRails.map((rail, index) => (
-              <motion.div
-                key={rail.selector}
-                className={`hero-rail hero-rail--${rail.tone}`}
-                initial={reduceMotion ? false : { opacity: 0, y: -44 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: reduceMotion ? 0 : 0.72,
-                  delay: reduceMotion ? 0 : index * 0.045,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              >
-                <span />
-                <span />
-                <span />
-                <code>{rail.selector}</code>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
             className="hero__copy"
-            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: reduceMotion ? 0 : 0.68,
-              delay: reduceMotion ? 0 : 0.18,
+              duration: reduceMotion ? 0 : 0.7,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
-            <p className="eyebrow">Reusable agent workflows</p>
+            <BrandMark large />
+            <p className="hero__brand">skills</p>
             <h1 id="hero-title">
               <span>반복 작업을,</span>
               <span>이름 있는 스킬로.</span>
             </h1>
             <p className="hero__lede">
-              리뷰부터 Git 정리까지. 검증된 워크플로를 필요한 순간 바로
-              호출하세요.
+              Claude Code와 Codex를 위한 검증된 에이전트 워크플로.
+              <br />
+              리뷰부터 Git 정리까지, 필요한 순간 바로 호출하세요.
             </p>
             <div className="hero__actions">
               <a className="button button--primary" href="#explore">
-                19개 스킬 탐색
+                {skills.length}개 스킬 탐색
                 <ArrowRight size={17} weight="bold" aria-hidden="true" />
               </a>
-              <a className="text-link" href="#install">
-                설치 명령 보기
+              <a className="button button--quiet" href="#install">
+                설치 방법
               </a>
             </div>
+            <p className="hero__meta">Open source · MIT licensed</p>
           </motion.div>
 
-          <ul className="hero__facts" aria-label="카탈로그 요약">
-            <li>
-              <strong>19</strong>
-              packaged skills
-            </li>
-            <li>
-              <strong>2</strong>
-              agent platforms
-            </li>
-            <li>
-              <strong>1</strong>
-              install command
-            </li>
-          </ul>
+          <motion.div
+            className="hero__preview"
+            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: reduceMotion ? 0 : 0.8,
+              delay: reduceMotion ? 0 : 0.12,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            <ProductPreview />
+          </motion.div>
         </section>
 
-        <section className="outcomes section" aria-labelledby="outcomes-title">
-          <Reveal className="section-heading section-heading--wide">
-            <span className="section-label section-label--spectrum">
-              Packaged workflows
-            </span>
-            <h2 id="outcomes-title">반복 지시를, 호출 가능한 계약으로.</h2>
+        <section className="outcomes section" id="why" aria-labelledby="outcomes-title">
+          <Reveal className="section-heading section-heading--center">
+            <span className="section-label">Why skills</span>
+            <h2 id="outcomes-title">한 번 잘한 일을,<br />다시 호출할 수 있게.</h2>
             <p>
-              각 스킬은 언제 불러야 하는지, 어떻게 안전하게 실행하는지, 무엇을
-              남겨야 하는지를 함께 정의합니다.
+              단순한 프롬프트 모음이 아닙니다. 각 스킬은 실행 순서와 안전 규칙,
+              완료 조건까지 함께 정의합니다.
             </p>
           </Reveal>
 
-          <div
-            className="outcome-track"
-            role="region"
-            aria-label="워크플로 결과 카드"
-            tabIndex={0}
-          >
+          <div className="outcome-grid">
             {outcomes.map((outcome, index) => {
               const Icon = outcome.icon;
               return (
-                <Reveal
-                  key={outcome.title}
-                  className={`outcome outcome--${outcome.tone}`}
-                  delay={index * 0.04}
-                >
-                  <div className="outcome__top">
-                    <Icon size={22} weight="duotone" aria-hidden="true" />
-                    <code>{outcome.selector}</code>
-                  </div>
-                  <div>
-                    <h3>{outcome.title}</h3>
-                    <p>{outcome.description}</p>
-                  </div>
+                <Reveal key={outcome.title} className="outcome" delay={index * 0.05}>
+                  <span className="outcome__icon">
+                    <Icon size={21} weight="regular" aria-hidden="true" />
+                  </span>
+                  <h3>{outcome.title}</h3>
+                  <p>{outcome.description}</p>
+                  <code>{outcome.selector}</code>
                 </Reveal>
               );
             })}
           </div>
         </section>
 
-        <section
-          className="workflow section"
-          id="usage"
-          aria-labelledby="workflow-title"
-        >
-          <Reveal className="workflow__heading">
-            <span className="section-label section-label--rose">How it works</span>
-            <h2 id="workflow-title">요청부터 증명까지, 세 단계.</h2>
-            <p>
-              사람은 목표를 말하고, 스킬은 반복 가능한 실행 계약을 적용합니다.
-            </p>
+        <section className="workflow section" id="usage" aria-labelledby="workflow-title">
+          <Reveal className="section-heading section-heading--center">
+            <span className="section-label">How it works</span>
+            <h2 id="workflow-title">요청부터 증명까지,<br />세 단계.</h2>
+            <p>목표를 말하면 스킬이 반복 가능한 실행 계약을 적용합니다.</p>
           </Reveal>
 
-          <div className="workflow-grid">
-            {workflowSteps.map((step, index) => (
-              <Reveal
-                key={step.number}
-                className="workflow-step"
-                delay={index * 0.05}
-              >
-                <code>{step.number}</code>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal className="workflow-window" delay={0.06}>
+            <div className="workflow-window__chrome">
+              <span className="window-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>agent run</span>
+              <code>$diff-summary</code>
+            </div>
+            <ol className="workflow-grid">
+              {workflowSteps.map((step) => (
+                <li className="workflow-step" key={step.number}>
+                  <div>
+                    <code>{step.number}</code>
+                    <span>{step.label}</span>
+                  </div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="workflow-window__status">
+              <span><i /> completed</span>
+              <code>report.html · tests passed · 0 0 parity</code>
+            </div>
+          </Reveal>
         </section>
 
-        <section
-          className="explore-section section"
-          id="explore"
-          aria-labelledby="explore-title"
-        >
-          <Reveal className="section-heading section-heading--wide">
-            <span className="section-label section-label--mint">Skill catalog</span>
-            <h2 id="explore-title">필요한 워크플로를 한 자리에서.</h2>
-            <p>
-              작업이나 산출물로 검색하고, 플랫폼에 맞는 selector를 바로
-              복사하세요.
-            </p>
+        <section className="explore-section section" id="explore" aria-labelledby="explore-title">
+          <Reveal className="section-heading section-heading--center">
+            <span className="section-label">Skill catalog</span>
+            <h2 id="explore-title">필요한 워크플로를<br />한 자리에서.</h2>
+            <p>작업이나 산출물로 검색하고, 플랫폼에 맞는 selector를 바로 복사하세요.</p>
           </Reveal>
           <Reveal delay={0.06}>
             <SkillExplorer />
@@ -296,24 +301,25 @@ export function App() {
 
         <section className="platforms section" aria-labelledby="platforms-title">
           <Reveal className="platforms__copy">
-            <span className="section-label section-label--violet">
-              One contract, two selectors
-            </span>
-            <h2 id="platforms-title">같은 스킬, 다른 prefix.</h2>
+            <span className="section-label">One contract, two selectors</span>
+            <h2 id="platforms-title">같은 스킬,<br />다른 prefix.</h2>
             <p>
               하나의 SKILL.md를 두 플랫폼이 같은 규칙으로 읽습니다. Codex는
-              $, Claude Code는 /를 이름 앞에 붙입니다.
+              <code>$</code>, Claude Code는 <code>/</code>를 이름 앞에 붙입니다.
             </p>
           </Reveal>
 
-          <Reveal className="platform-map" delay={0.08}>
-            <div className="platform-map__contract">
-              <span>shared contract</span>
-              <strong>diff-summary</strong>
+          <Reveal className="platform-window" delay={0.08}>
+            <div className="platform-window__chrome">
+              <span>diff-summary</span>
               <code>SKILL.md</code>
             </div>
-            <div className="platform-map__line" aria-hidden="true" />
-            <div className="platform-map__targets">
+            <div className="platform-contract">
+              <span>Shared contract</span>
+              <strong>diff-summary</strong>
+              <p>원본 근거에서 이중언어 보고서와 이해도 확인까지.</p>
+            </div>
+            <div className="platform-targets">
               <div className="platform-node">
                 <div>
                   <span>Codex</span>
@@ -332,96 +338,73 @@ export function App() {
           </Reveal>
         </section>
 
-        <section
-          className="install section"
-          id="install"
-          aria-labelledby="install-title"
-        >
-          <Reveal className="install__content">
-            <span className="section-label section-label--amber">
-              One command setup
-            </span>
-            <h2 id="install-title">19개 스킬을, 한 명령으로.</h2>
-            <p>
-              공식 installer의 symlink 방식으로 Claude Code와 Codex에 함께
-              연결합니다.
-            </p>
+        <section className="install section" id="install" aria-labelledby="install-title">
+          <Reveal className="section-heading section-heading--center">
+            <span className="section-label">Get skills</span>
+            <h2 id="install-title">{skills.length}개 스킬을,<br />한 명령으로.</h2>
+            <p>공식 installer가 Claude Code와 Codex에 전역 symlink로 연결합니다.</p>
+          </Reveal>
+
+          <Reveal className="install-card" delay={0.06}>
+            <div className="install-card__heading">
+              <span className="install-badge">npm</span>
+              <div>
+                <h3>두 플랫폼에 함께 설치</h3>
+                <p>원본 저장소를 유지한 채 각 에이전트의 스킬 폴더에 연결합니다.</p>
+              </div>
+            </div>
+            <div className="install-command">
+              <span aria-hidden="true">$</span>
+              <code tabIndex={0}>{installCommand}</code>
+              <CopyButton value={installCommand} label="명령 복사" />
+            </div>
             <ul className="install-notes" aria-label="설치 결과">
-              <li>
-                <CheckCircle size={18} weight="fill" aria-hidden="true" />
-                19개 스킬
-              </li>
-              <li>
-                <CheckCircle size={18} weight="fill" aria-hidden="true" />
-                전역 symlink
-              </li>
-              <li>
-                <CheckCircle size={18} weight="fill" aria-hidden="true" />
-                두 플랫폼
-              </li>
+              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {skills.length}개 스킬</li>
+              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> 전역 symlink</li>
+              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> Claude Code + Codex</li>
             </ul>
           </Reveal>
 
-          <Reveal className="install-command" delay={0.08}>
-            <div className="install-command__chrome">
-              <span>Terminal</span>
-              <span>ready</span>
-            </div>
-            <code tabIndex={0}>{installCommand}</code>
-            <CopyButton value={installCommand} label="명령 복사" />
-          </Reveal>
-        </section>
-
-        <section className="closing section" aria-labelledby="closing-title">
-          <Reveal>
-            <span className="section-label section-label--spectrum">Open source</span>
-            <h2 id="closing-title">팀의 기준을, 다시 부를 수 있게.</h2>
-            <p>반복되는 작업 방식을 설치 가능한 워크플로로 남겨두세요.</p>
-            <div className="closing__actions">
-              <a
-                className="button button--primary"
-                href="https://github.com/chann/skills"
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub에서 보기
-                <ArrowRight size={17} weight="bold" aria-hidden="true" />
-              </a>
-              <a className="text-link" href="#explore">
-                스킬 다시 보기
-              </a>
-            </div>
+          <Reveal className="install-actions" delay={0.08}>
+            <a
+              className="button button--primary"
+              href="https://github.com/chann/skills"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub에서 보기
+              <ArrowRight size={17} weight="bold" aria-hidden="true" />
+            </a>
+            <span>MIT License · open source</span>
           </Reveal>
         </section>
       </main>
 
       <footer className="site-footer">
-        <a className="brand" href="#main" aria-label="skills 홈">
-          <span className="brand__mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          <span>skills</span>
-        </a>
-        <p>Practical agent workflows for software engineering.</p>
-        <div>
-          <a
-            href="https://github.com/chann/skills/blob/main/LICENSE"
-            target="_blank"
-            rel="noreferrer"
-          >
-            MIT License
+        <div className="site-footer__top">
+          <a className="brand" href="#main" aria-label="skills 홈">
+            <BrandMark />
+            <span>skills</span>
           </a>
-          <a
-            href="https://github.com/chann/skills"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-            <ArrowRight size={15} weight="bold" aria-hidden="true" />
-          </a>
+          <p>Practical agent workflows for software engineering.</p>
+          <div>
+            <a
+              href="https://github.com/chann/skills/blob/main/LICENSE"
+              target="_blank"
+              rel="noreferrer"
+            >
+              MIT License
+            </a>
+            <a
+              href="https://github.com/chann/skills"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub <ArrowRight size={14} weight="bold" aria-hidden="true" />
+            </a>
+          </div>
         </div>
+        <div className="site-footer__word" aria-hidden="true" />
       </footer>
     </>
   );
