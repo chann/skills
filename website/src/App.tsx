@@ -17,21 +17,21 @@ const installCommand =
   "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
 
 const heroRails = [
+  { selector: "$review-me", tone: "lime" },
   { selector: "$code-review", tone: "sky" },
   { selector: "$diff-summary", tone: "violet" },
   { selector: "$gen-docs", tone: "coral" },
   { selector: "$git-commit", tone: "amber" },
   { selector: "$gen-frontend-handoff", tone: "mint" },
   { selector: "$long-task", tone: "rose" },
-  { selector: "$diff-viewer", tone: "blue" },
-  { selector: "$git-commit-realtime", tone: "lime" },
+  { selector: "$git-commit-realtime", tone: "blue" },
 ];
 
 const outcomes = [
   {
-    title: "변경을 검토한다",
-    description: "결함은 review로 찾고, 의도와 구조는 summary로 이해합니다.",
-    selector: "$code-review",
+    title: "결정을 끝까지 검토한다",
+    description: "계획의 모든 하위 선택을 leaf까지 따라가고 확인합니다.",
+    selector: "$review-me",
     icon: ShieldCheck,
     tone: "sky",
   },
@@ -88,7 +88,7 @@ export function App() {
       <aside className="announcement" aria-label="프로젝트 안내">
         <p>
           <span>Open source</span>
-          Claude Code와 Codex를 위한 18개 packaged workflow
+          Claude Code와 Codex를 위한 19개 packaged workflow
         </p>
         <a
           href="https://github.com/chann/skills"
@@ -183,7 +183,7 @@ export function App() {
             </p>
             <div className="hero__actions">
               <a className="button button--primary" href="#explore">
-                18개 스킬 탐색
+                19개 스킬 탐색
                 <ArrowRight size={17} weight="bold" aria-hidden="true" />
               </a>
               <a className="text-link" href="#install">
@@ -194,7 +194,7 @@ export function App() {
 
           <ul className="hero__facts" aria-label="카탈로그 요약">
             <li>
-              <strong>18</strong>
+              <strong>19</strong>
               packaged skills
             </li>
             <li>
@@ -341,7 +341,7 @@ export function App() {
             <span className="section-label section-label--amber">
               One command setup
             </span>
-            <h2 id="install-title">18개 스킬을, 한 명령으로.</h2>
+            <h2 id="install-title">19개 스킬을, 한 명령으로.</h2>
             <p>
               공식 installer의 symlink 방식으로 Claude Code와 Codex에 함께
               연결합니다.
@@ -349,7 +349,7 @@ export function App() {
             <ul className="install-notes" aria-label="설치 결과">
               <li>
                 <CheckCircle size={18} weight="fill" aria-hidden="true" />
-                18개 스킬
+                19개 스킬
               </li>
               <li>
                 <CheckCircle size={18} weight="fill" aria-hidden="true" />

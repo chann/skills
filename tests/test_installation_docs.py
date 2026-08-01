@@ -9,6 +9,8 @@ INSTALL_DOCS = [
     ROOT / "USAGE.md",
     ROOT / "code-review" / "README.md",
     ROOT / "code-review" / "README.ko.md",
+    ROOT / "review-me" / "README.md",
+    ROOT / "review-me" / "README.ko.md",
     ROOT / "doc-skill" / "README.md",
     ROOT / "doc-skill" / "README.ko.md",
     ROOT / "doc-skill" / "USAGE.md",
@@ -76,7 +78,7 @@ class InstallationDocsTests(unittest.TestCase):
 
     def test_every_skill_declares_claude_code_and_codex_interfaces(self) -> None:
         skill_paths = sorted(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(18, len(skill_paths))
+        self.assertEqual(19, len(skill_paths))
 
         for skill_path in skill_paths:
             selector = skill_path.parent.name

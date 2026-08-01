@@ -281,13 +281,13 @@ class GitSkillPackageTests(unittest.TestCase):
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
         packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(18, len(packaged_skills))
+        self.assertEqual(19, len(packaged_skills))
 
         expected_counts = {
-            ROOT / "README.md": "18 practical agent skills",
-            ROOT / "README.ko.md": "18개의 실용적인 에이전트 스킬",
-            ROOT / "USAGE.md": "18 independently discoverable skills",
-            ROOT / "ARCHITECTURE.md": "expose 18 skills",
+            ROOT / "README.md": "19 practical agent skills",
+            ROOT / "README.ko.md": "19개의 실용적인 에이전트 스킬",
+            ROOT / "USAGE.md": "19 independently discoverable skills",
+            ROOT / "ARCHITECTURE.md": "expose 19 skills",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path):

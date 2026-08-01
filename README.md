@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 18 practical agent skills for software engineering workflows.
+A collection of 19 practical agent skills for software engineering workflows.
 
 ## Website
 
@@ -24,6 +24,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | Skill                                    | What it does                                                                                                   |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.md)** | Git change intelligence — explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
+| **[review-me](review-me/README.md)**     | Review plans and designs one decision at a time until every consequential leaf is resolved                  |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs without clobbering prose                |
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, realtime checkpoint commits or pushes, history rewrite, merge to main/dev, and merged-branch cleanup    |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
@@ -58,6 +59,7 @@ mode while
 Per-skill or non-global installs (and manual setup) are documented in each skill's README:
 
 - [code-review installation](code-review/README.md#installation)
+- [review-me installation](review-me/README.md#installation)
 - [doc-skill installation](doc-skill/README.md#installation)
 - [git-skill installation](git-skill/README.md#installation)
 - [handoff installation](handoff/README.md#installation)
@@ -66,6 +68,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
 Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
+Review-me-only install: `npx skills add chann/skills --skill review-me`
 
 ## Quick reference
 
@@ -87,6 +90,19 @@ spells out both explicit selectors.
 `diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Its default output is an aligned Korean/English pair with Korean shown first; explicitly request one language for single-language mode. Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
 Every HTML report — review, summary, quiz, and raw diff — shares one interface: a Korean/English toggle, light/dark/system themes with a light print palette, one semantic status palette held at WCAG AA in both themes, Korean-aware typography that breaks prose on 어절 boundaries, and a keyboard shell with a skip link and a live region. Each report stays a single self-contained file that works with no server and no network.
+
+
+### review-me → [details](review-me/README.md)
+
+
+| Claude Code | Codex | Action |
+| ----------- | ----- | ------ |
+| `/review-me [topic]` | `$review-me [topic]` | Follow a plan or design through every consequential decision and confirm a leaf-complete record |
+
+`review-me` asks one decision question at a time, recommends a concrete answer,
+and recursively expands each answer into its downstream choices. It inspects
+available evidence for facts and keeps the review read-only until the final
+decision record is confirmed.
 
 
 ### doc-skill → [details](doc-skill/README.md)

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles five independent plugins — `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 18 skills.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles six independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, and `long-task` — that together expose 19 skills.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
@@ -18,6 +18,7 @@ default prompt.
 | Plugin | Version | Skills | Responsibility |
 |---|---|---|---|
 | `code-review` | 2.5.0 | `code-review`, `code-review-md`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer` | Explain changes across code and architecture; review diffs for defects; emit Markdown/HTML reports; render standalone raw HTML diffs |
+| `review-me` | 0.1.0 | `review-me` | Review a plan, design, or consequential choice one decision at a time; recursively expand downstream decisions and audit every leaf before confirmation |
 | `doc-skill` | 0.2.0 | `gen-docs` | Generate/update `README.md`, `README.ko.md`, `ARCHITECTURE.md`, `USAGE.md` while preserving hand-written prose |
 | `git-skill` | 0.7.0 | `git-commit`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, one-shot or realtime checkpoint commits and pushes, history rewrite, guarded merges, and merged-branch cleanup |
 | `handoff` | 0.2.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
@@ -41,6 +42,7 @@ Every plugin shares the same layout:
 ```
 
 - **`code-review`** centralizes defect analysis and the default Markdown + bilingual HTML output in the main `code-review` skill: the shared review workflow, four reference guides (`review-criteria`, `common-vulnerabilities`, `python`, `javascript-typescript`), and two scripts (`diff_stats.py`, `generate_html_report.py`). The `code-review-md` variant is a thin skill that reuses that workflow while stopping after the Markdown artifact. `diff-summary` is the canonical authoring source — `collect_diff_evidence.py` owns the hardened Git/GitHub boundary, its `SKILL.md` owns aligned Korean/English analysis, and `generate_summary_report.py` plus `summary-template.html` validate and merge the two Markdown sources into interactive offline HTML. For exact-selector installation, `diff-summary-md` and `diff-summary-quiz` each bundle a synchronized workflow reference, collector, generator, and template: the first invokes bilingual `--markdown-only` (no HTML, no browser open), and the second appends aligned validated `## Quiz` sections rendered as interactive multiple-choice quizzes. `diff-viewer` is also standalone — `generate_diff_report.py` plus `diff-template.html` — and displays the raw patch without analysis behind the same bilingual interface, localizing only its chrome because the diff body is code. The three canonical templates deliberately duplicate the shared design tokens, icon geometry, and accessibility shell so each skill stays independently installable; `tests/test_html_report_style_contract.py` is what keeps those copies identical rather than a runtime import.
+- **`review-me`** is a user-invoked, read-only decision-tree interview. Its `SKILL.md` owns the dependency-ordered frontier, single-question loop, recursive child expansion, descendant reopening, five leaf-closure tests, and final confirmation. `references/review-lenses.md` is the disclosed audit checklist loaded before the first substantive question, so the execution steps stay legible while every applicable product, system, human-interface, security, operational, and evolution consequence is accounted for.
 - **`git-skill`** keeps its single Python helper, `rewrite_msg.py`, under `git-commit/scripts/`; the `git-commit-rewrite` workflow shares it. `git-commit-push-realtime` composes the `git-commit` and `git-commit-push` safety contracts with outcome-based checkpoint planning, per-checkpoint verification, immediate ordinary pushes, and upstream-parity proof. `git-commit-realtime` applies the same checkpoint planning and verification while never touching the remote: it composes the `git-commit` contract alone and reports unpushed checkpoint hashes instead of push parity.
 - **`handoff`** keeps both handoff generators as self-contained `SKILL.md` files. `gen-frontend-handoff` focuses on client-visible API contract changes, type/rendering/error-state work, and `client action 없음` for DB-only changes. `gen-backend-handoff` focuses on API contracts, database migrations, jobs/queues, rollout, verification, and backend continuation prompts.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
@@ -66,7 +68,7 @@ Every plugin shares the same layout:
 1. The user types a slash command (e.g. `/code-review-md`) or triggers a skill by natural language.
 2. Claude Code loads the matching `commands/*.md`, which points at the skill.
 3. The skill runs its `SKILL.md` workflow, loading `references/` and invoking bundled scripts through a canonical absolute Python executable in `-I` isolated mode as needed.
-4. Outputs land where the skill specifies — review reports under `.reviews/`, change summaries under `.diff-summaries/`, raw diff reports under `.diffs/`, git history changes, or `long-task` state under `.agent/`.
+4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, raw diff reports under `.diffs/`, git history changes, or `long-task` state under `.agent/`.
 
 ### Invocation (Codex)
 
@@ -150,6 +152,15 @@ skills/
 │   │   ├── SKILL.md
 │   │   └── templates/                # README.md.tmpl, README.ko.md.tmpl, ARCHITECTURE.md.tmpl, USAGE.md.tmpl
 │   └── README.md · README.ko.md
+├── review-me/                        # plugin (v0.1.0)
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/review-me.md         # /review-me
+│   ├── skills/review-me/
+│   │   ├── SKILL.md                  # decision frontier + leaf closure
+│   │   ├── agents/openai.yaml
+│   │   ├── evals/evals.json
+│   │   └── references/review-lenses.md
+│   └── README.md · README.ko.md
 ├── git-skill/                        # plugin (v0.7.0)
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/                     # eight git-* commands + the /gcpr and /gcr aliases
@@ -193,7 +204,8 @@ skills/
 ## Design decisions
 
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
-- **One plugin per workflow domain.** `code-review`, `doc-skill`, `git-skill`, `handoff`, and `long-task` are versioned and installable independently, so users adopt only what they need.
+- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, and `long-task` are versioned and installable independently, so users adopt only what they need.
+- **Leaf-complete decision review is distinct from code review.** `review-me` resolves plans, designs, and choices conversationally; `code-review` evaluates concrete Git changes for defects. The former stays user-invoked and read-only through confirmation, while the latter may trigger naturally from a diff-review request and writes reports.
 - **Canonical logic with installable variants.** The `code-review` skill owns the workflow, references, and scripts; its `-md`/`-html` variants stay thin because they are installed with that plugin contract. `diff-summary` is the canonical authoring source, while `diff-summary-md` and `diff-summary-quiz` carry synchronized standalone copies of the workflow reference and runtime so each exact selector works by itself; package tests enforce byte parity. `git-commit` owns shared commit semantics and `rewrite_msg.py`; `git-commit-push-realtime` references that canonical workflow plus `git-commit-push` instead of duplicating their safety policy, and `git-commit-realtime` references the `git-commit` contract alone for local-only checkpoints.
 - **Platform names are explicit and paired.** Every skill directory name matches
   its `SKILL.md` frontmatter name, every Claude Code command wrapper uses

@@ -1,6 +1,6 @@
 # skills website
 
-`chann/skills`의 18개 에이전트 워크플로를 검색하고 비교하고 설치하는 정적
+`chann/skills`의 19개 에이전트 워크플로를 검색하고 비교하고 설치하는 정적
 웹사이트입니다.
 
 배포 주소: <https://chann.github.io/skills/>

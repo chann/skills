@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 18 independently discoverable skills across five workflow plugins.
+This repository exposes 19 independently discoverable skills across six workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual skill name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Review-me-only install: `npx skills add chann/skills --skill review-me`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md).
 
 ## Quick start
 
@@ -48,6 +48,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /diff-summary main..dev                  # Korean + English Markdown + bilingual HTML
 > /diff-summary-md main..dev               # Korean + English Markdown only
 > /diff-summary-quiz main..dev             # bilingual summary + aligned quiz
+> /review-me the team invitation plan      # close every consequential decision leaf
 > /git-commit                               # group changes into Conventional Commits
 > /git-commit-push-realtime                 # push each verified outcome while working
 > /gcpr                                      # same workflow, short alias
@@ -72,6 +73,7 @@ These are the exact names published by every package:
 | Markdown-only diff summary | `/diff-summary-md` | `$diff-summary-md` |
 | Diff summary quiz | `/diff-summary-quiz` | `$diff-summary-quiz` |
 | Raw diff viewer | `/diff-viewer` | `$diff-viewer` |
+| Plan and design review | `/review-me` | `$review-me` |
 | Project docs | `/gen-docs` | `$gen-docs` |
 | Git commit | `/git-commit` | `$git-commit` |
 | Git commit and push | `/git-commit-push` | `$git-commit-push` |
@@ -86,6 +88,20 @@ These are the exact names published by every package:
 | Autonomous long task | `/long-task` | `$long-task` |
 
 ## Command reference
+
+### review-me
+
+| Command | Action |
+|---|---|
+| `/review-me [topic]` | Review one consequential decision at a time until every applicable leaf passes choice, boundary, variant, consequence, and proof checks |
+
+Codex invokes the same contract as `$review-me [topic]`. With no topic argument,
+the skill reviews the plan, design, or decision already under discussion. It
+inspects available evidence for discoverable facts, gives a recommended answer
+with each question, and waits for one answer before following the next node.
+When the decision frontier is empty, it audits every review lens and asks for
+confirmation of the closure record; implementation remains outside the review
+unless the surrounding request already authorized it.
 
 ### code-review
 
@@ -246,6 +262,9 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 ```
 # Review and persist a bilingual HTML report for staged changes
 > /code-review review staged changes
+
+# Review a plan one decision at a time through every consequential leaf
+> /review-me our tenant-by-tenant billing migration
 
 # Summarize current changes, an exact branch range, the last commit, or a PR
 > summarize the code changes

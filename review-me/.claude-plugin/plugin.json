@@ -1,0 +1,5 @@
+{
+  "name": "review-me",
+  "description": "Leaf-complete decision-tree review for plans, designs, and consequential choices. Follows every answer into its downstream decisions, closes applicable edge cases, and ends with a confirmed decision record.",
+  "version": "0.1.0"
+}

@@ -28,7 +28,7 @@ export const categoryMeta: Record<
 > = {
   review: {
     label: "Review",
-    description: "변경을 읽고, 설명하고, 결함을 찾습니다.",
+    description: "계획과 변경을 검토하고, 설명하고, 결함을 찾습니다.",
   },
   docs: {
     label: "Docs",
@@ -49,6 +49,18 @@ export const categoryMeta: Record<
 };
 
 export const skills: Skill[] = [
+  {
+    id: "review-me",
+    title: "Review Me",
+    category: "review",
+    summary: "결정 트리를 따라가며 계획과 설계의 모든 중요한 leaf를 닫습니다.",
+    whenToUse: "구현 전에 모호한 선택, 경계, 실패·복구 조건을 끝까지 확정할 때",
+    result: "확인된 결정 트리, leaf 계약, 수용 예시, 의도적 보류 목록",
+    example: "$review-me review our billing migration plan",
+    claudeSelector: "/review-me",
+    codexSelector: "$review-me",
+    tags: ["review", "decision", "design", "plan", "interview"],
+  },
   {
     id: "code-review",
     title: "Code Review",

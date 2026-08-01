@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링 워크플로우를 위한 18개의 실용적인 에이전트 스킬 모음입니다.
+소프트웨어 엔지니어링 워크플로우를 위한 19개의 실용적인 에이전트 스킬 모음입니다.
 
 ## Website
 
@@ -22,6 +22,7 @@ npm --prefix website run dev
 | 스킬                                                | 설명                                                                                          |
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.ko.md)**         | git 변경 인텔리전스 — 설명형 diff 요약, 심각도 기반 리뷰, 원본 HTML diff 뷰어                    |
+| **[review-me](review-me/README.ko.md)**             | 계획과 설계를 한 번에 결정 하나씩 검토해 모든 중요한 leaf를 닫음                                |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 prose 보존하며 생성 또는 갱신              |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, realtime checkpoint 커밋·푸시, 히스토리 재작성, main/dev 머지, 로컬 브랜치 정리    |
 | **[handoff](handoff/README.ko.md)**                 | git diff, 범위, 세션 컨텍스트에서 프론트엔드/백엔드 핸드오프 문서 생성                         |
@@ -54,6 +55,7 @@ PromptScript 어댑터가 암묵적으로 추가될 수 있습니다. 이 경우
 스킬별 설치 또는 비전역 / 수동 설치는 각 스킬 README 참조:
 
 - [code-review 설치](code-review/README.ko.md#설치-방법)
+- [review-me 설치](review-me/README.ko.md#설치-방법)
 - [doc-skill 설치](doc-skill/README.ko.md#설치)
 - [git-skill 설치](git-skill/README.ko.md#설치-방법)
 - [handoff 설치](handoff/README.ko.md#설치-방법)
@@ -62,6 +64,7 @@ PromptScript 어댑터가 암묵적으로 추가될 수 있습니다. 이 경우
 handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
 diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
+review-me만 설치: `npx skills add chann/skills --skill review-me`
 
 ## 빠른 참조
 
@@ -82,6 +85,16 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명
 `diff-summary`는 “코드를 요약해줘”, “마지막 커밋 코드를 요약해줘”, “main..dev 변경 요약” 같은 요청에도 자동으로 활성화됩니다. 기본 출력은 한국어를 먼저 보여주는 정렬된 한·영 보고서이며, 한 언어만 명시적으로 요청하면 단일 언어 모드를 사용합니다. “마크다운 요약만 저장”은 `diff-summary-md`, “이 변경 이해했는지 퀴즈로 확인”은 `diff-summary-quiz`로 연결됩니다. 세 스킬 모두 명시한 `..`/`...` 범위를 정확히 보존합니다. 결함 탐색은 `code-review`, 원본 패치 확인은 `diff-viewer`를 사용하세요.
 
 리뷰·요약·퀴즈·원본 diff HTML 보고서는 하나의 인터페이스를 공유합니다. 한국어/영어 토글, 밝게·어둡게·시스템 테마와 인쇄용 밝은 팔레트, 두 테마 모두 WCAG AA를 지키는 단일 의미 색상 팔레트, 어절 단위로 줄을 바꾸는 한글 타이포그래피, 건너뛰기 링크와 라이브 리전을 갖춘 키보드 지원이 모두 들어 있습니다. 보고서는 서버나 네트워크 없이 열리는 단일 파일입니다.
+
+### review-me → [상세](review-me/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| ----------- | ----- | ---- |
+| `/review-me [주제]` | `$review-me [주제]` | 계획이나 설계의 모든 중요한 하위 결정을 따라가 leaf-complete 기록을 확인 |
+
+`review-me`는 한 번에 결정 하나만 질문하고 구체적인 권장안을 제시하며, 각
+답변에서 생긴 하위 선택을 재귀적으로 추적합니다. 확인 가능한 사실은 직접
+조사하고 최종 결정 기록이 확인될 때까지 읽기 전용 리뷰를 유지합니다.
 
 ### doc-skill → [상세](doc-skill/README.ko.md)
 
