@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 19 practical agent skills for software engineering workflows.
+A collection of 20 practical agent skills for software engineering workflows.
 
 ## Website
 
@@ -29,6 +29,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, realtime checkpoint commits or pushes, history rewrite, merge to main/dev, and merged-branch cleanup    |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
 | **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
+| **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
 
 
 ## Installation
@@ -64,11 +65,13 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [git-skill installation](git-skill/README.md#installation)
 - [handoff installation](handoff/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
+- [work-summary installation](work-summary/README.md#installation)
 
 Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
 Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 Review-me-only install: `npx skills add chann/skills --skill review-me`
+Work-summary-only install: `npx skills add chann/skills --skill work-summary`
 
 ## Quick reference
 
@@ -145,6 +148,19 @@ Also triggers on phrases like *"build this whole project"*, *"do this autonomous
 | ------------------------- | ------------------------ | --------------------------------------------------------------------------------- |
 | `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | Write a frontend/client handoff from backend API diffs, ranges, or session context |
 | `/gen-backend-handoff`    | `$gen-backend-handoff`   | Write a backend/server handoff from code, API, DB, job, or rollout changes         |
+
+### work-summary → [details](work-summary/README.md)
+
+
+| Claude Code | Codex | Action |
+| ----------- | ----- | ------ |
+| `/work-summary [range]` | `$work-summary [range]` | Generate a Markdown work report for today, this week, this month, or a custom date span |
+
+`work-summary` mines the local session history of Claude Code, Codex,
+opencode, and agy read-only, buckets it in your local timezone, and reports
+what was asked and done — a summary by default, or a detailed report with a
+timeline and request log. Also triggers on phrases like *"오늘 작업 요약해줘"*
+and *"what did I work on this week"*.
 
 ## Documentation
 

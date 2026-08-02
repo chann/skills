@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 19 independently discoverable skills across six workflow plugins.
+This repository exposes 20 independently discoverable skills across seven workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Review-me-only install: `npx skills add chann/skills --skill review-me`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual skill name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [work-summary](work-summary/README.md).
 
 ## Quick start
 
@@ -58,6 +58,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
 > /long-task build a CLI todo app end to end
+> /work-summary this week                   # Markdown report of the week's agent work
 ```
 
 ### Explicit selectors
@@ -86,6 +87,7 @@ These are the exact names published by every package:
 | Frontend handoff | `/gen-frontend-handoff` | `$gen-frontend-handoff` |
 | Backend handoff | `/gen-backend-handoff` | `$gen-backend-handoff` |
 | Autonomous long task | `/long-task` | `$long-task` |
+| Work-history report | `/work-summary` | `$work-summary` |
 
 ## Command reference
 
@@ -102,6 +104,19 @@ with each question, and waits for one answer before following the next node.
 When the decision frontier is empty, it audits every review lens and asks for
 confirmation of the closure record; implementation remains outside the review
 unless the surrounding request already authorized it.
+
+### work-summary
+
+| Command | Action |
+|---|---|
+| `/work-summary [range]` | Summarize coding-agent work for `today` (default), `yesterday`, `this week`, `last week`, `this month`, `last month`, a single day, or `YYYY-MM-DD..YYYY-MM-DD` as a Markdown report |
+
+Codex invokes the same contract as `$work-summary [range]`. The skill mines
+the local history stores of Claude Code, Codex, opencode, and agy read-only
+(silently skipping absent ones), buckets records in the user's local timezone,
+and replies with a summary or — on request — a detailed report that adds a
+timeline and per-request log. Reports stay local: history content is never
+sent anywhere, and a file is written under `.work-summaries/` only when asked.
 
 ### code-review
 
@@ -253,6 +268,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
 | `.agent/` | `long-task` | Working-memory and lifecycle state for a run |
+| `.work-summaries/` | `work-summary` | Markdown work reports, written only on request; gitignored |
 | `~/.claude/settings.json` | `long-task` | Stop hook installed under `hooks.Stop` on first run |
 
 `.reviews/`, `.diff-summaries/`, and `.diffs/` are already in this repository's `.gitignore`. In another repository the skills may suggest the matching ignore entry, but never edit `.gitignore` automatically.
@@ -289,6 +305,10 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 # Kick off an autonomous build, then check on it later
 > /long-task build a REST API for a URL shortener with tests
 > /long-task status
+
+# Report what was worked on across coding agents
+> /work-summary this week
+> /work-summary 2026-07-01..2026-07-31 detailed
 ```
 
 ## Troubleshooting

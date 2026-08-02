@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링 워크플로우를 위한 19개의 실용적인 에이전트 스킬 모음입니다.
+소프트웨어 엔지니어링 워크플로우를 위한 20개의 실용적인 에이전트 스킬 모음입니다.
 
 ## Website
 
@@ -27,6 +27,7 @@ npm --prefix website run dev
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, realtime checkpoint 커밋·푸시, 히스토리 재작성, main/dev 머지, 로컬 브랜치 정리    |
 | **[handoff](handoff/README.ko.md)**                 | git diff, 범위, 세션 컨텍스트에서 프론트엔드/백엔드 핸드오프 문서 생성                         |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
+| **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
 
 ## 설치 방법
 
@@ -60,11 +61,13 @@ PromptScript 어댑터가 암묵적으로 추가될 수 있습니다. 이 경우
 - [git-skill 설치](git-skill/README.ko.md#설치-방법)
 - [handoff 설치](handoff/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
+- [work-summary 설치](work-summary/README.ko.md#설치-방법)
 
 handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
 diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 review-me만 설치: `npx skills add chann/skills --skill review-me`
+work-summary만 설치: `npx skills add chann/skills --skill work-summary`
 
 ## 빠른 참조
 
@@ -129,6 +132,17 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명
 | ------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
 | `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | 백엔드 API diff, 범위, 세션 컨텍스트에서 프론트엔드/클라이언트 핸드오프 작성        |
 | `/gen-backend-handoff`    | `$gen-backend-handoff`   | 코드, API, DB, job, rollout 변경사항에서 백엔드/서버 핸드오프 작성                  |
+
+### work-summary → [상세](work-summary/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| ----------- | ----- | ---- |
+| `/work-summary [범위]` | `$work-summary [범위]` | 오늘, 이번 주, 이번 달 또는 사용자 지정 기간의 작업 내역을 Markdown 보고서로 생성 |
+
+`work-summary`는 Claude Code, Codex, opencode, agy가 로컬에 남긴 세션 기록을
+읽기 전용으로 수집해 로컬 타임존 기준으로 정리합니다. 기본은 요약이고, 요청
+시 타임라인과 요청 로그가 있는 상세 리포트를 만듭니다. *"오늘 작업 요약해줘"*,
+*"이번주에 뭐 했는지 정리해줘"* 같은 문구에도 자동 트리거됩니다.
 
 ## 문서
 

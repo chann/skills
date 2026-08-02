@@ -4,6 +4,7 @@ export const categoryOrder = [
   "git",
   "handoff",
   "automation",
+  "report",
 ] as const;
 
 export type SkillCategory = (typeof categoryOrder)[number];
@@ -45,6 +46,10 @@ export const categoryMeta: Record<
   automation: {
     label: "Automation",
     description: "큰 작업을 검증 가능한 마일스톤으로 운영합니다.",
+  },
+  report: {
+    label: "Report",
+    description: "에이전트 작업 기록을 날짜 범위 보고서로 만듭니다.",
   },
 };
 
@@ -278,5 +283,17 @@ export const skills: Skill[] = [
     claudeSelector: "/long-task",
     codexSelector: "$long-task",
     tags: ["automation", "orchestration", "milestone", "agent"],
+  },
+  {
+    id: "work-summary",
+    title: "Work Summary",
+    category: "report",
+    summary: "로컬 코딩 에이전트 기록에서 날짜 범위 작업 보고서를 만듭니다.",
+    whenToUse: "오늘, 이번 주, 이번 달 등 기간별 작업 내역과 요청을 정리할 때",
+    result: "요약 또는 상세 Markdown 작업 리포트 (요청 시 .work-summaries/)",
+    example: "$work-summary this week",
+    claudeSelector: "/work-summary",
+    codexSelector: "$work-summary",
+    tags: ["report", "summary", "history", "claude-code", "codex"],
   },
 ];

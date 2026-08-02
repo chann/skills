@@ -1,0 +1,5 @@
+{
+  "name": "work-summary",
+  "description": "Date-ranged Markdown work reports mined read-only from local coding-agent history — Claude Code, Codex, opencode, and agy. Summarize today, this week, or this month, or build a detailed report for any explicit date span.",
+  "version": "0.1.0"
+}

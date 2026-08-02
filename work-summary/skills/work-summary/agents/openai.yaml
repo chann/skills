@@ -1,0 +1,4 @@
+interface:
+  display_name: "Work Summary"
+  short_description: "Date-ranged Markdown report from local coding-agent history"
+  default_prompt: "Use $work-summary to report what I worked on today across my coding agents as Markdown."

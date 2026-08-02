@@ -1,0 +1,49 @@
+{
+  "skill_name": "work-summary",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $work-summary to summarize what I worked on today.",
+      "expected_output": "A Markdown work summary for the current local day with Sources and totals lines plus Overview, By project, and By agent sections built only from records found in local agent history stores.",
+      "files": [],
+      "assertions": [
+        "Reads references/agent-history-stores.md before mining and stays read-only toward every store",
+        "Resolves today as local midnight to now in the user's local timezone before filtering records",
+        "Every project, count, and quoted request in the report traces to mined records; nothing is invented"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Use $work-summary for a detailed report of this week including every request.",
+      "expected_output": "A detailed Markdown report for the Monday-start local week that adds Timeline and Requests log sections with per-request rows quoted from the stores.",
+      "files": [],
+      "assertions": [
+        "Buckets the week Monday-start in the user's local timezone, normalizing per-store epoch units",
+        "Includes the Timeline and Requests log sections at detailed depth",
+        "Excludes isMeta, isSidechain, developer-role, and is_internal records from the log"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use $work-summary for 2020-01-01..2020-01-02.",
+      "expected_output": "A report whose Overview states no recorded activity for the empty span while the header and Sources lines stay accurate.",
+      "files": [],
+      "assertions": [
+        "States no recorded activity instead of inventing work for an empty range",
+        "Keeps the requested inclusive date span exactly as given",
+        "Still lists which stores were mined in the Sources line"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use $work-summary this month on a machine where opencode has never been installed.",
+      "expected_output": "A monthly report that silently skips the absent opencode store and mines the remaining stores normally.",
+      "files": [],
+      "assertions": [
+        "Silently skips absent stores without failing the run",
+        "Notes present-but-unreadable stores as skipped in the Sources line",
+        "Delivers the report in the reply and writes a file only when asked"
+      ]
+    }
+  ]
+}
