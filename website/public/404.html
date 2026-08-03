@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>404 - skills</title>
+    <link rel="icon" href="/skills/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --canvas: #080908;
+        --ink: #f4f5f1;
+        --ink-soft: #a7aaa4;
+        --ink-muted: #898d85;
+        --line-strong: #373b35;
+        --accent: #bdebc7;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          color-scheme: light;
+          --canvas: #f7f6f3;
+          --ink: #171816;
+          --ink-soft: #5f625c;
+          --ink-muted: #686b65;
+          --line-strong: #c9c8c1;
+          --accent: #2f6d42;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      main {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 96px 24px 48px;
+        text-align: center;
+      }
+      .kicker {
+        color: var(--accent);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 16px 0 0;
+        font-size: clamp(2.25rem, 6vw, 3.75rem);
+        font-weight: 700;
+        letter-spacing: -0.05em;
+        line-height: 1.05;
+        text-wrap: balance;
+      }
+      p {
+        max-width: 420px;
+        margin: 16px 0 0;
+        color: var(--ink-soft);
+      }
+      a.button {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        margin-top: 32px;
+        padding: 8px 24px;
+        border-radius: 10px;
+        background: var(--ink);
+        color: var(--canvas);
+        font-weight: 690;
+        text-decoration: none;
+      }
+      a.button:active {
+        transform: translateY(1px);
+      }
+      a.button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      .word {
+        margin: 0 0 -0.1em;
+        color: transparent;
+        font-size: clamp(9rem, 24vw, 22rem);
+        font-weight: 730;
+        letter-spacing: -0.06em;
+        line-height: 1;
+        text-align: center;
+        -webkit-text-stroke: 1px var(--line-strong);
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="kicker">404</span>
+      <h1>페이지가 없습니다.</h1>
+      <p>주소가 바뀌었거나 잘못 입력됐습니다. 스킬 카탈로그는 홈에 있습니다.</p>
+      <a class="button" href="/skills/">홈으로 돌아가기</a>
+    </main>
+    <div class="word" aria-hidden="true">404</div>
+  </body>
+</html>
