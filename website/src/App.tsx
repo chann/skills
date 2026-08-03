@@ -100,16 +100,6 @@ const faqs = [
   },
 ];
 
-function BrandMark({ large = false }: { large?: boolean }) {
-  return (
-    <span className={`brand-mark${large ? " brand-mark--large" : ""}`} aria-hidden="true">
-      <span />
-      <span />
-      <span />
-    </span>
-  );
-}
-
 function ProductPreview() {
   return (
     <div className="product-window">
@@ -220,7 +210,6 @@ export function App() {
       <header className="site-header">
         <div className="site-header__inner">
           <a className="brand" href="#main" aria-label="skills 홈">
-            <BrandMark />
             <span>skills</span>
           </a>
 
@@ -262,7 +251,6 @@ export function App() {
               ease: [0.16, 1, 0.3, 1],
             }}
           >
-            <BrandMark large />
             <p className="hero__brand">skills</p>
             <h1 id="hero-title">
               <span>반복 작업을,</span>
@@ -512,7 +500,6 @@ export function App() {
       <footer className="site-footer">
         <div className="site-footer__top">
           <a className="brand" href="#main" aria-label="skills 홈">
-            <BrandMark />
             <span>skills</span>
           </a>
           <p>Practical agent workflows for software engineering.</p>
