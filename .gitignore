@@ -10,5 +10,6 @@ __pycache__/
 .work-summaries/
 workspace/
 .gstack/
+.superpowers/
 website/node_modules/
 website/dist/
