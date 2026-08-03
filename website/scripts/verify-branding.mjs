@@ -28,9 +28,9 @@ const required = {
   ],
   metadata: [
     '<meta property="og:site_name" content="chann/skills" />',
-    '<meta property="og:title" content="chann/skills - 반복 작업을, 이름 있는 스킬로" />',
-    '<meta name="twitter:title" content="chann/skills - 반복 작업을, 이름 있는 스킬로" />',
-    '<title>chann/skills - 반복 작업을, 이름 있는 스킬로</title>',
+    '<meta property="og:title" content="chann/skills - 어제의 반복이, 오늘의 스킬로" />',
+    '<meta name="twitter:title" content="chann/skills - 어제의 반복이, 오늘의 스킬로" />',
+    '<title>chann/skills - 어제의 반복이, 오늘의 스킬로</title>',
   ],
   notFound: [
     '<title>404 - chann/skills</title>',

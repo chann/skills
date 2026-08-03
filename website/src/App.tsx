@@ -1,10 +1,10 @@
 import {
   ArrowRight,
+  Brain,
   CheckCircle,
-  GitPullRequest,
-  NotePencil,
   Plus,
-  ShieldCheck,
+  Repeat,
+  TerminalWindow,
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -21,48 +21,48 @@ const installCommand =
   "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
 const updateCommand = "npx skills update chann/skills";
 
-const outcomes = [
+const efficiencyBenefits = [
   {
-    title: "결정의 끝까지 검토",
+    label: "Reusable instructions",
+    title: "같은 지침을 다시 만들지 않습니다.",
     description:
-      "상위 계획만 훑지 않고, 실제로 선택해야 하는 마지막 갈림길까지 따라갑니다.",
-    selector: "$review-me",
-    icon: ShieldCheck,
+      "실행 순서와 예시, 안전 규칙을 안정된 SKILL.md로 유지합니다. 반복 요청에서 동일한 앞부분이 유지되므로 지원되는 모델의 프롬프트 캐시를 활용하기 좋은 구조가 됩니다.",
+    icon: Repeat,
   },
   {
-    title: "맥락이 남는 설명",
+    label: "Deterministic scripts",
+    title: "정해진 일은 스크립트가 처리합니다.",
     description:
-      "원본 diff에서 시작해 이중언어 보고서, 다이어그램, 이해도 확인까지 연결합니다.",
-    selector: "$diff-summary",
-    icon: NotePencil,
+      "파일 탐색, 형식 검사, 데이터 동기화처럼 결과가 명확한 단계는 스크립트로 실행합니다. 모델이 같은 절차를 매번 다시 추론하지 않게 해 LLM 사용 범위를 줄입니다.",
+    icon: TerminalWindow,
   },
   {
-    title: "끝까지 확인하는 실행",
+    label: "Focused judgment",
+    title: "LLM은 판단에 집중합니다.",
     description:
-      "테스트부터 명시적 스테이징, 원격 저장소 반영 확인까지 한 흐름으로 끝냅니다.",
-    selector: "$git-commit-push-realtime",
-    icon: GitPullRequest,
+      "요구사항 해석, 코드 검토, 위험 판단처럼 문맥이 필요한 부분에 모델을 사용하고, 실행 순서와 완료 조건은 스킬이 고정합니다.",
+    icon: Brain,
   },
 ];
 
 const workflowSteps = [
   {
     number: "01",
-    label: "Request",
-    title: "목표를 말합니다",
-    description: "마지막 커밋을 리뷰하고 HTML 보고서로 보여줘.",
+    label: "Capture",
+    title: "반복을 포착합니다",
+    description: "자주 되풀이하는 요청과 산출물을 찾습니다.",
   },
   {
     number: "02",
-    label: "Guidance",
-    title: "스킬이 작업 기준을 읽습니다",
-    description: "범위, 안전 규칙, 확인 방법과 결과 형식을 불러옵니다.",
+    label: "Define",
+    title: "기준을 고정합니다",
+    description: "실행 순서, 안전 규칙과 완료 조건을 스킬에 남깁니다.",
   },
   {
     number: "03",
-    label: "Check",
-    title: "결과를 확인합니다",
-    description: "보고서, 테스트, 커밋과 원격 상태를 확인합니다.",
+    label: "Separate",
+    title: "역할을 나눕니다",
+    description: "판단은 LLM이 맡고, 결과가 정해진 단계는 스크립트가 실행합니다.",
   },
 ];
 
@@ -74,6 +74,14 @@ const faqs = [
   {
     q: "일반 프롬프트와 뭐가 다른가요?",
     a: "프롬프트는 대화가 끝나면 사라지지만 스킬은 파일로 남습니다. 버전 관리되고, 팀과 공유되고, $review-me처럼 이름으로 다시 호출할 수 있습니다.",
+  },
+  {
+    q: "스킬을 쓰면 토큰이 항상 줄어드나요?",
+    a: "항상 보장되지는 않습니다. 프롬프트 캐시는 사용하는 모델과 지침 길이, 동일한 앞부분의 유지 여부에 따라 달라집니다. 다만 스킬은 반복 지침을 안정된 형태로 재사용하고, 스크립트로 처리할 단계를 분리해 불필요한 LLM 작업을 줄이도록 설계됩니다.",
+  },
+  {
+    q: "어떤 작업을 스크립트로 처리하나요?",
+    a: "입력과 결과를 규칙으로 확인할 수 있는 작업입니다. 파일 검색, 형식 검사, 카탈로그 동기화와 테스트 실행은 스크립트에 맡기고, 해석과 검토가 필요한 작업은 LLM이 담당합니다.",
   },
   {
     q: "어떤 에이전트에서 쓸 수 있나요?",
@@ -254,24 +262,25 @@ export function App() {
           >
             <p className="hero__brand">{repositoryName}</p>
             <h1 id="hero-title">
-              <span>반복 작업을,</span>
-              <span>이름 있는 스킬로.</span>
+              <span>어제의 반복이,</span>
+              <span>오늘의 스킬로.</span>
             </h1>
             <p className="hero__lede">
-              Claude Code와 Codex를 위한 {skills.length}개 에이전트 워크플로.
-              <br />
-              리뷰부터 Git 정리까지, 필요한 순간 바로 호출하세요.
+              Claude Code와 Codex에서 되풀이하던 소프트웨어 작업을 검증 가능한
+              {` ${skills.length}개의 `}워크플로로 바꿨습니다. 반복 지침은
+              캐시하기 좋은 형태로 재사용하고, 결과가 정해진 단계는 스크립트에
+              맡겨 LLM이 필요한 판단에 집중하게 합니다.
             </p>
             <div className="hero__actions">
               <a className="button button--primary" href="#explore">
-                {skills.length}개 스킬 탐색
+                {skills.length}개 스킬 살펴보기
                 <ArrowRight size={17} weight="bold" aria-hidden="true" />
               </a>
-              <a className="button button--quiet" href="#install">
-                설치 방법
-              </a>
             </div>
-            <p className="hero__meta">Open source · MIT licensed</p>
+            <p className="hero__meta">
+              {skills.length} packaged skills · {categoryOrder.length} categories ·
+              Claude Code + Codex · MIT
+            </p>
           </motion.div>
 
           <motion.div
@@ -288,30 +297,41 @@ export function App() {
           </motion.div>
         </section>
 
-        <section className="outcomes section" id="why" aria-labelledby="outcomes-title">
-          <Reveal className="section-heading section-heading--center">
-            <span className="section-label">Why skills</span>
-            <h2 id="outcomes-title">한 번 잘한 일을,<br />다시 호출할 수 있게.</h2>
-            <p>
-              단순한 프롬프트 모음이 아닙니다. 각 스킬은 실행 순서와 안전 규칙,
-              완료 조건까지 함께 정의합니다.
-            </p>
-          </Reveal>
+        <section className="efficiency section" id="why" aria-labelledby="efficiency-title">
+          <div className="efficiency-layout">
+            <Reveal className="efficiency-intro">
+              <span className="section-label">Why skills</span>
+              <h2 id="efficiency-title">반복할수록,<br />덜 설명하고 더 선명하게.</h2>
+              <p>
+                스킬은 반복 지침을 재사용하고, 정해진 절차를 스크립트에 맡겨
+                모델이 꼭 필요한 판단에 집중하게 합니다.
+              </p>
+              <dl className="efficiency-stats" aria-label="스킬 저장소 현황">
+                <div><dt>Skills</dt><dd>{skills.length}</dd></div>
+                <div><dt>Categories</dt><dd>{categoryOrder.length}</dd></div>
+                <div><dt>Platforms</dt><dd>2</dd></div>
+              </dl>
+            </Reveal>
 
-          <div className="outcome-grid">
-            {outcomes.map((outcome, index) => {
-              const Icon = outcome.icon;
-              return (
-                <Reveal key={outcome.title} className="outcome" delay={index * 0.05}>
-                  <span className="outcome__icon">
-                    <Icon size={21} weight="regular" aria-hidden="true" />
-                  </span>
-                  <h3>{outcome.title}</h3>
-                  <p>{outcome.description}</p>
-                  <code>{outcome.selector}</code>
-                </Reveal>
-              );
-            })}
+            <div className="efficiency-list">
+              {efficiencyBenefits.map((benefit, index) => {
+                const Icon = benefit.icon;
+                return (
+                  <Reveal key={benefit.title}>
+                    <article className="efficiency-item">
+                      <span className="efficiency-item__icon">
+                        <Icon size={22} weight="regular" aria-hidden="true" />
+                      </span>
+                      <div>
+                        <span>{String(index + 1).padStart(2, "0")} · {benefit.label}</span>
+                        <h3>{benefit.title}</h3>
+                        <p>{benefit.description}</p>
+                      </div>
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -324,7 +344,7 @@ export function App() {
               id="tagline-title"
               lines={[
                 "좋은 프롬프트는 한 번 쓰고 사라집니다.",
-                "하지만 좋은 스킬은 기본기가 됩니다.",
+                "하지만 스킬로 만들면 기본기가 됩니다.",
               ]}
             />
             <Reveal delay={0.05}>
@@ -349,8 +369,8 @@ export function App() {
         <section className="workflow section" id="usage" aria-labelledby="workflow-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">How it works</span>
-            <h2 id="workflow-title">요청부터 결과 확인까지,<br />세 단계.</h2>
-            <p>목표를 말하면 스킬이 정해 둔 순서와 안전 규칙에 따라 작업합니다.</p>
+            <h2 id="workflow-title">반복 작업이 스킬이 되는,<br />세 단계.</h2>
+            <p>반복을 포착하고 기준을 고정한 뒤, LLM과 스크립트의 역할을 나눕니다.</p>
           </Reveal>
 
           <Reveal className="workflow-window" delay={0.06}>

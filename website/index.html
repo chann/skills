@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="chann/skills의 에이전트 워크플로를 찾고 설치하고 사용하는 방법을 안내합니다."
+      content="Claude Code와 Codex의 반복 작업을 재사용 가능한 스킬로 바꾸세요. 캐시 친화적인 지침과 스크립트 실행으로 LLM이 필요한 판단에 집중합니다."
     />
     <meta name="theme-color" content="#000000" />
     <link rel="canonical" href="https://chann.github.io/skills/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:site_name" content="chann/skills" />
-    <meta property="og:title" content="chann/skills - 반복 작업을, 이름 있는 스킬로" />
+    <meta property="og:title" content="chann/skills - 어제의 반복이, 오늘의 스킬로" />
     <meta
       property="og:description"
-      content="Claude Code와 Codex를 위한 검증된 에이전트 워크플로를 찾고 한 명령으로 설치하세요."
+      content="Claude Code와 Codex의 반복 작업을 재사용 가능한 스킬로 바꾸세요. 캐시 친화적인 지침과 스크립트 실행으로 LLM이 필요한 판단에 집중합니다."
     />
     <meta property="og:url" content="https://chann.github.io/skills/" />
     <meta
@@ -26,10 +26,10 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="chann/skills 웹사이트의 에이전트 워크플로 실행 화면" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="chann/skills - 반복 작업을, 이름 있는 스킬로" />
+    <meta name="twitter:title" content="chann/skills - 어제의 반복이, 오늘의 스킬로" />
     <meta
       name="twitter:description"
-      content="Claude Code와 Codex를 위한 검증된 에이전트 워크플로를 찾고 한 명령으로 설치하세요."
+      content="Claude Code와 Codex의 반복 작업을 재사용 가능한 스킬로 바꾸세요. 캐시 친화적인 지침과 스크립트 실행으로 LLM이 필요한 판단에 집중합니다."
     />
     <meta
       name="twitter:image"
@@ -48,7 +48,7 @@
         document.documentElement.dataset.theme = "dark";
       }
     </script>
-    <title>chann/skills - 반복 작업을, 이름 있는 스킬로</title>
+    <title>chann/skills - 어제의 반복이, 오늘의 스킬로</title>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -68,6 +68,22 @@
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "프롬프트는 대화가 끝나면 사라지지만 스킬은 파일로 남습니다. 버전 관리되고, 팀과 공유되고, 이름으로 다시 호출할 수 있습니다."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "스킬을 쓰면 토큰이 항상 줄어드나요?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "항상 보장되지는 않습니다. 프롬프트 캐시는 사용하는 모델과 지침 길이, 동일한 앞부분의 유지 여부에 따라 달라집니다. 다만 스킬은 반복 지침을 안정된 형태로 재사용하고, 스크립트로 처리할 단계를 분리해 불필요한 LLM 작업을 줄이도록 설계됩니다."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "어떤 작업을 스크립트로 처리하나요?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "입력과 결과를 규칙으로 확인할 수 있는 작업입니다. 파일 검색, 형식 검사, 카탈로그 동기화와 테스트 실행은 스크립트에 맡기고, 해석과 검토가 필요한 작업은 LLM이 담당합니다."
             }
           },
           {
