@@ -40,6 +40,10 @@ export function SkillExplorer({
         skill.title,
         skill.summary,
         skill.whenToUse,
+        skill.codexSelector,
+        skill.claudeSelector,
+        skill.example,
+        ...(skill.aliases ?? []),
         ...skill.tags,
       ]
         .join(" ")
