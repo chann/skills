@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run verify:catalog && npm run verify:text-wrapping && tsc -b && vite build",
+    "build": "npm run verify:catalog && npm run verify:text-wrapping && npm run verify:branding && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
+    "verify:branding": "node scripts/verify-branding.mjs",
     "verify:catalog": "node scripts/verify-catalog.mjs",
     "verify:text-wrapping": "node scripts/verify-text-wrapping.mjs"
   },

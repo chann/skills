@@ -16,6 +16,7 @@ import { TaglineReveal } from "./components/TaglineReveal";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { categoryOrder, skills } from "./data/skills";
 
+const repositoryName = "chann/skills";
 const installCommand =
   "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
 const updateCommand = "npx skills update chann/skills";
@@ -109,7 +110,7 @@ function ProductPreview() {
           <i />
           <i />
         </span>
-        <span>skills / workspace</span>
+        <span>{repositoryName} / workspace</span>
         <code>ready</code>
       </div>
 
@@ -209,8 +210,8 @@ export function App() {
 
       <header className="site-header">
         <div className="site-header__inner">
-          <a className="brand" href="#main" aria-label="skills 홈">
-            <span>skills</span>
+          <a className="brand" href="#main" aria-label={`${repositoryName} 홈`}>
+            <span>{repositoryName}</span>
           </a>
 
           <nav aria-label="주요 메뉴">
@@ -251,7 +252,7 @@ export function App() {
               ease: [0.16, 1, 0.3, 1],
             }}
           >
-            <p className="hero__brand">skills</p>
+            <p className="hero__brand">{repositoryName}</p>
             <h1 id="hero-title">
               <span>반복 작업을,</span>
               <span>이름 있는 스킬로.</span>
@@ -499,8 +500,8 @@ export function App() {
 
       <footer className="site-footer">
         <div className="site-footer__top">
-          <a className="brand" href="#main" aria-label="skills 홈">
-            <span>skills</span>
+          <a className="brand" href="#main" aria-label={`${repositoryName} 홈`}>
+            <span>{repositoryName}</span>
           </a>
           <p>Practical agent workflows for software engineering.</p>
           <div>
@@ -521,7 +522,7 @@ export function App() {
           </div>
         </div>
         <div className="site-footer__word" aria-hidden="true">
-          {"skills".split("").map((letter, index) => (
+          {repositoryName.split("").map((letter, index) => (
             <motion.span
               key={index}
               initial={reduceMotion ? false : { y: "0.42em", opacity: 0 }}

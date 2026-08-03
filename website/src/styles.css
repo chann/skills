@@ -1518,7 +1518,7 @@ code {
   margin: 52px 0 0;
   overflow: hidden;
   color: var(--accent);
-  font-size: clamp(9rem, 24vw, 22rem);
+  font-size: clamp(5rem, 12vw, 11rem);
   font-weight: 730;
   letter-spacing: -0.09em;
   line-height: 0.84;
@@ -1893,7 +1893,7 @@ code {
 
   .site-footer__word {
     margin-top: 40px;
-    font-size: 34vw;
+    font-size: 17vw;
   }
 }
 
