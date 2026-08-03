@@ -35,6 +35,9 @@ client-side JavaScript.
 - Emit crawlable, language-specific HTML metadata and structured data at build
   time.
 - Fail the build on missing or structurally inconsistent translations.
+- Lead with the approved promise, "어제의 반복이, 오늘의 스킬로.", and explain
+  how reusable instructions and scripted deterministic work can reduce the
+  amount of repeated LLM processing.
 - Preserve the current visual system, responsive behavior, theme control,
   Korean-aware line breaking, and official GitHub mark.
 
@@ -47,8 +50,159 @@ client-side JavaScript.
 - No URL persistence for search text, category filters, or selected skills.
 - No user-authored translation editor, remote translation service, or runtime
   translation download.
-- No redesign of the catalog, theme control, page sections, or overall visual
-  hierarchy.
+- No guarantee of a fixed token, cost, or latency reduction. Prompt-cache
+  eligibility and savings depend on the model, stable-prefix length, cache
+  lifetime, and request structure.
+- No redesign of the catalog or theme control and no framework or styling-stack
+  migration. The landing-page change is limited to copy, the benefits layout,
+  and the supporting workflow argument.
+
+## Landing Message and Conversion Contract
+
+### Layout and page outline
+
+Use layout A, a classic hero followed by product sections, because the existing
+product-window preview makes the catalog understandable above the fold. Retain
+the current section order and upgrade the argument inside it:
+
+1. hero with one primary action and the product preview;
+2. asymmetric efficiency benefits;
+3. large word-by-word tagline reveal;
+4. three-step role-separation workflow;
+5. searchable skill catalog;
+6. one skill shared by Claude Code and Codex;
+7. FAQ with cache and scripting objections answered;
+8. installation card and final call to action.
+
+The hero has one primary conversion action, scrolling to the catalog. The
+existing install button is removed from above the fold so it does not compete
+with exploration before the visitor understands the offer. Installation
+remains the final action after the argument and catalog.
+
+### Hero
+
+The Korean hero copy is fixed:
+
+```text
+어제의 반복이,
+오늘의 스킬로.
+
+Claude Code와 Codex에서 되풀이하던 소프트웨어 작업을 검증 가능한 20개의
+워크플로로 바꿨습니다. 반복 지침은 캐시하기 좋은 형태로 재사용하고, 결과가
+정해진 단계는 스크립트에 맡겨 LLM이 필요한 판단에 집중하게 합니다.
+```
+
+The primary action is `20개 스킬 살펴보기`. The adjacent proof line uses only
+repository facts: `20 packaged skills · 6 categories · Claude Code + Codex ·
+MIT`. No fabricated savings percentage or performance claim appears.
+
+The four headline translations carry the same idea naturally rather than
+matching Korean word for word:
+
+| Locale | Headline |
+|---|---|
+| KO | `어제의 반복이, 오늘의 스킬로.` |
+| EN | `Yesterday’s repetition becomes today’s skill.` |
+| JP | `昨日の繰り返しを、今日のスキルへ。` |
+| CN | `把昨天的重复，变成今天的技能。` |
+
+Every locale provides a native-language subheadline with the same three facts:
+twenty verified workflows, reusable cache-friendly instructions, and scripted
+steps that let the LLM focus on judgment. `cache-friendly` is phrased as a
+structural advantage, never a guaranteed cache hit.
+
+### Efficiency benefits
+
+Replace the generic three-equal-card outcome grid with an asymmetric section:
+the claim and factual counts occupy the left column, while three vertically
+stacked explanations occupy the wider right column. On narrow screens the
+content becomes one reading-order column.
+
+The Korean benefit contract is:
+
+1. **같은 지침을 다시 만들지 않습니다.** 실행 순서와 예시, 안전 규칙을
+   안정된 `SKILL.md`로 유지합니다. 반복 요청에서 동일한 앞부분이 유지되므로
+   지원되는 모델의 프롬프트 캐시를 활용하기 좋은 구조가 됩니다.
+2. **정해진 일은 스크립트가 처리합니다.** 파일 탐색, 형식 검사, 데이터
+   동기화처럼 결과가 명확한 단계는 스크립트로 실행합니다. 모델이 같은 절차를
+   매번 다시 추론하지 않게 해 LLM 사용 범위를 줄입니다.
+3. **LLM은 판단에 집중합니다.** 요구사항 해석, 코드 검토, 위험 판단처럼
+   문맥이 필요한 부분에 모델을 사용하고, 실행 순서와 완료 조건은 스킬이
+   고정합니다.
+
+The copy distinguishes two mechanisms. Stable reusable instruction prefixes
+are more compatible with prompt caching; deterministic scripts reduce the work
+that needs model judgment in the first place. It does not claim that saving a
+`SKILL.md` automatically enables an API cache.
+
+### Tagline reveal
+
+Keep the existing word-by-word reveal and use the exact user-approved Korean
+copy:
+
+```text
+좋은 프롬프트는 한 번 쓰고 사라집니다.
+하지만 스킬로 만들면 기본기가 됩니다.
+```
+
+Each translation preserves the contrast between an ephemeral prompt and a
+reusable skill. The reveal remains at least two lines, uses meaningful line
+breaks, and honors reduced motion.
+
+### How it works
+
+Refocus the existing three-step window from a generic request lifecycle to the
+division of responsibilities:
+
+1. **반복을 포착합니다.** 자주 되풀이하는 요청과 산출물을 찾습니다.
+2. **기준을 고정합니다.** 실행 순서, 안전 규칙과 완료 조건을 스킬에
+   남깁니다.
+3. **역할을 나눕니다.** 판단은 LLM이 맡고, 결과가 정해진 단계는 스크립트가
+   실행합니다.
+
+The existing product chrome and verified status row stay in place so the
+section demonstrates a real workflow rather than becoming another prose block.
+
+### FAQ and claim boundaries
+
+Add two visible FAQ entries, sourced from the same locale data as FAQ JSON-LD:
+
+**스킬을 쓰면 토큰이 항상 줄어드나요?**
+
+> 항상 보장되지는 않습니다. 프롬프트 캐시는 사용하는 모델과 지침 길이,
+> 동일한 앞부분의 유지 여부에 따라 달라집니다. 다만 스킬은 반복 지침을
+> 안정된 형태로 재사용하고, 스크립트로 처리할 단계를 분리해 불필요한 LLM
+> 작업을 줄이도록 설계됩니다.
+
+**어떤 작업을 스크립트로 처리하나요?**
+
+> 입력과 결과를 규칙으로 확인할 수 있는 작업입니다. 파일 검색, 형식 검사,
+> 카탈로그 동기화와 테스트 실행은 스크립트에 맡기고, 해석과 검토가 필요한
+> 작업은 LLM이 담당합니다.
+
+These boundaries reflect the official platform behavior: OpenAI documents
+discounted cached input for repeated common prompt prefixes, and Anthropic
+documents that cache hits require reusable, identical prefix content. The site
+may describe the design as cache-friendly, but it may not promise a hit or a
+specific saving. References:
+
+- <https://openai.com/index/api-prompt-caching/>
+- <https://platform.claude.com/docs/en/build-with-claude/prompt-caching>
+
+### SEO and social copy
+
+The Korean document and social title becomes
+`chann/skills - 어제의 반복이, 오늘의 스킬로`. The Korean description is:
+
+```text
+Claude Code와 Codex의 반복 작업을 재사용 가능한 스킬로 바꾸세요. 캐시
+친화적인 지침과 스크립트 실행으로 LLM이 필요한 판단에 집중합니다.
+```
+
+English, Japanese, and Simplified Chinese use native equivalents rather than
+the Korean text. All four social cards use the locale headline while retaining
+the current `chann/skills` composition. The page remains indexed because it is
+an evergreen open-source catalog, not a time-bound campaign.
 
 ## Locale and Route Contract
 
@@ -271,7 +425,11 @@ Extend the website build pipeline with a multilingual verifier that checks:
    alternate links;
 5. the output contains `index.html`, `en/index.html`, `jp/index.html`,
    `cn/index.html`, and `404.html`;
-6. the existing catalog, branding, and text-wrapping verifiers remain green.
+6. every locale supplies the hero, three efficiency benefits, tagline reveal,
+   three workflow steps, and both claim-boundary FAQ entries;
+7. Korean keeps the exact approved hero and tagline wording, and the hero has
+   exactly one primary conversion action;
+8. the existing catalog, branding, and text-wrapping verifiers remain green.
 
 Run:
 
@@ -292,6 +450,10 @@ Exercise all four direct URLs in a production-equivalent preview:
 - language switching from the page top and from each supported section hash;
 - catalog state reset across a language change;
 - localized query matches plus canonical selector/title search;
+- one primary hero action, the asymmetric benefits layout, exact Korean hero
+  and tagline copy, and natural localized equivalents in all four languages;
+- cache and scripting explanations that preserve the approved claim boundaries
+  and appear in both visible FAQ and JSON-LD;
 - copy feedback, empty state, FAQ, theme control, GitHub link, and 404 copy;
 - light and dark themes at 320px, 390px, and 1440px;
 - zero horizontal document overflow and no browser console errors;
@@ -316,6 +478,15 @@ After the implementation checkpoint is pushed and GitHub Pages completes:
 
 - `/skills/` always renders Korean and never redirects based on browser or
   stored language.
+- The Korean hero reads `어제의 반복이, 오늘의 스킬로.` and exposes only the
+  `20개 스킬 살펴보기` primary action above the fold.
+- The benefits explain reusable cache-friendly instructions, deterministic
+  scripted steps, and LLM judgment as distinct mechanisms without promising a
+  fixed saving.
+- The Korean tagline reads `좋은 프롬프트는 한 번 쓰고 사라집니다. 하지만
+  스킬로 만들면 기본기가 됩니다.` and retains its word-by-word reveal.
+- The workflow teaches capture, fixed criteria, and script/LLM role separation,
+  and the two new FAQ entries state the cache and scripting boundaries.
 - `/skills/en/`, `/skills/jp/`, and `/skills/cn/` are directly loadable static
   pages in English, Japanese, and Simplified Chinese.
 - All visible product copy, all twenty skill descriptions/use cases/results,
