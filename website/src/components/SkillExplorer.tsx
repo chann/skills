@@ -72,7 +72,9 @@ export function SkillExplorer() {
                 <strong>{categoryMeta[category].label}</strong>
                 <code>{count}</code>
               </span>
-              <p>{categoryMeta[category].description}</p>
+              <span className="category-card__desc">
+                {categoryMeta[category].description}
+              </span>
             </button>
           );
         })}

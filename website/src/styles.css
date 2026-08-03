@@ -867,8 +867,7 @@ code {
   font-size: 11px;
 }
 
-.category-card p {
-  margin: 0;
+.category-card__desc {
   font-size: 13px;
 }
 
