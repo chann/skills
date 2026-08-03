@@ -9,23 +9,21 @@
     <style>
       :root {
         color-scheme: dark;
-        --canvas: #080908;
-        --ink: #f4f5f1;
-        --ink-soft: #a7aaa4;
-        --ink-muted: #898d85;
-        --line-strong: #373b35;
+        --canvas: #000000;
+        --ink: #f7f8ff;
+        --ink-soft: #b4bad0;
+        --ink-muted: #8f97ad;
         --accent: #0044ff;
-        --accent-text: #6f93ff;
+        --accent-text: #85a2ff;
         --accent-ink: #ffffff;
       }
       @media (prefers-color-scheme: light) {
         :root {
           color-scheme: light;
-          --canvas: #f7f6f3;
-          --ink: #171816;
-          --ink-soft: #5f625c;
-          --ink-muted: #686b65;
-          --line-strong: #c9c8c1;
+          --canvas: #f5f7fc;
+          --ink: #111827;
+          --ink-soft: #515b70;
+          --ink-muted: #626c82;
           --accent: #0044ff;
           --accent-text: #0044ff;
           --accent-ink: #ffffff;
@@ -100,14 +98,15 @@
         outline-offset: 3px;
       }
       .word {
-        margin: 0 0 -0.1em;
-        color: transparent;
+        height: 0.72em;
+        margin: 0;
+        overflow: hidden;
+        color: var(--accent);
         font-size: clamp(9rem, 24vw, 22rem);
         font-weight: 730;
         letter-spacing: -0.06em;
-        line-height: 1;
+        line-height: 0.84;
         text-align: center;
-        -webkit-text-stroke: 1px var(--line-strong);
         user-select: none;
       }
     </style>

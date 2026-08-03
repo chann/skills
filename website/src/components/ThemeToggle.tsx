@@ -25,7 +25,7 @@ export function ThemeToggle() {
       const isDark = theme === "dark" || (theme === "system" && media.matches);
       document
         .querySelector('meta[name="theme-color"]')
-        ?.setAttribute("content", isDark ? "#080908" : "#f7f6f3");
+        ?.setAttribute("content", isDark ? "#000000" : "#f5f7fc");
     };
 
     syncThemeColor();
