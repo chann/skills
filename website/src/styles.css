@@ -7,6 +7,7 @@
   --ink: #f4f5f1;
   --ink-soft: #a7aaa4;
   --ink-muted: #898d85;
+  --ink-fade: #9a9d96;
   --line: #252824;
   --line-strong: #373b35;
   --accent: #bdebc7;
@@ -30,6 +31,7 @@
   --ink: #171816;
   --ink-soft: #5f625c;
   --ink-muted: #686b65;
+  --ink-fade: #62655e;
   --line: #deddd7;
   --line-strong: #c9c8c1;
   --accent: #2f6d42;
@@ -49,6 +51,7 @@
     --ink: #171816;
     --ink-soft: #5f625c;
     --ink-muted: #686b65;
+    --ink-fade: #62655e;
     --line: #deddd7;
     --line-strong: #c9c8c1;
     --accent: #2f6d42;
@@ -308,6 +311,11 @@ code {
   letter-spacing: -0.065em;
   line-height: 0.98;
   text-wrap: balance;
+  background: linear-gradient(90deg, var(--ink) 12%, var(--ink-fade) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .hero h1 span {
