@@ -1,3 +1,4 @@
+import { CaretDown } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { formatMessage } from "../i18n/content";
 import { localeHref, localeRegistry } from "../i18n/locales";
@@ -47,8 +48,13 @@ export function LanguageSwitcher({ locale, labels }: LanguageSwitcherProps) {
         aria-label={formatMessage(labels.trigger, { language: current.label })}
         onClick={() => setOpen((value) => !value)}
       >
-        <span>{current.code}</span>
-        <span aria-hidden="true">⌄</span>
+        <span className="language-switcher__code">{current.code}</span>
+        <CaretDown
+          className="language-switcher__caret"
+          size={12}
+          weight="bold"
+          aria-hidden="true"
+        />
       </button>
       {open ? (
         <nav
