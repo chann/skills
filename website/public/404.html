@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-locale="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -44,6 +44,10 @@
         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
         line-height: 1.6;
         word-break: keep-all;
+      }
+      html[data-locale="jp"] body,
+      html[data-locale="cn"] body {
+        overflow-wrap: anywhere;
       }
       main {
         display: flex;
@@ -99,6 +103,34 @@
         outline: 3px solid var(--accent);
         outline-offset: 3px;
       }
+      .locale-nav {
+        margin-top: 22px;
+      }
+      .locale-nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 14px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .locale-nav a {
+        color: var(--ink-muted);
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .locale-nav a[aria-current="page"] {
+        color: var(--accent-text);
+        font-weight: 700;
+      }
+      .locale-nav a:hover {
+        color: var(--ink);
+      }
+      .locale-nav a:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
       .word {
         height: 0.72em;
         margin: 0;
@@ -116,10 +148,74 @@
   <body>
     <main>
       <span class="kicker">chann/skills · 404</span>
-      <h1>페이지가 없습니다.</h1>
-      <p>주소가 바뀌었거나 잘못 입력됐습니다. 스킬 카탈로그는 홈에 있습니다.</p>
-      <a class="button" href="/skills/">홈으로 돌아가기</a>
+      <h1 data-i18n="heading">페이지가 없습니다.</h1>
+      <p data-i18n="description">주소가 바뀌었거나 잘못 입력됐습니다. 스킬 카탈로그는 홈에 있습니다.</p>
+      <a class="button" href="/skills/" data-i18n="home">홈으로 돌아가기</a>
+      <nav class="locale-nav" aria-label="언어별 홈" data-i18n-aria="navigation">
+        <ul>
+          <li><a href="/skills/" hreflang="ko" data-locale-link="ko">한국어 (KO)</a></li>
+          <li><a href="/skills/en/" hreflang="en" data-locale-link="en">English (EN)</a></li>
+          <li><a href="/skills/jp/" hreflang="ja" data-locale-link="jp">日本語 (JP)</a></li>
+          <li><a href="/skills/cn/" hreflang="zh-CN" data-locale-link="cn">简体中文 (CN)</a></li>
+        </ul>
+      </nav>
     </main>
     <div class="word" aria-hidden="true">404</div>
+    <script>
+      const dictionaries = {
+        ko: {
+          lang: "ko",
+          title: "페이지를 찾을 수 없습니다 - chann/skills",
+          heading: "페이지를 찾을 수 없습니다",
+          description: "요청한 페이지가 없거나 이동되었습니다.",
+          home: "홈으로 돌아가기",
+          navigation: "언어별 홈",
+        },
+        en: {
+          lang: "en",
+          title: "Page not found - chann/skills",
+          heading: "Page not found",
+          description: "The page you requested does not exist or has moved.",
+          home: "Return home",
+          navigation: "Localized home pages",
+        },
+        jp: {
+          lang: "ja",
+          title: "ページが見つかりません - chann/skills",
+          heading: "ページが見つかりません",
+          description: "指定されたページは存在しないか、移動しました。",
+          home: "ホームへ戻る",
+          navigation: "言語別ホーム",
+        },
+        cn: {
+          lang: "zh-CN",
+          title: "找不到页面 - chann/skills",
+          heading: "找不到页面",
+          description: "你请求的页面不存在或已移动。",
+          home: "返回首页",
+          navigation: "各语言首页",
+        },
+      };
+      const routes = {
+        ko: "/skills/",
+        en: "/skills/en/",
+        jp: "/skills/jp/",
+        cn: "/skills/cn/",
+      };
+      const locale = location.pathname.split("/").filter(Boolean)[1];
+      const active = ["en", "jp", "cn"].includes(locale) ? locale : "ko";
+      const dictionary = dictionaries[active];
+      document.documentElement.lang = dictionary.lang;
+      document.documentElement.dataset.locale = active;
+      document.title = dictionary.title;
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.textContent = dictionary[element.dataset.i18n];
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+        element.setAttribute("aria-label", dictionary[element.dataset.i18nAria]);
+      });
+      document.querySelector("a.button").setAttribute("href", routes[active]);
+      document.querySelector(`[data-locale-link="${active}"]`).setAttribute("aria-current", "page");
+    </script>
   </body>
 </html>

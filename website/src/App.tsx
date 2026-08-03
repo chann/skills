@@ -10,6 +10,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { CopyButton } from "./components/CopyButton";
 import { GitHubMark } from "./components/GitHubMark";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
 import { TaglineReveal } from "./components/TaglineReveal";
@@ -142,7 +143,7 @@ export function App({ locale }: AppProps) {
             <span>{repositoryName}</span>
           </a>
 
-          <nav aria-label={content.nav.label}>
+          <nav className="main-navigation" aria-label={content.nav.label}>
             {navItems.map((item) => (
               <a
                 key={item.id}
@@ -155,6 +156,7 @@ export function App({ locale }: AppProps) {
           </nav>
 
           <div className="header-actions">
+            <LanguageSwitcher locale={locale} labels={content.language} />
             <ThemeToggle content={content.theme} />
             <a
               className="icon-link"

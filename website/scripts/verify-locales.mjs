@@ -98,4 +98,38 @@ for (const locale of requiredLocales) {
   }
 }
 
+const switcherSource = await readFile(
+  path.join(root, "src", "components", "LanguageSwitcher.tsx"),
+  "utf8",
+);
+for (const snippet of [
+  "aria-expanded",
+  "aria-controls",
+  "aria-current",
+  'event.key !== "Escape"',
+  "triggerRef.current?.focus()",
+  "localeHref(targetLocale, hash)",
+]) {
+  if (!switcherSource.includes(snippet)) {
+    throw new Error(`Language switcher is missing ${snippet}.`);
+  }
+}
+
+const localeSource = await readFile(path.join(root, "src", "i18n", "locales.ts"), "utf8");
+for (const label of ["한국어 (KO)", "English (EN)", "日本語 (JP)", "简体中文 (CN)"]) {
+  if (!localeSource.includes(label)) throw new Error(`Locale registry is missing ${label}.`);
+}
+
+const notFoundSource = await readFile(path.join(root, "public", "404.html"), "utf8");
+for (const locale of requiredLocales) {
+  if (!notFoundSource.includes(`${locale}: {`)) {
+    throw new Error(`404 page is missing the ${locale} dictionary.`);
+  }
+}
+for (const forbidden of ["location.replace", "location.assign", "location.href ="]) {
+  if (notFoundSource.includes(forbidden)) {
+    throw new Error(`404 page must not redirect with ${forbidden}.`);
+  }
+}
+
 console.log(`Localized content verified for ${requiredLocales.join(", ")}.`);

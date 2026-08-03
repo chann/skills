@@ -202,7 +202,7 @@
     "title": "主题：{theme}"
   },
   "language": {
-    "trigger": "选择语言",
+    "trigger": "当前语言：{language}。选择语言",
     "navigation": "语言"
   },
   "accessibility": {

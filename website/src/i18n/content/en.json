@@ -202,7 +202,7 @@
     "title": "Theme: {theme}"
   },
   "language": {
-    "trigger": "Choose language",
+    "trigger": "Current language: {language}. Choose language",
     "navigation": "Languages"
   },
   "accessibility": {

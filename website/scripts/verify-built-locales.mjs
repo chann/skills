@@ -56,4 +56,19 @@ for (const [locale, descriptor] of Object.entries(locales)) {
   }
 }
 
+const notFound = await readFile(path.join(dist, "404.html"), "utf8");
+for (const snippet of [
+  '<html lang="ko" data-locale="ko">',
+  'href="/skills/" hreflang="ko"',
+  'href="/skills/en/" hreflang="en"',
+  'href="/skills/jp/" hreflang="ja"',
+  'href="/skills/cn/" hreflang="zh-CN"',
+  'const active = ["en", "jp", "cn"].includes(locale) ? locale : "ko";',
+]) {
+  if (!notFound.includes(snippet)) throw new Error(`404 output is missing ${snippet}`);
+}
+for (const forbidden of ["location.replace", "location.assign", "location.href ="]) {
+  if (notFound.includes(forbidden)) throw new Error(`404 output redirects with ${forbidden}`);
+}
+
 console.log("Built locale pages verified for ko, en, jp, cn.");
