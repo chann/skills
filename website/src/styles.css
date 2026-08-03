@@ -101,7 +101,7 @@ button {
 }
 
 code {
-  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+  font-family: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
 }
 
@@ -368,7 +368,7 @@ code {
 .hero__meta {
   margin: 14px 0 0;
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 12px;
 }
 
@@ -456,7 +456,7 @@ code {
   justify-content: space-between;
   padding: 0 12px 14px;
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -530,7 +530,7 @@ code {
   display: inline-block;
   margin: 0 0 18px;
   color: var(--accent);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.13em;
@@ -584,7 +584,7 @@ code {
   gap: 10px 20px;
   margin-top: 18px;
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
 }
 
@@ -731,7 +731,7 @@ code {
 .tagline-stats dt {
   order: 2;
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -779,7 +779,7 @@ code {
   align-items: center;
   justify-content: space-between;
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -816,7 +816,7 @@ code {
 
 .workflow-window__status span {
   color: var(--accent);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-weight: 600;
 }
 
@@ -968,7 +968,7 @@ code {
 
 .filters button span {
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 10px;
 }
 
@@ -985,7 +985,7 @@ code {
 .explorer__count {
   margin: 0;
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
   white-space: nowrap;
 }
@@ -1048,7 +1048,7 @@ code {
 
 .skill-row__category {
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 10px;
   text-transform: uppercase;
 }
@@ -1072,7 +1072,7 @@ code {
 
 .skill-detail__package {
   color: var(--accent);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -1112,7 +1112,7 @@ code {
 .example-command > span,
 .platform-node span {
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1303,7 +1303,7 @@ code {
 
 .platform-contract > span {
   color: var(--accent);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1424,7 +1424,7 @@ code {
   border-radius: 999px;
   background: var(--accent);
   color: var(--accent-ink);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1456,7 +1456,7 @@ code {
 
 .install-command > span {
   color: var(--accent);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
 }
 
 .install-command > code {
@@ -1499,7 +1499,7 @@ code {
 
 .install-actions > span {
   color: var(--ink-muted);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
   font-size: 11px;
 }
 
