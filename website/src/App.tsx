@@ -8,6 +8,7 @@ import {
   ShieldCheck,
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
+import { useEffect, useState } from "react";
 import { CopyButton } from "./components/CopyButton";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
@@ -177,8 +178,37 @@ function ProductPreview() {
   );
 }
 
+const navItems = [
+  { id: "why", label: "소개" },
+  { id: "explore", label: "스킬 찾기" },
+  { id: "faq", label: "FAQ" },
+  { id: "install", label: "설치" },
+];
+
 export function App() {
   const reduceMotion = useReducedMotion();
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sections = navItems
+      .map((item) => document.getElementById(item.id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const leaving = entries
+          .filter((entry) => !entry.isIntersecting)
+          .map((entry) => entry.target.id);
+        const entering = entries.find((entry) => entry.isIntersecting)?.target.id;
+        setActiveSection((current) =>
+          entering ?? (current && leaving.includes(current) ? null : current),
+        );
+      },
+      { rootMargin: "-40% 0px -55% 0px" },
+    );
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <>
@@ -194,10 +224,15 @@ export function App() {
           </a>
 
           <nav aria-label="주요 메뉴">
-            <a href="#why">소개</a>
-            <a href="#explore">스킬 찾기</a>
-            <a href="#faq">FAQ</a>
-            <a href="#install">설치</a>
+            {navItems.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                aria-current={activeSection === item.id ? "true" : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
           <div className="header-actions">

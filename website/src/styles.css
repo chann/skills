@@ -264,6 +264,11 @@ code {
   transition: color 160ms var(--ease-out), background 160ms var(--ease-out);
 }
 
+.site-header nav a[aria-current="true"] {
+  background: var(--surface-raised);
+  color: var(--ink);
+}
+
 .header-actions {
   display: flex;
   justify-self: end;
