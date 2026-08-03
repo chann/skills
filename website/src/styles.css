@@ -685,6 +685,65 @@ code {
   font-size: 12px;
 }
 
+.tagline {
+  background: var(--canvas);
+}
+
+.tagline__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tagline__text {
+  margin: 0;
+  font-size: clamp(2.25rem, 4.8vw, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 1.12;
+}
+
+.tagline__line {
+  display: block;
+}
+
+.tagline__word {
+  display: inline-block;
+}
+
+.tagline-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px 64px;
+  margin: 64px 0 0;
+}
+
+.tagline-stats div {
+  display: grid;
+  gap: 8px;
+}
+
+.tagline-stats dt {
+  order: 2;
+  color: var(--ink-muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tagline-stats dd {
+  margin: 0;
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
 .workflow {
   background: var(--canvas);
 }
@@ -1629,6 +1688,15 @@ code {
 
   .outcome {
     min-height: 0;
+  }
+
+  .tagline__text {
+    font-size: clamp(1.9rem, 8.4vw, 2.5rem);
+  }
+
+  .tagline-stats {
+    gap: 24px 40px;
+    margin-top: 48px;
   }
 
   .workflow-window,

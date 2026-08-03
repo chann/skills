@@ -10,8 +10,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { CopyButton } from "./components/CopyButton";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
+import { TaglineReveal } from "./components/TaglineReveal";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { skills } from "./data/skills";
+import { categoryOrder, skills } from "./data/skills";
 
 const installCommand =
   "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
@@ -249,6 +250,37 @@ export function App() {
                 </Reveal>
               );
             })}
+          </div>
+        </section>
+
+        <section className="tagline section" aria-labelledby="tagline-title">
+          <div className="tagline__inner">
+            <Reveal>
+              <span className="section-label">Repeatable by design</span>
+            </Reveal>
+            <TaglineReveal
+              id="tagline-title"
+              lines={[
+                "좋은 프롬프트는 한 번 쓰고 사라집니다.",
+                "좋은 스킬은 팀의 기본기가 됩니다.",
+              ]}
+            />
+            <Reveal delay={0.05}>
+              <dl className="tagline-stats">
+                <div>
+                  <dt>Packaged skills</dt>
+                  <dd>{skills.length}</dd>
+                </div>
+                <div>
+                  <dt>Categories</dt>
+                  <dd>{categoryOrder.length}</dd>
+                </div>
+                <div>
+                  <dt>Platforms</dt>
+                  <dd>2</dd>
+                </div>
+              </dl>
+            </Reveal>
           </div>
         </section>
 
