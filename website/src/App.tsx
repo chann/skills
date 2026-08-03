@@ -233,7 +233,7 @@ export function App() {
               <span>이름 있는 스킬로.</span>
             </h1>
             <p className="hero__lede">
-              Claude Code와 Codex를 위한 검증된 에이전트 워크플로.
+              Claude Code와 Codex를 위한 {skills.length}개 에이전트 워크플로.
               <br />
               리뷰부터 Git 정리까지, 필요한 순간 바로 호출하세요.
             </p>
@@ -448,21 +448,26 @@ export function App() {
             </div>
             <ul className="install-notes" aria-label="설치 결과">
               <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {skills.length}개 스킬</li>
-              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> 전역 symlink</li>
+              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> 되돌릴 수 있는 전역 symlink</li>
               <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> Claude Code + Codex</li>
             </ul>
           </Reveal>
 
           <Reveal className="install-actions" delay={0.08}>
-            <a
-              className="button button--primary"
-              href="https://github.com/chann/skills"
-              target="_blank"
-              rel="noreferrer"
-            >
-              GitHub에서 보기
-              <ArrowRight size={17} weight="bold" aria-hidden="true" />
-            </a>
+            <div className="install-actions__buttons">
+              <a className="button button--primary" href="#explore">
+                {skills.length}개 스킬 탐색
+                <ArrowRight size={17} weight="bold" aria-hidden="true" />
+              </a>
+              <a
+                className="button button--quiet"
+                href="https://github.com/chann/skills"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub에서 보기
+              </a>
+            </div>
             <span>MIT License · open source</span>
           </Reveal>
         </section>

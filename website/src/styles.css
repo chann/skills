@@ -1497,6 +1497,14 @@ code {
   margin-top: 40px;
 }
 
+.install-actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .install-actions > span {
   color: var(--ink-muted);
   font-family: "Geist Mono Variable", ui-monospace, monospace;
