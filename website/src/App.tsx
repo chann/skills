@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   CheckCircle,
-  GithubLogo,
   GitPullRequest,
   NotePencil,
   Plus,
@@ -10,6 +9,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { CopyButton } from "./components/CopyButton";
+import { GitHubMark } from "./components/GitHubMark";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
 import { TaglineReveal } from "./components/TaglineReveal";
@@ -235,7 +235,7 @@ export function App() {
               rel="noreferrer"
               aria-label="GitHub에서 보기"
             >
-              <GithubLogo size={18} weight="fill" aria-hidden="true" />
+              <GitHubMark size={18} />
             </a>
           </div>
         </div>

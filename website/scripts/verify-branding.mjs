@@ -5,6 +5,10 @@ import { fileURLToPath } from "node:url";
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sources = {
   app: await readFile(path.join(websiteRoot, "src", "App.tsx"), "utf8"),
+  githubMark: await readFile(
+    path.join(websiteRoot, "src", "components", "GitHubMark.tsx"),
+    "utf8",
+  ),
   metadata: await readFile(path.join(websiteRoot, "index.html"), "utf8"),
   notFound: await readFile(path.join(websiteRoot, "public", "404.html"), "utf8"),
 };
@@ -15,6 +19,12 @@ const required = {
     "<span>{repositoryName} / workspace</span>",
     '<p className="hero__brand">{repositoryName}</p>',
     'repositoryName.split("")',
+    "<GitHubMark size={18} />",
+  ],
+  githubMark: [
+    'viewBox="0 0 24 24"',
+    'fill="currentColor"',
+    "M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256",
   ],
   metadata: [
     '<meta property="og:site_name" content="chann/skills" />',
@@ -34,6 +44,10 @@ for (const [surface, snippets] of Object.entries(required)) {
       throw new Error(`Missing chann/skills branding in ${surface}: ${snippet}`);
     }
   }
+}
+
+if (sources.app.includes("GithubLogo")) {
+  throw new Error("Phosphor GithubLogo must not replace the official GitHub Mark.");
 }
 
 const repeatedAppBranding = {
