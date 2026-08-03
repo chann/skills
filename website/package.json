@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run verify:catalog && tsc -b && vite build",
+    "build": "npm run verify:catalog && npm run verify:text-wrapping && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
-    "verify:catalog": "node scripts/verify-catalog.mjs"
+    "verify:catalog": "node scripts/verify-catalog.mjs",
+    "verify:text-wrapping": "node scripts/verify-text-wrapping.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
