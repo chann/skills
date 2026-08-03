@@ -436,7 +436,23 @@ export function App() {
             </a>
           </div>
         </div>
-        <div className="site-footer__word" aria-hidden="true" />
+        <div className="site-footer__word" aria-hidden="true">
+          {"skills".split("").map((letter, index) => (
+            <motion.span
+              key={index}
+              initial={reduceMotion ? false : { y: "0.42em", opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.8,
+                delay: reduceMotion ? 0 : index * 0.055,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              {letter}
+            </motion.span>
+          ))}
+        </div>
       </footer>
     </>
   );
