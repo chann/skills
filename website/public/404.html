@@ -14,7 +14,9 @@
         --ink-soft: #a7aaa4;
         --ink-muted: #898d85;
         --line-strong: #373b35;
-        --accent: #bdebc7;
+        --accent: #0044ff;
+        --accent-text: #6f93ff;
+        --accent-ink: #ffffff;
       }
       @media (prefers-color-scheme: light) {
         :root {
@@ -24,7 +26,9 @@
           --ink-soft: #5f625c;
           --ink-muted: #686b65;
           --line-strong: #c9c8c1;
-          --accent: #2f6d42;
+          --accent: #0044ff;
+          --accent-text: #0044ff;
+          --accent-ink: #ffffff;
         }
       }
       * {
@@ -51,7 +55,7 @@
         text-align: center;
       }
       .kicker {
-        color: var(--accent);
+        color: var(--accent-text);
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 12px;
         font-weight: 600;
@@ -78,10 +82,15 @@
         margin-top: 32px;
         padding: 8px 24px;
         border-radius: 10px;
-        background: var(--ink);
-        color: var(--canvas);
+        background: var(--accent);
+        color: var(--accent-ink);
         font-weight: 690;
         text-decoration: none;
+        transition: filter 160ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      a.button:hover {
+        filter: brightness(1.12);
       }
       a.button:active {
         transform: translateY(1px);

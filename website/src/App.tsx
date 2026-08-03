@@ -18,6 +18,7 @@ import { categoryOrder, skills } from "./data/skills";
 
 const installCommand =
   "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
+const updateCommand = "npx skills update chann/skills";
 
 const outcomes = [
   {
@@ -35,9 +36,9 @@ const outcomes = [
     icon: NotePencil,
   },
   {
-    title: "증명 가능한 실행",
+    title: "끝까지 확인하는 실행",
     description:
-      "테스트, 명시적 스테이징, push parity를 실행 계약 안에 함께 넣습니다.",
+      "테스트부터 명시적 스테이징, 원격 저장소 반영 확인까지 한 흐름으로 끝냅니다.",
     selector: "$git-commit-push-realtime",
     icon: GitPullRequest,
   },
@@ -52,14 +53,14 @@ const workflowSteps = [
   },
   {
     number: "02",
-    label: "Contract",
-    title: "스킬이 계약을 읽습니다",
-    description: "범위, 안전 규칙, 검증 방법과 결과 형식을 불러옵니다.",
+    label: "Guidance",
+    title: "스킬이 작업 기준을 읽습니다",
+    description: "범위, 안전 규칙, 확인 방법과 결과 형식을 불러옵니다.",
   },
   {
     number: "03",
-    label: "Proof",
-    title: "결과로 증명합니다",
+    label: "Check",
+    title: "결과를 확인합니다",
     description: "보고서, 테스트, 커밋과 원격 상태를 확인합니다.",
   },
 ];
@@ -75,15 +76,15 @@ const faqs = [
   },
   {
     q: "어떤 에이전트에서 쓸 수 있나요?",
-    a: "Claude Code와 Codex를 기본 지원합니다. 같은 SKILL.md를 Codex는 $이름, Claude Code는 /이름으로 호출합니다. installer는 Gemini CLI, GitHub Copilot CLI 같은 다른 에이전트 대상도 지원합니다.",
+    a: "Claude Code와 Codex를 기본 지원합니다. 같은 SKILL.md를 Codex는 $이름, Claude Code는 /이름으로 호출합니다. 설치 도구는 Gemini CLI, GitHub Copilot CLI 같은 다른 에이전트도 지원합니다.",
   },
   {
     q: "설치하면 내 컴퓨터에 무엇이 생기나요?",
-    a: "npx skills add가 저장소를 받아 각 에이전트의 스킬 폴더에 symlink를 만듭니다. 원본은 한 곳에 유지되고, 링크만 지우면 흔적 없이 제거됩니다.",
+    a: "npx skills add가 저장소를 내려받고 각 에이전트가 같은 원본을 읽도록 연결합니다. 원본은 한 곳에 유지되며, 연결만 지우면 깔끔하게 제거됩니다.",
   },
   {
     q: "스킬이 마음대로 커밋하거나 푸시하지 않나요?",
-    a: "각 스킬은 안전 규칙을 계약으로 명시합니다. 예를 들어 git 스킬은 명시적 스테이징만 사용하고 force push를 금지하며, 푸시가 거부되면 멈추고 보고합니다.",
+    a: "각 스킬에는 안전 규칙이 분명히 적혀 있습니다. 예를 들어 git 스킬은 명시적 스테이징만 사용하고 force push를 금지하며, 푸시가 거부되면 멈추고 보고합니다.",
   },
   {
     q: "일부 스킬만 설치할 수 있나요?",
@@ -91,7 +92,7 @@ const faqs = [
   },
   {
     q: "업데이트는 어떻게 하나요?",
-    a: "설치 명령을 다시 실행하면 최신 버전을 받아옵니다. symlink 모드라서 원본 한 곳만 갱신되고 모든 에이전트에 함께 반영됩니다.",
+    a: `${updateCommand} 명령을 실행하면 설치된 스킬을 최신 버전으로 업데이트합니다.`,
   },
   {
     q: "비용이나 라이선스 제한이 있나요?",
@@ -157,7 +158,7 @@ function ProductPreview() {
             <p className="product-kicker">DECISION REVIEW</p>
             <h2>계획의 모든 선택을<br />끝까지 검토합니다.</h2>
             <p className="product-editor__lede">
-              전제부터 leaf decision까지 추적하고, 확인된 근거와 남은 위험을
+              전제부터 마지막 선택지까지 추적하고, 확인된 근거와 남은 위험을
               분리해 보여줍니다.
             </p>
 
@@ -334,7 +335,7 @@ export function App() {
               id="tagline-title"
               lines={[
                 "좋은 프롬프트는 한 번 쓰고 사라집니다.",
-                "좋은 스킬은 팀의 기본기가 됩니다.",
+                "하지만 좋은 스킬은 기본기가 됩니다.",
               ]}
             />
             <Reveal delay={0.05}>
@@ -359,8 +360,8 @@ export function App() {
         <section className="workflow section" id="usage" aria-labelledby="workflow-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">How it works</span>
-            <h2 id="workflow-title">요청부터 증명까지,<br />세 단계.</h2>
-            <p>목표를 말하면 스킬이 반복 가능한 실행 계약을 적용합니다.</p>
+            <h2 id="workflow-title">요청부터 결과 확인까지,<br />세 단계.</h2>
+            <p>목표를 말하면 스킬이 정해 둔 순서와 안전 규칙에 따라 작업합니다.</p>
           </Reveal>
 
           <Reveal className="workflow-window" delay={0.06}>
@@ -387,7 +388,7 @@ export function App() {
             </ol>
             <div className="workflow-window__status">
               <span><i /> completed</span>
-              <code>report.html · tests passed · 0 0 parity</code>
+              <code>report.html · tests passed · push confirmed</code>
             </div>
           </Reveal>
         </section>
@@ -396,7 +397,7 @@ export function App() {
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">Skill catalog</span>
             <h2 id="explore-title">필요한 워크플로를<br />한 자리에서.</h2>
-            <p>작업이나 산출물로 검색하고, 플랫폼에 맞는 selector를 바로 복사하세요.</p>
+            <p>작업이나 산출물로 검색하고, 플랫폼에 맞는 호출 명령을 바로 복사하세요.</p>
           </Reveal>
           <Reveal delay={0.06}>
             <SkillExplorer />
@@ -405,10 +406,10 @@ export function App() {
 
         <section className="platforms section" aria-labelledby="platforms-title">
           <Reveal className="platforms__copy">
-            <span className="section-label">One contract, two selectors</span>
-            <h2 id="platforms-title">같은 스킬,<br />다른 prefix.</h2>
+            <span className="section-label">One skill, two commands</span>
+            <h2 id="platforms-title">같은 스킬,<br />호출 방법만 다르게.</h2>
             <p>
-              하나의 SKILL.md를 두 플랫폼이 같은 규칙으로 읽습니다. Codex는
+              하나의 SKILL.md를 두 도구가 같은 방식으로 읽습니다. Codex는
               <code>$</code>, Claude Code는 <code>/</code>를 이름 앞에 붙입니다.
             </p>
           </Reveal>
@@ -419,7 +420,7 @@ export function App() {
               <code>SKILL.md</code>
             </div>
             <div className="platform-contract">
-              <span>Shared contract</span>
+              <span>Shared instructions</span>
               <strong>diff-summary</strong>
               <p>원본 근거에서 이중언어 보고서와 이해도 확인까지.</p>
             </div>
@@ -465,7 +466,7 @@ export function App() {
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">Get skills</span>
             <h2 id="install-title">{skills.length}개 스킬을,<br />한 명령으로.</h2>
-            <p>공식 installer가 Claude Code와 Codex에 전역 symlink로 연결합니다.</p>
+            <p>공식 설치 도구가 Claude Code와 Codex에서 바로 쓸 수 있게 연결합니다.</p>
           </Reveal>
 
           <Reveal className="install-card" delay={0.06}>
@@ -483,7 +484,7 @@ export function App() {
             </div>
             <ul className="install-notes" aria-label="설치 결과">
               <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {skills.length}개 스킬</li>
-              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> 되돌릴 수 있는 전역 symlink</li>
+              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> 언제든 제거할 수 있는 전역 연결</li>
               <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> Claude Code + Codex</li>
             </ul>
           </Reveal>

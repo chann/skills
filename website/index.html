@@ -76,7 +76,7 @@
             "name": "어떤 에이전트에서 쓸 수 있나요?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Claude Code와 Codex를 기본 지원합니다. 같은 SKILL.md를 Codex는 $이름, Claude Code는 /이름으로 호출합니다. installer는 Gemini CLI, GitHub Copilot CLI 같은 다른 에이전트 대상도 지원합니다."
+              "text": "Claude Code와 Codex를 기본 지원합니다. 같은 SKILL.md를 Codex는 $이름, Claude Code는 /이름으로 호출합니다. 설치 도구는 Gemini CLI, GitHub Copilot CLI 같은 다른 에이전트도 지원합니다."
             }
           },
           {
@@ -84,7 +84,7 @@
             "name": "설치하면 내 컴퓨터에 무엇이 생기나요?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "npx skills add가 저장소를 받아 각 에이전트의 스킬 폴더에 symlink를 만듭니다. 원본은 한 곳에 유지되고, 링크만 지우면 흔적 없이 제거됩니다."
+              "text": "npx skills add가 저장소를 내려받고 각 에이전트가 같은 원본을 읽도록 연결합니다. 원본은 한 곳에 유지되며, 연결만 지우면 깔끔하게 제거됩니다."
             }
           },
           {
@@ -92,7 +92,7 @@
             "name": "스킬이 마음대로 커밋하거나 푸시하지 않나요?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "각 스킬은 안전 규칙을 계약으로 명시합니다. 예를 들어 git 스킬은 명시적 스테이징만 사용하고 force push를 금지하며, 푸시가 거부되면 멈추고 보고합니다."
+              "text": "각 스킬에는 안전 규칙이 분명히 적혀 있습니다. 예를 들어 git 스킬은 명시적 스테이징만 사용하고 force push를 금지하며, 푸시가 거부되면 멈추고 보고합니다."
             }
           },
           {
@@ -108,7 +108,7 @@
             "name": "업데이트는 어떻게 하나요?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "설치 명령을 다시 실행하면 최신 버전을 받아옵니다. symlink 모드라서 원본 한 곳만 갱신되고 모든 에이전트에 함께 반영됩니다."
+              "text": "npx skills update chann/skills 명령을 실행하면 설치된 스킬을 최신 버전으로 업데이트합니다."
             }
           },
           {
