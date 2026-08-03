@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -53,6 +54,15 @@ for (const [locale, descriptor] of Object.entries(locales)) {
   }
   if (/__LOCALE_|__LANG_|__META_/.test(html)) {
     throw new Error(`${locale}: generator sentinel remains in output.`);
+  }
+
+  const [sourceCard, builtCard] = await Promise.all([
+    readFile(path.join(root, "public", "assets", descriptor.socialCard)),
+    readFile(path.join(dist, "assets", descriptor.socialCard)),
+  ]);
+  const digest = (buffer) => createHash("sha256").update(buffer).digest("hex");
+  if (digest(sourceCard) !== digest(builtCard)) {
+    throw new Error(`${locale}: built social card differs from its source asset.`);
   }
 }
 
