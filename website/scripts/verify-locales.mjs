@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const requiredLocales = ["ko"];
+const requiredLocales = ["ko", "en", "jp", "cn"];
 const requiredSkillFields = ["summary", "whenToUse", "result"];
 
 function keyPaths(value, prefix = "") {
@@ -39,10 +39,32 @@ if (canonicalIds.length !== 20 || new Set(canonicalIds).size !== 20) {
   throw new Error(`Expected 20 unique canonical skill IDs, found ${canonicalIds.length}.`);
 }
 
+const localizedContent = Object.fromEntries(
+  await Promise.all(
+    requiredLocales.map(async (locale) => {
+      const file = path.join(root, "src", "i18n", "content", `${locale}.json`);
+      return [locale, JSON.parse(await readFile(file, "utf8"))];
+    }),
+  ),
+);
+const koreanKeyPaths = keyPaths(localizedContent.ko).sort();
+
 for (const locale of requiredLocales) {
-  const file = path.join(root, "src", "i18n", "content", `${locale}.json`);
-  const content = JSON.parse(await readFile(file, "utf8"));
+  const content = localizedContent[locale];
   requireNonEmptyStrings(content, locale);
+
+  const localeKeyPaths = keyPaths(content).sort();
+  if (JSON.stringify(localeKeyPaths) !== JSON.stringify(koreanKeyPaths)) {
+    const missing = koreanKeyPaths.filter((key) => !localeKeyPaths.includes(key));
+    const extra = localeKeyPaths.filter((key) => !koreanKeyPaths.includes(key));
+    throw new Error(
+      `${locale}: locale keys differ (missing: ${missing.join(", ") || "none"}; extra: ${extra.join(", ") || "none"}).`,
+    );
+  }
+
+  if (locale !== "ko" && /[가-힣]/.test(JSON.stringify(content))) {
+    throw new Error(`${locale}: untranslated Korean text remains.`);
+  }
 
   const localizedIds = Object.keys(content.skills ?? {});
   const missing = canonicalIds.filter((id) => !localizedIds.includes(id));

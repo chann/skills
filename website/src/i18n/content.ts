@@ -1,10 +1,16 @@
 import { skillDefinitions, type SkillDefinition, type SkillId } from "../data/skills";
+import cnJson from "./content/cn.json";
+import enJson from "./content/en.json";
+import jpJson from "./content/jp.json";
 import koJson from "./content/ko.json";
 import type { Locale, SiteContent, SkillCopy } from "./types";
 
 const ko: SiteContent = koJson;
+const en: SiteContent = enJson;
+const jp: SiteContent = jpJson;
+const cn: SiteContent = cnJson;
 
-export const contentByLocale = { ko } as const;
+export const contentByLocale = { ko, en, jp, cn } as const;
 
 export type LocalizedSkill = SkillDefinition & SkillCopy;
 

@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "chann/skills - 把昨天的重复，变成今天的技能。",
+    "description": "把Claude Code和Codex中的重复工作变成可复用的技能。用缓存友好的指令和脚本化步骤，让LLM专注于真正需要判断的部分。",
+    "socialAlt": "chann/skills网站中的智能体工作流运行界面"
+  },
+  "nav": {
+    "label": "主导航",
+    "items": {
+      "why": "为什么用技能",
+      "explore": "查找技能",
+      "faq": "常见问题",
+      "install": "安装"
+    }
+  },
+  "hero": {
+    "brand": "chann/skills",
+    "headline": ["把昨天的重复，", "变成今天的技能。"],
+    "lede": "我们把Claude Code和Codex中反复进行的软件工作，整理成{count}个可验证的工作流。稳定的指令以更适合提示词缓存的形式复用，结果明确的步骤交给脚本执行，让LLM专注于真正需要判断的部分。",
+    "primaryAction": "查看{count}个技能",
+    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+  },
+  "benefits": {
+    "label": "为什么用技能",
+    "title": ["重复得越多，", "解释得越少，判断得越清楚。"],
+    "description": "技能复用稳定的指令，把确定性的流程交给脚本，让模型专注于需要上下文的判断。",
+    "items": [
+      {
+        "label": "可复用的指令",
+        "title": "不再重复编写相同的指令。",
+        "description": "把执行顺序、示例和安全规则保存在稳定的SKILL.md中。重复请求可以保留相同的前缀，因此更容易利用支持模型的提示词缓存。"
+      },
+      {
+        "label": "确定性脚本",
+        "title": "让脚本处理确定性的工作。",
+        "description": "文件查找、格式检查、数据同步等结果明确的步骤由脚本执行。模型无需每次重新推理同一流程，从而减少交给LLM的工作。"
+      },
+      {
+        "label": "聚焦判断",
+        "title": "让LLM专注于判断。",
+        "description": "需求理解、代码审查、风险判断等需要上下文的部分交给模型；执行顺序和完成条件由技能固定。"
+      }
+    ]
+  },
+  "tagline": {
+    "label": "为复用而设计",
+    "lines": [
+      "好的提示词，用过一次就会消失。",
+      "但把它做成技能，就会成为工作的基本功。"
+    ],
+    "stats": {
+      "skills": "已打包技能",
+      "categories": "分类",
+      "platforms": "平台"
+    }
+  },
+  "workflow": {
+    "label": "工作方式",
+    "title": ["只需三步，", "把重复工作变成技能。"],
+    "description": "发现重复，固定标准，再划分LLM与脚本的职责。",
+    "steps": [
+      {
+        "number": "01",
+        "label": "发现",
+        "title": "捕捉重复",
+        "description": "找出经常重复提出的请求和反复交付的成果。"
+      },
+      {
+        "number": "02",
+        "label": "定义",
+        "title": "固定标准",
+        "description": "把执行顺序、安全规则和完成条件写入技能。"
+      },
+      {
+        "number": "03",
+        "label": "分工",
+        "title": "划分职责",
+        "description": "LLM负责判断，结果明确的步骤由脚本执行。"
+      }
+    ],
+    "status": "已完成",
+    "artifact": "report.html · tests passed · push confirmed"
+  },
+  "catalog": {
+    "label": "技能目录",
+    "title": ["所需的工作流，", "都在这里。"],
+    "description": "按任务或成果搜索，然后直接复制适合当前平台的调用命令。",
+    "categoryNavigation": "按分类浏览",
+    "searchLabel": "搜索技能",
+    "searchPlaceholder": "搜索任务、成果或技能名称",
+    "clearSearch": "清除搜索",
+    "filtersLabel": "技能分类",
+    "all": "全部",
+    "count": "{count}个技能",
+    "skillList": "技能列表",
+    "whenToUse": "适用场景",
+    "result": "产出",
+    "exampleRequest": "请求示例",
+    "exampleCopy": "复制示例",
+    "aliases": "别名",
+    "emptyTitle": "没有匹配的技能",
+    "emptyDescription": "请缩短搜索词，或选择其他分类。",
+    "showAll": "查看全部技能"
+  },
+  "platforms": {
+    "label": "一个技能，两种命令",
+    "title": ["同一个技能，", "只需换一种调用方式。"],
+    "descriptionBeforeCodex": "两个工具读取同一份SKILL.md。在Codex中，名称前加",
+    "descriptionBetweenSelectors": "；在Claude Code中，名称前加",
+    "descriptionAfterClaude": "。",
+    "sharedInstructions": "共享指令",
+    "contractDescription": "从原始证据，到双语报告和理解度检查。"
+  },
+  "faq": {
+    "label": "常见问题",
+    "title": "常见问题",
+    "description": "安装前需要了解的事项。",
+    "items": [
+      {
+        "question": "技能到底是什么？",
+        "answer": "技能是一份SKILL.md文档，用来定义智能体应如何完成特定任务。它包含执行顺序、安全规则和输出格式，让相同请求始终按同一标准处理。"
+      },
+      {
+        "question": "它和普通提示词有什么不同？",
+        "answer": "提示词会随着对话结束而消失，技能则会作为文件保留下来。你可以对它进行版本管理、与团队共享，并通过名称反复调用，例如$review-me。"
+      },
+      {
+        "question": "使用技能一定能减少token用量吗？",
+        "answer": "不一定，也不保证节省。提示词缓存取决于模型、指令长度以及相同前缀是否得以保留。技能通过复用稳定指令并分离可脚本化步骤，来减少不必要的LLM工作。"
+      },
+      {
+        "question": "哪些工作适合交给脚本？",
+        "answer": "输入和结果可以按规则验证的工作。文件查找、格式检查、目录同步和测试执行交给脚本；解释与审查交给LLM。"
+      },
+      {
+        "question": "哪些智能体可以使用这些技能？",
+        "answer": "默认支持Claude Code和Codex。同一份SKILL.md在Codex中通过$name调用，在Claude Code中通过/name调用。安装工具也支持Gemini CLI、GitHub Copilot CLI等其他智能体。"
+      },
+      {
+        "question": "安装后，电脑里会新增什么？",
+        "answer": "npx skills add会下载仓库，并让每个智能体链接到同一份源文件。源文件只保留一份，删除链接即可干净卸载。"
+      },
+      {
+        "question": "技能会自行commit或push吗？",
+        "answer": "每个技能都会明确写出安全规则。例如，Git技能只允许显式暂存，禁止force push；如果push被拒绝，就会停止并报告。"
+      },
+      {
+        "question": "可以只安装部分技能吗？",
+        "answer": "可以。把安装命令中的--skill '*'替换为所需的技能名称即可。每个技能的README也提供单独安装方式。"
+      },
+      {
+        "question": "如何更新已安装的技能？",
+        "answer": "运行npx skills update chann/skills，即可把已安装的技能更新到最新版本。"
+      },
+      {
+        "question": "是否收费或有许可证限制？",
+        "answer": "没有。整个仓库都以MIT License开源。你可以fork仓库，并按团队规则调整这些技能。"
+      }
+    ]
+  },
+  "install": {
+    "label": "获取技能",
+    "title": ["一个命令，", "安装{count}个技能。"],
+    "description": "官方安装工具会完成连接，让这些技能可直接用于Claude Code和Codex。",
+    "cardTitle": "同时安装到两个平台",
+    "cardDescription": "保留一份源仓库，并将它链接到每个智能体的技能目录。",
+    "copyLabel": "复制命令",
+    "resultsLabel": "安装结果",
+    "skillResult": "{count}个技能",
+    "linkResult": "可随时删除的全局链接",
+    "platformsResult": "Claude Code + Codex",
+    "exploreAction": "查看{count}个技能",
+    "githubAction": "在GitHub中查看",
+    "license": "MIT License · open source"
+  },
+  "footer": {
+    "tagline": "面向软件工程的实用智能体工作流。",
+    "license": "MIT License",
+    "github": "GitHub"
+  },
+  "productPreview": {
+    "sidebarLabel": "技能示例列表",
+    "packagedSkills": "已打包技能",
+    "workspace": "工作区",
+    "ready": "就绪",
+    "tab": "SKILL.md",
+    "kicker": "决策审查",
+    "title": ["把计划中的每个选择", "一直审查到最后。"],
+    "lede": "从前提追踪到最后一个选项，并把已确认的证据与剩余风险分开呈现。",
+    "proof": ["已追踪12项决策", "已发现3项风险", "报告已就绪"]
+  },
+  "copy": {
+    "idle": "复制",
+    "copied": "已复制",
+    "error": "复制失败"
+  },
+  "theme": {
+    "system": "跟随系统",
+    "light": "浅色",
+    "dark": "深色",
+    "change": "当前为{theme}主题。切换主题",
+    "title": "主题：{theme}"
+  },
+  "language": {
+    "trigger": "选择语言",
+    "navigation": "语言"
+  },
+  "accessibility": {
+    "skipToMain": "跳到主要内容",
+    "home": "{repository}首页",
+    "github": "在GitHub中查看",
+    "mainNavigation": "主导航",
+    "repositoryStats": "技能仓库统计",
+    "installResults": "安装结果"
+  },
+  "categories": {
+    "review": {
+      "label": "审查",
+      "description": "审查并解释计划与变更，找出缺陷。"
+    },
+    "docs": {
+      "label": "文档",
+      "description": "让项目文档与当前代码保持一致。"
+    },
+    "git": {
+      "label": "Git",
+      "description": "安全地commit、push、merge和清理。"
+    },
+    "handoff": {
+      "label": "交接",
+      "description": "为下一位开发者留下所需上下文。"
+    },
+    "automation": {
+      "label": "自动化",
+      "description": "通过可验证的里程碑推进大型任务。"
+    },
+    "report": {
+      "label": "报告",
+      "description": "把智能体工作记录整理成指定日期范围的报告。"
+    }
+  },
+  "skills": {
+    "review-me": {
+      "summary": "沿着决策树，审查计划和设计中的每个最终选项。",
+      "whenToUse": "在实现前，需要彻底明确模糊选项、边界以及失败与恢复条件时",
+      "result": "审查完成的决策树、每个选项的完成标准、验收示例和明确的暂缓清单"
+    },
+    "code-review": {
+      "summary": "从代码变更中找出缺陷与风险，并生成双语报告。",
+      "whenToUse": "在发布前审查PR、commit、branch或working tree时",
+      "result": "Markdown审查报告和独立运行的HTML审查报告"
+    },
+    "code-review-md": {
+      "summary": "不生成浏览器输出，只把代码审查保存为Markdown。",
+      "whenToUse": "需要把审查结果用于PR评论或文档流水线时",
+      "result": ".reviews/目录下的Markdown审查报告"
+    },
+    "diff-summary": {
+      "summary": "基于证据解释变更的目的、行为、结构和测试影响。",
+      "whenToUse": "需要快速理解代码为何发生变化时",
+      "result": "韩语和英语Markdown，以及交互式HTML摘要"
+    },
+    "diff-summary-md": {
+      "summary": "不生成HTML，只把同一份变更说明保存为Markdown。",
+      "whenToUse": "需要把变更摘要直接放入仓库文档或issue时",
+      "result": "结构清晰的韩语和英语Markdown"
+    },
+    "diff-summary-quiz": {
+      "summary": "为变更摘要加入用于检验理解程度的交互式测验。",
+      "whenToUse": "用于入职培训、审查学习或验证变更交接时",
+      "result": "双语摘要和带答案的测验"
+    },
+    "diff-viewer": {
+      "summary": "把当前Git diff渲染为易读的独立HTML页面。",
+      "whenToUse": "希望不做分析，直接在浏览器中查看原始patch时",
+      "result": "unified或split视图的HTML diff"
+    },
+    "gen-docs": {
+      "summary": "在保留现有表述的同时，创建或更新核心项目文档。",
+      "whenToUse": "README、架构或使用文档与代码不一致时",
+      "result": "README、README.ko、ARCHITECTURE和USAGE"
+    },
+    "git-commit": {
+      "summary": "把working tree中的变更拆分成逻辑清晰的Conventional Commit。",
+      "whenToUse": "需要把混合变更整理成可审查的commit时",
+      "result": "一个或多个显式暂存的commit"
+    },
+    "git-commit-push": {
+      "summary": "按逻辑单位commit，然后通过普通push发布到remote。",
+      "whenToUse": "需要一次性整理并发布已完成的变更时",
+      "result": "Conventional Commits和remote push"
+    },
+    "git-commit-push-realtime": {
+      "summary": "每完成一个已验证的结果，就立即commit并push。",
+      "whenToUse": "希望在remote上为较长的实现保留可审查checkpoint时",
+      "result": "已验证的checkpoint，以及每次都确认过的remote发布状态"
+    },
+    "git-commit-realtime": {
+      "summary": "为每个已验证结果创建local commit，把push留到之后。",
+      "whenToUse": "希望保留工作过程，但自行决定发布时间时",
+      "result": "不会触及remote的local checkpoint"
+    },
+    "git-commit-rewrite": {
+      "summary": "把最近的commit标题改写为Conventional Commit格式。",
+      "whenToUse": "需要统一已有commit message的质量和结构时",
+      "result": "经过安全检查的一致commit历史"
+    },
+    "git-merge-to-main": {
+      "summary": "把当前branch安全merge到main，并清理源branch。",
+      "whenToUse": "把feature branch集成到main时",
+      "result": "已验证的main merge和安全的branch删除"
+    },
+    "git-merge-to-dev": {
+      "summary": "把当前branch merge到dev或develop，并安全清理。",
+      "whenToUse": "把feature branch集成到开发branch时",
+      "result": "已验证的dev merge和安全的branch删除"
+    },
+    "git-branch-cleanup": {
+      "summary": "只安全删除已经merge到受保护branch的local branch。",
+      "whenToUse": "需要无风险地清理积累的local branch时",
+      "result": "仅清理可safe delete的已merge branch"
+    },
+    "gen-frontend-handoff": {
+      "summary": "把backend变更整理成frontend和client工作所需的上下文。",
+      "whenToUse": "把API变更交接给web、mobile或SDK开发者时",
+      "result": "包含API规范、界面状态、错误处理和验证方法的frontend交接文档"
+    },
+    "gen-backend-handoff": {
+      "summary": "把API和数据变更整理成server工作所需的交接文档。",
+      "whenToUse": "把backend实现或运维工作交接给其他开发者时",
+      "result": "包含API、DB、job和rollout的backend handoff"
+    },
+    "long-task": {
+      "summary": "通过多个milestone和验证cycle，把大型项目完整推进到底。",
+      "whenToUse": "委派需要数小时完成的自主end-to-end实现时",
+      "result": "贯穿规划、并行工作、审查和完成审计的一体化执行"
+    },
+    "work-summary": {
+      "summary": "从本地coding agent记录中生成指定日期范围的工作报告。",
+      "whenToUse": "汇总今天、本周、本月或其他时间段的工作与请求时",
+      "result": "简要或详细的Markdown工作报告，可按需保存到.work-summaries/"
+    }
+  },
+  "notFound": {
+    "title": "找不到页面",
+    "description": "你请求的页面不存在或已移动。",
+    "home": "返回首页",
+    "navigation": "各语言首页"
+  }
+}

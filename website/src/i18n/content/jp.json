@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "chann/skills - 昨日の繰り返しを、今日のスキルへ。",
+    "description": "Claude CodeとCodexの繰り返し作業を、再利用できるスキルへ。キャッシュしやすい指示とスクリプト実行で、LLMを必要な判断に集中させます。",
+    "socialAlt": "chann/skillsウェブサイトでエージェントワークフローを実行している画面"
+  },
+  "nav": {
+    "label": "メインナビゲーション",
+    "items": {
+      "why": "スキルの価値",
+      "explore": "スキルを探す",
+      "faq": "FAQ",
+      "install": "インストール"
+    }
+  },
+  "hero": {
+    "brand": "chann/skills",
+    "headline": ["昨日の繰り返しを、", "今日のスキルへ。"],
+    "lede": "Claude CodeとCodexで繰り返していたソフトウェア作業を、検証可能な{count}個のワークフローにしました。指示はキャッシュしやすい安定した形で再利用し、結果が決まっている手順はスクリプトに任せて、LLMを必要な判断に集中させます。",
+    "primaryAction": "{count}個のスキルを見る",
+    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+  },
+  "benefits": {
+    "label": "スキルを使う理由",
+    "title": ["繰り返すほど、", "説明は少なく、判断は明確に。"],
+    "description": "スキルは安定した指示を再利用し、決まった手順をスクリプトに任せることで、モデルを文脈が必要な判断に集中させます。",
+    "items": [
+      {
+        "label": "再利用できる指示",
+        "title": "同じ指示を作り直しません。",
+        "description": "実行順序、例、安全規則を安定したSKILL.mdとして維持します。繰り返し依頼でも同じ前半部分が保たれるため、対応モデルのプロンプトキャッシュを活用しやすい構造になります。"
+      },
+      {
+        "label": "決定的なスクリプト",
+        "title": "決まった作業はスクリプトに任せます。",
+        "description": "ファイル探索、形式チェック、データ同期など、結果が明確な手順はスクリプトで実行します。同じ手順をモデルが毎回推論し直す必要がなくなり、LLMに任せる作業を減らせます。"
+      },
+      {
+        "label": "判断に集中",
+        "title": "LLMは判断に集中します。",
+        "description": "要件の解釈、コードレビュー、リスク判断など、文脈が必要な部分にモデルを使います。実行順序と完了条件はスキルが固定します。"
+      }
+    ]
+  },
+  "tagline": {
+    "label": "繰り返せる設計",
+    "lines": [
+      "良いプロンプトは、一度使えば消えていきます。",
+      "でもスキルにすれば、仕事の土台になります。"
+    ],
+    "stats": {
+      "skills": "パッケージ済みスキル",
+      "categories": "カテゴリー",
+      "platforms": "プラットフォーム"
+    }
+  },
+  "workflow": {
+    "label": "仕組み",
+    "title": ["繰り返し作業をスキルにする、", "3つのステップ。"],
+    "description": "繰り返しを見つけ、基準を固定し、LLMとスクリプトの役割を分けます。",
+    "steps": [
+      {
+        "number": "01",
+        "label": "発見",
+        "title": "繰り返しを捉える",
+        "description": "何度も依頼している作業と成果物を見つけます。"
+      },
+      {
+        "number": "02",
+        "label": "定義",
+        "title": "基準を固定する",
+        "description": "実行順序、安全規則、完了条件をスキルに残します。"
+      },
+      {
+        "number": "03",
+        "label": "分担",
+        "title": "役割を分ける",
+        "description": "判断はLLMに任せ、結果が決まっている手順はスクリプトで実行します。"
+      }
+    ],
+    "status": "完了",
+    "artifact": "report.html · tests passed · push confirmed"
+  },
+  "catalog": {
+    "label": "スキルカタログ",
+    "title": ["必要なワークフローを、", "ひとつの場所で。"],
+    "description": "作業や成果物から検索し、利用するプラットフォームの呼び出しコマンドをすぐにコピーできます。",
+    "categoryNavigation": "カテゴリーから探す",
+    "searchLabel": "スキルを検索",
+    "searchPlaceholder": "作業、成果物、スキル名を検索",
+    "clearSearch": "検索をクリア",
+    "filtersLabel": "スキルカテゴリー",
+    "all": "すべて",
+    "count": "{count}個のスキル",
+    "skillList": "スキル一覧",
+    "whenToUse": "使う場面",
+    "result": "成果物",
+    "exampleRequest": "リクエスト例",
+    "exampleCopy": "例をコピー",
+    "aliases": "エイリアス",
+    "emptyTitle": "一致するスキルがありません",
+    "emptyDescription": "検索語を短くするか、別のカテゴリーを選んでください。",
+    "showAll": "すべてのスキルを表示"
+  },
+  "platforms": {
+    "label": "ひとつのスキル、2つのコマンド",
+    "title": ["同じスキルを、", "異なる呼び出し方で。"],
+    "descriptionBeforeCodex": "2つのツールが同じSKILL.mdを読みます。Codexでは名前の前に",
+    "descriptionBetweenSelectors": "を、Claude Codeでは",
+    "descriptionAfterClaude": "を付けます。",
+    "sharedInstructions": "共通の指示",
+    "contractDescription": "原典の根拠から、日英レポートと理解度確認まで。"
+  },
+  "faq": {
+    "label": "FAQ",
+    "title": "よくある質問",
+    "description": "インストール前に知っておきたいことをまとめました。",
+    "items": [
+      {
+        "question": "スキルとは何ですか？",
+        "answer": "エージェントが特定の作業をどう実行するか定義したSKILL.mdです。実行順序、安全規則、成果物の形式まで含むため、同じ依頼を同じ基準で処理できます。"
+      },
+      {
+        "question": "通常のプロンプトと何が違いますか？",
+        "answer": "プロンプトは会話が終わると消えますが、スキルはファイルとして残ります。バージョン管理やチーム共有ができ、$review-meのように名前で繰り返し呼び出せます。"
+      },
+      {
+        "question": "スキルを使えば、必ずトークンを減らせますか？",
+        "answer": "必ず減るとは限りません。削減は保証されません。プロンプトキャッシュはモデル、指示の長さ、同じ前半部分が維持されるかによって変わります。スキルは安定した指示を再利用し、スクリプト化できる手順を分けることで、不要なLLM作業を減らすよう設計されています。"
+      },
+      {
+        "question": "どの作業をスクリプトに任せますか？",
+        "answer": "入力と結果を規則で確認できる作業です。ファイル探索、形式チェック、カタログ同期、テスト実行はスクリプトに任せ、解釈やレビューはLLMが担当します。"
+      },
+      {
+        "question": "どのエージェントで使えますか？",
+        "answer": "Claude CodeとCodexを標準でサポートします。同じSKILL.mdをCodexは$name、Claude Codeは/nameで呼び出します。インストーラーはGemini CLIやGitHub Copilot CLIなどにも対応しています。"
+      },
+      {
+        "question": "インストールすると、PCに何が追加されますか？",
+        "answer": "npx skills addがリポジトリを取得し、各エージェントが同じ原本を読めるようリンクします。原本は1か所に保たれ、リンクを削除すればきれいにアンインストールできます。"
+      },
+      {
+        "question": "スキルが勝手にcommitやpushをしませんか？",
+        "answer": "各スキルには安全規則が明記されています。たとえばGitスキルは明示的なステージングだけを使い、force pushを禁止し、pushが拒否された場合は停止して報告します。"
+      },
+      {
+        "question": "一部のスキルだけをインストールできますか？",
+        "answer": "はい。インストールコマンドの--skill '*'を、必要なスキル名に置き換えてください。各スキルのREADMEにも個別のインストール方法があります。"
+      },
+      {
+        "question": "スキルを更新するには？",
+        "answer": "npx skills update chann/skillsを実行すると、インストール済みのスキルを最新バージョンに更新できます。"
+      },
+      {
+        "question": "料金やライセンス上の制限はありますか？",
+        "answer": "ありません。すべてMIT Licenseのオープンソースです。リポジトリをforkし、チームの規則に合わせて変更できます。"
+      }
+    ]
+  },
+  "install": {
+    "label": "スキルを入手",
+    "title": ["{count}個のスキルを、", "ひとつのコマンドで。"],
+    "description": "公式インストーラーが、Claude CodeとCodexですぐ使えるように接続します。",
+    "cardTitle": "2つのプラットフォームにインストール",
+    "cardDescription": "原本リポジトリを1か所に保ち、各エージェントのスキルフォルダーへリンクします。",
+    "copyLabel": "コマンドをコピー",
+    "resultsLabel": "インストール結果",
+    "skillResult": "{count}個のスキル",
+    "linkResult": "いつでも削除できるグローバルリンク",
+    "platformsResult": "Claude Code + Codex",
+    "exploreAction": "{count}個のスキルを見る",
+    "githubAction": "GitHubで見る",
+    "license": "MIT License · open source"
+  },
+  "footer": {
+    "tagline": "ソフトウェアエンジニアリングのための実用的なエージェントワークフロー。",
+    "license": "MIT License",
+    "github": "GitHub"
+  },
+  "productPreview": {
+    "sidebarLabel": "スキル例の一覧",
+    "packagedSkills": "パッケージ済みスキル",
+    "workspace": "ワークスペース",
+    "ready": "準備完了",
+    "tab": "SKILL.md",
+    "kicker": "意思決定レビュー",
+    "title": ["計画のすべての選択を", "最後までレビューします。"],
+    "lede": "前提から最後の選択肢まで追跡し、確認済みの根拠と残るリスクを分けて示します。",
+    "proof": ["12件の判断を追跡", "3件のリスクを発見", "レポート準備完了"]
+  },
+  "copy": {
+    "idle": "コピー",
+    "copied": "コピーしました",
+    "error": "コピーできませんでした"
+  },
+  "theme": {
+    "system": "システム",
+    "light": "ライト",
+    "dark": "ダーク",
+    "change": "現在は{theme}テーマです。テーマを変更",
+    "title": "テーマ：{theme}"
+  },
+  "language": {
+    "trigger": "言語を選択",
+    "navigation": "言語"
+  },
+  "accessibility": {
+    "skipToMain": "本文へスキップ",
+    "home": "{repository} ホーム",
+    "github": "GitHubで見る",
+    "mainNavigation": "メインナビゲーション",
+    "repositoryStats": "スキルリポジトリの統計",
+    "installResults": "インストール結果"
+  },
+  "categories": {
+    "review": {
+      "label": "レビュー",
+      "description": "計画と変更をレビューし、説明し、不具合を見つけます。"
+    },
+    "docs": {
+      "label": "ドキュメント",
+      "description": "プロジェクト文書を現在のコードに合わせます。"
+    },
+    "git": {
+      "label": "Git",
+      "description": "commit、push、merge、整理を安全に実行します。"
+    },
+    "handoff": {
+      "label": "引き継ぎ",
+      "description": "次の開発者に必要な文脈を残します。"
+    },
+    "automation": {
+      "label": "自動化",
+      "description": "大きな作業を検証可能なマイルストーンで進めます。"
+    },
+    "report": {
+      "label": "レポート",
+      "description": "エージェントの作業履歴を期間指定のレポートにします。"
+    }
+  },
+  "skills": {
+    "review-me": {
+      "summary": "意思決定ツリーをたどり、計画と設計の最後の選択肢までレビューします。",
+      "whenToUse": "実装前に、曖昧な選択、境界、失敗・復旧条件を最後まで確定したいとき",
+      "result": "レビュー済みの意思決定ツリー、選択肢ごとの完了条件、受け入れ例、明示的な保留一覧"
+    },
+    "code-review": {
+      "summary": "コード変更から不具合とリスクを見つけ、日英レポートを作成します。",
+      "whenToUse": "リリース前にPR、commit、branch、working treeをレビューするとき",
+      "result": "Markdownレビューと単体で動くHTMLレビュー"
+    },
+    "code-review-md": {
+      "summary": "ブラウザー出力を作らず、コードレビューをMarkdownだけで残します。",
+      "whenToUse": "PRコメントやドキュメントパイプラインに載せるレビューが必要なとき",
+      "result": ".reviews/配下のMarkdownレビュー"
+    },
+    "diff-summary": {
+      "summary": "変更の目的、動作、構造、テストへの影響を根拠とともに説明します。",
+      "whenToUse": "コードが変更された理由をすばやく理解したいとき",
+      "result": "韓国語と英語のMarkdown、および対話型HTMLサマリー"
+    },
+    "diff-summary-md": {
+      "summary": "同じ変更説明をHTMLなしのMarkdownだけで保存します。",
+      "whenToUse": "変更サマリーをリポジトリ文書やissueにそのまま貼りたいとき",
+      "result": "整理された韓国語と英語のMarkdown"
+    },
+    "diff-summary-quiz": {
+      "summary": "変更サマリーに理解度を確認する対話型クイズを追加します。",
+      "whenToUse": "オンボーディング、レビュー学習、変更の引き継ぎを確認するとき",
+      "result": "日英サマリーと解答付きクイズ"
+    },
+    "diff-viewer": {
+      "summary": "現在のGit diffを読みやすい単体HTMLとして表示します。",
+      "whenToUse": "分析せずに元のpatchをブラウザーで確認したいとき",
+      "result": "unifiedまたはsplit形式のHTML diff"
+    },
+    "gen-docs": {
+      "summary": "既存の文面を保ちながら、主要なプロジェクト文書を作成・更新します。",
+      "whenToUse": "README、architecture、usage文書がコードとずれたとき",
+      "result": "README、README.ko、ARCHITECTURE、USAGE"
+    },
+    "git-commit": {
+      "summary": "working treeの変更を論理的なConventional Commit単位に分けます。",
+      "whenToUse": "混在した変更をレビュー可能なcommitに整理するとき",
+      "result": "明示的にステージされた1件以上のcommit"
+    },
+    "git-commit-push": {
+      "summary": "論理単位でcommitし、通常のpushでremoteへ反映します。",
+      "whenToUse": "完了した変更を整理して一度に公開するとき",
+      "result": "Conventional Commitsとremoteへのpush"
+    },
+    "git-commit-push-realtime": {
+      "summary": "検証済みの結果が完成するたび、commitしてすぐにpushします。",
+      "whenToUse": "長い実装をremote上のレビュー可能なcheckpointとして残すとき",
+      "result": "検証済みcheckpointと、毎回確認されたremote反映状態"
+    },
+    "git-commit-realtime": {
+      "summary": "検証済みの結果ごとにlocal commitを作り、pushは後に残します。",
+      "whenToUse": "作業履歴を残しつつ、公開時点は自分で決めたいとき",
+      "result": "remoteに触れないlocal checkpoint"
+    },
+    "git-commit-rewrite": {
+      "summary": "最近のcommitタイトルをConventional Commit形式に書き直します。",
+      "whenToUse": "既存のcommit messageを一貫した形式に整えるとき",
+      "result": "安全確認を経た一貫性のあるcommit履歴"
+    },
+    "git-merge-to-main": {
+      "summary": "現在のbranchをmainへ安全にmergeし、元のbranchを整理します。",
+      "whenToUse": "feature branchをmainへ統合するとき",
+      "result": "検証済みのmain mergeと安全なbranch削除"
+    },
+    "git-merge-to-dev": {
+      "summary": "現在のbranchをdevまたはdevelopへmergeし、安全に整理します。",
+      "whenToUse": "feature branchを開発用branchへ統合するとき",
+      "result": "検証済みのdev mergeと安全なbranch削除"
+    },
+    "git-branch-cleanup": {
+      "summary": "保護branchへmerge済みのlocal branchだけを安全に削除します。",
+      "whenToUse": "増えたlocal branchをリスクなく整理するとき",
+      "result": "safe delete可能なmerge済みbranchだけの整理"
+    },
+    "gen-frontend-handoff": {
+      "summary": "backend変更をfrontendとclient作業に必要な文脈へ変換します。",
+      "whenToUse": "API変更をweb、mobile、SDK開発者へ引き継ぐとき",
+      "result": "API仕様、画面状態、エラー処理、検証方法をまとめたfrontend引き継ぎ文書"
+    },
+    "gen-backend-handoff": {
+      "summary": "APIとデータの変更をserver作業向けの引き継ぎ文書にまとめます。",
+      "whenToUse": "backend実装や運用作業を別の開発者へ引き継ぐとき",
+      "result": "API、DB、job、rolloutを含むbackend handoff"
+    },
+    "long-task": {
+      "summary": "大きなプロジェクトを複数のmilestoneと検証cycleで最後まで進めます。",
+      "whenToUse": "数時間にわたるend-to-end実装を自律的に任せるとき",
+      "result": "計画、並行作業、レビュー、完了監査をつないだ実行"
+    },
+    "work-summary": {
+      "summary": "ローカルのcoding agent履歴から期間指定の作業レポートを作ります。",
+      "whenToUse": "今日、今週、今月など、期間ごとの作業内容と依頼をまとめるとき",
+      "result": "要約または詳細なMarkdown作業レポート（必要に応じて.work-summaries/配下）"
+    }
+  },
+  "notFound": {
+    "title": "ページが見つかりません",
+    "description": "指定されたページは存在しないか、移動しました。",
+    "home": "ホームへ戻る",
+    "navigation": "言語別ホーム"
+  }
+}

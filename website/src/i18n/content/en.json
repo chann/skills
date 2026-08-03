@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "chann/skills - Yesterday’s repetition becomes today’s skill.",
+    "description": "Turn repetitive Claude Code and Codex work into reusable skills. Cache-friendly instructions and scripted steps keep the LLM focused on judgment.",
+    "socialAlt": "Agent workflow running on the chann/skills website"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "items": {
+      "why": "Why skills",
+      "explore": "Explore",
+      "faq": "FAQ",
+      "install": "Install"
+    }
+  },
+  "hero": {
+    "brand": "chann/skills",
+    "headline": ["Yesterday’s repetition becomes", "today’s skill."],
+    "lede": "We turned repetitive Claude Code and Codex software work into {count} verifiable workflows. Stable instructions are easier to reuse with prompt caching, while scripted steps leave the LLM free to focus on judgment.",
+    "primaryAction": "Explore {count} skills",
+    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+  },
+  "benefits": {
+    "label": "Why skills",
+    "title": ["Repeat the work,", "not the explanation."],
+    "description": "Skills reuse stable instructions and hand predictable procedures to scripts, so the model can focus on decisions that need context.",
+    "items": [
+      {
+        "label": "Reusable instructions",
+        "title": "Stop rebuilding the same instructions.",
+        "description": "Keep the sequence, examples, and safety rules in a stable SKILL.md. Repeated requests retain the same prefix, creating a structure that works well with prompt caching on supported models."
+      },
+      {
+        "label": "Deterministic scripts",
+        "title": "Let scripts handle predictable work.",
+        "description": "Run steps with clear outcomes—file discovery, format checks, and data synchronization—as scripts. The model no longer has to reason through the same procedure every time, reducing the work assigned to the LLM."
+      },
+      {
+        "label": "Focused judgment",
+        "title": "Keep the LLM focused on judgment.",
+        "description": "Use the model for requirements, code review, and risk decisions that need context. The skill keeps the execution order and completion criteria fixed."
+      }
+    ]
+  },
+  "tagline": {
+    "label": "Repeatable by design",
+    "lines": [
+      "A good prompt disappears after one use.",
+      "Turn it into a skill, and it becomes part of your foundation."
+    ],
+    "stats": {
+      "skills": "Packaged skills",
+      "categories": "Categories",
+      "platforms": "Platforms"
+    }
+  },
+  "workflow": {
+    "label": "How it works",
+    "title": ["Turn recurring work into a skill", "in three steps."],
+    "description": "Capture the repetition, define the standard, then divide the work between the LLM and scripts.",
+    "steps": [
+      {
+        "number": "01",
+        "label": "Capture",
+        "title": "Capture the repetition",
+        "description": "Find requests and deliverables you produce again and again."
+      },
+      {
+        "number": "02",
+        "label": "Define",
+        "title": "Define the standard",
+        "description": "Record the sequence, safety rules, and completion criteria in the skill."
+      },
+      {
+        "number": "03",
+        "label": "Separate",
+        "title": "Separate the roles",
+        "description": "Let the LLM make judgments while scripts execute steps with predictable outcomes."
+      }
+    ],
+    "status": "completed",
+    "artifact": "report.html · tests passed · push confirmed"
+  },
+  "catalog": {
+    "label": "Skill catalog",
+    "title": ["Every workflow you need,", "all in one place."],
+    "description": "Search by task or deliverable, then copy the command for your platform.",
+    "categoryNavigation": "Browse by category",
+    "searchLabel": "Search skills",
+    "searchPlaceholder": "Search tasks, deliverables, or skill names",
+    "clearSearch": "Clear search",
+    "filtersLabel": "Skill categories",
+    "all": "All",
+    "count": "{count} skills",
+    "skillList": "Skill list",
+    "whenToUse": "Use it when",
+    "result": "Result",
+    "exampleRequest": "Example request",
+    "exampleCopy": "Copy example",
+    "aliases": "Aliases",
+    "emptyTitle": "No matching skills",
+    "emptyDescription": "Try a shorter query or choose another category.",
+    "showAll": "Show all skills"
+  },
+  "platforms": {
+    "label": "One skill, two commands",
+    "title": ["The same skill,", "a different way to call it."],
+    "descriptionBeforeCodex": "Both tools read the same SKILL.md. Prefix the name with ",
+    "descriptionBetweenSelectors": " in Codex and ",
+    "descriptionAfterClaude": " in Claude Code.",
+    "sharedInstructions": "Shared instructions",
+    "contractDescription": "From source evidence to a bilingual report and a comprehension check."
+  },
+  "faq": {
+    "label": "FAQ",
+    "title": "Frequently asked questions",
+    "description": "What to know before you install.",
+    "items": [
+      {
+        "question": "What exactly is a skill?",
+        "answer": "A skill is a SKILL.md document that defines how an agent should perform a specific task. It includes the execution sequence, safety rules, and output format so repeated requests follow the same standard."
+      },
+      {
+        "question": "How is it different from a regular prompt?",
+        "answer": "A prompt disappears when the conversation ends, but a skill remains as a file. You can version it, share it with a team, and call it again by name, such as $review-me."
+      },
+      {
+        "question": "Do skills always reduce token usage?",
+        "answer": "No—savings are not guaranteed. Prompt caching depends on the model, instruction length, and whether the same prefix is preserved. Skills are designed to reuse stable instructions and separate scripted steps, which can reduce unnecessary LLM work."
+      },
+      {
+        "question": "Which tasks should scripts handle?",
+        "answer": "Tasks whose inputs and outputs can be checked by rules. Scripts handle file discovery, format validation, catalog synchronization, and test execution; the LLM handles interpretation and review."
+      },
+      {
+        "question": "Which agents can use these skills?",
+        "answer": "Claude Code and Codex are supported by default. Codex calls the same SKILL.md with $name, while Claude Code uses /name. The installer also supports agents such as Gemini CLI and GitHub Copilot CLI."
+      },
+      {
+        "question": "What gets added to my computer?",
+        "answer": "npx skills add downloads the repository and links each agent to the same source. The source stays in one place, and removing the links cleanly uninstalls the skills."
+      },
+      {
+        "question": "Can a skill commit or push on its own?",
+        "answer": "Each skill states its safety rules explicitly. For example, Git skills use explicit staging only, forbid force pushes, and stop to report when a push is rejected."
+      },
+      {
+        "question": "Can I install only selected skills?",
+        "answer": "Yes. Replace --skill '*' in the install command with the name of the skill you want. Each skill README also includes its individual install command."
+      },
+      {
+        "question": "How do I update installed skills?",
+        "answer": "Run npx skills update chann/skills to update installed skills to the latest version."
+      },
+      {
+        "question": "Are there fees or license restrictions?",
+        "answer": "No. The entire repository is open source under the MIT License. You can fork it and adapt the skills to your team’s rules."
+      }
+    ]
+  },
+  "install": {
+    "label": "Get skills",
+    "title": ["Install {count} skills", "with one command."],
+    "description": "The official installer connects the skills so they are ready in Claude Code and Codex.",
+    "cardTitle": "Install for both platforms",
+    "cardDescription": "Keep one source repository and link it into each agent’s skill directory.",
+    "copyLabel": "Copy command",
+    "resultsLabel": "Installation results",
+    "skillResult": "{count} skills",
+    "linkResult": "Removable global links",
+    "platformsResult": "Claude Code + Codex",
+    "exploreAction": "Explore {count} skills",
+    "githubAction": "View on GitHub",
+    "license": "MIT License · open source"
+  },
+  "footer": {
+    "tagline": "Practical agent workflows for software engineering.",
+    "license": "MIT License",
+    "github": "GitHub"
+  },
+  "productPreview": {
+    "sidebarLabel": "Example skill list",
+    "packagedSkills": "Packaged skills",
+    "workspace": "workspace",
+    "ready": "ready",
+    "tab": "SKILL.md",
+    "kicker": "DECISION REVIEW",
+    "title": ["Review every decision", "all the way to the last branch."],
+    "lede": "Trace assumptions through the final choice, then separate confirmed evidence from the risks that remain.",
+    "proof": ["12 decisions traced", "3 risks surfaced", "report ready"]
+  },
+  "copy": {
+    "idle": "Copy",
+    "copied": "Copied",
+    "error": "Copy failed"
+  },
+  "theme": {
+    "system": "system",
+    "light": "light",
+    "dark": "dark",
+    "change": "Current theme: {theme}. Change theme",
+    "title": "Theme: {theme}"
+  },
+  "language": {
+    "trigger": "Choose language",
+    "navigation": "Languages"
+  },
+  "accessibility": {
+    "skipToMain": "Skip to main content",
+    "home": "{repository} home",
+    "github": "View on GitHub",
+    "mainNavigation": "Main navigation",
+    "repositoryStats": "Skill repository statistics",
+    "installResults": "Installation results"
+  },
+  "categories": {
+    "review": {
+      "label": "Review",
+      "description": "Review plans and changes, explain them, and find defects."
+    },
+    "docs": {
+      "label": "Docs",
+      "description": "Bring project documentation back in sync with the code."
+    },
+    "git": {
+      "label": "Git",
+      "description": "Commit, push, merge, and clean up safely."
+    },
+    "handoff": {
+      "label": "Handoff",
+      "description": "Leave the context the next developer needs."
+    },
+    "automation": {
+      "label": "Automation",
+      "description": "Run large projects through verifiable milestones."
+    },
+    "report": {
+      "label": "Report",
+      "description": "Turn agent history into reports for a date range."
+    }
+  },
+  "skills": {
+    "review-me": {
+      "summary": "Follow the decision tree to review every final choice in a plan or design.",
+      "whenToUse": "Before implementation, when ambiguous choices, boundaries, and failure or recovery conditions must be resolved",
+      "result": "A completed decision tree, completion criteria for each choice, acceptance examples, and an explicit deferral list"
+    },
+    "code-review": {
+      "summary": "Find defects and risks in code changes and produce a bilingual report.",
+      "whenToUse": "When reviewing a PR, commit, branch, or working tree before release",
+      "result": "A Markdown review and a standalone HTML review"
+    },
+    "code-review-md": {
+      "summary": "Save a code review as Markdown only, without browser output.",
+      "whenToUse": "When a review must be posted to a PR comment or documentation pipeline",
+      "result": "A Markdown review under .reviews/"
+    },
+    "diff-summary": {
+      "summary": "Explain a change’s purpose, behavior, structure, and test impact with evidence.",
+      "whenToUse": "When you need to understand quickly why code changed",
+      "result": "Korean and English Markdown plus an interactive HTML summary"
+    },
+    "diff-summary-md": {
+      "summary": "Save the same change explanation as Markdown only, without HTML.",
+      "whenToUse": "When a change summary needs to go directly into repository docs or an issue",
+      "result": "Structured Korean and English Markdown"
+    },
+    "diff-summary-quiz": {
+      "summary": "Add an interactive comprehension quiz to a change summary.",
+      "whenToUse": "For onboarding, review training, or validating a change handoff",
+      "result": "A bilingual summary and a quiz with answers"
+    },
+    "diff-viewer": {
+      "summary": "Render the current Git diff as a readable standalone HTML page.",
+      "whenToUse": "When you want to inspect the raw patch in a browser without analysis",
+      "result": "A unified or split-view HTML diff"
+    },
+    "gen-docs": {
+      "summary": "Create or update core project docs while preserving existing wording.",
+      "whenToUse": "When README, architecture, or usage docs have drifted from the code",
+      "result": "README, README.ko, ARCHITECTURE, and USAGE"
+    },
+    "git-commit": {
+      "summary": "Split working-tree changes into logical Conventional Commit units.",
+      "whenToUse": "When mixed changes need to become reviewable commits",
+      "result": "One or more explicitly staged commits"
+    },
+    "git-commit-push": {
+      "summary": "Create logical commits, then publish them with a normal push.",
+      "whenToUse": "When completed work should be organized and published in one pass",
+      "result": "Conventional Commits and a remote push"
+    },
+    "git-commit-push-realtime": {
+      "summary": "Commit and push each verified result as soon as it is complete.",
+      "whenToUse": "When a long implementation should leave reviewable checkpoints on the remote",
+      "result": "Verified checkpoints with remote publication confirmed every time"
+    },
+    "git-commit-realtime": {
+      "summary": "Create a local commit for each verified result and leave pushing for later.",
+      "whenToUse": "When the work history should be preserved but publication timing remains manual",
+      "result": "Local checkpoints that do not touch the remote"
+    },
+    "git-commit-rewrite": {
+      "summary": "Rewrite recent commit titles in Conventional Commit format.",
+      "whenToUse": "When existing commit messages need a consistent structure",
+      "result": "A consistent commit history after safety checks"
+    },
+    "git-merge-to-main": {
+      "summary": "Merge the current branch into main safely and clean up the source branch.",
+      "whenToUse": "When integrating a feature branch into main",
+      "result": "A verified main merge and safe branch deletion"
+    },
+    "git-merge-to-dev": {
+      "summary": "Merge the current branch into dev or develop and clean it up safely.",
+      "whenToUse": "When integrating a feature branch into the development branch",
+      "result": "A verified dev merge and safe branch deletion"
+    },
+    "git-branch-cleanup": {
+      "summary": "Safely delete only local branches already merged into a protected branch.",
+      "whenToUse": "When accumulated local branches need risk-free cleanup",
+      "result": "Cleanup limited to merged branches eligible for safe delete"
+    },
+    "gen-frontend-handoff": {
+      "summary": "Turn backend changes into the context needed for frontend and client work.",
+      "whenToUse": "When handing API changes to web, mobile, or SDK developers",
+      "result": "A frontend handoff covering the API contract, UI states, errors, and verification"
+    },
+    "gen-backend-handoff": {
+      "summary": "Document API and data changes for the server work that follows.",
+      "whenToUse": "When handing backend implementation or operations work to another developer",
+      "result": "A backend handoff covering APIs, databases, jobs, and rollout"
+    },
+    "long-task": {
+      "summary": "Run a large project end to end through milestones and verification cycles.",
+      "whenToUse": "When delegating an autonomous implementation that will take several hours",
+      "result": "A connected execution spanning planning, parallel work, review, and a completion audit"
+    },
+    "work-summary": {
+      "summary": "Create a date-range work report from local coding-agent history.",
+      "whenToUse": "When summarizing requests and work completed today, this week, this month, or another period",
+      "result": "A concise or detailed Markdown work report, optionally under .work-summaries/"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you requested does not exist or has moved.",
+    "home": "Return home",
+    "navigation": "Localized home pages"
+  }
+}
