@@ -4,6 +4,7 @@ import {
   GithubLogo,
   GitPullRequest,
   NotePencil,
+  Plus,
   ShieldCheck,
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
@@ -59,6 +60,41 @@ const workflowSteps = [
     label: "Proof",
     title: "결과로 증명합니다",
     description: "보고서, 테스트, 커밋과 원격 상태를 확인합니다.",
+  },
+];
+
+const faqs = [
+  {
+    q: "스킬이 정확히 뭔가요?",
+    a: "에이전트가 특정 작업을 어떻게 수행할지 정의한 SKILL.md 문서입니다. 실행 순서, 안전 규칙, 결과 형식까지 담고 있어 같은 요청이 항상 같은 기준으로 처리됩니다.",
+  },
+  {
+    q: "일반 프롬프트와 뭐가 다른가요?",
+    a: "프롬프트는 대화가 끝나면 사라지지만 스킬은 파일로 남습니다. 버전 관리되고, 팀과 공유되고, $review-me처럼 이름으로 다시 호출할 수 있습니다.",
+  },
+  {
+    q: "어떤 에이전트에서 쓸 수 있나요?",
+    a: "Claude Code와 Codex를 기본 지원합니다. 같은 SKILL.md를 Codex는 $이름, Claude Code는 /이름으로 호출합니다. installer는 Gemini CLI, GitHub Copilot CLI 같은 다른 에이전트 대상도 지원합니다.",
+  },
+  {
+    q: "설치하면 내 컴퓨터에 무엇이 생기나요?",
+    a: "npx skills add가 저장소를 받아 각 에이전트의 스킬 폴더에 symlink를 만듭니다. 원본은 한 곳에 유지되고, 링크만 지우면 흔적 없이 제거됩니다.",
+  },
+  {
+    q: "스킬이 마음대로 커밋하거나 푸시하지 않나요?",
+    a: "각 스킬은 안전 규칙을 계약으로 명시합니다. 예를 들어 git 스킬은 명시적 스테이징만 사용하고 force push를 금지하며, 푸시가 거부되면 멈추고 보고합니다.",
+  },
+  {
+    q: "일부 스킬만 설치할 수 있나요?",
+    a: "네. 설치 명령의 --skill '*' 자리에 원하는 스킬 이름만 지정하면 됩니다. 각 스킬의 README에 개별 설치 방법이 있습니다.",
+  },
+  {
+    q: "업데이트는 어떻게 하나요?",
+    a: "설치 명령을 다시 실행하면 최신 버전을 받아옵니다. symlink 모드라서 원본 한 곳만 갱신되고 모든 에이전트에 함께 반영됩니다.",
+  },
+  {
+    q: "비용이나 라이선스 제한이 있나요?",
+    a: "없습니다. 전체가 MIT 라이선스 오픈소스입니다. 저장소를 포크해서 팀 규칙에 맞게 고쳐 써도 됩니다.",
   },
 ];
 
@@ -160,6 +196,7 @@ export function App() {
           <nav aria-label="주요 메뉴">
             <a href="#why">소개</a>
             <a href="#explore">스킬 찾기</a>
+            <a href="#faq">FAQ</a>
             <a href="#install">설치</a>
           </nav>
 
@@ -367,6 +404,25 @@ export function App() {
                 <CopyButton value="/diff-summary" compact />
               </div>
             </div>
+          </Reveal>
+        </section>
+
+        <section className="faq section" id="faq" aria-labelledby="faq-title">
+          <Reveal className="section-heading section-heading--center">
+            <span className="section-label">FAQ</span>
+            <h2 id="faq-title">자주 묻는 질문</h2>
+            <p>설치 전에 확인할 것들을 모았습니다.</p>
+          </Reveal>
+          <Reveal className="faq-list" delay={0.06}>
+            {faqs.map((faq) => (
+              <details className="faq-item" key={faq.q}>
+                <summary>
+                  {faq.q}
+                  <Plus size={18} weight="bold" aria-hidden="true" />
+                </summary>
+                <p>{faq.a}</p>
+              </details>
+            ))}
           </Reveal>
         </section>
 
