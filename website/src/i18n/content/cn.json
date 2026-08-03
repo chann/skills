@@ -195,7 +195,6 @@
     "error": "复制失败"
   },
   "theme": {
-    "system": "跟随系统",
     "light": "浅色",
     "dark": "深色",
     "change": "当前为{theme}主题。切换主题",

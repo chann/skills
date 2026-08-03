@@ -1,47 +1,75 @@
-import { Desktop, Moon, Sun } from "@phosphor-icons/react";
+import { Moon, Sun } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { formatMessage } from "../i18n/content";
 import type { SiteContent } from "../i18n/types";
 
-type Theme = "system" | "light" | "dark";
+type Theme = "light" | "dark";
 
-const themes: Theme[] = ["dark", "light", "system"];
+const themeStorageKey = "skills-theme";
+
+function isTheme(value: string | null | undefined): value is Theme {
+  return value === "light" || value === "dark";
+}
+
+function readStoredTheme(): Theme | null {
+  try {
+    const stored = localStorage.getItem(themeStorageKey);
+    return isTheme(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+function preferredTheme(): Theme {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+function initialTheme(): Theme {
+  const documentTheme = document.documentElement.dataset.theme;
+  return isTheme(documentTheme)
+    ? documentTheme
+    : readStoredTheme() ?? preferredTheme();
+}
 
 interface ThemeToggleProps {
   content: SiteContent["theme"];
 }
 
 export function ThemeToggle({ content }: ThemeToggleProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem("skills-theme");
-    return themes.includes(saved as Theme) ? (saved as Theme) : "dark";
-  });
+  const [theme, setTheme] = useState<Theme>(initialTheme);
+  const [followsSystem, setFollowsSystem] = useState(() => readStoredTheme() === null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem("skills-theme", theme);
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const syncThemeColor = () => {
-      const isDark = theme === "dark" || (theme === "system" && media.matches);
-      document
-        .querySelector('meta[name="theme-color"]')
-        ?.setAttribute("content", isDark ? "#000000" : "#f5f7fc");
-    };
-
-    syncThemeColor();
-    if (theme !== "system") return;
-
-    media.addEventListener("change", syncThemeColor);
-    return () => media.removeEventListener("change", syncThemeColor);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#000000" : "#f5f7fc");
   }, [theme]);
 
+  useEffect(() => {
+    if (!followsSystem) return;
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncWithSystem = () => setTheme(media.matches ? "dark" : "light");
+    syncWithSystem();
+    media.addEventListener("change", syncWithSystem);
+    return () => media.removeEventListener("change", syncWithSystem);
+  }, [followsSystem]);
+
   const nextTheme = () => {
-    const next = themes[(themes.indexOf(theme) + 1) % themes.length];
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    setFollowsSystem(false);
     setTheme(next);
+    try {
+      localStorage.setItem(themeStorageKey, next);
+    } catch {
+      // The visible theme can still change when storage is unavailable.
+    }
   };
 
-  const Icon = theme === "light" ? Sun : theme === "dark" ? Moon : Desktop;
+  const Icon = theme === "light" ? Sun : Moon;
   const label = content[theme];
 
   return (

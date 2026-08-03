@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-locale="ko" data-theme="dark">
+<html lang="ko" data-locale="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -42,16 +42,26 @@
     />
     <link rel="icon" href="/skills/favicon.svg" type="image/svg+xml" />
     <script>
+      let savedTheme = null;
       try {
-        const theme = localStorage.getItem("skills-theme");
-        document.documentElement.dataset.theme = ["dark", "light", "system"].includes(
-          theme,
-        )
-          ? theme
-          : "dark";
+        savedTheme = localStorage.getItem("skills-theme");
+        if (savedTheme !== "light" && savedTheme !== "dark" && savedTheme !== null) {
+          localStorage.removeItem("skills-theme");
+          savedTheme = null;
+        }
       } catch {
-        document.documentElement.dataset.theme = "dark";
+        // Storage can be unavailable; the system preference remains usable.
       }
+      const theme =
+        savedTheme === "light" || savedTheme === "dark"
+          ? savedTheme
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      document.documentElement.dataset.theme = theme;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#000000" : "#f5f7fc");
     </script>
     <title>chann/skills - 어제의 반복이, 오늘의 스킬로</title>
     <script type="application/ld+json" id="faq-schema">

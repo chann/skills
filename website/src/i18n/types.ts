@@ -132,7 +132,7 @@ export interface SiteContent {
   footer: { tagline: string; license: string; github: string };
   productPreview: ProductPreviewContent;
   copy: { idle: string; copied: string; error: string };
-  theme: { system: string; light: string; dark: string; change: string; title: string };
+  theme: { light: string; dark: string; change: string; title: string };
   language: { trigger: string; navigation: string };
   accessibility: AccessibilityContent;
   categories: Record<SkillCategory, { label: string; description: string }>;

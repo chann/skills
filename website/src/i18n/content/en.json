@@ -195,7 +195,6 @@
     "error": "Copy failed"
   },
   "theme": {
-    "system": "system",
     "light": "light",
     "dark": "dark",
     "change": "Current theme: {theme}. Change theme",
