@@ -55,7 +55,30 @@ export function SkillExplorer() {
   };
 
   return (
-    <div className="explorer">
+    <div>
+      <div className="category-grid" role="group" aria-label="분류별 바로가기">
+        {categoryOrder.map((category) => {
+          const count = skills.filter((skill) => skill.category === category).length;
+          const active = filter === category;
+          return (
+            <button
+              key={category}
+              type="button"
+              className={`category-card${active ? " is-active" : ""}`}
+              onClick={() => setFilter(active ? "all" : category)}
+              aria-pressed={active}
+            >
+              <span className="category-card__head">
+                <strong>{categoryMeta[category].label}</strong>
+                <code>{count}</code>
+              </span>
+              <p>{categoryMeta[category].description}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="explorer">
       <div className="explorer__controls">
         <label className="search-field">
           <span className="sr-only">스킬 검색</span>
@@ -221,6 +244,7 @@ export function SkillExplorer() {
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }
