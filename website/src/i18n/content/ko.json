@@ -1,0 +1,350 @@
+{
+  "meta": {
+    "title": "chann/skills - 어제의 반복이, 오늘의 스킬로",
+    "description": "Claude Code와 Codex의 반복 작업을 재사용 가능한 스킬로 바꾸세요. 캐시 친화적인 지침과 스크립트 실행으로 LLM이 필요한 판단에 집중합니다.",
+    "socialAlt": "chann/skills 웹사이트의 에이전트 워크플로 실행 화면"
+  },
+  "nav": {
+    "label": "주요 메뉴",
+    "items": {
+      "why": "소개",
+      "explore": "스킬 찾기",
+      "faq": "FAQ",
+      "install": "설치"
+    }
+  },
+  "hero": {
+    "brand": "chann/skills",
+    "headline": ["어제의 반복이,", "오늘의 스킬로."],
+    "lede": "Claude Code와 Codex에서 되풀이하던 소프트웨어 작업을 검증 가능한 {count}개의 워크플로로 바꿨습니다. 반복 지침은 캐시하기 좋은 형태로 재사용하고, 결과가 정해진 단계는 스크립트에 맡겨 LLM이 필요한 판단에 집중하게 합니다.",
+    "primaryAction": "{count}개 스킬 살펴보기",
+    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+  },
+  "benefits": {
+    "label": "Why skills",
+    "title": ["반복할수록,", "덜 설명하고 더 선명하게."],
+    "description": "스킬은 반복 지침을 재사용하고, 정해진 절차를 스크립트에 맡겨 모델이 꼭 필요한 판단에 집중하게 합니다.",
+    "items": [
+      {
+        "label": "Reusable instructions",
+        "title": "같은 지침을 다시 만들지 않습니다.",
+        "description": "실행 순서와 예시, 안전 규칙을 안정된 SKILL.md로 유지합니다. 반복 요청에서 동일한 앞부분이 유지되므로 지원되는 모델의 프롬프트 캐시를 활용하기 좋은 구조가 됩니다."
+      },
+      {
+        "label": "Deterministic scripts",
+        "title": "정해진 일은 스크립트가 처리합니다.",
+        "description": "파일 탐색, 형식 검사, 데이터 동기화처럼 결과가 명확한 단계는 스크립트로 실행합니다. 모델이 같은 절차를 매번 다시 추론하지 않게 해 LLM 사용 범위를 줄입니다."
+      },
+      {
+        "label": "Focused judgment",
+        "title": "LLM은 판단에 집중합니다.",
+        "description": "요구사항 해석, 코드 검토, 위험 판단처럼 문맥이 필요한 부분에 모델을 사용하고, 실행 순서와 완료 조건은 스킬이 고정합니다."
+      }
+    ]
+  },
+  "tagline": {
+    "label": "Repeatable by design",
+    "lines": [
+      "좋은 프롬프트는 한 번 쓰고 사라집니다.",
+      "하지만 스킬로 만들면 기본기가 됩니다."
+    ],
+    "stats": {
+      "skills": "Packaged skills",
+      "categories": "Categories",
+      "platforms": "Platforms"
+    }
+  },
+  "workflow": {
+    "label": "How it works",
+    "title": ["반복 작업이 스킬이 되는,", "세 단계."],
+    "description": "반복을 포착하고 기준을 고정한 뒤, LLM과 스크립트의 역할을 나눕니다.",
+    "steps": [
+      {
+        "number": "01",
+        "label": "Capture",
+        "title": "반복을 포착합니다",
+        "description": "자주 되풀이하는 요청과 산출물을 찾습니다."
+      },
+      {
+        "number": "02",
+        "label": "Define",
+        "title": "기준을 고정합니다",
+        "description": "실행 순서, 안전 규칙과 완료 조건을 스킬에 남깁니다."
+      },
+      {
+        "number": "03",
+        "label": "Separate",
+        "title": "역할을 나눕니다",
+        "description": "판단은 LLM이 맡고, 결과가 정해진 단계는 스크립트가 실행합니다."
+      }
+    ],
+    "status": "completed",
+    "artifact": "report.html · tests passed · push confirmed"
+  },
+  "catalog": {
+    "label": "Skill catalog",
+    "title": ["필요한 워크플로를", "한 자리에서."],
+    "description": "작업이나 산출물로 검색하고, 플랫폼에 맞는 호출 명령을 바로 복사하세요.",
+    "categoryNavigation": "분류별 바로가기",
+    "searchLabel": "스킬 검색",
+    "searchPlaceholder": "작업, 산출물, 스킬 이름 검색",
+    "clearSearch": "검색어 지우기",
+    "filtersLabel": "스킬 분류",
+    "all": "전체",
+    "count": "{count}개 스킬",
+    "skillList": "스킬 목록",
+    "whenToUse": "이럴 때",
+    "result": "결과",
+    "exampleRequest": "예시 요청",
+    "exampleCopy": "예시 복사",
+    "aliases": "별칭",
+    "emptyTitle": "일치하는 스킬이 없습니다",
+    "emptyDescription": "검색어를 줄이거나 다른 분류를 선택해보세요.",
+    "showAll": "전체 스킬 보기"
+  },
+  "platforms": {
+    "label": "One skill, two commands",
+    "title": ["같은 스킬,", "호출 방법만 다르게."],
+    "descriptionBeforeCodex": "하나의 SKILL.md를 두 도구가 같은 방식으로 읽습니다. Codex는 ",
+    "descriptionBetweenSelectors": "를, Claude Code는 ",
+    "descriptionAfterClaude": "를 이름 앞에 붙입니다.",
+    "sharedInstructions": "Shared instructions",
+    "contractDescription": "원본 근거에서 이중언어 보고서와 이해도 확인까지."
+  },
+  "faq": {
+    "label": "FAQ",
+    "title": "자주 묻는 질문",
+    "description": "설치 전에 확인할 것들을 모았습니다.",
+    "items": [
+      {
+        "question": "스킬이 정확히 뭔가요?",
+        "answer": "에이전트가 특정 작업을 어떻게 수행할지 정의한 SKILL.md 문서입니다. 실행 순서, 안전 규칙, 결과 형식까지 담고 있어 같은 요청이 항상 같은 기준으로 처리됩니다."
+      },
+      {
+        "question": "일반 프롬프트와 뭐가 다른가요?",
+        "answer": "프롬프트는 대화가 끝나면 사라지지만 스킬은 파일로 남습니다. 버전 관리되고, 팀과 공유되고, $review-me처럼 이름으로 다시 호출할 수 있습니다."
+      },
+      {
+        "question": "스킬을 쓰면 토큰이 항상 줄어드나요?",
+        "answer": "항상 보장되지는 않습니다. 프롬프트 캐시는 사용하는 모델과 지침 길이, 동일한 앞부분의 유지 여부에 따라 달라집니다. 다만 스킬은 반복 지침을 안정된 형태로 재사용하고, 스크립트로 처리할 단계를 분리해 불필요한 LLM 작업을 줄이도록 설계됩니다."
+      },
+      {
+        "question": "어떤 작업을 스크립트로 처리하나요?",
+        "answer": "입력과 결과를 규칙으로 확인할 수 있는 작업입니다. 파일 검색, 형식 검사, 카탈로그 동기화와 테스트 실행은 스크립트에 맡기고, 해석과 검토가 필요한 작업은 LLM이 담당합니다."
+      },
+      {
+        "question": "어떤 에이전트에서 쓸 수 있나요?",
+        "answer": "Claude Code와 Codex를 기본 지원합니다. 같은 SKILL.md를 Codex는 $이름, Claude Code는 /이름으로 호출합니다. 설치 도구는 Gemini CLI, GitHub Copilot CLI 같은 다른 에이전트도 지원합니다."
+      },
+      {
+        "question": "설치하면 내 컴퓨터에 무엇이 생기나요?",
+        "answer": "npx skills add가 저장소를 내려받고 각 에이전트가 같은 원본을 읽도록 연결합니다. 원본은 한 곳에 유지되며, 연결만 지우면 깔끔하게 제거됩니다."
+      },
+      {
+        "question": "스킬이 마음대로 커밋하거나 푸시하지 않나요?",
+        "answer": "각 스킬에는 안전 규칙이 분명히 적혀 있습니다. 예를 들어 git 스킬은 명시적 스테이징만 사용하고 force push를 금지하며, 푸시가 거부되면 멈추고 보고합니다."
+      },
+      {
+        "question": "일부 스킬만 설치할 수 있나요?",
+        "answer": "네. 설치 명령의 --skill '*' 자리에 원하는 스킬 이름만 지정하면 됩니다. 각 스킬의 README에 개별 설치 방법이 있습니다."
+      },
+      {
+        "question": "업데이트는 어떻게 하나요?",
+        "answer": "npx skills update chann/skills 명령을 실행하면 설치된 스킬을 최신 버전으로 업데이트합니다."
+      },
+      {
+        "question": "비용이나 라이선스 제한이 있나요?",
+        "answer": "없습니다. 전체가 MIT 라이선스 오픈소스입니다. 저장소를 포크해서 팀 규칙에 맞게 고쳐 써도 됩니다."
+      }
+    ]
+  },
+  "install": {
+    "label": "Get skills",
+    "title": ["{count}개 스킬을,", "한 명령으로."],
+    "description": "공식 설치 도구가 Claude Code와 Codex에서 바로 쓸 수 있게 연결합니다.",
+    "cardTitle": "두 플랫폼에 함께 설치",
+    "cardDescription": "원본 저장소를 유지한 채 각 에이전트의 스킬 폴더에 연결합니다.",
+    "copyLabel": "명령 복사",
+    "resultsLabel": "설치 결과",
+    "skillResult": "{count}개 스킬",
+    "linkResult": "언제든 제거할 수 있는 전역 연결",
+    "platformsResult": "Claude Code + Codex",
+    "exploreAction": "{count}개 스킬 탐색",
+    "githubAction": "GitHub에서 보기",
+    "license": "MIT License · open source"
+  },
+  "footer": {
+    "tagline": "Practical agent workflows for software engineering.",
+    "license": "MIT License",
+    "github": "GitHub"
+  },
+  "productPreview": {
+    "sidebarLabel": "스킬 예시 목록",
+    "packagedSkills": "Packaged skills",
+    "workspace": "workspace",
+    "ready": "ready",
+    "tab": "SKILL.md",
+    "kicker": "DECISION REVIEW",
+    "title": ["계획의 모든 선택을", "끝까지 검토합니다."],
+    "lede": "전제부터 마지막 선택지까지 추적하고, 확인된 근거와 남은 위험을 분리해 보여줍니다.",
+    "proof": ["12 decisions traced", "3 risks surfaced", "report ready"]
+  },
+  "copy": {
+    "idle": "복사",
+    "copied": "복사됨",
+    "error": "복사 실패"
+  },
+  "theme": {
+    "system": "시스템",
+    "light": "라이트",
+    "dark": "다크",
+    "change": "현재 {theme} 테마. 테마 변경",
+    "title": "테마: {theme}"
+  },
+  "language": {
+    "trigger": "언어 선택",
+    "navigation": "언어"
+  },
+  "accessibility": {
+    "skipToMain": "본문으로 건너뛰기",
+    "home": "{repository} 홈",
+    "github": "GitHub에서 보기",
+    "mainNavigation": "주요 메뉴",
+    "repositoryStats": "스킬 저장소 현황",
+    "installResults": "설치 결과"
+  },
+  "categories": {
+    "review": {
+      "label": "Review",
+      "description": "계획과 변경을 검토하고, 설명하고, 결함을 찾습니다."
+    },
+    "docs": {
+      "label": "Docs",
+      "description": "프로젝트 문서를 현재 코드와 맞춥니다."
+    },
+    "git": {
+      "label": "Git",
+      "description": "커밋, 푸시, 머지, 정리를 안전하게 수행합니다."
+    },
+    "handoff": {
+      "label": "Handoff",
+      "description": "다음 개발자에게 필요한 맥락을 남깁니다."
+    },
+    "automation": {
+      "label": "Automation",
+      "description": "큰 작업을 검증 가능한 마일스톤으로 운영합니다."
+    },
+    "report": {
+      "label": "Report",
+      "description": "에이전트 작업 기록을 날짜 범위 보고서로 만듭니다."
+    }
+  },
+  "skills": {
+    "review-me": {
+      "summary": "결정 트리를 따라가며 계획과 설계의 마지막 선택지까지 검토합니다.",
+      "whenToUse": "구현 전에 모호한 선택, 경계, 실패·복구 조건을 끝까지 확정할 때",
+      "result": "검토가 끝난 결정 트리, 선택지별 완료 기준, 수용 예시, 의도적 보류 목록"
+    },
+    "code-review": {
+      "summary": "코드 변경에서 결함과 위험을 찾고 이중언어 보고서를 만듭니다.",
+      "whenToUse": "PR, 커밋, 브랜치, 작업 트리를 출시 전에 검토할 때",
+      "result": "Markdown 리뷰와 독립 실행형 HTML 리뷰"
+    },
+    "code-review-md": {
+      "summary": "브라우저 출력 없이 코드 리뷰를 Markdown 파일로만 남깁니다.",
+      "whenToUse": "PR 코멘트나 문서 파이프라인에 붙일 리뷰가 필요할 때",
+      "result": ".reviews/ 아래의 Markdown 리뷰"
+    },
+    "diff-summary": {
+      "summary": "변경의 목적, 동작, 구조, 테스트 영향을 근거와 함께 설명합니다.",
+      "whenToUse": "코드가 왜 바뀌었는지 빠르게 이해해야 할 때",
+      "result": "한국어와 영어 Markdown, 대화형 HTML 요약"
+    },
+    "diff-summary-md": {
+      "summary": "동일한 변경 설명을 HTML 없이 Markdown으로만 저장합니다.",
+      "whenToUse": "변경 요약을 저장소 문서나 이슈에 바로 붙일 때",
+      "result": "정렬된 한국어와 영어 Markdown"
+    },
+    "diff-summary-quiz": {
+      "summary": "변경 요약에 이해도를 확인하는 대화형 퀴즈를 더합니다.",
+      "whenToUse": "온보딩, 리뷰 학습, 변경 인수인계를 확인할 때",
+      "result": "이중언어 요약과 정답이 포함된 퀴즈"
+    },
+    "diff-viewer": {
+      "summary": "현재 Git diff를 읽기 쉬운 독립 실행형 HTML로 렌더링합니다.",
+      "whenToUse": "분석 없이 원본 패치를 브라우저에서 확인할 때",
+      "result": "unified 또는 split 방식의 HTML diff"
+    },
+    "gen-docs": {
+      "summary": "기존 문장을 보존하며 핵심 프로젝트 문서를 생성하거나 갱신합니다.",
+      "whenToUse": "README, 아키텍처, 사용법 문서가 코드와 어긋났을 때",
+      "result": "README, README.ko, ARCHITECTURE, USAGE"
+    },
+    "git-commit": {
+      "summary": "작업 트리 변경을 논리적인 Conventional Commit 단위로 나눕니다.",
+      "whenToUse": "섞인 변경을 검토 가능한 커밋으로 정리할 때",
+      "result": "명시적으로 스테이징된 하나 이상의 커밋"
+    },
+    "git-commit-push": {
+      "summary": "논리 단위로 커밋한 뒤 일반 push로 원격에 반영합니다.",
+      "whenToUse": "완료된 변경을 정리해 한 번에 게시할 때",
+      "result": "Conventional Commits와 원격 push"
+    },
+    "git-commit-push-realtime": {
+      "summary": "작업 중 검증된 결과가 끝날 때마다 커밋하고 즉시 푸시합니다.",
+      "whenToUse": "긴 구현을 원격의 리뷰 가능한 체크포인트로 남길 때",
+      "result": "검증된 체크포인트와 매번 확인한 원격 반영 상태"
+    },
+    "git-commit-realtime": {
+      "summary": "검증된 결과마다 로컬 커밋을 만들고 push는 별도로 남깁니다.",
+      "whenToUse": "작업 과정을 보존하되 원격 게시 시점은 직접 정할 때",
+      "result": "원격을 건드리지 않는 로컬 체크포인트"
+    },
+    "git-commit-rewrite": {
+      "summary": "최근 커밋 제목을 Conventional Commit 형식으로 다시 씁니다.",
+      "whenToUse": "이미 만든 커밋의 메시지 품질을 정리할 때",
+      "result": "안전 확인을 거친 일관된 커밋 기록"
+    },
+    "git-merge-to-main": {
+      "summary": "현재 브랜치를 main에 안전하게 머지하고 소스 브랜치를 정리합니다.",
+      "whenToUse": "기능 브랜치를 main에 통합할 때",
+      "result": "검증된 main 머지와 안전한 브랜치 삭제"
+    },
+    "git-merge-to-dev": {
+      "summary": "현재 브랜치를 dev 또는 develop에 머지하고 안전하게 정리합니다.",
+      "whenToUse": "기능 브랜치를 개발 통합 브랜치에 반영할 때",
+      "result": "검증된 dev 머지와 안전한 브랜치 삭제"
+    },
+    "git-branch-cleanup": {
+      "summary": "보호 브랜치에 이미 머지된 로컬 브랜치만 안전하게 삭제합니다.",
+      "whenToUse": "쌓인 로컬 브랜치를 위험 없이 정리할 때",
+      "result": "safe delete가 가능한 머지 완료 브랜치 정리"
+    },
+    "gen-frontend-handoff": {
+      "summary": "백엔드 변경을 프론트엔드와 클라이언트 작업에 필요한 맥락으로 바꿉니다.",
+      "whenToUse": "API 변경을 웹, 모바일, SDK 개발자에게 넘길 때",
+      "result": "API 명세, 화면 상태, 오류 처리, 검증 방법을 정리한 프론트엔드 인계 문서"
+    },
+    "gen-backend-handoff": {
+      "summary": "API와 데이터 변경을 서버 작업에 필요한 인수인계 문서로 정리합니다.",
+      "whenToUse": "백엔드 구현이나 운영 작업을 다른 개발자에게 넘길 때",
+      "result": "API, DB, job, rollout이 담긴 백엔드 핸드오프"
+    },
+    "long-task": {
+      "summary": "큰 프로젝트를 여러 마일스톤과 검증 사이클로 끝까지 운영합니다.",
+      "whenToUse": "여러 시간에 걸친 end-to-end 구현을 자율적으로 맡길 때",
+      "result": "계획, 병렬 작업, 리뷰, 완료 감사가 연결된 실행"
+    },
+    "work-summary": {
+      "summary": "로컬 코딩 에이전트 기록에서 날짜 범위 작업 보고서를 만듭니다.",
+      "whenToUse": "오늘, 이번 주, 이번 달 등 기간별 작업 내역과 요청을 정리할 때",
+      "result": "요약 또는 상세 Markdown 작업 리포트 (요청 시 .work-summaries/)"
+    }
+  },
+  "notFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "description": "요청한 페이지가 없거나 이동되었습니다.",
+    "home": "홈으로 돌아가기",
+    "navigation": "언어별 홈"
+  }
+}

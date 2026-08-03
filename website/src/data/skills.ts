@@ -9,13 +9,32 @@ export const categoryOrder = [
 
 export type SkillCategory = (typeof categoryOrder)[number];
 
-export interface Skill {
-  id: string;
+export type SkillId =
+  | "review-me"
+  | "code-review"
+  | "code-review-md"
+  | "diff-summary"
+  | "diff-summary-md"
+  | "diff-summary-quiz"
+  | "diff-viewer"
+  | "gen-docs"
+  | "git-commit"
+  | "git-commit-push"
+  | "git-commit-push-realtime"
+  | "git-commit-realtime"
+  | "git-commit-rewrite"
+  | "git-merge-to-main"
+  | "git-merge-to-dev"
+  | "git-branch-cleanup"
+  | "gen-frontend-handoff"
+  | "gen-backend-handoff"
+  | "long-task"
+  | "work-summary";
+
+export interface SkillDefinition {
+  id: SkillId;
   title: string;
   category: SkillCategory;
-  summary: string;
-  whenToUse: string;
-  result: string;
   example: string;
   claudeSelector: string;
   codexSelector: string;
@@ -23,44 +42,11 @@ export interface Skill {
   tags: string[];
 }
 
-export const categoryMeta: Record<
-  SkillCategory,
-  { label: string; description: string }
-> = {
-  review: {
-    label: "Review",
-    description: "계획과 변경을 검토하고, 설명하고, 결함을 찾습니다.",
-  },
-  docs: {
-    label: "Docs",
-    description: "프로젝트 문서를 현재 코드와 맞춥니다.",
-  },
-  git: {
-    label: "Git",
-    description: "커밋, 푸시, 머지, 정리를 안전하게 수행합니다.",
-  },
-  handoff: {
-    label: "Handoff",
-    description: "다음 개발자에게 필요한 맥락을 남깁니다.",
-  },
-  automation: {
-    label: "Automation",
-    description: "큰 작업을 검증 가능한 마일스톤으로 운영합니다.",
-  },
-  report: {
-    label: "Report",
-    description: "에이전트 작업 기록을 날짜 범위 보고서로 만듭니다.",
-  },
-};
-
-export const skills: Skill[] = [
+export const skillDefinitions = [
   {
     id: "review-me",
     title: "Review Me",
     category: "review",
-    summary: "결정 트리를 따라가며 계획과 설계의 마지막 선택지까지 검토합니다.",
-    whenToUse: "구현 전에 모호한 선택, 경계, 실패·복구 조건을 끝까지 확정할 때",
-    result: "검토가 끝난 결정 트리, 선택지별 완료 기준, 수용 예시, 의도적 보류 목록",
     example: "$review-me review our billing migration plan",
     claudeSelector: "/review-me",
     codexSelector: "$review-me",
@@ -70,9 +56,6 @@ export const skills: Skill[] = [
     id: "code-review",
     title: "Code Review",
     category: "review",
-    summary: "코드 변경에서 결함과 위험을 찾고 이중언어 보고서를 만듭니다.",
-    whenToUse: "PR, 커밋, 브랜치, 작업 트리를 출시 전에 검토할 때",
-    result: "Markdown 리뷰와 독립 실행형 HTML 리뷰",
     example: "$code-review review the last commit",
     claudeSelector: "/code-review",
     codexSelector: "$code-review",
@@ -82,9 +65,6 @@ export const skills: Skill[] = [
     id: "code-review-md",
     title: "Markdown Code Review",
     category: "review",
-    summary: "브라우저 출력 없이 코드 리뷰를 Markdown 파일로만 남깁니다.",
-    whenToUse: "PR 코멘트나 문서 파이프라인에 붙일 리뷰가 필요할 때",
-    result: ".reviews/ 아래의 Markdown 리뷰",
     example: "$code-review-md review staged changes",
     claudeSelector: "/code-review-md",
     codexSelector: "$code-review-md",
@@ -94,9 +74,6 @@ export const skills: Skill[] = [
     id: "diff-summary",
     title: "Diff Summary",
     category: "review",
-    summary: "변경의 목적, 동작, 구조, 테스트 영향을 근거와 함께 설명합니다.",
-    whenToUse: "코드가 왜 바뀌었는지 빠르게 이해해야 할 때",
-    result: "한국어와 영어 Markdown, 대화형 HTML 요약",
     example: "$diff-summary main..dev",
     claudeSelector: "/diff-summary",
     codexSelector: "$diff-summary",
@@ -106,9 +83,6 @@ export const skills: Skill[] = [
     id: "diff-summary-md",
     title: "Markdown Diff Summary",
     category: "review",
-    summary: "동일한 변경 설명을 HTML 없이 Markdown으로만 저장합니다.",
-    whenToUse: "변경 요약을 저장소 문서나 이슈에 바로 붙일 때",
-    result: "정렬된 한국어와 영어 Markdown",
     example: "$diff-summary-md HEAD~3..HEAD",
     claudeSelector: "/diff-summary-md",
     codexSelector: "$diff-summary-md",
@@ -118,9 +92,6 @@ export const skills: Skill[] = [
     id: "diff-summary-quiz",
     title: "Diff Summary Quiz",
     category: "review",
-    summary: "변경 요약에 이해도를 확인하는 대화형 퀴즈를 더합니다.",
-    whenToUse: "온보딩, 리뷰 학습, 변경 인수인계를 확인할 때",
-    result: "이중언어 요약과 정답이 포함된 퀴즈",
     example: "$diff-summary-quiz feature...main",
     claudeSelector: "/diff-summary-quiz",
     codexSelector: "$diff-summary-quiz",
@@ -130,9 +101,6 @@ export const skills: Skill[] = [
     id: "diff-viewer",
     title: "Diff Viewer",
     category: "review",
-    summary: "현재 Git diff를 읽기 쉬운 독립 실행형 HTML로 렌더링합니다.",
-    whenToUse: "분석 없이 원본 패치를 브라우저에서 확인할 때",
-    result: "unified 또는 split 방식의 HTML diff",
     example: "$diff-viewer",
     claudeSelector: "/diff-viewer",
     codexSelector: "$diff-viewer",
@@ -142,9 +110,6 @@ export const skills: Skill[] = [
     id: "gen-docs",
     title: "Generate Project Docs",
     category: "docs",
-    summary: "기존 문장을 보존하며 핵심 프로젝트 문서를 생성하거나 갱신합니다.",
-    whenToUse: "README, 아키텍처, 사용법 문서가 코드와 어긋났을 때",
-    result: "README, README.ko, ARCHITECTURE, USAGE",
     example: "$gen-docs",
     claudeSelector: "/gen-docs",
     codexSelector: "$gen-docs",
@@ -154,9 +119,6 @@ export const skills: Skill[] = [
     id: "git-commit",
     title: "Git Commit",
     category: "git",
-    summary: "작업 트리 변경을 논리적인 Conventional Commit 단위로 나눕니다.",
-    whenToUse: "섞인 변경을 검토 가능한 커밋으로 정리할 때",
-    result: "명시적으로 스테이징된 하나 이상의 커밋",
     example: "$git-commit",
     claudeSelector: "/git-commit",
     codexSelector: "$git-commit",
@@ -166,9 +128,6 @@ export const skills: Skill[] = [
     id: "git-commit-push",
     title: "Git Commit and Push",
     category: "git",
-    summary: "논리 단위로 커밋한 뒤 일반 push로 원격에 반영합니다.",
-    whenToUse: "완료된 변경을 정리해 한 번에 게시할 때",
-    result: "Conventional Commits와 원격 push",
     example: "$git-commit-push",
     claudeSelector: "/git-commit-push",
     codexSelector: "$git-commit-push",
@@ -178,9 +137,6 @@ export const skills: Skill[] = [
     id: "git-commit-push-realtime",
     title: "Git Commit and Push Realtime",
     category: "git",
-    summary: "작업 중 검증된 결과가 끝날 때마다 커밋하고 즉시 푸시합니다.",
-    whenToUse: "긴 구현을 원격의 리뷰 가능한 체크포인트로 남길 때",
-    result: "검증된 체크포인트와 매번 확인한 원격 반영 상태",
     example: "$git-commit-push-realtime",
     claudeSelector: "/git-commit-push-realtime",
     codexSelector: "$git-commit-push-realtime",
@@ -191,9 +147,6 @@ export const skills: Skill[] = [
     id: "git-commit-realtime",
     title: "Git Commit Realtime",
     category: "git",
-    summary: "검증된 결과마다 로컬 커밋을 만들고 push는 별도로 남깁니다.",
-    whenToUse: "작업 과정을 보존하되 원격 게시 시점은 직접 정할 때",
-    result: "원격을 건드리지 않는 로컬 체크포인트",
     example: "$git-commit-realtime",
     claudeSelector: "/git-commit-realtime",
     codexSelector: "$git-commit-realtime",
@@ -204,9 +157,6 @@ export const skills: Skill[] = [
     id: "git-commit-rewrite",
     title: "Git Commit Rewrite",
     category: "git",
-    summary: "최근 커밋 제목을 Conventional Commit 형식으로 다시 씁니다.",
-    whenToUse: "이미 만든 커밋의 메시지 품질을 정리할 때",
-    result: "안전 확인을 거친 일관된 커밋 기록",
     example: "$git-commit-rewrite",
     claudeSelector: "/git-commit-rewrite",
     codexSelector: "$git-commit-rewrite",
@@ -216,9 +166,6 @@ export const skills: Skill[] = [
     id: "git-merge-to-main",
     title: "Git Merge to Main",
     category: "git",
-    summary: "현재 브랜치를 main에 안전하게 머지하고 소스 브랜치를 정리합니다.",
-    whenToUse: "기능 브랜치를 main에 통합할 때",
-    result: "검증된 main 머지와 안전한 브랜치 삭제",
     example: "$git-merge-to-main",
     claudeSelector: "/git-merge-to-main",
     codexSelector: "$git-merge-to-main",
@@ -228,9 +175,6 @@ export const skills: Skill[] = [
     id: "git-merge-to-dev",
     title: "Git Merge to Dev",
     category: "git",
-    summary: "현재 브랜치를 dev 또는 develop에 머지하고 안전하게 정리합니다.",
-    whenToUse: "기능 브랜치를 개발 통합 브랜치에 반영할 때",
-    result: "검증된 dev 머지와 안전한 브랜치 삭제",
     example: "$git-merge-to-dev",
     claudeSelector: "/git-merge-to-dev",
     codexSelector: "$git-merge-to-dev",
@@ -240,9 +184,6 @@ export const skills: Skill[] = [
     id: "git-branch-cleanup",
     title: "Git Branch Cleanup",
     category: "git",
-    summary: "보호 브랜치에 이미 머지된 로컬 브랜치만 안전하게 삭제합니다.",
-    whenToUse: "쌓인 로컬 브랜치를 위험 없이 정리할 때",
-    result: "safe delete가 가능한 머지 완료 브랜치 정리",
     example: "$git-branch-cleanup",
     claudeSelector: "/git-branch-cleanup",
     codexSelector: "$git-branch-cleanup",
@@ -252,9 +193,6 @@ export const skills: Skill[] = [
     id: "gen-frontend-handoff",
     title: "Generate Frontend Handoff",
     category: "handoff",
-    summary: "백엔드 변경을 프론트엔드와 클라이언트 작업에 필요한 맥락으로 바꿉니다.",
-    whenToUse: "API 변경을 웹, 모바일, SDK 개발자에게 넘길 때",
-    result: "API 명세, 화면 상태, 오류 처리, 검증 방법을 정리한 프론트엔드 인계 문서",
     example: "$gen-frontend-handoff main...feature-api",
     claudeSelector: "/gen-frontend-handoff",
     codexSelector: "$gen-frontend-handoff",
@@ -264,9 +202,6 @@ export const skills: Skill[] = [
     id: "gen-backend-handoff",
     title: "Generate Backend Handoff",
     category: "handoff",
-    summary: "API와 데이터 변경을 서버 작업에 필요한 인수인계 문서로 정리합니다.",
-    whenToUse: "백엔드 구현이나 운영 작업을 다른 개발자에게 넘길 때",
-    result: "API, DB, job, rollout이 담긴 백엔드 핸드오프",
     example: "$gen-backend-handoff HEAD~5..HEAD",
     claudeSelector: "/gen-backend-handoff",
     codexSelector: "$gen-backend-handoff",
@@ -276,9 +211,6 @@ export const skills: Skill[] = [
     id: "long-task",
     title: "Long Task",
     category: "automation",
-    summary: "큰 프로젝트를 여러 마일스톤과 검증 사이클로 끝까지 운영합니다.",
-    whenToUse: "여러 시간에 걸친 end-to-end 구현을 자율적으로 맡길 때",
-    result: "계획, 병렬 작업, 리뷰, 완료 감사가 연결된 실행",
     example: "$long-task build the project end to end",
     claudeSelector: "/long-task",
     codexSelector: "$long-task",
@@ -288,12 +220,9 @@ export const skills: Skill[] = [
     id: "work-summary",
     title: "Work Summary",
     category: "report",
-    summary: "로컬 코딩 에이전트 기록에서 날짜 범위 작업 보고서를 만듭니다.",
-    whenToUse: "오늘, 이번 주, 이번 달 등 기간별 작업 내역과 요청을 정리할 때",
-    result: "요약 또는 상세 Markdown 작업 리포트 (요청 시 .work-summaries/)",
     example: "$work-summary this week",
     claudeSelector: "/work-summary",
     codexSelector: "$work-summary",
     tags: ["report", "summary", "history", "claude-code", "codex"],
   },
-];
+] as const satisfies readonly SkillDefinition[];

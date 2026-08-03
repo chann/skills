@@ -10,14 +10,18 @@ const sources = {
     "utf8",
   ),
   metadata: await readFile(path.join(websiteRoot, "index.html"), "utf8"),
+  korean: await readFile(
+    path.join(websiteRoot, "src", "i18n", "content", "ko.json"),
+    "utf8",
+  ),
   notFound: await readFile(path.join(websiteRoot, "public", "404.html"), "utf8"),
 };
 
 const required = {
   app: [
     'const repositoryName = "chann/skills";',
-    "<span>{repositoryName} / workspace</span>",
-    '<p className="hero__brand">{repositoryName}</p>',
+    "<span>{repositoryName} / {content.workspace}</span>",
+    '<p className="hero__brand">{content.hero.brand}</p>',
     'repositoryName.split("")',
     "<GitHubMark size={18} />",
   ],
@@ -32,6 +36,7 @@ const required = {
     '<meta name="twitter:title" content="chann/skills - 어제의 반복이, 오늘의 스킬로" />',
     '<title>chann/skills - 어제의 반복이, 오늘의 스킬로</title>',
   ],
+  korean: ['"brand": "chann/skills"'],
   notFound: [
     '<title>404 - chann/skills</title>',
     '<span class="kicker">chann/skills · 404</span>',
@@ -51,7 +56,7 @@ if (sources.app.includes("GithubLogo")) {
 }
 
 const repeatedAppBranding = {
-  'aria-label={`${repositoryName} 홈`}': 2,
+  "formatMessage(content.accessibility.home": 2,
   "<span>{repositoryName}</span>": 2,
 };
 

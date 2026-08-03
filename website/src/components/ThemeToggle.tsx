@@ -1,16 +1,17 @@
 import { Desktop, Moon, Sun } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { formatMessage } from "../i18n/content";
+import type { SiteContent } from "../i18n/types";
 
 type Theme = "system" | "light" | "dark";
 
 const themes: Theme[] = ["dark", "light", "system"];
-const labels: Record<Theme, string> = {
-  system: "시스템",
-  light: "라이트",
-  dark: "다크",
-};
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  content: SiteContent["theme"];
+}
+
+export function ThemeToggle({ content }: ThemeToggleProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("skills-theme");
     return themes.includes(saved as Theme) ? (saved as Theme) : "dark";
@@ -41,17 +42,18 @@ export function ThemeToggle() {
   };
 
   const Icon = theme === "light" ? Sun : theme === "dark" ? Moon : Desktop;
+  const label = content[theme];
 
   return (
     <button
       type="button"
       className="theme-toggle"
       onClick={nextTheme}
-      aria-label={`현재 ${labels[theme]} 테마. 테마 변경`}
-      title={`테마: ${labels[theme]}`}
+      aria-label={formatMessage(content.change, { theme: label })}
+      title={formatMessage(content.title, { theme: label })}
     >
       <Icon size={18} weight="bold" aria-hidden="true" />
-      <span className="sr-only">{labels[theme]}</span>
+      <span className="sr-only">{label}</span>
     </button>
   );
 }

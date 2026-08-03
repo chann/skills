@@ -64,6 +64,9 @@ function duplicates(values) {
 
 const packaged = await packagedSkillNames();
 const catalogSource = await readFile(catalogPath, "utf8");
+if (!catalogSource.includes("export const skillDefinitions")) {
+  throw new Error("Canonical catalog must export skillDefinitions.");
+}
 const catalog = catalogSkillNames(catalogSource);
 const duplicatedCatalogIds = [...new Set(duplicates(catalog))];
 const missingFromCatalog = packaged.filter((name) => !catalog.includes(name));

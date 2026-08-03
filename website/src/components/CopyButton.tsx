@@ -1,17 +1,20 @@
 import { Check, Copy, WarningCircle } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import type { SiteContent } from "../i18n/types";
 
 type CopyState = "idle" | "copied" | "error";
 
 interface CopyButtonProps {
   value: string;
+  content: SiteContent["copy"];
   label?: string;
   compact?: boolean;
 }
 
 export function CopyButton({
   value,
-  label = "복사",
+  content,
+  label = content.idle,
   compact = false,
 }: CopyButtonProps) {
   const [state, setState] = useState<CopyState>("idle");
@@ -32,7 +35,7 @@ export function CopyButton({
   };
 
   const text =
-    state === "copied" ? "복사됨" : state === "error" ? "복사 실패" : label;
+    state === "copied" ? content.copied : state === "error" ? content.error : label;
   const Icon = state === "copied" ? Check : state === "error" ? WarningCircle : Copy;
 
   return (

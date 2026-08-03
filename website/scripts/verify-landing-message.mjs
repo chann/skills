@@ -5,6 +5,10 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = await readFile(path.join(root, "src", "App.tsx"), "utf8");
 const html = await readFile(path.join(root, "index.html"), "utf8");
+const content = JSON.parse(
+  await readFile(path.join(root, "src", "i18n", "content", "ko.json"), "utf8"),
+);
+const localizedCopy = JSON.stringify(content);
 
 for (const text of [
   "어제의 반복이,",
@@ -16,7 +20,7 @@ for (const text of [
   "스킬을 쓰면 토큰이 항상 줄어드나요?",
   "어떤 작업을 스크립트로 처리하나요?",
 ]) {
-  if (!app.includes(text)) {
+  if (!localizedCopy.includes(text)) {
     throw new Error(`Missing landing message: ${text}`);
   }
 }
@@ -30,7 +34,7 @@ if ((hero.match(/button--primary/g) ?? []).length !== 1) {
   throw new Error("Hero must contain exactly one primary action.");
 }
 
-if (!html.includes("chann/skills - 어제의 반복이, 오늘의 스킬로")) {
+if (!html.includes(content.meta.title)) {
   throw new Error("Korean metadata title is stale.");
 }
 

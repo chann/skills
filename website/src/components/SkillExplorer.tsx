@@ -5,20 +5,29 @@ import {
 } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useMemo, useRef, useState } from "react";
-import {
-  categoryMeta,
-  categoryOrder,
-  skills,
-  type SkillCategory,
-} from "../data/skills";
+import { categoryOrder, type SkillCategory } from "../data/skills";
+import { formatMessage, type LocalizedSkill } from "../i18n/content";
+import type { CatalogContent, SiteContent } from "../i18n/types";
 import { CopyButton } from "./CopyButton";
 
 type Filter = "all" | SkillCategory;
 
-export function SkillExplorer() {
+interface SkillExplorerProps {
+  skills: LocalizedSkill[];
+  categories: SiteContent["categories"];
+  content: CatalogContent;
+  copyContent: SiteContent["copy"];
+}
+
+export function SkillExplorer({
+  skills,
+  categories,
+  content,
+  copyContent,
+}: SkillExplorerProps) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState(skills[0].id);
+  const [selectedId, setSelectedId] = useState<LocalizedSkill["id"]>(skills[0].id);
   const reduceMotion = useReducedMotion();
   const detailRef = useRef<HTMLElement>(null);
 
@@ -42,7 +51,7 @@ export function SkillExplorer() {
   const selected =
     filtered.find((skill) => skill.id === selectedId) ?? filtered[0] ?? null;
 
-  const selectSkill = (id: string) => {
+  const selectSkill = (id: LocalizedSkill["id"]) => {
     setSelectedId(id);
     if (!window.matchMedia("(max-width: 767px)").matches) return;
 
@@ -56,7 +65,7 @@ export function SkillExplorer() {
 
   return (
     <div>
-      <div className="category-grid" role="group" aria-label="분류별 바로가기">
+      <div className="category-grid" role="group" aria-label={content.categoryNavigation}>
         {categoryOrder.map((category) => {
           const count = skills.filter((skill) => skill.category === category).length;
           const active = filter === category;
@@ -69,11 +78,11 @@ export function SkillExplorer() {
               aria-pressed={active}
             >
               <span className="category-card__head">
-                <strong>{categoryMeta[category].label}</strong>
+                <strong>{categories[category].label}</strong>
                 <code>{count}</code>
               </span>
               <span className="category-card__desc">
-                {categoryMeta[category].description}
+                {categories[category].description}
               </span>
             </button>
           );
@@ -83,34 +92,34 @@ export function SkillExplorer() {
       <div className="explorer">
       <div className="explorer__controls">
         <label className="search-field">
-          <span className="sr-only">스킬 검색</span>
+          <span className="sr-only">{content.searchLabel}</span>
           <MagnifyingGlass size={20} aria-hidden="true" />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="작업, 산출물, 스킬 이름 검색"
+            placeholder={content.searchPlaceholder}
           />
           {query ? (
             <button
               type="button"
               className="search-field__clear"
               onClick={() => setQuery("")}
-              aria-label="검색어 지우기"
+              aria-label={content.clearSearch}
             >
               <X size={17} weight="bold" aria-hidden="true" />
             </button>
           ) : null}
         </label>
 
-        <div className="filters" role="group" aria-label="스킬 분류">
+        <div className="filters" role="group" aria-label={content.filtersLabel}>
           <button
             type="button"
             className={filter === "all" ? "is-active" : ""}
             onClick={() => setFilter("all")}
             aria-pressed={filter === "all"}
           >
-            전체 <span>{skills.length}</span>
+            {content.all} <span>{skills.length}</span>
           </button>
           {categoryOrder.map((category) => (
             <button
@@ -120,7 +129,7 @@ export function SkillExplorer() {
               onClick={() => setFilter(category)}
               aria-pressed={filter === category}
             >
-              {categoryMeta[category].label}
+              {categories[category].label}
               <span>
                 {skills.filter((skill) => skill.category === category).length}
               </span>
@@ -129,7 +138,7 @@ export function SkillExplorer() {
         </div>
 
         <p className="explorer__count" role="status" aria-live="polite">
-          <strong>{filtered.length}</strong>개 스킬
+          {formatMessage(content.count, { count: filtered.length })}
         </p>
       </div>
 
@@ -139,7 +148,7 @@ export function SkillExplorer() {
             className="skill-list"
             id="skill-list"
             role="group"
-            aria-label="스킬 목록"
+            aria-label={content.skillList}
           >
             <AnimatePresence initial={false} mode="popLayout">
               {filtered.map((skill) => (
@@ -163,7 +172,7 @@ export function SkillExplorer() {
                     <code>{skill.codexSelector}</code>
                   </span>
                   <span className="skill-row__category">
-                    {categoryMeta[skill.category].label}
+                    {categories[skill.category].label}
                   </span>
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </motion.button>
@@ -184,7 +193,7 @@ export function SkillExplorer() {
             >
               <div className="skill-detail__header">
                 <span className="skill-detail__package">
-                  {categoryMeta[selected.category].label}
+                  {categories[selected.category].label}
                 </span>
                 <h3>{selected.title}</h3>
                 <p>{selected.summary}</p>
@@ -192,11 +201,11 @@ export function SkillExplorer() {
 
               <dl className="skill-detail__facts">
                 <div>
-                  <dt>이럴 때</dt>
+                  <dt>{content.whenToUse}</dt>
                   <dd>{selected.whenToUse}</dd>
                 </div>
                 <div>
-                  <dt>결과</dt>
+                  <dt>{content.result}</dt>
                   <dd>{selected.result}</dd>
                 </div>
               </dl>
@@ -206,25 +215,29 @@ export function SkillExplorer() {
                   <span>Codex</span>
                   <code>{selected.codexSelector}</code>
                 </div>
-                <CopyButton value={selected.codexSelector} compact />
+                <CopyButton value={selected.codexSelector} content={copyContent} compact />
               </div>
               <div className="selector-pair">
                 <div>
                   <span>Claude Code</span>
                   <code>{selected.claudeSelector}</code>
                 </div>
-                <CopyButton value={selected.claudeSelector} compact />
+                <CopyButton value={selected.claudeSelector} content={copyContent} compact />
               </div>
 
               <div className="example-command">
-                <span>예시 요청</span>
+                <span>{content.exampleRequest}</span>
                 <code tabIndex={0}>{selected.example}</code>
-                <CopyButton value={selected.example} label="예시 복사" />
+                <CopyButton
+                  value={selected.example}
+                  content={copyContent}
+                  label={content.exampleCopy}
+                />
               </div>
 
               {selected.aliases?.length ? (
                 <p className="skill-detail__alias">
-                  별칭: <code>{selected.aliases.join(", ")}</code>
+                  {content.aliases}: <code>{selected.aliases.join(", ")}</code>
                 </p>
               ) : null}
             </motion.article>
@@ -233,8 +246,8 @@ export function SkillExplorer() {
       ) : (
         <div className="empty-state" role="status">
           <MagnifyingGlass size={28} aria-hidden="true" />
-          <h3>일치하는 스킬이 없습니다</h3>
-          <p>검색어를 줄이거나 다른 분류를 선택해보세요.</p>
+          <h3>{content.emptyTitle}</h3>
+          <p>{content.emptyDescription}</p>
           <button
             type="button"
             onClick={() => {
@@ -242,7 +255,7 @@ export function SkillExplorer() {
               setFilter("all");
             }}
           >
-            전체 스킬 보기
+            {content.showAll}
           </button>
         </div>
       )}
