@@ -242,6 +242,8 @@ export function SkillExplorer({
               {selected.aliases?.length ? (
                 <p className="skill-detail__alias">
                   {content.aliases}: <code>{selected.aliases.join(", ")}</code>
+                  <span aria-hidden="true"> → </span>
+                  <span>{selected.title}</span>
                 </p>
               ) : null}
             </motion.article>

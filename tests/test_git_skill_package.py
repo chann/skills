@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -28,6 +29,18 @@ def body(path: Path) -> str:
     """Return a Markdown file's content with its YAML frontmatter removed."""
     text = path.read_text(encoding="utf-8")
     return text.split("---\n", 2)[2] if text.startswith("---\n") else text
+
+
+def quoted_yaml_field(path: Path, key: str) -> str:
+    """Return one quoted field from an agents/openai.yaml interface."""
+    match = re.search(
+        rf'^\s+{re.escape(key)}:\s+"([^"]+)"$',
+        path.read_text(encoding="utf-8"),
+        re.MULTILINE,
+    )
+    if match is None:
+        raise AssertionError(f"{path.relative_to(ROOT)} is missing {key}")
+    return match.group(1)
 
 
 class GitSkillPackageTests(unittest.TestCase):
@@ -82,6 +95,28 @@ class GitSkillPackageTests(unittest.TestCase):
         self.assertIn(
             f"${REALTIME_ALIAS}",
             interface.read_text(encoding="utf-8"),
+        )
+
+    def test_codex_realtime_alias_uses_the_canonical_display_name(self) -> None:
+        alias_interface = CODEX_REALTIME_ALIAS_SKILL / "agents" / "openai.yaml"
+        canonical_interface = REALTIME_SKILL / "agents" / "openai.yaml"
+        website_source = (
+            ROOT / "website" / "src" / "data" / "skills.ts"
+        ).read_text(encoding="utf-8")
+        title_match = re.search(
+            rf'id: "{REALTIME_SKILL_NAME}",\s+title: "([^"]+)"',
+            website_source,
+        )
+
+        self.assertIsNotNone(title_match)
+        canonical_name = quoted_yaml_field(canonical_interface, "display_name")
+        self.assertEqual(
+            canonical_name,
+            quoted_yaml_field(alias_interface, "display_name"),
+        )
+        self.assertEqual(
+            canonical_name,
+            title_match.group(1) if title_match else "",
         )
 
     def test_short_alias_is_documented_across_package_surfaces(self) -> None:
