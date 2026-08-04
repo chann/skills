@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 20개의 실용적인 에이전트 워크플로와 21개의 설치 가능한 Codex selector 모음입니다.
+소프트웨어 엔지니어링을 위한 23개의 실용적인 에이전트 워크플로와 24개의 설치 가능한 Codex selector를 8개 plugin으로 제공합니다.
 
 ## Website
 
@@ -28,6 +28,7 @@ npm --prefix website run dev
 | **[handoff](handoff/README.ko.md)**                 | git diff, 범위, 세션 컨텍스트에서 프론트엔드/백엔드 핸드오프 문서 생성                         |
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 | **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
+| **[plan-summary](plan-summary/README.ko.md)**       | 명시한 plan·PRD·명세·설계를 한·영으로 요약하고 Markdown 전용·퀴즈 변형 제공                    |
 
 ## 설치 방법
 
@@ -62,12 +63,14 @@ PromptScript 어댑터가 암묵적으로 추가될 수 있습니다. 이 경우
 - [handoff 설치](handoff/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
 - [work-summary 설치](work-summary/README.ko.md#설치-방법)
+- [plan-summary 설치](plan-summary/README.ko.md#설치)
 
 handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
 diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 review-me만 설치: `npx skills add chann/skills --skill review-me`
 work-summary만 설치: `npx skills add chann/skills --skill work-summary`
+plan-summary 제품군 설치: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## 빠른 참조
@@ -145,6 +148,16 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명
 시 타임라인과 요청 로그가 있는 상세 리포트를 만듭니다. *"오늘 작업 요약해줘"*,
 *"이번주에 뭐 했는지 정리해줘"* 같은 문구에도 자동 트리거됩니다.
 
+### plan-summary → [상세](plan-summary/README.ko.md)
+
+| Claude Code | Codex | 출력 |
+| --- | --- | --- |
+| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | `.plan-summaries/`에 정렬된 한·영 Markdown과 이중언어 HTML 생성 |
+| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | 정렬된 한·영 Markdown만 생성 |
+| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | 이중언어 보고서와 정렬된 `QZ-*` 이해도 퀴즈 생성 |
+
+세 selector는 사용자가 명시한 `.md`, `.markdown`, `.txt` UTF-8 파일만 읽고 문서를 자동 탐색하지 않습니다. 보고서는 소스 순서·digest와 `PS-*` 근거 카드를 공유합니다. Markdown 전용 selector는 HTML을 만들지 않고, 퀴즈 selector는 접근 가능한 오프라인 상호작용을 추가합니다.
+
 ## 문서
 
 - [사용법](USAGE.md) — 설치, 전체 명령 레퍼런스, 설정, 예제, 문제 해결
@@ -171,7 +184,7 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
 - `diff-summary`, `diff-summary-md`, `diff-summary-quiz` 사용 시 Git 2.45+
-- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `git-commit-rewrite` 사용 시 필요)
+- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite` 사용 시 필요)
 
 ## 라이선스
 

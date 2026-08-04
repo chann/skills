@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 20 canonical workflows and 21 installable Codex selectors across seven workflow plugins.
+This repository exposes 23 canonical workflows and 24 installable Codex selectors across 8 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [work-summary](work-summary/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md).
 
 ## Quick start
 
@@ -59,6 +59,9 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
 > /long-task build a CLI todo app end to end
 > /work-summary this week                   # Markdown report of the week's agent work
+> /plan-summary docs/plan.md docs/design.md # Korean + English plan summary + HTML
+> /plan-summary-md docs/prd.md              # Korean + English Markdown only
+> /plan-summary-quiz docs/spec.md           # bilingual summary + aligned quiz
 ```
 
 ### Explicit selectors
@@ -88,6 +91,9 @@ These are the exact names published by every package:
 | Backend handoff | `/gen-backend-handoff` | `$gen-backend-handoff` |
 | Autonomous long task | `/long-task` | `$long-task` |
 | Work-history report | `/work-summary` | `$work-summary` |
+| Plan document summary | `/plan-summary` | `$plan-summary` |
+| Markdown-only plan summary | `/plan-summary-md` | `$plan-summary-md` |
+| Plan summary quiz | `/plan-summary-quiz` | `$plan-summary-quiz` |
 
 ## Command reference
 
@@ -117,6 +123,18 @@ the local history stores of Claude Code, Codex, opencode, and agy read-only
 and replies with a summary or — on request — a detailed report that adds a
 timeline and per-request log. Reports stay local: history content is never
 sent anywhere, and a file is written under `.work-summaries/` only when asked.
+
+### plan-summary
+
+| Command | Output |
+| --- | --- |
+| `/plan-summary [source-path ...]` | Aligned Korean and English Markdown plus bilingual HTML under `.plan-summaries/` |
+| `/plan-summary-md [source-path ...]` | The same aligned Markdown pair only; no HTML or browser open |
+| `/plan-summary-quiz [source-path ...]` | The bilingual report plus aligned interactive `QZ-*` questions |
+
+Codex uses `$plan-summary`, `$plan-summary-md`, and `$plan-summary-quiz` with the same explicit paths. Supply only selected `.md`, `.markdown`, or `.txt` UTF-8 files. The workflow never scans a directory or repository, expands a glob, or fetches a URL.
+
+The agent sends `{"paths":["docs/plan.md","docs/design.md"]}` through standard input to `collect_plan_evidence.py`. The collector returns ordered paths, sizes, SHA-256 digests, and exact content as inert JSON. One evidence map then produces Korean and English reports with aligned `PS-*` IDs, categories, and source references. `generate_plan_summary.py --bilingual-json-stdin --output-directory .plan-summaries` validates both sources before atomically writing the artifact set. The Markdown-only selector adds `--markdown-only`; the quiz selector appends aligned final `## Quiz` sections whose `QZ-*` questions keep identical option counts and answer positions.
 
 ### code-review
 
@@ -265,13 +283,14 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 |---|---|---|
 | `.reviews/` | `code-review`, `code-review-md` | Markdown / HTML reports; gitignored |
 | `.diff-summaries/` | `diff-summary`, `diff-summary-md`, `diff-summary-quiz` | Korean + English Markdown sources, plus bilingual self-contained HTML for `diff-summary` and `diff-summary-quiz`; gitignored |
+| `.plan-summaries/` | `plan-summary`, `plan-summary-md`, `plan-summary-quiz` | Korean + English Markdown sources, plus bilingual self-contained HTML for `plan-summary` and `plan-summary-quiz`; gitignored |
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
 | `.agent/` | `long-task` | Working-memory and lifecycle state for a run |
 | `.work-summaries/` | `work-summary` | Markdown work reports, written only on request; gitignored |
 | `~/.claude/settings.json` | `long-task` | Stop hook installed under `hooks.Stop` on first run |
 
-`.reviews/`, `.diff-summaries/`, and `.diffs/` are already in this repository's `.gitignore`. In another repository the skills may suggest the matching ignore entry, but never edit `.gitignore` automatically.
+`.reviews/`, `.diff-summaries/`, `.plan-summaries/`, and `.diffs/` are already in this repository's `.gitignore`. In another repository the skills may suggest the matching ignore entry, but never edit `.gitignore` automatically.
 
 ## Examples
 
@@ -309,6 +328,11 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 # Report what was worked on across coding agents
 > /work-summary this week
 > /work-summary 2026-07-01..2026-07-31 detailed
+
+# Summarize explicit planning documents, optionally as Markdown only or with a quiz
+> /plan-summary docs/plan.md docs/design.md
+> /plan-summary-md docs/prd.md
+> /plan-summary-quiz docs/spec.md
 ```
 
 ## Troubleshooting
@@ -324,6 +348,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | No HTML report generated | Python 3.10+ missing | install Python 3.10 or newer |
 | `/diff-summary` reports an invalid or empty scope | The requested ref/range is unresolved or contains no changes | Correct the exact scope; the skill will not silently fall back to the working tree |
 | `/code-review` wrote no file | Report generation did not complete | inspect the handoff warning and rerun `/code-review`; use `/code-review-md` only when HTML is not wanted |
+| `/plan-summary` asks for a source | No explicit file was supplied | pass one or more `.md`, `.markdown`, or `.txt` UTF-8 paths; the skill will not auto-discover documents |
 | long-task won't auto-continue | `.agent/state.md` missing or not `active` | run `/long-task` to start, or `/long-task resume` |
 | long-task stopped early | hit `LONG_TASK_MAX_STOP_CONTINUES` | raise it, e.g. `export LONG_TASK_MAX_STOP_CONTINUES=1000` |
 
@@ -332,4 +357,4 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
 - A Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite` (standard library only — nothing to install)
+- Python 3.10+ for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, and `git-commit-rewrite` (standard library only — nothing to install)

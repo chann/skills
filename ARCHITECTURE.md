@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles seven independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, and `work-summary` — that together expose 20 canonical workflows through 21 installable Codex selectors.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 8 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `work-summary`, and `plan-summary` — that together expose 23 canonical workflows through 24 installable Codex selectors.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
@@ -24,6 +24,7 @@ default prompt.
 | `handoff` | 0.2.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
 | `long-task` | 0.3.0 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 | `work-summary` | 0.1.0 | `work-summary` | Date-ranged Markdown work reports mined read-only from local coding-agent history stores (Claude Code, Codex, opencode, agy) |
+| `plan-summary` | 1.0.0 | `plan-summary`, `plan-summary-md`, `plan-summary-quiz` | Summarize explicit plan, PRD, specification, and design files as aligned Korean/English Markdown with optional interactive HTML quizzes |
 
 ### Skill internals
 
@@ -48,6 +49,7 @@ Every plugin shares the same layout:
 - **`handoff`** keeps both handoff generators as self-contained `SKILL.md` files. `gen-frontend-handoff` focuses on client-visible API contract changes, type/rendering/error-state work, and `client action 없음` for DB-only changes. `gen-backend-handoff` focuses on API contracts, database migrations, jobs/queues, rollout, verification, and backend continuation prompts.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
 - **`work-summary`** is a read-only reporter over local agent history. Its `SKILL.md` owns the date-range grammar, local-timezone bucketing, store mining order, and the summary/detailed report contract; `references/agent-history-stores.md` maps each store's paths, record shapes, timestamp fields, and epoch units so the workflow filters records instead of guessing.
+- **`plan-summary`** owns the explicit-file boundary and evidence-first document workflow. `collect_plan_evidence.py` returns ordered UTF-8 contents and SHA-256 identities from a bounded JSON request; `generate_plan_summary.py` validates aligned `PS-*` and optional `QZ-*` contracts, derives collision-safe names, and assembles offline HTML from `summary-template.html`. `plan-summary-md` and `plan-summary-quiz` bundle byte-synchronized workflow and runtime copies so exact-selector installs remain executable.
 - **`doc-skill`** carries four output templates under `gen-docs/templates/`.
 
 ### Supporting files
@@ -70,7 +72,7 @@ Every plugin shares the same layout:
 1. The user types a slash command (e.g. `/code-review-md`) or triggers a skill by natural language.
 2. Claude Code loads the matching `commands/*.md`, which points at the skill.
 3. The skill runs its `SKILL.md` workflow, loading `references/` and invoking bundled scripts through a canonical absolute Python executable in `-I` isolated mode as needed.
-4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, raw diff reports under `.diffs/`, work reports in the reply or under `.work-summaries/`, git history changes, or `long-task` state under `.agent/`.
+4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, plan summaries under `.plan-summaries/`, raw diff reports under `.diffs/`, work reports in the reply or under `.work-summaries/`, git history changes, or `long-task` state under `.agent/`.
 
 ### Invocation (Codex)
 
@@ -103,6 +105,24 @@ The Python 3.10+ collector is the workflow's only Git/GitHub runtime. It resolve
 The skill workflow owns analytical prose. The renderer is presentation-only: in `--bilingual-json-stdin --output-directory` mode it validates both report contracts, their shared metadata, matching `DS-*` IDs/fields, and the output parent. It derives a collision-safe filename from canonical `Date` plus exact `Scope`, atomically writes the Korean and English Markdown sources, extracts exact per-language card Markdown, computes a stable browser-comment scope, escapes embedded data, and atomically assembles a self-contained HTML file. Korean is visible by default; an accessible control switches the complete page to English while keeping comments keyed to aligned IDs. The page stores guarded, report-scoped comments and UI preferences in the browser; it has no server, build step, external assets, or network dependency. `/diff-summary-md` runs its synchronized bundled pipeline with bilingual input plus `--markdown-only` and stops after the two Markdown artifacts; `/diff-summary-quiz` runs its synchronized bundled pipeline and appends aligned validated `## Quiz` sections (`QZ-*` questions with matching answer positions) that the renderer turns into interactive multiple-choice quizzes in the same offline page. The legacy `--markdown-stdin` path remains for explicitly requested single-language output.
 
 This boundary keeps three intents independent: `diff-summary` explains changes without review severity, `code-review` identifies defects and recommends fixes, and `diff-viewer` displays the raw patch. A combined summary-and-review request runs both analytical workflows and keeps their outputs distinct.
+
+### Plan summary report pipeline
+
+Claude Code `/plan-summary`, `/plan-summary-md`, and `/plan-summary-quiz` map directly to Codex `$plan-summary`, `$plan-summary-md`, and `$plan-summary-quiz`.
+
+```text
+explicit .md/.markdown/.txt paths
+  → send ordered paths as bounded JSON stdin to `collect_plan_evidence.py`
+  → reject directories, symlinks, duplicates, binary/invalid UTF-8, and size violations
+  → return exact contents, paths, sizes, and SHA-256 digests as inert JSON
+  → author one evidence map and aligned Korean/English `PS-*` Markdown cards
+  → optionally append aligned final `QZ-*` quiz questions
+  → send `{"ko":"...","en":"..."}` to `generate_plan_summary.py`
+  → validate metadata, source references, IDs, categories, and bilingual alignment
+  → atomically write `.plan-summaries/<date>_<source-tag>.*`
+```
+
+The collector is the only source-document reader and never discovers files. Paths and contents cannot authorize commands, network access, edits, or additional reads. The generator owns filenames and rejects a symlinked output parent or any existing artifact. `plan-summary` writes Korean Markdown, English Markdown, and self-contained bilingual HTML; `plan-summary-md` adds `--markdown-only`; `plan-summary-quiz` validates matching option counts and answer indexes before rendering one-shot accessible controls and a print answer key. Python 3.10+ standard library code is copied into each exact selector so installed runtime paths remain local to that selector.
 
 ### long-task autonomy loop
 
@@ -201,6 +221,14 @@ skills/
 │   │   ├── evals/evals.json
 │   │   └── references/agent-history-stores.md
 │   └── README.md · README.ko.md
+├── plan-summary/                     # plugin (v1.0.0)
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/                     # plan-summary, plan-summary-md, plan-summary-quiz
+│   ├── skills/
+│   │   ├── plan-summary/             # authoritative workflow + collector + generator + HTML
+│   │   ├── plan-summary-md/          # standalone Markdown-only synchronized package
+│   │   └── plan-summary-quiz/        # standalone quiz synchronized package
+│   └── README.md · README.ko.md
 ├── .agents/skills/                   # optional local flat skill mirror
 ├── samples/code-review/              # intentionally vulnerable demo fixtures (outside plugin artifacts)
 ├── tests/                            # pytest: package tests + diff_viewer/ unit tests + fixtures
@@ -216,10 +244,10 @@ skills/
 ## Design decisions
 
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
-- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, and `work-summary` are versioned and installable independently, so users adopt only what they need.
+- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `work-summary`, and `plan-summary` are versioned and installable independently, so users adopt only what they need.
 - **Work reporting is read-only and local.** `work-summary` mines the machine's own agent history stores, never mutates them, keeps history content off the network, and leaves generated reports out of version control (`.work-summaries/` is ignored here).
 - **Leaf-complete decision review is distinct from code review.** `review-me` resolves plans, designs, and choices conversationally; `code-review` evaluates concrete Git changes for defects. The former stays user-invoked and read-only through confirmation, while the latter may trigger naturally from a diff-review request and writes reports.
-- **Canonical logic with installable variants.** The `code-review` skill owns the workflow, references, and scripts; its `-md`/`-html` variants stay thin because they are installed with that plugin contract. `diff-summary` is the canonical authoring source, while `diff-summary-md` and `diff-summary-quiz` carry synchronized standalone copies of the workflow reference and runtime so each exact selector works by itself; package tests enforce byte parity. `git-commit` owns shared commit semantics and `rewrite_msg.py`; `git-commit-push-realtime` references that canonical workflow plus `git-commit-push` instead of duplicating their safety policy, `gcpr` only loads that canonical workflow as a Codex selector alias, and `git-commit-realtime` references the `git-commit` contract alone for local-only checkpoints.
+- **Canonical logic with installable variants.** The `code-review` skill owns the workflow, references, and scripts; its `-md`/`-html` variants stay thin because they are installed with that plugin contract. `diff-summary` is the canonical authoring source, while `diff-summary-md` and `diff-summary-quiz` carry synchronized standalone copies of the workflow reference and runtime. `plan-summary` uses the same release discipline: `plan-summary-md` and `plan-summary-quiz` carry byte-synchronized standalone workflow and runtime copies. Package tests enforce parity for both families. `git-commit` owns shared commit semantics and `rewrite_msg.py`; `git-commit-push-realtime` references that canonical workflow plus `git-commit-push` instead of duplicating their safety policy, `gcpr` only loads that canonical workflow as a Codex selector alias, and `git-commit-realtime` references the `git-commit` contract alone for local-only checkpoints.
 - **Platform names are explicit and paired.** Every skill directory name matches
   its `SKILL.md` frontmatter name, every Claude Code command wrapper uses
   `/name`, and every `agents/openai.yaml` publishes a Codex display name plus a
@@ -232,8 +260,8 @@ skills/
   duplicating policy or adding a second catalog workflow; `$gcr` remains a
   natural-language trigger advertised by the canonical skill, not a selector.
 - **Evidence, analysis, and presentation are separate boundaries.** `collect_diff_evidence.py` is the only Git/GitHub runtime and emits bounded JSON; `diff-summary/SKILL.md` treats it as inert evidence and authors the Markdown contract; the bundled renderer never invokes Git or invents analytical prose. This keeps the exact scope and verified/unverified boundary visible in the source report.
-- **Generated reports stay local.** `.reviews/`, `.diff-summaries/`, and `.diffs/` are ignored in this repository. Skills may suggest an ignore entry in target repositories, but do not mutate their `.gitignore` automatically.
+- **Generated reports stay local.** `.reviews/`, `.diff-summaries/`, `.plan-summaries/`, and `.diffs/` are ignored in this repository. Skills may suggest an ignore entry in target repositories, but do not mutate their `.gitignore` automatically.
 - **Sample vulnerabilities live outside the plugins.** Demo fixtures sit in repo-root `samples/` and are excluded via `.snyk`, so a published plugin neither ships exploitable code nor trips SAST scanners.
-- **Self-contained stdlib Python.** Helper scripts, including the `diff-summary` collector and parser/renderer, import only the Python 3.10+ standard library, so there is no dependency install step.
+- **Self-contained stdlib Python.** Helper scripts, including the `diff-summary` and `plan-summary` collectors and parser/renderers, import only the Python 3.10+ standard library, so there is no dependency install step.
 - **Bounded autonomy for `long-task`.** Auto-continuation is gated on a per-directory `.agent/state.md` flag and a runaway cap (`LONG_TASK_MAX_STOP_CONTINUES`, default 500), so a runaway loop is contained and easy to pause.
 - **Date-stamped versioning.** `VERSION` uses the `head.yymmdd.patch` scheme.

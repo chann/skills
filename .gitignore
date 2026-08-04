@@ -6,6 +6,7 @@ __pycache__/
 # Test
 .reviews/
 .diff-summaries/
+.plan-summaries/
 .diffs/
 .work-summaries/
 workspace/

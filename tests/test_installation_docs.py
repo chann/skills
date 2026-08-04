@@ -22,6 +22,8 @@ INSTALL_DOCS = [
     ROOT / "long-task" / "README.ko.md",
     ROOT / "work-summary" / "README.md",
     ROOT / "work-summary" / "README.ko.md",
+    ROOT / "plan-summary" / "README.md",
+    ROOT / "plan-summary" / "README.ko.md",
 ]
 
 CODE_REVIEW_READMES = [
@@ -40,6 +42,18 @@ ROOT_SELECTOR_DOCS = [
     ROOT / "README.md",
     ROOT / "README.ko.md",
     ROOT / "USAGE.md",
+]
+
+PLAN_SUMMARY_READMES = [
+    ROOT / "plan-summary" / "README.md",
+    ROOT / "plan-summary" / "README.ko.md",
+]
+
+ROOT_PLAN_SUMMARY_DOCS = [
+    ROOT / "README.md",
+    ROOT / "README.ko.md",
+    ROOT / "USAGE.md",
+    ROOT / "ARCHITECTURE.md",
 ]
 
 
@@ -80,7 +94,7 @@ class InstallationDocsTests(unittest.TestCase):
 
     def test_every_skill_declares_claude_code_and_codex_interfaces(self) -> None:
         skill_paths = sorted(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(21, len(skill_paths))
+        self.assertEqual(24, len(skill_paths))
 
         for skill_path in skill_paths:
             selector = skill_path.parent.name
@@ -144,6 +158,48 @@ class InstallationDocsTests(unittest.TestCase):
             with self.subTest(doc=path.relative_to(ROOT)):
                 self.assertIn("/diff-summary", text)
                 self.assertIn(".diff-summaries/", text)
+
+    def test_root_docs_publish_plan_summary_family_and_counts(self) -> None:
+        for path in ROOT_PLAN_SUMMARY_DOCS:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(doc=path.relative_to(ROOT)):
+                for selector in (
+                    "plan-summary",
+                    "plan-summary-md",
+                    "plan-summary-quiz",
+                ):
+                    self.assertIn(f"/{selector}", text)
+                    self.assertIn(f"${selector}", text)
+                self.assertIn(".plan-summaries/", text)
+                self.assertIn("23", text)
+                self.assertIn("24", text)
+                self.assertIn("8", text)
+
+    def test_plan_summary_readmes_publish_exact_installs_and_boundaries(self) -> None:
+        for path in PLAN_SUMMARY_READMES:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(doc=path.relative_to(ROOT)):
+                for selector in (
+                    "plan-summary",
+                    "plan-summary-md",
+                    "plan-summary-quiz",
+                ):
+                    self.assertGreaterEqual(text.count(f"--skill {selector}"), 2)
+                    self.assertIn(f"/{selector}", text)
+                    self.assertIn(f"${selector}", text)
+                self.assertIn(".plan-summaries/", text)
+                self.assertIn("Python 3.10+", text)
+                self.assertIn("UTF-8", text)
+                self.assertIn(".md", text)
+                self.assertIn(".markdown", text)
+                self.assertIn(".txt", text)
+                self.assertIn("PS-*", text)
+                self.assertIn("QZ-*", text)
+
+    def test_plan_summary_artifacts_are_ignored(self) -> None:
+        ignore = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
+
+        self.assertIn(".plan-summaries/", ignore)
 
     def test_diff_summary_architecture_and_usage_document_the_collector_boundary(self) -> None:
         architecture = (ROOT / "ARCHITECTURE.md").read_text(encoding="utf-8")

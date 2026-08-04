@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 20 practical agent workflows and 21 installable Codex selectors.
+A collection of 23 practical agent workflows and 24 installable Codex selectors across 8 plugins.
 
 ## Website
 
@@ -30,6 +30,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
 | **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
+| **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
 
 
 ## Installation
@@ -66,12 +67,14 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [handoff installation](handoff/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
 - [work-summary installation](work-summary/README.md#installation)
+- [plan-summary installation](plan-summary/README.md#installation)
 
 Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
 Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 Review-me-only install: `npx skills add chann/skills --skill review-me`
 Work-summary-only install: `npx skills add chann/skills --skill work-summary`
+Plan-summary family install: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 Codex `$gcpr` install: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## Quick reference
@@ -163,6 +166,16 @@ what was asked and done — a summary by default, or a detailed report with a
 timeline and request log. Also triggers on phrases like *"오늘 작업 요약해줘"*
 and *"what did I work on this week"*.
 
+### plan-summary → [details](plan-summary/README.md)
+
+| Claude Code | Codex | Output |
+| --- | --- | --- |
+| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | Aligned Korean/English Markdown plus bilingual HTML under `.plan-summaries/` |
+| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | Aligned Korean/English Markdown only |
+| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus aligned `QZ-*` comprehension quizzes |
+
+The three selectors read only explicit `.md`, `.markdown`, or `.txt` UTF-8 files. They never auto-discover documents. Reports share ordered source digests and `PS-*` evidence cards; the Markdown-only selector emits no HTML, while the quiz selector adds accessible offline interaction.
+
 ## Documentation
 
 - [Usage](USAGE.md) — install, full command reference, configuration, examples, and troubleshooting
@@ -191,7 +204,7 @@ What is and isn't portable:
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, and `git-commit-rewrite`)
+- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, and `git-commit-rewrite`)
 
 ## License
 
