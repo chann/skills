@@ -8,6 +8,7 @@ GIT_SKILL = ROOT / "git-skill"
 REALTIME_SKILL_NAME = "git-commit-push-realtime"
 REALTIME_SKILL = GIT_SKILL / "skills" / REALTIME_SKILL_NAME
 REALTIME_ALIAS = "gcpr"
+CODEX_REALTIME_ALIAS_SKILL = GIT_SKILL / "skills" / REALTIME_ALIAS
 LOCAL_REALTIME_SKILL_NAME = "git-commit-realtime"
 LOCAL_REALTIME_SKILL = GIT_SKILL / "skills" / LOCAL_REALTIME_SKILL_NAME
 LOCAL_REALTIME_ALIAS = "gcr"
@@ -66,6 +67,23 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, description)
 
+    def test_codex_realtime_alias_is_a_thin_skill_package(self) -> None:
+        skill = CODEX_REALTIME_ALIAS_SKILL / "SKILL.md"
+        interface = CODEX_REALTIME_ALIAS_SKILL / "agents" / "openai.yaml"
+
+        self.assertTrue(skill.is_file())
+        self.assertTrue(interface.is_file())
+        self.assertIn(f"name: {REALTIME_ALIAS}", frontmatter(skill))
+        self.assertIn(f"${REALTIME_ALIAS}", frontmatter(skill))
+
+        skill_text = skill.read_text(encoding="utf-8")
+        self.assertIn(REALTIME_SKILL_NAME, skill_text)
+        self.assertNotIn("git push", body(skill))
+        self.assertIn(
+            f"${REALTIME_ALIAS}",
+            interface.read_text(encoding="utf-8"),
+        )
+
     def test_short_alias_is_documented_across_package_surfaces(self) -> None:
         documented = [
             ROOT / "README.md",
@@ -77,11 +95,9 @@ class GitSkillPackageTests(unittest.TestCase):
         ]
 
         for path in documented:
-            with self.subTest(path=path):
-                self.assertIn(
-                    f"`/{REALTIME_ALIAS}`",
-                    path.read_text(encoding="utf-8"),
-                )
+            for selector in (f"`/{REALTIME_ALIAS}`", f"`${REALTIME_ALIAS}`"):
+                with self.subTest(path=path, selector=selector):
+                    self.assertIn(selector, path.read_text(encoding="utf-8"))
 
     def test_realtime_commit_push_uses_green_outcome_checkpoints(self) -> None:
         skill = (REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
@@ -134,7 +150,8 @@ class GitSkillPackageTests(unittest.TestCase):
         for path in package_readmes:
             with self.subTest(path=path):
                 text = path.read_text(encoding="utf-8")
-                self.assertEqual(2, text.count(f"--skill {REALTIME_SKILL_NAME}"))
+                self.assertEqual(3, text.count(f"--skill {REALTIME_SKILL_NAME}"))
+                self.assertEqual(3, text.count(f"--skill {REALTIME_ALIAS}"))
                 self.assertIn(f"/{REALTIME_SKILL_NAME}", text)
                 self.assertIn(f"${REALTIME_SKILL_NAME}", text)
 
@@ -281,13 +298,13 @@ class GitSkillPackageTests(unittest.TestCase):
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
         packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(20, len(packaged_skills))
+        self.assertEqual(21, len(packaged_skills))
 
         expected_counts = {
-            ROOT / "README.md": "20 practical agent skills",
-            ROOT / "README.ko.md": "20개의 실용적인 에이전트 스킬",
-            ROOT / "USAGE.md": "20 independently discoverable skills",
-            ROOT / "ARCHITECTURE.md": "expose 20 skills",
+            ROOT / "README.md": "20 practical agent workflows and 21 installable Codex selectors",
+            ROOT / "README.ko.md": "20개의 실용적인 에이전트 워크플로와 21개의 설치 가능한 Codex selector",
+            ROOT / "USAGE.md": "20 canonical workflows and 21 installable Codex selectors",
+            ROOT / "ARCHITECTURE.md": "expose 20 canonical workflows through 21 installable Codex selectors",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path):
@@ -301,7 +318,7 @@ class GitSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.7.0", metadata["version"])
+        self.assertEqual("0.8.0", metadata["version"])
         self.assertIn("realtime checkpoint commits and pushes", metadata["description"])
 
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:

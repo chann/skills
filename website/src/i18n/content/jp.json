@@ -18,7 +18,7 @@
     "headline": ["昨日の繰り返しを、", "今日のスキルへ。"],
     "lede": "Claude CodeとCodexで繰り返していたソフトウェア作業を、検証可能な{count}個のワークフローにしました。指示はキャッシュしやすい安定した形で再利用し、結果が決まっている手順はスクリプトに任せて、LLMを必要な判断に集中させます。",
     "primaryAction": "{count}個のスキルを見る",
-    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+    "proof": "{count}個の正式ワークフロー · {categories}カテゴリー · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "スキルを使う理由",

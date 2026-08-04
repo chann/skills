@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 20 independently discoverable skills across seven workflow plugins.
+This repository exposes 20 canonical workflows and 21 installable Codex selectors across seven workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each diff-summary selector is independently executable: install only the Markdown variant with `npx skills add chann/skills --skill diff-summary-md`, or only the quiz variant with `npx skills add chann/skills --skill diff-summary-quiz`. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -78,7 +78,7 @@ These are the exact names published by every package:
 | Project docs | `/gen-docs` | `$gen-docs` |
 | Git commit | `/git-commit` | `$git-commit` |
 | Git commit and push | `/git-commit-push` | `$git-commit-push` |
-| Realtime commit and push | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` |
+| Realtime commit and push | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` |
 | Realtime local commit | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` |
 | Commit-message rewrite | `/git-commit-rewrite` | `$git-commit-rewrite` |
 | Merge to main | `/git-merge-to-main` | `$git-merge-to-main` |

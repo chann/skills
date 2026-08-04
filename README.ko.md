@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링 워크플로우를 위한 20개의 실용적인 에이전트 스킬 모음입니다.
+소프트웨어 엔지니어링을 위한 20개의 실용적인 에이전트 워크플로와 21개의 설치 가능한 Codex selector 모음입니다.
 
 ## Website
 
@@ -68,6 +68,7 @@ handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-h
 diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 review-me만 설치: `npx skills add chann/skills --skill review-me`
 work-summary만 설치: `npx skills add chann/skills --skill work-summary`
+Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## 빠른 참조
 
@@ -111,7 +112,7 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명
 | ------------------------------ | --------------------------- | ------------------------------------------------------------------------------- |
 | `/git-commit`                  | `$git-commit`               | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
 | `/git-commit-push`             | `$git-commit-push`          | 위 작업 후 `git push`까지 진행 (`--force` 안 함)                                |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
+| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 (푸시 안 함)               |
 | `/git-commit-rewrite`          | `$git-commit-rewrite`       | 최근 비순응 커밋 subject를 Conventional 형식으로 재작성                         |
 | `/git-merge-to-main`           | `$git-merge-to-main`        | 현재 브랜치를 `main`으로 머지 후 소스 브랜치를 `git branch -d`로 삭제           |

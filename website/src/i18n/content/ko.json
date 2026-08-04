@@ -18,7 +18,7 @@
     "headline": ["어제의 반복이,", "오늘의 스킬로."],
     "lede": "Claude Code와 Codex에서 되풀이하던 소프트웨어 작업을 검증 가능한 {count}개의 워크플로로 바꿨습니다. 반복 지침은 캐시하기 좋은 형태로 재사용하고, 결과가 정해진 단계는 스크립트에 맡겨 LLM이 필요한 판단에 집중하게 합니다.",
     "primaryAction": "{count}개 스킬 살펴보기",
-    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+    "proof": "{count}개 정식 워크플로 · {categories}개 카테고리 · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "Why skills",

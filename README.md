@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 20 practical agent skills for software engineering workflows.
+A collection of 20 practical agent workflows and 21 installable Codex selectors.
 
 ## Website
 
@@ -72,6 +72,7 @@ Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-h
 Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 Review-me-only install: `npx skills add chann/skills --skill review-me`
 Work-summary-only install: `npx skills add chann/skills --skill work-summary`
+Codex `$gcpr` install: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## Quick reference
 
@@ -123,7 +124,7 @@ decision record is confirmed.
 | -------------------------------- | --------------------------- | ------------------------------------------------------------------------------------- |
 | `/git-commit`                    | `$git-commit`               | Group working-tree changes into Conventional Commits                                  |
 | `/git-commit-push`               | `$git-commit-push`          | Same, then `git push` (no `--force`)                                                   |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` | Commit and push each verified, meaningful outcome while implementation continues |
+| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | Commit and push each verified, meaningful outcome while implementation continues |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | Commit each verified, meaningful outcome locally while implementation continues — no push |
 | `/git-commit-rewrite`            | `$git-commit-rewrite`       | Rewrite recent non-Conventional commit subjects                                       |
 | `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |

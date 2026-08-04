@@ -18,7 +18,7 @@
     "headline": ["把昨天的重复，", "变成今天的技能。"],
     "lede": "我们把Claude Code和Codex中反复进行的软件工作，整理成{count}个可验证的工作流。稳定的指令以更适合提示词缓存的形式复用，结果明确的步骤交给脚本执行，让LLM专注于真正需要判断的部分。",
     "primaryAction": "查看{count}个技能",
-    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+    "proof": "{count}个正式工作流 · {categories}个分类 · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "为什么用技能",

@@ -58,6 +58,12 @@ function catalogSkillNames(source) {
     .sort();
 }
 
+function catalogAliasTokens(source) {
+  return [...source.matchAll(/^\s*aliases:\s*\[([^\]]*)\],\s*$/gm)]
+    .flatMap((match) => [...match[1].matchAll(/"([/$][^"]+)"/g)])
+    .map((match) => match[1]);
+}
+
 function duplicates(values) {
   return values.filter((value, index) => values.indexOf(value) !== index);
 }
@@ -68,18 +74,31 @@ if (!catalogSource.includes("export const skillDefinitions")) {
   throw new Error("Canonical catalog must export skillDefinitions.");
 }
 const catalog = catalogSkillNames(catalogSource);
+const aliasTokens = catalogAliasTokens(catalogSource);
+const aliasNames = [...new Set(aliasTokens.map((alias) => alias.slice(1)))];
 const duplicatedCatalogIds = [...new Set(duplicates(catalog))];
-const missingFromCatalog = packaged.filter((name) => !catalog.includes(name));
+const duplicatedAliasTokens = [...new Set(duplicates(aliasTokens))];
+const collidingAliasNames = aliasNames.filter((name) => catalog.includes(name));
+const represented = new Set([...catalog, ...aliasNames]);
+const missingFromCatalog = packaged.filter((name) => !represented.has(name));
 const missingFromPackages = catalog.filter((name) => !packaged.includes(name));
 
 if (
   duplicatedCatalogIds.length ||
+  duplicatedAliasTokens.length ||
+  collidingAliasNames.length ||
   missingFromCatalog.length ||
   missingFromPackages.length
 ) {
   const details = [
     duplicatedCatalogIds.length
       ? `Duplicate catalog ids: ${duplicatedCatalogIds.join(", ")}`
+      : null,
+    duplicatedAliasTokens.length
+      ? `Duplicate catalog aliases: ${duplicatedAliasTokens.join(", ")}`
+      : null,
+    collidingAliasNames.length
+      ? `Catalog aliases collide with canonical ids: ${collidingAliasNames.join(", ")}`
       : null,
     missingFromCatalog.length
       ? `Missing from catalog: ${missingFromCatalog.join(", ")}`
@@ -92,4 +111,6 @@ if (
   throw new Error(details.join("\n"));
 }
 
-console.log(`Catalog matches ${packaged.length} packaged skills.`);
+console.log(
+  `Catalog matches ${catalog.length} workflows and ${packaged.length} packaged selectors.`,
+);

@@ -18,7 +18,7 @@
     "headline": ["Yesterday’s repetition becomes", "today’s skill."],
     "lede": "We turned repetitive Claude Code and Codex software work into {count} verifiable workflows. Stable instructions are easier to reuse with prompt caching, while scripted steps leave the LLM free to focus on judgment.",
     "primaryAction": "Explore {count} skills",
-    "proof": "{count} packaged skills · {categories} categories · Claude Code + Codex · MIT"
+    "proof": "{count} canonical workflows · {categories} categories · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "Why skills",

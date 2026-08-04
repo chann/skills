@@ -23,6 +23,7 @@ npx skills add -y -g chann/skills \
   --skill git-commit \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
+  --skill gcpr \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -37,6 +38,7 @@ npx skills add chann/skills \
   --skill git-commit \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
+  --skill gcpr \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -45,6 +47,16 @@ npx skills add chann/skills \
 ```
 
 Use the actual skill names with `--skill`; `git-skill` is the plugin directory that packages these Git workflows.
+
+To add only the Codex `$gcpr` selector and its required workflows:
+
+```bash
+npx skills add -y -g chann/skills \
+  --skill gcpr \
+  --skill git-commit-push-realtime \
+  --skill git-commit \
+  --skill git-commit-push
+```
 
 **Manual:**
 
@@ -62,7 +74,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 | ------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------- |
 | `/git-commit`                   | `$git-commit`                | Group staged + unstaged changes into logical units; create one Conventional Commit per unit    |
 | `/git-commit-push`              | `$git-commit-push`           | Same as above, then `git push` (no force)                                                      |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime`  | During implementation, commit and immediately push each verified, meaningful outcome     |
+| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | During implementation, commit and immediately push each verified, meaningful outcome     |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | During implementation, commit each verified, meaningful outcome locally — never push           |
 | `/git-commit-rewrite`           | `$git-commit-rewrite`        | Rewrite recent non-conformant commit subjects to Conventional format                           |
 | `/git-merge-to-main`            | `$git-merge-to-main`         | Merge current branch into `main`, then delete the source unless protected                      |
@@ -76,7 +88,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 > 변경사항 의미 단위로 커밋해줘
 > /git-commit-push
 > keep committing and pushing meaningful checkpoints as you work
-> $git-commit-push-realtime
+> $gcpr
 > keep committing as you work, I'll push later
 > /gcr
 > /git-commit-rewrite
@@ -98,7 +110,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 
 Runs the default workflow, then `git push`. Never `--force` or `--force-with-lease`. If the push is rejected, the skill stops and surfaces the error rather than auto-resolving.
 
-### `/git-commit-push-realtime` (alias `/gcpr`)
+### `/git-commit-push-realtime` (aliases `/gcpr` and `$gcpr`)
 
 1. Inspect the branch, upstream, existing commits, working tree, and secret-path risks before editing
 2. Plan outcome-based checkpoints; do not split work by elapsed time, file count, or token pressure
@@ -223,6 +235,9 @@ git-skill/
     ├── git-commit-push-realtime/         # Verified realtime-checkpoint variant
     │   ├── SKILL.md
     │   └── evals/evals.json
+    ├── gcpr/                             # Thin Codex selector alias
+    │   ├── SKILL.md
+    │   └── agents/openai.yaml
     ├── git-commit-realtime/              # Local-only realtime-checkpoint variant
     │   ├── SKILL.md
     │   └── evals/evals.json

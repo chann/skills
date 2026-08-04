@@ -140,7 +140,7 @@ export const skillDefinitions = [
     example: "$git-commit-push-realtime",
     claudeSelector: "/git-commit-push-realtime",
     codexSelector: "$git-commit-push-realtime",
-    aliases: ["/gcpr"],
+    aliases: ["/gcpr", "$gcpr"],
     tags: ["git", "commit", "push", "realtime", "checkpoint"],
   },
   {

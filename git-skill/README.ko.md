@@ -23,6 +23,7 @@ npx skills add -y -g chann/skills \
   --skill git-commit \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
+  --skill gcpr \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -37,6 +38,7 @@ npx skills add chann/skills \
   --skill git-commit \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
+  --skill gcpr \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -45,6 +47,16 @@ npx skills add chann/skills \
 ```
 
 설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. `git-skill`은 이 Git 워크플로우들을 패키징하는 플러그인 디렉터리 이름입니다.
+
+Codex `$gcpr` selector와 필수 워크플로만 추가하려면:
+
+```bash
+npx skills add -y -g chann/skills \
+  --skill gcpr \
+  --skill git-commit-push-realtime \
+  --skill git-commit \
+  --skill git-commit-push
+```
 
 **수동 설치:**
 
@@ -62,7 +74,7 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 | ------------------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
 | `/git-commit`                   | `$git-commit`                | staged + unstaged 변경을 의미 단위로 분리해 unit마다 Conventional Commit 생성  |
 | `/git-commit-push`              | `$git-commit-push`           | 위 작업 후 `git push`까지 진행 (force 안 함)                                   |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime`  | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
+| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 — 푸시하지 않음           |
 | `/git-commit-rewrite`           | `$git-commit-rewrite`        | 최근 비순응 커밋 subject를 Conventional 형식으로 재작성                        |
 | `/git-merge-to-main`            | `$git-merge-to-main`         | 현재 브랜치를 `main`으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제         |
@@ -76,7 +88,7 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 > commit my changes
 > /git-commit-push
 > 작업 중간중간 의미 있는 단위마다 커밋하고 푸시해줘
-> $git-commit-push-realtime
+> $gcpr
 > 푸시 없이 의미 단위마다 커밋만 해줘
 > /gcr
 > /git-commit-rewrite
@@ -98,7 +110,7 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 
 기본 워크플로우 실행 후 `git push`. `--force` / `--force-with-lease` 절대 사용 안 함. push 가 거부되면(non-fast-forward) 자동 해결 시도 없이 즉시 에러를 사용자에게 노출하고 중단.
 
-### `/git-commit-push-realtime` (별칭 `/gcpr`)
+### `/git-commit-push-realtime` (별칭 `/gcpr`, `$gcpr`)
 
 1. 수정 전에 브랜치, upstream, 기존 커밋, 작업 트리, 비밀 경로 위험 점검
 2. 결과 중심 checkpoint 계획 수립 (경과 시간, 파일 수, 토큰 압력으로 분리하지 않음)
@@ -223,6 +235,9 @@ git-skill/
     ├── git-commit-push-realtime/         # 검증된 realtime checkpoint 변형
     │   ├── SKILL.md
     │   └── evals/evals.json
+    ├── gcpr/                             # 얇은 Codex selector 별칭
+    │   ├── SKILL.md
+    │   └── agents/openai.yaml
     ├── git-commit-realtime/              # 로컬 전용 realtime checkpoint 변형
     │   ├── SKILL.md
     │   └── evals/evals.json
