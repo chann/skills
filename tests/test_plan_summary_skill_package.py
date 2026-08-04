@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
@@ -19,11 +20,24 @@ SHARED_FILES = (
     Path("scripts/generate_plan_summary.py"),
     Path("assets/summary-template.html"),
 )
+REPORT_TEST = ROOT / "tests" / "plan_summary" / "test_summary_report.py"
 
 
 def skill_body(path: Path) -> str:
     text = path.read_text(encoding="utf-8")
     return text.split("---\n", 2)[2].lstrip("\n")
+
+
+def load_report_fixtures():
+    spec = importlib.util.spec_from_file_location(
+        "_plan_summary_report_fixtures", REPORT_TEST
+    )
+    if spec is None or spec.loader is None:
+        raise AssertionError("plan-summary report fixtures could not be loaded")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 class PlanSummarySkillPackageTests(unittest.TestCase):
@@ -183,10 +197,11 @@ class PlanSummarySkillPackageTests(unittest.TestCase):
                     re.compile(rf"(?m)^[^A-Za-z0-9]*{re.escape(name)}\s*$"),
                 )
 
-    def test_variant_exact_selector_installs_a_usable_standalone_package(self) -> None:
+    def test_exact_selector_installs_and_generates_expected_artifacts(self) -> None:
         environment = os.environ.copy()
         environment.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
-        for name in ("plan-summary-md", "plan-summary-quiz"):
+        fixtures = load_report_fixtures()
+        for name in SKILL_NAMES:
             with self.subTest(skill=name), tempfile.TemporaryDirectory() as target:
                 subprocess.run(["git", "init", "-q"], cwd=target, check=True)
                 result = subprocess.run(
@@ -214,13 +229,78 @@ class PlanSummarySkillPackageTests(unittest.TestCase):
                 )
                 self.assertEqual(result.returncode, 0, result.stdout)
                 installed = Path(target) / ".agents" / "skills" / name
-                for relative in (
+                required = [
                     Path("SKILL.md"),
                     Path("agents/openai.yaml"),
-                    Path("references/plan-summary-workflow.md"),
                     *SHARED_FILES,
-                ):
+                ]
+                if name != "plan-summary":
+                    required.append(Path("references/plan-summary-workflow.md"))
+                for relative in required:
                     self.assertTrue((installed / relative).is_file(), relative)
+
+                collector_result = subprocess.run(
+                    [
+                        sys.executable,
+                        "-I",
+                        str(installed / "scripts" / "collect_plan_evidence.py"),
+                    ],
+                    cwd=ROOT,
+                    input=json.dumps({"paths": ["plan-summary/README.md"]}),
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                self.assertEqual(
+                    collector_result.returncode, 0, collector_result.stderr
+                )
+                collected = json.loads(collector_result.stdout)
+                self.assertEqual(
+                    [document["display_path"] for document in collected["documents"]],
+                    ["plan-summary/README.md"],
+                )
+
+                reports = (
+                    (fixtures.KO_QUIZ_REPORT, fixtures.EN_QUIZ_REPORT)
+                    if name == "plan-summary-quiz"
+                    else (fixtures.KO_REPORT, fixtures.EN_REPORT)
+                )
+                output_directory = Path(target) / "artifacts"
+                command = [
+                    sys.executable,
+                    "-I",
+                    str(installed / "scripts" / "generate_plan_summary.py"),
+                    "--bilingual-json-stdin",
+                    "--output-directory",
+                    str(output_directory),
+                ]
+                if name == "plan-summary-md":
+                    command.append("--markdown-only")
+                generator_result = subprocess.run(
+                    command,
+                    input=json.dumps({"ko": reports[0], "en": reports[1]}),
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+                self.assertEqual(
+                    generator_result.returncode, 0, generator_result.stderr
+                )
+                artifacts = [
+                    Path(path)
+                    for path in json.loads(generator_result.stdout)["artifacts"]
+                ]
+                self.assertEqual(
+                    len(artifacts), 2 if name == "plan-summary-md" else 3
+                )
+                self.assertTrue(all(path.is_file() for path in artifacts))
+                self.assertEqual(
+                    sum(path.suffix == ".html" for path in artifacts),
+                    0 if name == "plan-summary-md" else 1,
+                )
+
                 help_result = subprocess.run(
                     [
                         sys.executable,
