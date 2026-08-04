@@ -47,13 +47,17 @@ const localizedContent = Object.fromEntries(
     }),
   ),
 );
-const koreanKeyPaths = keyPaths(localizedContent.ko).sort();
+const localeShapePaths = (content) =>
+  keyPaths(content)
+    .filter((key) => !/^benefits\.title\[\d+\]$/.test(key))
+    .sort();
+const koreanKeyPaths = localeShapePaths(localizedContent.ko);
 
 for (const locale of requiredLocales) {
   const content = localizedContent[locale];
   requireNonEmptyStrings(content, locale);
 
-  const localeKeyPaths = keyPaths(content).sort();
+  const localeKeyPaths = localeShapePaths(content);
   if (JSON.stringify(localeKeyPaths) !== JSON.stringify(koreanKeyPaths)) {
     const missing = koreanKeyPaths.filter((key) => !localeKeyPaths.includes(key));
     const extra = localeKeyPaths.filter((key) => !koreanKeyPaths.includes(key));
@@ -85,6 +89,7 @@ for (const locale of requiredLocales) {
 
   const expectedLengths = [
     ["hero.headline", content.hero?.headline, 2],
+    ["benefits.title", content.benefits?.title, locale === "ko" ? 3 : 2],
     ["benefits.items", content.benefits?.items, 3],
     ["tagline.lines", content.tagline?.lines, 2],
     ["workflow.steps", content.workflow?.steps, 3],

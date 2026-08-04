@@ -222,7 +222,7 @@ export function App({ locale }: AppProps) {
             <Reveal className="efficiency-intro">
               <span className="section-label">{content.benefits.label}</span>
               <h2 id="efficiency-title">
-                {content.benefits.title[0]}<br />{content.benefits.title[1]}
+                {content.benefits.title.map((line) => <span key={line}>{line}</span>)}
               </h2>
               <p>{content.benefits.description}</p>
               <dl

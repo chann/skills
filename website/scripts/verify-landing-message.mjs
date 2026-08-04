@@ -9,6 +9,11 @@ const content = JSON.parse(
   await readFile(path.join(root, "src", "i18n", "content", "ko.json"), "utf8"),
 );
 const localizedCopy = JSON.stringify(content);
+const expectedBenefitsTitle = ["반복할수록,", "덜 설명하고", "더 선명하게."];
+
+if (JSON.stringify(content.benefits.title) !== JSON.stringify(expectedBenefitsTitle)) {
+  throw new Error("Korean benefits title must use the approved three-line composition.");
+}
 
 for (const text of [
   "어제의 반복이,",

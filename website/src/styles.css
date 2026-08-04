@@ -687,6 +687,10 @@ code {
   text-wrap: balance;
 }
 
+.efficiency-intro h2 span {
+  display: block;
+}
+
 .efficiency-intro > p {
   margin: 24px 0 0;
   color: var(--ink-soft);
