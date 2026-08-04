@@ -521,5 +521,106 @@ class PlanSummaryOutputTests(unittest.TestCase):
         self.assertTrue(all(Path(path).is_file() for path in payload["artifacts"]))
 
 
+class PlanSummaryHtmlTests(unittest.TestCase):
+    def test_renders_plan_cards_without_git_specific_labels(self) -> None:
+        rendered = renderer.render_html_report(
+            renderer.parse_report(KO_REPORT), renderer.parse_report(EN_REPORT)
+        )
+
+        self.assertIn("Plan Summary", rendered)
+        self.assertIn('data-summary-id="PS-001"', rendered)
+        self.assertIn("docs/plan.md#release-scope", rendered)
+        self.assertIn("Source basis", rendered)
+        for forbidden in (
+            "Diff Summary",
+            ".diff-summaries",
+            "DS-",
+            "diff-summary:",
+            ">Repository<",
+            ">Command<",
+            ">HEAD<",
+            "requested Git scope",
+        ):
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, rendered)
+
+    def test_bilingual_html_defaults_to_korean_and_switches_the_whole_page(self) -> None:
+        rendered = renderer.render_html_report(
+            renderer.parse_report(KO_REPORT), renderer.parse_report(EN_REPORT)
+        )
+
+        self.assertIn('<html lang="ko"', rendered)
+        self.assertIn('data-language-part="ko" class="language-part is-active"', rendered)
+        self.assertIn('data-language-part="en" class="language-part" hidden', rendered)
+        self.assertIn('data-set-lang="ko" aria-pressed="true"', rendered)
+        self.assertIn('data-set-lang="en" aria-pressed="false"', rendered)
+        self.assertIn("document.documentElement.lang = language", rendered)
+        self.assertIn("첫 출시의 문서 요약 범위", rendered)
+        self.assertIn("The first release defines", rendered)
+
+    def test_html_is_self_contained_and_escapes_document_content(self) -> None:
+        unsafe = replace_once(
+            KO_REPORT,
+            "첫 출시의 문서 요약 범위와 검증 기준을 정리합니다.",
+            '<script>alert("atlas & ink")</script>',
+        )
+
+        rendered = renderer.render_html_report(
+            renderer.parse_report(unsafe), renderer.parse_report(EN_REPORT)
+        )
+
+        self.assertNotIn('<script>alert("atlas & ink")</script>', rendered)
+        self.assertIn("&lt;script&gt;alert", rendered)
+        self.assertIn(r"\u003cscript\u003ealert", rendered)
+        self.assertNotRegex(rendered, r'<(?:link|script)[^>]+src=["\']https?://')
+        self.assertNotRegex(rendered, r'<link[^>]+href=["\']https?://')
+
+    def test_quiz_options_are_accessible_buttons_with_one_shot_answer_behavior(self) -> None:
+        rendered = renderer.render_html_report(
+            renderer.parse_report(KO_QUIZ_REPORT),
+            renderer.parse_report(EN_QUIZ_REPORT),
+        )
+
+        self.assertIn('class="quiz-option"', rendered)
+        self.assertIn('data-quiz-correct="true"', rendered)
+        self.assertIn('aria-pressed="false"', rendered)
+        self.assertIn('role="status"', rendered)
+        self.assertIn("if (question.dataset.answered === \"true\")", rendered)
+        self.assertIn("option.disabled = true", rendered)
+        self.assertIn("explanation.open = true", rendered)
+
+    def test_print_styles_reveal_the_quiz_answer_key(self) -> None:
+        rendered = renderer.render_html_report(renderer.parse_report(KO_QUIZ_REPORT))
+
+        self.assertIn("@media print", rendered)
+        self.assertIn('.quiz-option[data-quiz-correct="true"]::after', rendered)
+        self.assertIn(".quiz-explanation {", rendered)
+        self.assertIn("display: block !important", rendered)
+
+    def test_runtime_uses_plan_summary_storage_keys(self) -> None:
+        rendered = renderer.render_html_report(
+            renderer.parse_report(KO_REPORT), renderer.parse_report(EN_REPORT)
+        )
+
+        self.assertIn("data-plan-summary-runtime", rendered)
+        self.assertIn('const THEME_KEY = "plan-summary:theme"', rendered)
+        self.assertIn('const LANGUAGE_KEY = "plan-summary:language"', rendered)
+        self.assertNotIn("diff-summary:", rendered)
+
+    def test_default_generation_writes_one_bilingual_html_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / ".plan-summaries"
+
+            korean, english, html_path = renderer.generate_bilingual_report_in_directory(
+                KO_REPORT, EN_REPORT, output
+            )
+
+            self.assertTrue(korean.is_file())
+            self.assertTrue(english.is_file())
+            self.assertIsNotNone(html_path)
+            assert html_path is not None
+            self.assertIn("data-plan-summary-runtime", html_path.read_text(encoding="utf-8"))
+
+
 if __name__ == "__main__":
     unittest.main()

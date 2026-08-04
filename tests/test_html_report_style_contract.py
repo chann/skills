@@ -14,6 +14,14 @@ SUMMARY_TEMPLATE = (
     / "assets"
     / "summary-template.html"
 )
+PLAN_SUMMARY_TEMPLATE = (
+    ROOT
+    / "plan-summary"
+    / "skills"
+    / "plan-summary"
+    / "assets"
+    / "summary-template.html"
+)
 TEMPLATES = {
     "diff-summary": SUMMARY_TEMPLATE,
     "diff-viewer": (
@@ -519,6 +527,23 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     ),
                     EXPECTED_DARK_THEME,
                 )
+
+    def test_plan_summary_template_matches_shared_color_and_focus_contracts(
+        self,
+    ) -> None:
+        source = PLAN_SUMMARY_TEMPLATE.read_text(encoding="utf-8")
+
+        for token, (light, dark) in EXPECTED_THEME.items():
+            with self.subTest(token=token):
+                self.assertIn(f"--{token}: light-dark({light}, {dark});", source)
+        for token, value in EXPECTED_ROOT_TOKENS.items():
+            with self.subTest(root_token=token):
+                self.assertIn(f"--{token}: {value};", source)
+        self.assertRegex(source, r":focus-visible\s*\{[^}]*outline:")
+        self.assertIn("@media (prefers-reduced-motion: reduce)", source)
+        self.assertIn("@media print", source)
+        self.assertIn("word-break: keep-all", source)
+        self.assertIn("overflow-wrap: anywhere", source)
 
     def test_theme_switches_through_one_segmented_control_idiom(self) -> None:
         """A menu hides the active mode; a segmented group shows it at a glance."""
