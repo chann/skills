@@ -5,6 +5,13 @@ import { fileURLToPath } from "node:url";
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = path.resolve(websiteRoot, "..");
 const catalogPath = path.join(websiteRoot, "src", "data", "skills.ts");
+const expectedWorkflowCount = 23;
+const expectedSelectorCount = 24;
+const requiredPlanSummaryIds = [
+  "plan-summary",
+  "plan-summary-md",
+  "plan-summary-quiz",
+];
 
 async function exists(target) {
   try {
@@ -82,13 +89,19 @@ const collidingAliasNames = aliasNames.filter((name) => catalog.includes(name));
 const represented = new Set([...catalog, ...aliasNames]);
 const missingFromCatalog = packaged.filter((name) => !represented.has(name));
 const missingFromPackages = catalog.filter((name) => !packaged.includes(name));
+const missingPlanSummaryIds = requiredPlanSummaryIds.filter(
+  (name) => !catalog.includes(name),
+);
 
 if (
   duplicatedCatalogIds.length ||
   duplicatedAliasTokens.length ||
   collidingAliasNames.length ||
   missingFromCatalog.length ||
-  missingFromPackages.length
+  missingFromPackages.length ||
+  missingPlanSummaryIds.length ||
+  catalog.length !== expectedWorkflowCount ||
+  packaged.length !== expectedSelectorCount
 ) {
   const details = [
     duplicatedCatalogIds.length
@@ -105,6 +118,15 @@ if (
       : null,
     missingFromPackages.length
       ? `Missing from packages: ${missingFromPackages.join(", ")}`
+      : null,
+    missingPlanSummaryIds.length
+      ? `Missing plan-summary workflows: ${missingPlanSummaryIds.join(", ")}`
+      : null,
+    catalog.length !== expectedWorkflowCount
+      ? `Expected ${expectedWorkflowCount} workflows, found ${catalog.length}`
+      : null,
+    packaged.length !== expectedSelectorCount
+      ? `Expected ${expectedSelectorCount} packaged selectors, found ${packaged.length}`
       : null,
   ].filter(Boolean);
 

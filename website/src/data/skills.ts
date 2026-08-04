@@ -18,6 +18,9 @@ export type SkillId =
   | "diff-summary-quiz"
   | "diff-viewer"
   | "gen-docs"
+  | "plan-summary"
+  | "plan-summary-md"
+  | "plan-summary-quiz"
   | "git-commit"
   | "git-commit-push"
   | "git-commit-push-realtime"
@@ -114,6 +117,33 @@ export const skillDefinitions = [
     claudeSelector: "/gen-docs",
     codexSelector: "$gen-docs",
     tags: ["docs", "readme", "architecture", "usage"],
+  },
+  {
+    id: "plan-summary",
+    title: "Plan Summary",
+    category: "docs",
+    example: "$plan-summary docs/plan.md docs/design.md",
+    claudeSelector: "/plan-summary",
+    codexSelector: "$plan-summary",
+    tags: ["plan", "prd", "design", "spec", "summary", "bilingual"],
+  },
+  {
+    id: "plan-summary-md",
+    title: "Plan Summary Markdown",
+    category: "docs",
+    example: "$plan-summary-md docs/plan.md",
+    claudeSelector: "/plan-summary-md",
+    codexSelector: "$plan-summary-md",
+    tags: ["plan", "prd", "design", "markdown", "summary", "bilingual"],
+  },
+  {
+    id: "plan-summary-quiz",
+    title: "Plan Summary Quiz",
+    category: "docs",
+    example: "$plan-summary-quiz docs/prd.md",
+    claudeSelector: "/plan-summary-quiz",
+    codexSelector: "$plan-summary-quiz",
+    tags: ["plan", "prd", "design", "quiz", "summary", "bilingual"],
   },
   {
     id: "git-commit",

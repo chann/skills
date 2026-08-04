@@ -279,6 +279,21 @@
       "whenToUse": "README, 아키텍처, 사용법 문서가 코드와 어긋났을 때",
       "result": "README, README.ko, ARCHITECTURE, USAGE"
     },
+    "plan-summary": {
+      "summary": "명시한 plan, PRD, 명세, 설계를 서로 정렬된 한국어와 영어로 요약합니다.",
+      "whenToUse": "선택한 문서의 목표, 범위, 결정, 의존성, 위험, 미결 질문을 팀이 빠르게 파악해야 할 때",
+      "result": "한국어·영어 PS-* Markdown 카드와 자체 포함 이중언어 HTML 보고서"
+    },
+    "plan-summary-md": {
+      "summary": "정렬된 plan 요약을 한국어·영어 Markdown으로만 작성합니다.",
+      "whenToUse": "plan 요약을 저장소 문서, issue 또는 텍스트 전용 workflow에 바로 넣어야 할 때",
+      "result": "HTML이나 브라우저 열기 없이 .plan-summaries/에 생성된 검증된 Markdown 보고서 2개"
+    },
+    "plan-summary-quiz": {
+      "summary": "이중언어 plan 요약에 서로 정렬된 이해도 퀴즈를 추가합니다.",
+      "whenToUse": "온보딩, plan handoff, 요구사항·설계 결정의 이해도를 확인할 때",
+      "result": "Markdown과 대화형 오프라인 HTML로 생성된 이중언어 PS-* 요약과 정렬된 QZ-* 문제"
+    },
     "git-commit": {
       "summary": "작업 트리 변경을 논리적인 Conventional Commit 단위로 나눕니다.",
       "whenToUse": "섞인 변경을 검토 가능한 커밋으로 정리할 때",

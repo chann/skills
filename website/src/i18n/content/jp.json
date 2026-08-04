@@ -279,6 +279,21 @@
       "whenToUse": "README、architecture、usage文書がコードとずれたとき",
       "result": "README、README.ko、ARCHITECTURE、USAGE"
     },
+    "plan-summary": {
+      "summary": "明示した計画、PRD、仕様、設計を、対応の取れた韓国語と英語のレポートに要約します。",
+      "whenToUse": "選択した文書の目標、範囲、決定、依存関係、リスク、未解決事項をチームで素早く把握したいとき",
+      "result": "韓国語と英語で対応する PS-* Markdown カードと、自己完結型の二言語 HTML レポート"
+    },
+    "plan-summary-md": {
+      "summary": "対応の取れた計画要約を、韓国語と英語の Markdown のみで作成します。",
+      "whenToUse": "計画要約をリポジトリ文書、issue、またはテキスト専用の工程へ直接入れたいとき",
+      "result": "HTML やブラウザー表示なしで .plan-summaries/ に生成される検証済み Markdown レポート 2 件"
+    },
+    "plan-summary-quiz": {
+      "summary": "二言語の計画要約に、対応の取れた理解度クイズを追加します。",
+      "whenToUse": "オンボーディング、計画の引き継ぎ、要件や設計判断の理解確認を行うとき",
+      "result": "Markdown と対話型オフライン HTML による二言語の PS-* 要約と対応する QZ-* 問題"
+    },
     "git-commit": {
       "summary": "working treeの変更を論理的なConventional Commit単位に分けます。",
       "whenToUse": "混在した変更をレビュー可能なcommitに整理するとき",

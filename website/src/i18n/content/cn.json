@@ -279,6 +279,21 @@
       "whenToUse": "README、架构或使用文档与代码不一致时",
       "result": "README、README.ko、ARCHITECTURE和USAGE"
     },
+    "plan-summary": {
+      "summary": "将明确指定的计划、PRD、规格和设计整理为相互对齐的韩文与英文摘要。",
+      "whenToUse": "团队需要快速理解所选文档中的目标、范围、决策、依赖、风险和未决问题时",
+      "result": "相互对齐的韩文与英文 PS-* Markdown 卡片，以及一份自包含双语 HTML 报告"
+    },
+    "plan-summary-md": {
+      "summary": "仅以韩文和英文 Markdown 输出相互对齐的计划摘要。",
+      "whenToUse": "计划摘要需要直接进入仓库文档、issue 或纯文本工作流时",
+      "result": "在 .plan-summaries/ 中生成两份经过验证的 Markdown 报告，不创建 HTML 或打开浏览器"
+    },
+    "plan-summary-quiz": {
+      "summary": "为双语计划摘要添加相互对齐的理解测验。",
+      "whenToUse": "用于入职培训、计划交接，或检验对需求和设计决策的理解时",
+      "result": "以 Markdown 和交互式离线 HTML 生成双语 PS-* 摘要与对齐的 QZ-* 问题"
+    },
     "git-commit": {
       "summary": "把working tree中的变更拆分成逻辑清晰的Conventional Commit。",
       "whenToUse": "需要把混合变更整理成可审查的commit时",
