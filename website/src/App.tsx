@@ -494,7 +494,7 @@ export function App({ locale }: AppProps) {
               key={index}
               initial={reduceMotion ? false : { y: "0.42em", opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{
                 duration: reduceMotion ? 0 : 0.8,
                 delay: reduceMotion ? 0 : index * 0.055,
