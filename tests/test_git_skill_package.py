@@ -97,7 +97,7 @@ class GitSkillPackageTests(unittest.TestCase):
             interface.read_text(encoding="utf-8"),
         )
 
-    def test_codex_realtime_alias_uses_the_canonical_display_name(self) -> None:
+    def test_codex_realtime_alias_keeps_its_short_display_name(self) -> None:
         alias_interface = CODEX_REALTIME_ALIAS_SKILL / "agents" / "openai.yaml"
         canonical_interface = REALTIME_SKILL / "agents" / "openai.yaml"
         website_source = (
@@ -110,10 +110,10 @@ class GitSkillPackageTests(unittest.TestCase):
 
         self.assertIsNotNone(title_match)
         canonical_name = quoted_yaml_field(canonical_interface, "display_name")
-        self.assertEqual(
-            canonical_name,
-            quoted_yaml_field(alias_interface, "display_name"),
-        )
+        alias_name = quoted_yaml_field(alias_interface, "display_name")
+        self.assertEqual("GCPR", alias_name)
+        self.assertEqual("Git Commit and Push Realtime", canonical_name)
+        self.assertNotEqual(alias_name, canonical_name)
         self.assertEqual(
             canonical_name,
             title_match.group(1) if title_match else "",
