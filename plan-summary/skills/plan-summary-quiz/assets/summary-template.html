@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="__REPORT_LANGUAGE__">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>__REPORT_TITLE__</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --radius: 0px;
+      --radius-control: 4px;
+      --font-sans: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", D2Coding, "Nanum Gothic Coding", "Courier New", monospace;
+      --font-mono: "Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", D2Coding, "Nanum Gothic Coding", "Courier New", monospace;
+      font-family: var(--font-sans);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      --background: light-dark(#fdfcfc, #201d1d);
+      --foreground: light-dark(#201d1d, #fdfcfc);
+      --card: light-dark(#fdfcfc, #201d1d);
+      --card-foreground: light-dark(#201d1d, #fdfcfc);
+      --popover: light-dark(#fdfcfc, #302c2c);
+      --popover-foreground: light-dark(#201d1d, #fdfcfc);
+      --muted: light-dark(#f8f7f7, #302c2c);
+      --muted-foreground: light-dark(#646262, #9a9898);
+      --primary: light-dark(#201d1d, #fdfcfc);
+      --primary-foreground: light-dark(#fdfcfc, #201d1d);
+      --secondary: light-dark(#f1eeee, #302c2c);
+      --secondary-foreground: light-dark(#302c2c, #fdfcfc);
+      --accent: light-dark(#f1eeee, #302c2c);
+      --accent-foreground: light-dark(#201d1d, #fdfcfc);
+      --destructive: light-dark(#d70015, #ff3b30);
+      --destructive-foreground: light-dark(#fdfcfc, #201d1d);
+      --border: light-dark(#e0dede, #3f3c3c);
+      --input: light-dark(#646262, #646262);
+      --ring: light-dark(#201d1d, #fdfcfc);
+      --status-success: light-dark(#008236, #7bf1a8);
+      --status-success-soft: light-dark(#f0fdf4, #032e15);
+      --status-warning: light-dark(#a65f00, #ffdf20);
+      --status-warning-soft: light-dark(#fefce8, #432004);
+      --status-danger: light-dark(#c10007, #ffa2a2);
+      --status-danger-soft: light-dark(#fef2f2, #460809);
+      --status-info: light-dark(#1447e6, #8ec5ff);
+      --status-info-soft: light-dark(#eff6ff, #162456);
+      --shadow: none;
+      min-width: 18rem;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    body[data-default-theme="dark"]:not([data-theme]),
+    body[data-theme="dark"] {
+      color-scheme: dark;
+    }
+
+    body[data-default-theme="light"]:not([data-theme]),
+    body[data-theme="light"] {
+      color-scheme: light;
+    }
+
+    body[data-default-theme="auto"]:not([data-theme]) {
+      color-scheme: light dark;
+    }
+
+    button,
+    summary {
+      color: inherit;
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-control);
+      background: var(--card);
+      cursor: pointer;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--accent);
+    }
+
+    button:disabled {
+      cursor: default;
+      opacity: 0.78;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      overflow-wrap: anywhere;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 20;
+      top: 0.75rem;
+      left: 0.75rem;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--popover);
+      color: var(--popover-foreground);
+      transform: translateY(-180%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100vh;
+      padding: 1.4rem;
+      border-right: 1px solid var(--border);
+      background: var(--muted);
+    }
+
+    .brand {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-copy {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.78rem;
+      word-break: keep-all;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 0.55rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-list code {
+      display: block;
+      font-size: 0.76rem;
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .topbar {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 0.8rem clamp(1rem, 4vw, 3rem);
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--background) 94%, transparent);
+      backdrop-filter: blur(12px);
+    }
+
+    .control {
+      display: inline-flex;
+      gap: 0.2rem;
+      padding: 0.2rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-control);
+      background: var(--muted);
+    }
+
+    .control button {
+      min-height: 2rem;
+      padding: 0.3rem 0.65rem;
+      border-color: transparent;
+      background: transparent;
+      font-size: 0.76rem;
+    }
+
+    .control button[aria-pressed="true"] {
+      border-color: var(--border);
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .report {
+      width: min(70rem, 100%);
+      margin: 0 auto;
+      padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 5vw, 4.5rem) 6rem;
+    }
+
+    .language-part[hidden] {
+      display: none;
+    }
+
+    .report-header {
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .report-overline {
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .report-title {
+      max-width: 24ch;
+      margin: 0.65rem 0 1.5rem;
+      font-size: clamp(2rem, 6vw, 4.7rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      word-break: keep-all;
+    }
+
+    .metadata {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin: 0;
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+    }
+
+    .metadata > div {
+      min-width: 0;
+      padding: 0.8rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .metadata dt,
+    .field-label {
+      color: var(--muted-foreground);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .metadata dd {
+      margin: 0.25rem 0 0;
+    }
+
+    .metadata-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.8rem;
+      margin: 0.25rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .report-section {
+      margin-top: 3rem;
+    }
+
+    .section-title {
+      margin: 0 0 1rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 1rem;
+      letter-spacing: 0.03em;
+    }
+
+    .executive-summary,
+    .field-value,
+    .quiz-question-title,
+    .quiz-option-text,
+    .quiz-explanation,
+    .generic-block {
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    .executive-summary {
+      max-width: 70ch;
+      font-size: 1.05rem;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .summary-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+
+    .card-summary {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .card-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .card-heading {
+      display: grid;
+      gap: 0.2rem;
+      min-width: 0;
+    }
+
+    .summary-id {
+      color: var(--muted-foreground);
+      font-size: 0.72rem;
+    }
+
+    .summary-title {
+      font-size: 1rem;
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      padding: 0.2rem 0.45rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted-foreground);
+      font-size: 0.68rem;
+    }
+
+    .card-panel {
+      display: grid;
+      gap: 1rem;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      background: var(--muted);
+    }
+
+    .card-field {
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .card-field p {
+      margin: 0;
+    }
+
+    .source-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-chips code {
+      display: block;
+      padding: 0.18rem 0.35rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 0.72rem;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      min-width: 38rem;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th,
+    td {
+      padding: 0.65rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--muted);
+    }
+
+    .generic-block ul,
+    .generic-block ol {
+      padding-left: 1.5rem;
+    }
+
+    .quiz-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .quiz-question {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .quiz-question-heading {
+      display: grid;
+      gap: 0.25rem;
+      margin: 0 0 1rem;
+      font-size: 1rem;
+    }
+
+    .quiz-id {
+      color: var(--muted-foreground);
+      font-size: 0.72rem;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 0.5rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .quiz-option {
+      display: grid;
+      grid-template-columns: 1.8rem minmax(0, 1fr);
+      align-items: start;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.7rem;
+      text-align: left;
+    }
+
+    .quiz-option-marker {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.72rem;
+    }
+
+    .quiz-option.is-correct {
+      border-color: var(--status-success);
+      background: var(--status-success-soft);
+      color: var(--status-success);
+    }
+
+    .quiz-option.is-incorrect {
+      border-color: var(--status-danger);
+      background: var(--status-danger-soft);
+      color: var(--status-danger);
+    }
+
+    .quiz-status {
+      margin: 0.8rem 0 0;
+      font-weight: 700;
+    }
+
+    .quiz-explanation {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .quiz-explanation summary {
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .status-live {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        display: block;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: 1rem;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .source-list {
+        grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+      }
+
+      .topbar {
+        position: static;
+        justify-content: flex-start;
+        padding: 0.75rem 1rem;
+      }
+
+      .report {
+        padding: 2rem 1rem 4rem;
+      }
+
+      .metadata {
+        grid-template-columns: 1fr;
+      }
+
+      .card-summary {
+        display: grid;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    @media print {
+      body,
+      body[data-default-theme="dark"]:not([data-theme]),
+      body[data-theme="dark"],
+      body[data-default-theme="auto"]:not([data-theme]) {
+        --background: #ffffff;
+        --foreground: #201d1d;
+        --card: #fdfcfc;
+        --card-foreground: #201d1d;
+        --popover: #fdfcfc;
+        --popover-foreground: #201d1d;
+        --muted: #f8f7f7;
+        --muted-foreground: #646262;
+        --primary: #201d1d;
+        --primary-foreground: #fdfcfc;
+        --secondary: #f1eeee;
+        --secondary-foreground: #302c2c;
+        --accent: #f1eeee;
+        --accent-foreground: #201d1d;
+        --destructive: #d70015;
+        --destructive-foreground: #fdfcfc;
+        --border: #e0dede;
+        --input: #646262;
+        --ring: #201d1d;
+        color-scheme: light;
+        --shadow: none;
+      }
+
+      .sidebar,
+      .topbar,
+      .skip-link,
+      .status-live {
+        display: none !important;
+      }
+
+      .shell {
+        display: block;
+      }
+
+      .report {
+        width: 100%;
+        padding: 0;
+      }
+
+      .summary-card,
+      .quiz-question {
+        break-inside: avoid;
+      }
+
+      .summary-card > .card-panel {
+        display: grid !important;
+      }
+
+      .quiz-option[data-quiz-correct="true"]::after {
+        content: " ✓";
+        color: var(--status-success);
+        font-weight: 700;
+      }
+
+      .quiz-explanation {
+        display: block !important;
+      }
+
+      .quiz-explanation > * {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body data-default-theme="__DEFAULT_THEME__">
+  <a class="skip-link" href="#report-main">Skip to report</a>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Report sources">
+      <p class="brand">Plan Summary</p>
+      <p class="sidebar-copy">Explicit source documents</p>
+      __SIDEBAR_SOURCES__
+    </aside>
+    <div class="content">
+      <header class="topbar">
+        __LANGUAGE_CONTROL__
+        <div class="control control--theme" role="group" aria-label="Theme">
+          <button type="button" data-set-theme="auto" aria-pressed="true">Auto</button>
+          <button type="button" data-set-theme="light" aria-pressed="false">Light</button>
+          <button type="button" data-set-theme="dark" aria-pressed="false">Dark</button>
+        </div>
+        <button type="button" data-print-report>Print</button>
+      </header>
+      <main class="report" id="report-main" tabindex="-1">
+        __REPORT_PARTS__
+      </main>
+    </div>
+  </div>
+  <p class="status-live" data-live-status role="status" aria-live="polite"></p>
+  <script id="summary-data" type="application/json">__SUMMARY_DATA__</script>
+  <script data-plan-summary-runtime>
+    (() => {
+      "use strict";
+      const THEME_KEY = "plan-summary:theme";
+      const LANGUAGE_KEY = "plan-summary:language";
+      const allowedThemes = new Set(["auto", "light", "dark"]);
+      const languageParts = Array.from(document.querySelectorAll("[data-language-part]"));
+      const languageButtons = Array.from(document.querySelectorAll("[data-set-lang]"));
+      const themeButtons = Array.from(document.querySelectorAll("[data-set-theme]"));
+      const liveStatus = document.querySelector("[data-live-status]");
+
+      function readStorage(key) {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (_error) {
+          return null;
+        }
+      }
+
+      function writeStorage(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (_error) {
+          return;
+        }
+      }
+
+      function announce(message) {
+        if (liveStatus) {
+          liveStatus.textContent = "";
+          window.requestAnimationFrame(() => {
+            liveStatus.textContent = message;
+          });
+        }
+      }
+
+      function setTheme(theme, persist = true) {
+        if (!allowedThemes.has(theme)) return;
+        if (theme === "auto") {
+          document.body.removeAttribute("data-theme");
+        } else {
+          document.body.dataset.theme = theme;
+        }
+        themeButtons.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.setTheme === theme));
+        });
+        if (persist) writeStorage(THEME_KEY, theme);
+      }
+
+      function setLanguage(language, persist = true) {
+        if (!languageButtons.some((button) => button.dataset.setLang === language)) return;
+        languageParts.forEach((part) => {
+          const active = part.dataset.languagePart === language;
+          part.hidden = !active;
+          part.classList.toggle("is-active", active);
+        });
+        languageButtons.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.setLang === language));
+        });
+        document.documentElement.lang = language;
+        const activePart = languageParts.find((part) => part.dataset.languagePart === language);
+        if (activePart && activePart.dataset.reportTitle) {
+          document.title = activePart.dataset.reportTitle;
+        }
+        if (persist) writeStorage(LANGUAGE_KEY, language);
+      }
+
+      function answerQuestion(selectedOption) {
+        const question = selectedOption.closest(".quiz-question");
+        if (!question) return;
+        if (question.dataset.answered === "true") return;
+        question.dataset.answered = "true";
+        const options = Array.from(question.querySelectorAll(".quiz-option"));
+        const correct = options.find((candidate) => candidate.dataset.quizCorrect === "true");
+        options.forEach((option) => {
+          option.disabled = true;
+          option.setAttribute("aria-pressed", String(option === selectedOption));
+          if (option === correct) option.classList.add("is-correct");
+        });
+        const isCorrect = selectedOption === correct;
+        if (!isCorrect) selectedOption.classList.add("is-incorrect");
+        const status = question.querySelector("[data-quiz-status]");
+        if (status) {
+          status.hidden = false;
+          status.textContent = isCorrect ? "Correct." : "Review the correct answer below.";
+        }
+        const explanation = question.querySelector(".quiz-explanation");
+        if (explanation) explanation.open = true;
+        announce(status ? status.textContent : "Answer recorded.");
+      }
+
+      languageButtons.forEach((button) => {
+        button.addEventListener("click", () => setLanguage(button.dataset.setLang));
+      });
+      themeButtons.forEach((button) => {
+        button.addEventListener("click", () => setTheme(button.dataset.setTheme));
+      });
+      document.querySelectorAll(".quiz-option").forEach((option) => {
+        option.addEventListener("click", () => answerQuestion(option));
+      });
+      const printButton = document.querySelector("[data-print-report]");
+      if (printButton) printButton.addEventListener("click", () => window.print());
+
+      const defaultTheme = document.body.dataset.defaultTheme || "auto";
+      const savedTheme = readStorage(THEME_KEY);
+      setTheme(allowedThemes.has(savedTheme) ? savedTheme : defaultTheme, false);
+      const defaultLanguage = document.documentElement.lang;
+      const savedLanguage = readStorage(LANGUAGE_KEY);
+      setLanguage(
+        languageButtons.some((button) => button.dataset.setLang === savedLanguage)
+          ? savedLanguage
+          : defaultLanguage,
+        false,
+      );
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Summary Quiz"
+  short_description: "Summarize plans with a comprehension quiz"
+  default_prompt: "Use $plan-summary-quiz to summarize the selected plan documents and add a bilingual quiz."
