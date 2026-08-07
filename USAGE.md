@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 23 canonical workflows and 24 installable Codex selectors across 8 workflow plugins.
+This repository exposes 24 canonical workflows and 25 installable Codex selectors across 9 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md).
 
 ## Quick start
 
@@ -62,6 +62,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /plan-summary docs/plan.md docs/design.md # Korean + English plan summary + HTML
 > /plan-summary-md docs/prd.md              # Korean + English Markdown only
 > /plan-summary-quiz docs/spec.md           # bilingual summary + aligned quiz
+> /human-friendly-writing docs/note.ko.md   # AI가 쓴 한국어를 사람 문장으로
 ```
 
 ### Explicit selectors
@@ -94,6 +95,7 @@ These are the exact names published by every package:
 | Plan document summary | `/plan-summary` | `$plan-summary` |
 | Markdown-only plan summary | `/plan-summary-md` | `$plan-summary-md` |
 | Plan summary quiz | `/plan-summary-quiz` | `$plan-summary-quiz` |
+| Human-friendly Korean rewrite | `/human-friendly-writing` | `$human-friendly-writing` |
 
 ## Command reference
 
@@ -110,6 +112,20 @@ with each question, and waits for one answer before following the next node.
 When the decision frontier is empty, it audits every review lens and asks for
 confirmation of the closure record; implementation remains outside the review
 unless the surrounding request already authorized it.
+
+### human-friendly-writing
+
+| Command | Action |
+|---|---|
+| `/human-friendly-writing [text-or-file]` | Rewrite AI-written Korean text into natural, human-sounding prose without changing its meaning |
+
+Codex invokes the same contract as `$human-friendly-writing [text-or-file]`.
+The skill replaces AI-flavored jargon — 계약(contract), 엔벨로프(envelope),
+패리티(parity) — and leaked framework vocabulary, then smooths translation-ese
+style. Facts, numbers, proper nouns, code identifiers, and keep-list technical
+terms (API, 토큰, 프롬프트, 커밋, 멱등, …) never change; unlisted terms are
+replaced only when a three-part judgment test passes, and doubt keeps the
+original. File input is rewritten to a sibling file, never overwritten.
 
 ### work-summary
 

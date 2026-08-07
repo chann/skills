@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 23 practical agent workflows and 24 installable Codex selectors across 8 plugins.
+A collection of 24 practical agent workflows and 25 installable Codex selectors across 9 plugins.
 
 ## Website
 
@@ -31,6 +31,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
 | **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
+| **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean text into natural, human-sounding prose — de-jargon plus style smoothing without changing meaning |
 
 
 ## Installation
@@ -68,6 +69,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [long-task installation](long-task/README.md#installation)
 - [work-summary installation](work-summary/README.md#installation)
 - [plan-summary installation](plan-summary/README.md#installation)
+- [human-friendly-writing installation](human-friendly-writing/README.md#installation)
 
 Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
@@ -75,6 +77,7 @@ Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
 Review-me-only install: `npx skills add chann/skills --skill review-me`
 Work-summary-only install: `npx skills add chann/skills --skill work-summary`
 Plan-summary family install: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
+Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`
 Codex `$gcpr` install: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## Quick reference
@@ -175,6 +178,18 @@ and *"what did I work on this week"*.
 | `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus aligned `QZ-*` comprehension quizzes |
 
 The three selectors read only explicit `.md`, `.markdown`, or `.txt` UTF-8 files. They never auto-discover documents. Reports share ordered source digests and `PS-*` evidence cards; the Markdown-only selector emits no HTML, while the quiz selector adds accessible offline interaction.
+
+### human-friendly-writing → [details](human-friendly-writing/README.md)
+
+| Claude Code | Codex | Action |
+| ----------- | ----- | ------ |
+| `/human-friendly-writing [text-or-file]` | `$human-friendly-writing [text-or-file]` | Rewrite AI-written Korean text into natural prose without changing meaning |
+
+`human-friendly-writing` replaces AI-flavored jargon — 계약(contract),
+엔벨로프(envelope), 패리티(parity), leaked framework vocabulary — and smooths
+translation-ese style while preserving facts, numbers, and established
+technical terms. Also triggers on phrases like *"AI 용어 없애줘"* and *"사람답게
+다듬어줘"*.
 
 ## Documentation
 

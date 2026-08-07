@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Friendly Writing"
+  short_description: "Rewrite AI-written Korean text into natural human prose"
+  default_prompt: "Use $human-friendly-writing to rewrite this Korean text so it reads like a person wrote it, without changing its meaning."

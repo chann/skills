@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 23개의 실용적인 에이전트 워크플로와 24개의 설치 가능한 Codex selector를 8개 plugin으로 제공합니다.
+소프트웨어 엔지니어링을 위한 24개의 실용적인 에이전트 워크플로와 25개의 설치 가능한 Codex selector를 9개 plugin으로 제공합니다.
 
 ## Website
 
@@ -29,6 +29,7 @@ npm --prefix website run dev
 | **[long-task](long-task/README.ko.md)**             | 멀티 마일스톤 프로젝트 자율 오케스트레이터 — 병렬 worktree 서브에이전트 + 마일스톤 리뷰 사이클  |
 | **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
 | **[plan-summary](plan-summary/README.ko.md)**       | 명시한 plan·PRD·명세·설계를 한·영으로 요약하고 Markdown 전용·퀴즈 변형 제공                    |
+| **[human-friendly-writing](human-friendly-writing/README.ko.md)** | AI가 쓴 한국어를 뜻은 그대로 두고 사람이 쓴 것 같은 자연스러운 문장으로 재작성                 |
 
 ## 설치 방법
 
@@ -64,6 +65,7 @@ PromptScript 어댑터가 암묵적으로 추가될 수 있습니다. 이 경우
 - [long-task 설치](long-task/README.ko.md#설치-방법)
 - [work-summary 설치](work-summary/README.ko.md#설치-방법)
 - [plan-summary 설치](plan-summary/README.ko.md#설치)
+- [human-friendly-writing 설치](human-friendly-writing/README.ko.md#설치)
 
 handoff만 설치하는 예: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
@@ -71,6 +73,7 @@ diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 review-me만 설치: `npx skills add chann/skills --skill review-me`
 work-summary만 설치: `npx skills add chann/skills --skill work-summary`
 plan-summary 제품군 설치: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
+human-friendly-writing만 설치: `npx skills add chann/skills --skill human-friendly-writing`
 Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## 빠른 참조
@@ -157,6 +160,17 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 명
 | `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | 이중언어 보고서와 정렬된 `QZ-*` 이해도 퀴즈 생성 |
 
 세 selector는 사용자가 명시한 `.md`, `.markdown`, `.txt` UTF-8 파일만 읽고 문서를 자동 탐색하지 않습니다. 보고서는 소스 순서·digest와 `PS-*` 근거 카드를 공유합니다. Markdown 전용 selector는 HTML을 만들지 않고, 퀴즈 selector는 접근 가능한 오프라인 상호작용을 추가합니다.
+
+### human-friendly-writing → [상세](human-friendly-writing/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| ----------- | ----- | ---- |
+| `/human-friendly-writing [텍스트-또는-파일]` | `$human-friendly-writing [텍스트-또는-파일]` | AI가 쓴 한국어를 뜻은 그대로 두고 자연스러운 문장으로 재작성 |
+
+`human-friendly-writing`은 계약(contract)·엔벨로프(envelope)·패리티(parity)
+같은 AI 특유의 직역 용어와 새어 나온 내부 방법론 용어를 걷어내고 번역투를
+매만집니다. 사실·수치·표준 기술 용어는 그대로 둡니다. *"AI 용어 없애줘"*,
+*"사람답게 다듬어줘"* 같은 문구에도 자동 트리거됩니다.
 
 ## 문서
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 8 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `work-summary`, and `plan-summary` — that together expose 23 canonical workflows through 24 installable Codex selectors.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 9 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `work-summary`, `plan-summary`, and `human-friendly-writing` — that together expose 24 canonical workflows through 25 installable Codex selectors.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
@@ -25,6 +25,7 @@ default prompt.
 | `long-task` | 0.3.0 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 | `work-summary` | 0.1.0 | `work-summary` | Date-ranged Markdown work reports mined read-only from local coding-agent history stores (Claude Code, Codex, opencode, agy) |
 | `plan-summary` | 1.0.0 | `plan-summary`, `plan-summary-md`, `plan-summary-quiz` | Summarize explicit plan, PRD, specification, and design files as aligned Korean/English Markdown with optional interactive HTML quizzes |
+| `human-friendly-writing` | 0.1.0 | `human-friendly-writing` | Rewrite AI-written Korean text into natural, human-sounding prose — slop-term lexicon plus style pass, meaning-preserving |
 
 ### Skill internals
 
@@ -51,6 +52,7 @@ Every plugin shares the same layout:
 - **`work-summary`** is a read-only reporter over local agent history. Its `SKILL.md` owns the date-range grammar, local-timezone bucketing, store mining order, and the summary/detailed report contract; `references/agent-history-stores.md` maps each store's paths, record shapes, timestamp fields, and epoch units so the workflow filters records instead of guessing.
 - **`plan-summary`** owns the explicit-file boundary and evidence-first document workflow. `collect_plan_evidence.py` returns ordered UTF-8 contents and SHA-256 identities from a bounded JSON request; `generate_plan_summary.py` validates aligned `PS-*` and optional `QZ-*` contracts, derives collision-safe names, and assembles offline HTML from `summary-template.html`. `plan-summary-md` and `plan-summary-quiz` bundle byte-synchronized workflow and runtime copies so exact-selector installs remain executable.
 - **`doc-skill`** carries four output templates under `gen-docs/templates/`.
+- **`human-friendly-writing`** rewrites AI-written Korean prose without moving meaning. Its `SKILL.md` owns the hard preservation rules, the three-part judgment test for unlisted slop terms, and the ban on leaked method vocabulary; `references/slop-lexicon.md` carries the replaceable-term tables plus the keep list of established technical terms, and `references/style-rules.md` carries the translation-ese/rhythm/tone pass with the final self-check checklist.
 
 ### Supporting files
 
@@ -228,6 +230,14 @@ skills/
 │   │   ├── plan-summary/             # authoritative workflow + collector + generator + HTML
 │   │   ├── plan-summary-md/          # standalone Markdown-only synchronized package
 │   │   └── plan-summary-quiz/        # standalone quiz synchronized package
+│   └── README.md · README.ko.md
+├── human-friendly-writing/           # plugin (v0.1.0)
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/human-friendly-writing.md
+│   ├── skills/human-friendly-writing/
+│   │   ├── SKILL.md                  # de-jargon + style pass, meaning-preserving
+│   │   ├── agents/openai.yaml
+│   │   └── references/               # slop-lexicon.md, style-rules.md
 │   └── README.md · README.ko.md
 ├── .agents/skills/                   # optional local flat skill mirror
 ├── samples/code-review/              # intentionally vulnerable demo fixtures (outside plugin artifacts)
