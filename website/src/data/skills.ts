@@ -21,6 +21,7 @@ export type SkillId =
   | "plan-summary"
   | "plan-summary-md"
   | "plan-summary-quiz"
+  | "human-friendly-writing"
   | "git-commit"
   | "git-commit-push"
   | "git-commit-push-realtime"
@@ -144,6 +145,15 @@ export const skillDefinitions = [
     claudeSelector: "/plan-summary-quiz",
     codexSelector: "$plan-summary-quiz",
     tags: ["plan", "prd", "design", "quiz", "summary", "bilingual"],
+  },
+  {
+    id: "human-friendly-writing",
+    title: "Human Friendly Writing",
+    category: "docs",
+    example: "$human-friendly-writing docs/release-note.ko.md",
+    claudeSelector: "/human-friendly-writing",
+    codexSelector: "$human-friendly-writing",
+    tags: ["korean", "writing", "humanize", "de-jargon", "style", "rewrite"],
   },
   {
     id: "git-commit",

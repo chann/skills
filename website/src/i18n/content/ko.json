@@ -294,6 +294,11 @@
       "whenToUse": "온보딩, plan handoff, 요구사항·설계 결정의 이해도를 확인할 때",
       "result": "Markdown과 대화형 오프라인 HTML로 생성된 이중언어 PS-* 요약과 정렬된 QZ-* 문제"
     },
+    "human-friendly-writing": {
+      "summary": "AI가 쓴 한국어를 뜻은 그대로 두고 사람이 쓴 것처럼 자연스럽게 다듬습니다.",
+      "whenToUse": "계약·엔벨로프·패리티 같은 직역 용어나 번역투 때문에 글에서 AI 티가 날 때",
+      "result": "용어와 문체를 손본 재작성 텍스트와 무엇을 바꿨는지에 대한 짧은 설명"
+    },
     "git-commit": {
       "summary": "작업 트리 변경을 논리적인 Conventional Commit 단위로 나눕니다.",
       "whenToUse": "섞인 변경을 검토 가능한 커밋으로 정리할 때",

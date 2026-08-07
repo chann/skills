@@ -294,6 +294,11 @@
       "whenToUse": "用于入职培训、计划交接，或检验对需求和设计决策的理解时",
       "result": "以 Markdown 和交互式离线 HTML 生成双语 PS-* 摘要与对齐的 QZ-* 问题"
     },
+    "human-friendly-writing": {
+      "summary": "在不改变内容的前提下，把 AI 写的韩文改写成自然的人类文风。",
+      "whenToUse": "当韩文文本带有 AI 味——如“契约、信封、奇偶校验”式的直译术语或翻译腔时",
+      "result": "改写后的韩文文本，以及关于修改内容的简短说明"
+    },
     "git-commit": {
       "summary": "把working tree中的变更拆分成逻辑清晰的Conventional Commit。",
       "whenToUse": "需要把混合变更整理成可审查的commit时",

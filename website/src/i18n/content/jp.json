@@ -294,6 +294,11 @@
       "whenToUse": "オンボーディング、計画の引き継ぎ、要件や設計判断の理解確認を行うとき",
       "result": "Markdown と対話型オフライン HTML による二言語の PS-* 要約と対応する QZ-* 問題"
     },
+    "human-friendly-writing": {
+      "summary": "AI が書いた韓国語の文章を、意味を変えずに人が書いたような自然な文体に整えます。",
+      "whenToUse": "契約・エンベロープ・パリティのような直訳語や翻訳調で AI らしさが残っているとき",
+      "result": "語彙と文体を整えた書き直しテキストと、変更点の短い説明"
+    },
     "git-commit": {
       "summary": "working treeの変更を論理的なConventional Commit単位に分けます。",
       "whenToUse": "混在した変更をレビュー可能なcommitに整理するとき",

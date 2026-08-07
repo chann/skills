@@ -294,6 +294,11 @@
       "whenToUse": "For onboarding, plan handoffs, or checking understanding of requirements and design decisions",
       "result": "Bilingual PS-* summaries and aligned QZ-* questions in Markdown and interactive offline HTML"
     },
+    "human-friendly-writing": {
+      "summary": "Rewrite AI-written Korean text into natural, human-sounding prose without changing its meaning.",
+      "whenToUse": "When Korean text reads AI-flavored — English concept words like contract, envelope, or parity calqued literally, or translation-ese rhythm",
+      "result": "The rewritten Korean text plus a short plain-language note on what changed"
+    },
     "git-commit": {
       "summary": "Split working-tree changes into logical Conventional Commit units.",
       "whenToUse": "When mixed changes need to become reviewable commits",
