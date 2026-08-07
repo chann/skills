@@ -35,9 +35,10 @@ style. The meaning never moves.
 4. Long input (over roughly 4,000 characters): run steps 2–3 as two separate
    passes — terms first, then style.
 5. Run the self-check checklist at the end of `style-rules.md`.
-6. Reply with the rewritten text plus two or three plain sentences about what
-   changed — "용어 여섯 곳과 문장 리듬 세 곳을 손봤습니다" 수준이면 충분하다.
-   If the text was already fine, say so and change almost nothing.
+6. Reply with the rewritten text plus two or three plain sentences, written in
+   Korean, about what changed — "용어 여섯 곳과 문장 리듬 세 곳을 손봤습니다"
+   수준이면 충분하다. If the text was already fine, say so and change almost
+   nothing.
 
 ## The three-part test for unlisted terms
 
@@ -61,6 +62,9 @@ into the reader's language.
 전: 모든 렌즈 감사가 끝났고, 열린 노드가 없습니다. 마감 기록을 제시합니다.
 후: 확인할 항목은 모두 살펴봤고, 남은 결정도 없습니다. 정리한 결과는 아래와
 같습니다.
+
+Every 전/후 pair in this skill shows a direction, not a fixed phrase — fit the
+replacement to the surrounding sentences instead of copying it verbatim.
 
 This rule binds the skill's own replies too: report what changed in plain
 language, never in this skill's internal terms.
