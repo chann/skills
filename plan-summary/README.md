@@ -2,7 +2,7 @@
 
 [한국어](README.ko.md)
 
-Summarize explicitly selected plans, PRDs, specifications, and design documents as aligned Korean and English reports. The plugin ships three independently installable selectors.
+Summarize explicitly selected plans, PRDs, specifications, and design documents as matching Korean and English reports. The plugin ships three independently installable selectors.
 
 ## Workflows
 
@@ -52,11 +52,11 @@ Supply one or more explicit `.md`, `.markdown`, or `.txt` regular UTF-8 files. T
 
 The packaged `collect_plan_evidence.py` reads a bounded JSON request from standard input and returns ordered paths, byte sizes, SHA-256 digests, and exact contents. It rejects missing files, directories, symlinks, duplicates, binary data, invalid UTF-8, unsupported extensions, and configured size limits without creating artifacts.
 
-## Report contract
+## Report requirements
 
-Korean and English reports are authored from one evidence map. Their ordered sources, digests, `PS-*` card IDs, categories, and source references must align. The generator rejects drift rather than silently dropping a claim.
+Korean and English reports use the same evidence map. Their source order, digests, `PS-*` card IDs, categories, and source references must match. The generator rejects mismatches rather than silently dropping a claim.
 
-`plan-summary-quiz` adds final aligned `QZ-*` questions with 2–6 options, exactly one correct answer, and evidence-backed explanations. Both languages keep the same option count and answer position.
+`plan-summary-quiz` adds corresponding `QZ-*` questions with 2–6 options, exactly one correct answer, and evidence-backed explanations. Both languages keep the same option count and answer position.
 
 ## Artifacts
 

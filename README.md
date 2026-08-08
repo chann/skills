@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-A collection of 24 practical agent workflows and 25 installable Codex selectors across 9 plugins.
+24 practical agent workflows and 25 installable Codex selectors, packaged across 9 plugins.
 
 ## Website
 
@@ -23,15 +23,15 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 
 | Skill                                    | What it does                                                                                                   |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.md)** | Git change intelligence — explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
-| **[review-me](review-me/README.md)**     | Review plans and designs one decision at a time until every consequential leaf is resolved                  |
-| **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs without clobbering prose                |
-| **[git-skill](git-skill/README.md)**     | Conventional Commits, realtime checkpoint commits or pushes, history rewrite, merge to main/dev, and merged-branch cleanup    |
+| **[code-review](code-review/README.md)** | Analyze Git changes with explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
+| **[review-me](review-me/README.md)**     | Review every important plan or design decision, one at a time, until nothing is left unresolved             |
+| **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose      |
+| **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, and local branch cleanup |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
-| **[long-task](long-task/README.md)**     | Autonomous orchestrator for multi-milestone projects — parallel worktree subagents + reviews                   |
+| **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
 | **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
-| **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean text into natural, human-sounding prose — de-jargon plus style smoothing without changing meaning |
+| **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean into natural prose by removing awkward jargon and smoothing the style without changing meaning |
 
 
 ## Installation
@@ -49,15 +49,17 @@ npx skills add chann/skills \
   --yes
 ```
 
-The explicit agent list is intentional. `skills@1.5.19` can
-implicitly add the project-only PromptScript adapter when `--global --yes` is
-used without `--agent`, producing one misleading failure for every skill even
-though the supported targets were installed. The command above selects all
-skills, keeps the default symlink mode (do not add `--copy`), and avoids that
-unsupported target. Append other globally supported agent IDs if needed, but
-keep this explicit target list so this CLI version does not fall back to copy
-mode while
-[the upstream fix](https://github.com/vercel-labs/skills/pull/1561) is pending.
+The explicit agent list is intentional. With `skills@1.5.19`, using `--global
+--yes` without `--agent` can add the project-only PromptScript adapter. Every
+skill then reports one misleading failure even though installation succeeded
+for the supported targets.
+
+The command above selects every skill and excludes PromptScript. It also keeps
+the default symlink mode because it does not use `--copy`. Add other agent IDs
+that support global installation if needed, but continue to list the targets
+explicitly until
+[the upstream fix](https://github.com/vercel-labs/skills/pull/1561) lands. This
+prevents this CLI version from falling back to copy mode.
 
 Per-skill or non-global installs (and manual setup) are documented in each skill's README:
 
@@ -71,14 +73,14 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [plan-summary installation](plan-summary/README.md#installation)
 - [human-friendly-writing installation](human-friendly-writing/README.md#installation)
 
-Example handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
-Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`
-Diff-summary-only install: `npx skills add chann/skills --skill diff-summary`
-Review-me-only install: `npx skills add chann/skills --skill review-me`
-Work-summary-only install: `npx skills add chann/skills --skill work-summary`
-Plan-summary family install: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
-Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`
-Codex `$gcpr` install: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
+- Handoff only: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
+- Backend handoff only: `npx skills add chann/skills --skill gen-backend-handoff`
+- Diff summary only: `npx skills add chann/skills --skill diff-summary`
+- Review-me only: `npx skills add chann/skills --skill review-me`
+- Work summary only: `npx skills add chann/skills --skill work-summary`
+- Plan-summary family: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
+- Human-friendly-writing only: `npx skills add chann/skills --skill human-friendly-writing`
+- Codex `$gcpr`: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## Quick reference
 
@@ -94,12 +96,12 @@ spells out both explicit selectors.
 | `/code-review-md [scope]`        | `$code-review-md [scope]`   | Write a markdown-only review to `.reviews/`                                                       |
 | `/diff-summary [scope]`          | `$diff-summary [scope]`     | Explain changes in Korean + English Markdown and one bilingual interactive HTML under `.diff-summaries/` |
 | `/diff-summary-md [scope]`       | `$diff-summary-md [scope]`  | Explain changes in Korean + English Markdown only under `.diff-summaries/` (no HTML, no browser) |
-| `/diff-summary-quiz [scope]`     | `$diff-summary-quiz [scope]` | Same as `/diff-summary`, plus aligned interactive comprehension quizzes                          |
+| `/diff-summary-quiz [scope]`     | `$diff-summary-quiz [scope]` | Same as `/diff-summary`, plus matching interactive comprehension quizzes                         |
 | `/diff-viewer`                   | `$diff-viewer`              | Render the raw working-tree diff to `.diffs/`                                                    |
 
-`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” Its default output is an aligned Korean/English pair with Korean shown first; explicitly request one language for single-language mode. Ask for “Markdown only” to route to `diff-summary-md`, or “quiz me on this diff” to route to `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
+`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” By default, it produces matching Korean and English reports with Korean shown first. Request one language explicitly for single-language mode. Ask for “Markdown only” to use `diff-summary-md`, or “quiz me on this diff” to use `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
 
-Every HTML report — review, summary, quiz, and raw diff — shares one interface: a Korean/English toggle, light/dark/system themes with a light print palette, one semantic status palette held at WCAG AA in both themes, Korean-aware typography that breaks prose on 어절 boundaries, and a keyboard shell with a skip link and a live region. Each report stays a single self-contained file that works with no server and no network.
+Every HTML report — review, summary, quiz, and raw diff — uses the same interface. It includes a Korean/English toggle, light/dark/system themes with a light print palette, status colors that meet WCAG AA in both themes, Korean-aware line breaks at 어절 boundaries, and keyboard support with a skip link and live region. Each report is a self-contained file that works without a server or network connection.
 
 
 ### review-me → [details](review-me/README.md)
@@ -107,12 +109,12 @@ Every HTML report — review, summary, quiz, and raw diff — shares one interfa
 
 | Claude Code | Codex | Action |
 | ----------- | ----- | ------ |
-| `/review-me [topic]` | `$review-me [topic]` | Follow a plan or design through every consequential decision and confirm a leaf-complete record |
+| `/review-me [topic]` | `$review-me [topic]` | Follow every important plan or design decision and confirm that none remain unresolved |
 
-`review-me` asks one decision question at a time, recommends a concrete answer,
-and recursively expands each answer into its downstream choices. It inspects
-available evidence for facts and keeps the review read-only until the final
-decision record is confirmed.
+`review-me` asks about one decision at a time and recommends a concrete answer.
+When an answer creates more choices, it follows those too. It checks available
+evidence for facts and keeps the review read-only until every decision is
+recorded and confirmed.
 
 
 ### doc-skill → [details](doc-skill/README.md)
@@ -163,19 +165,19 @@ Also triggers on phrases like *"build this whole project"*, *"do this autonomous
 | ----------- | ----- | ------ |
 | `/work-summary [range]` | `$work-summary [range]` | Generate a Markdown work report for today, this week, this month, or a custom date span |
 
-`work-summary` mines the local session history of Claude Code, Codex,
-opencode, and agy read-only, buckets it in your local timezone, and reports
-what was asked and done — a summary by default, or a detailed report with a
-timeline and request log. Also triggers on phrases like *"오늘 작업 요약해줘"*
-and *"what did I work on this week"*.
+`work-summary` reads the local session history of Claude Code, Codex, opencode,
+and agy without modifying it. It groups activity in your local timezone and
+reports what was requested and completed — a summary by default, or a detailed
+report with a timeline and request log. It also triggers on phrases like
+*"오늘 작업 요약해줘"* and *"what did I work on this week"*.
 
 ### plan-summary → [details](plan-summary/README.md)
 
 | Claude Code | Codex | Output |
 | --- | --- | --- |
-| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | Aligned Korean/English Markdown plus bilingual HTML under `.plan-summaries/` |
-| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | Aligned Korean/English Markdown only |
-| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus aligned `QZ-*` comprehension quizzes |
+| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | Matching Korean/English Markdown plus bilingual HTML under `.plan-summaries/` |
+| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | Matching Korean/English Markdown only |
+| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus corresponding `QZ-*` comprehension quizzes |
 
 The three selectors read only explicit `.md`, `.markdown`, or `.txt` UTF-8 files. They never auto-discover documents. Reports share ordered source digests and `PS-*` evidence cards; the Markdown-only selector emits no HTML, while the quiz selector adds accessible offline interaction.
 
@@ -209,10 +211,10 @@ All `SKILL.md` files in this repo follow the standard skill format and reference
 | **Copilot CLI / Gemini CLI / others**           | Point your platform's skill loader at `<plugin>/skills/<name>/SKILL.md` per its docs          |
 
 
-What is and isn't portable:
+What works across platforms and what is specific to Claude Code:
 
 - **Portable** — every `SKILL.md` body and its `references/`. The skills trigger on natural-language phrases on any platform.
-- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/code-review`, `/git-commit`, `/long-task`, ...). Other platforms invoke the skill via natural language or their own activation mechanism.
+- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/code-review`, `/git-commit`, `/long-task`, ...). Other platforms invoke the skill with natural language or their own calling convention.
 
 ## Requirements
 

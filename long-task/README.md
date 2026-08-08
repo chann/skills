@@ -2,17 +2,17 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-Autonomous orchestrator for **long-running, multi-milestone projects** that run for hours or days without human intervention. Inspired by [jthack/claude-goal](https://github.com/jthack/claude-goal)'s `/goal` lifecycle, layered on top of a worktree-based parallel-subagent orchestrator.
+Runs **long, multi-milestone projects** autonomously for hours or days without human intervention. It combines the `/goal` lifecycle from [jthack/claude-goal](https://github.com/jthack/claude-goal) with parallel subagents in Git worktrees.
 
 ## What it does
 
-- Runs a **Phase 1 (setup) → Phase 2 (orchestration loop) → Phase 3 (completion)** workflow that takes a project from scratch to delivered
+- Runs a **Phase 1 (setup) → Phase 2 (execution loop) → Phase 3 (completion)** workflow that takes a project from scratch to delivery
 - Dispatches parallel **subagents in isolated git worktrees** (cap: 5 parallel) and merges them after verification
-- Enforces an **architectural review cycle** at every milestone (review → fix subagents → re-review, max 3 iterations)
+- Reviews the architecture at every milestone, assigns fixes to subagents, and reviews again for up to 3 iterations
 - Uses persistent `.agent/` state files as working memory so progress survives context compaction or session restarts
 - Installs a **Stop hook** that auto-continues work across many turns while a long-task is active — no manual nudging needed
 - Codex-style **lifecycle commands**: `/long-task status | pause | resume | clear | complete`
-- **Completion audit** gate: `/long-task complete` writes a template that maps acceptance criteria to concrete evidence
+- **Completion check**: `/long-task complete` writes a template that maps acceptance criteria to concrete evidence
 - Resolves ambiguity autonomously during execution — you only interact with the user during Phase 1 setup
 - Includes ready-to-customize templates for `goal.md`, `plans.md`, `standards.md`, `implement.md`, `progress.md`, `state.md`, `audit.md`
 
@@ -53,7 +53,7 @@ selectors are:
 
 | Claude Code                  | Codex                     | Action                                                                             |
 | ---------------------------- | ------------------------- | ---------------------------------------------------------------------------------- |
-| `/long-task <objective>`     | `$long-task <objective>`  | Phase 1 setup with this objective, then enter autonomous orchestration loop        |
+| `/long-task <objective>`     | `$long-task <objective>`  | Set the objective in Phase 1, then begin the autonomous execution loop             |
 | `/long-task`                 | `$long-task`              | Status if active, otherwise Phase 1 interactive setup                              |
 | `/long-task status`          | `$long-task status`       | Current state, phase, elapsed time, runaway counter, and `.agent/progress.md` tail |
 | `/long-task pause`           | `$long-task pause`        | Disarm Stop hook auto-continuation until resumed                                   |
@@ -83,7 +83,7 @@ export LONG_TASK_MAX_STOP_CONTINUES=1000
 ## How it works
 
 1. **Phase 1 (Setup, only user interaction):** Interview the user, write `.agent/goal.md`, design milestones in `.agent/plans.md`, define `.agent/standards.md` and `.agent/implement.md`. Get final sign-off. State file `.agent/state.md` is created with `status: active`.
-2. **Phase 2 (Orchestration loop):** Per milestone — re-read state, dispatch parallel implementer subagents in worktrees, verify (tests/lint/types), merge, dispatch architectural reviewer, run fix cycle, update `progress.md`. Repeat until all milestones complete. Stop-hook auto-continues across turns.
+2. **Phase 2 (Execution loop):** For each milestone, re-read state, dispatch parallel implementer subagents in worktrees, verify with tests, lint, and type checks, merge, dispatch an architectural reviewer, fix any issues, and update `progress.md`. Repeat until all milestones are complete. The Stop hook continues the work across turns.
 3. **Phase 3 (Completion):** Final cross-cutting review on entire codebase, address critical issues, run `/long-task complete` to write `.agent/audit.md` (the evidence map), and report to user.
 
 ## State files (`.agent/`)
@@ -124,7 +124,7 @@ long-task/
 
 ## Credits
 
-The lifecycle / Stop-hook design is a direct nod to [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal), which clones codex's `/goal` into Claude Code. This plugin combines that mechanism with multi-milestone orchestration.
+The lifecycle and Stop-hook design comes from [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal), which brings Codex's `/goal` workflow to Claude Code. This plugin extends it to multi-milestone projects with parallel work.
 
 ## License
 

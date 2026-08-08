@@ -6,7 +6,7 @@ Generate or update a clean four-file documentation set for any software project:
 
 ## Highlights
 
-- Keeps `README.md` as a concise front door instead of mixing overview, usage, and architecture in one file
+- Keeps `README.md` as a concise introduction instead of mixing overview, usage, and architecture in one file
 - Keeps `README.ko.md` in sync as a faithful Korean mirror of the English README
 - Moves detailed commands, options, configuration, examples, and troubleshooting to `USAGE.md`
 - Moves components, data flow, directory structure, and design decisions to `ARCHITECTURE.md`

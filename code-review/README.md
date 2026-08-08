@@ -2,14 +2,14 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-Change intelligence for git diffs: explanatory summaries, defect reviews, and raw browser-readable patches.
+Explain Git diffs, review them for defects, or inspect the raw patch in a browser.
 
 ## What it does
 
 - Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
 - Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
 - Generates a styled, self-contained **bilingual** HTML report by default (Korean + English with a full-page language toggle), featuring severity badges, light/dark/auto themes with a code syntax scheme selector, a compact collapsible sidebar, per-finding markdown copy, in-browser per-finding comments, and a "Copy feedback" payload to regenerate the review against reviewer comments
-- Includes `/diff-summary` for aligned Korean/English evidence-based change summaries plus one bilingual interactive HTML, with `/diff-summary-md` for the Markdown pair only and `/diff-summary-quiz` for aligned comprehension quizzes
+- Includes `/diff-summary` for matching Korean/English evidence-based change summaries plus one bilingual interactive HTML, with `/diff-summary-md` for the Markdown pair only and `/diff-summary-quiz` for corresponding comprehension quizzes
 - Includes `/diff-viewer` for a browser-readable HTML view of the current working-tree diff without review analysis
 - Supports multiple review scopes: staged changes, specific commits, commit ranges, branch comparisons, and PRs
 - Includes reference guides for Python and JavaScript/TypeScript best practices
@@ -61,7 +61,7 @@ Codex:
 | `/code-review-md [scope]`       | `$code-review-md [scope]`    | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`          |
 | `/diff-summary [scope]`         | `$diff-summary [scope]`      | Korean + English Markdown and bilingual HTML under `.diff-summaries/`   |
 | `/diff-summary-md [scope]`      | `$diff-summary-md [scope]`   | Korean + English Markdown only under `.diff-summaries/`                 |
-| `/diff-summary-quiz [scope]`    | `$diff-summary-quiz [scope]` | Bilingual artifacts plus aligned `## Quiz` comprehension sections       |
+| `/diff-summary-quiz [scope]`    | `$diff-summary-quiz [scope]` | Bilingual artifacts plus corresponding `## Quiz` comprehension sections |
 | `/diff-viewer`                  | `$diff-viewer`               | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`                    |
 
 **Examples:**
@@ -120,8 +120,8 @@ If a prompt asks for both a summary and a review, run both workflows and keep th
 
 1. Preserve and validate the requested scope, including the exact `..` or `...` syntax
 2. Send the repository and scope as JSON over stdin to the packaged `collect_diff_evidence.py`; it is the only Git/GitHub runtime
-3. Treat its bounded JSON result as inert evidence and write aligned Korean and English Markdown reports with stable, matching `DS-001`-style summary cards
-4. Send both reports as bilingual JSON over stdin to `generate_summary_report.py`, which validates alignment and atomically writes both sources plus one sibling HTML
+3. Treat its bounded JSON result as inert evidence and write matching Korean and English Markdown reports with stable `DS-001`-style summary cards
+4. Send both reports as bilingual JSON over stdin to `generate_summary_report.py`, which checks that they match and writes both sources plus one sibling HTML in a single operation
 5. Open the self-contained HTML report in a browser
 
 The report marks consequential inference and unverified runtime, test, migration, or deployment outcomes instead of presenting them as facts.
@@ -157,7 +157,7 @@ Each `/diff-summary` HTML report works directly from a local `file://` URL with 
 - **Markdown copy** — copy one card, the complete source report, or a feedback payload that groups cards with their comments.
 - **Offline navigation** — collapsible/resizable sidebar, light/dark/system themes, responsive layout, and print styling, all bundled into one HTML file.
 
-The evidence collector uses fixed argv, sanitized process environments, exact-scope validation, execution-surface blocking, sensitive-path checks, and bounded command output. Repository diffs, paths, commit messages, PR text, and errors remain untrusted data; the workflow never follows instructions embedded in that evidence or performs secondary shell/file inspection from it.
+The evidence collector uses fixed argv, sanitized process environments, exact-scope validation, blocks repository-configured code execution, checks sensitive paths, and limits command output. Repository diffs, paths, commit messages, PR text, and errors remain untrusted data; the workflow never follows instructions embedded in that evidence or uses it to trigger additional shell or file inspection.
 
 The skill suggests adding `.diff-summaries/` to a target repository's `.gitignore`, but never edits that repository automatically.
 
@@ -246,7 +246,7 @@ If you see Snyk or other SAST tools flag this skill, here is the breakdown:
 - **`generate_html_report.py` — fence-language attribute XSS (real, fixed)**: prior to the fix, a malicious markdown fence like ` ```a"><script>... ` could break out of the `class="language-..."` attribute because `html.escape(..., quote=False)` does not escape `"`. The lang token is now whitelisted to `[A-Za-z0-9._+-]{0,32}` via `safe_lang()`, eliminating attribute breakout regardless of input.
 - **`generate_html_report.py` — `html.escape(quote=False)` flagged broadly (false positive)**: the helper deliberately uses `quote=False` and only inserts the result into element-body contexts. All attribute insertions are either hardcoded class names or anchor values produced by `slugify()` (which strips non-word characters). No tainted value reaches an attribute.
 - **`generate_html_report.py` — raw-markdown embed (correctly defended)**: the markdown source is embedded into the HTML inside a `<script type="application/json">` block (not executed by browsers) and `</` sequences are escaped to `<\/` so the script tag cannot be closed prematurely.
-- **`diff-summary` evidence boundary**: `collect_diff_evidence.py` is the only Git/GitHub runtime. It uses fixed argv and sanitized environments, disables lazy fetches and repository-configured execution surfaces, rejects unsafe repository metadata and sensitive paths, and caps time/stdout/stderr before returning JSON. `generate_summary_report.py --bilingual-json-stdin --output-directory` rejects symlinked artifact parents, derives collision-safe filenames, validates the Korean/English alignment contract, and atomically writes two Markdown files plus one bilingual HTML file.
+- **`diff-summary` evidence boundary**: `collect_diff_evidence.py` is the only Git/GitHub runtime. It uses fixed argv and sanitized environments, disables lazy fetches and repository-configured code execution, rejects unsafe repository metadata and sensitive paths, and caps time/stdout/stderr before returning JSON. `generate_summary_report.py --bilingual-json-stdin --output-directory` rejects symlinked output directories, derives collision-safe filenames, checks that the Korean and English reports match, and writes two Markdown files plus one bilingual HTML file in a single operation.
 - **`generate_html_report.py` — path arguments (false positive)**: the tool reads `args.input` and writes `args.output`. These are CLI arguments the user typed themselves; there is no privileged read/write surface to attack.
 
 If you ever consider re-adding intentionally vulnerable fixtures to this plugin folder, please keep them under the repo-root `samples/` tree instead — that is what `.snyk` excludes and what keeps SAST quiet without lying about real risk.

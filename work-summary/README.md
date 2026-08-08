@@ -2,10 +2,10 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-A date-ranged Markdown reporter over the session history your coding agents
-already keep locally — Claude Code, Codex, opencode, and agy. Ask for today,
-this week, this month, or an explicit span and get a summary or a detailed
-report of what was asked and what was done.
+Turn the local session history kept by Claude Code, Codex, opencode, and agy
+into a Markdown work report for a date range. Ask for today, this week, this
+month, or an explicit span to get a summary or a detailed account of what was
+requested and completed.
 
 ## Why it is different
 
@@ -46,7 +46,7 @@ With no argument it reports today at summary depth. Ask for "detailed" (or
 "상세") to add a timeline and a per-request log; ask for a file to save the
 report under `.work-summaries/`.
 
-## Interaction contract
+## Behavior
 
 - Read-only toward every agent history store
 - Local-only: history content never leaves the machine

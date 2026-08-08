@@ -2,29 +2,29 @@
 
 [English](README.md) · [← 메인으로](../README.ko.md)
 
-**여러 마일스톤에 걸친 장시간 작업**을 사람의 개입 없이 몇 시간 ~ 며칠 동안 자율적으로 진행하는 오케스트레이터 스킬입니다. [jthack/claude-goal](https://github.com/jthack/claude-goal)의 `/goal` lifecycle을 worktree 기반 병렬 서브에이전트 오케스트레이터 위에 얹은 형태입니다.
+**여러 마일스톤에 걸친 장시간 작업**을 사람의 개입 없이 몇 시간에서 며칠 동안 자율적으로 진행하는 스킬입니다. [jthack/claude-goal](https://github.com/jthack/claude-goal)의 `/goal` 진행 방식과 Git worktree에서 실행하는 병렬 서브에이전트를 결합했습니다.
 
 ## 주요 기능
 
-- Phase 1(셋업) → Phase 2(오케스트레이션 루프) → Phase 3(완료) 워크플로우로 프로젝트를 처음부터 끝까지 진행
-- **격리된 git worktree**에서 병렬 서브에이전트 실행 (최대 5개) 후 검증을 거쳐 merge
-- 마일스톤마다 **아키텍처 리뷰 사이클** 강제 (review → fix 서브에이전트 → re-review, 최대 3회)
-- `.agent/` 상태 파일을 작업 메모리로 사용하여 컨텍스트 압축/세션 재시작 후에도 진행 상황 보존
-- **Stop hook** 으로 long-task 활성 중 Claude 가 멈출 때마다 자동으로 다음 작업을 이어감 (codex `/goal` 스타일)
-- codex 스타일 **lifecycle 커맨드**: `/long-task status | pause | resume | clear | complete`
-- **completion audit** 게이트: `/long-task complete` 가 acceptance criteria → 실제 증거 매핑 템플릿을 작성
-- 실행 중 발생하는 모호함은 자율적으로 해결 — 사용자와의 상호작용은 Phase 1 셋업 단계에서만
+- Phase 1(준비) → Phase 2(실행 반복) → Phase 3(완료) 순서로 프로젝트를 처음부터 끝까지 진행
+- **격리된 Git worktree**에서 서브에이전트를 최대 5개까지 병렬로 실행하고, 검증한 뒤 머지
+- 마일스톤마다 아키텍처를 리뷰하고 수정 전담 서브에이전트를 실행한 뒤 다시 리뷰하며, 최대 3회 반복
+- `.agent/` 상태 파일을 작업 메모리로 사용해 대화 맥락이 압축되거나 세션이 다시 시작돼도 진행 상황을 보존
+- long-task가 활성화된 동안 Claude가 멈출 때마다 **Stop hook**이 다음 작업을 자동으로 이어서 실행
+- Codex 방식의 **상태 관리 명령**: `/long-task status | pause | resume | clear | complete`
+- `/long-task complete`가 완료 기준과 실제 근거를 연결하는 `.agent/audit.md` 템플릿을 작성
+- 실행 중 생기는 모호함은 자율적으로 해결하며, 사용자와는 Phase 1 준비 단계에서만 상호작용
 - `goal.md`, `plans.md`, `standards.md`, `implement.md`, `progress.md`, `state.md`, `audit.md` 템플릿 포함
 
 ## 설치 방법
 
-**권장 (전역 + 자동 승인, 한 방):**
+**권장(전역 설치, 자동 승인):**
 
 ```bash
 npx skills add -y -g chann/skills --skill long-task
 ```
 
-**프로젝트 로컬:**
+**현재 프로젝트에 설치:**
 
 ```bash
 npx skills add chann/skills --skill long-task
@@ -41,23 +41,23 @@ ln -s "$(pwd)/skills/long-task/skills/long-task" ~/.claude/skills/long-task
 
 ### Stop hook 설치
 
-별도 설치 스크립트는 필요하지 않습니다. helper 는 설치 가능한 스킬 폴더 안에 포함되어 있으며, 첫 `/long-task` 실행 시 Stop hook 을 설치하거나 기존 경로를 갱신합니다.
+별도 설치 스크립트는 필요하지 않습니다. 도우미는 설치되는 스킬 폴더 안에 있으며, `/long-task`를 처음 실행할 때 Stop hook을 설치하거나 기존 경로를 갱신합니다.
 
-helper 는 `~/.claude/settings.json` 을 안전하게 patch 하며 멱등적으로 동작합니다. hook 은 cwd 에 `.agent/state.md` 가 있고 `status: active` 일 때만 동작하므로 다른 Claude Code 세션은 영향받지 않습니다. 특정 프로젝트의 자동 이어가기를 끄려면 `/long-task pause`, `/long-task clear`, 또는 `/long-task complete` 를 실행하세요.
+도우미는 `~/.claude/settings.json`을 안전하게 수정하며 멱등적으로 동작합니다. 현재 작업 디렉터리에 `.agent/state.md`가 있고 `status: active`일 때만 hook이 동작하므로 다른 Claude Code 세션에는 영향을 주지 않습니다. 특정 프로젝트에서 자동 실행을 멈추려면 `/long-task pause`, `/long-task clear` 또는 `/long-task complete`를 실행하세요.
 
 ## 사용 방법
 
 *"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*,
-*"long task 돌려줘"* 같은 문구로 자동 트리거됩니다. 명시 selector는 다음과
-같습니다:
+*"long task 돌려줘"* 같은 요청에도 자동으로 실행됩니다. 직접 호출할 때는 다음
+selector를 사용합니다:
 
 | Claude Code                  | Codex                     | 동작                                                                   |
 | ---------------------------- | ------------------------- | ---------------------------------------------------------------------- |
-| `/long-task <objective>`     | `$long-task <objective>`  | 목표 지정 후 Phase 1 셋업 → 자율 오케스트레이션                        |
-| `/long-task`                 | `$long-task`              | 활성 task가 있으면 상태 출력, 없으면 Phase 1 인터뷰 시작                |
-| `/long-task status`          | `$long-task status`       | 현재 상태, phase, 경과 시간, runaway 카운터, `progress.md` 끝부분 표시  |
+| `/long-task <objective>`     | `$long-task <objective>`  | 목표를 지정하고 Phase 1 준비를 거쳐 자율 실행 시작                      |
+| `/long-task`                 | `$long-task`              | 진행 중인 작업이 있으면 상태를 표시하고, 없으면 Phase 1 인터뷰 시작     |
+| `/long-task status`          | `$long-task status`       | 현재 상태, 단계, 경과 시간, 연속 실행 횟수, `progress.md` 끝부분 표시   |
 | `/long-task pause`           | `$long-task pause`        | Stop hook 자동 이어가기 일시 정지                                       |
-| `/long-task resume`          | `$long-task resume`       | 재개, runaway 카운터 초기화                                             |
+| `/long-task resume`          | `$long-task resume`       | 자동 실행을 재개하고 연속 실행 횟수 초기화                              |
 | `/long-task clear`           | `$long-task clear`        | `.agent/state.md`만 삭제 (다른 `.agent/*.md`는 보존)                    |
 | `/long-task complete`        | `$long-task complete`     | `.agent/audit.md` 템플릿 작성, 완료 표시, Stop hook 해제                |
 
@@ -72,9 +72,9 @@ helper 는 `~/.claude/settings.json` 을 안전하게 patch 하며 멱등적으�
 > /long-task complete
 ```
 
-### Runaway 가드
+### 연속 실행 제한
 
-Stop hook 은 기본적으로 **최대 500 회** 자동 이어가기 후 멈춥니다. Claude Code 실행 전 환경 변수로 override:
+Stop hook은 기본적으로 **최대 500회**까지 자동으로 이어서 실행한 뒤 멈춥니다. 횟수를 바꾸려면 Claude Code를 실행하기 전에 환경 변수를 설정합니다:
 
 ```bash
 export LONG_TASK_MAX_STOP_CONTINUES=1000
@@ -82,21 +82,21 @@ export LONG_TASK_MAX_STOP_CONTINUES=1000
 
 ## 동작 순서
 
-1. **Phase 1 (셋업, 유일한 사용자 상호작용):** 사용자 인터뷰, `.agent/goal.md` 작성, `.agent/plans.md` 마일스톤 설계, `.agent/standards.md` 와 `.agent/implement.md` 정의. 최종 승인. `.agent/state.md` 가 `status: active` 로 생성됨.
-2. **Phase 2 (오케스트레이션 루프):** 마일스톤마다 — 상태 재읽기, worktree 에서 병렬 implementer 서브에이전트 디스패치, 검증(test/lint/type), merge, 아키텍처 리뷰어 디스패치, fix 사이클, `progress.md` 업데이트. Stop hook 이 턴 사이마다 자동으로 이어감.
-3. **Phase 3 (완료):** 전체 코드베이스 cross-cutting 리뷰, 치명적 이슈 처리, `/long-task complete` 실행 → `.agent/audit.md` 작성 → 사용자에게 보고.
+1. **Phase 1(준비, 사용자와 상호작용하는 유일한 단계):** 사용자를 인터뷰하고 `.agent/goal.md`를 작성합니다. `.agent/plans.md`에 마일스톤을 설계하고 `.agent/standards.md`와 `.agent/implement.md`를 정한 뒤 최종 승인을 받습니다. 이어서 `status: active`인 `.agent/state.md`를 만듭니다.
+2. **Phase 2(실행 반복):** 마일스톤마다 상태를 다시 읽고, worktree에서 구현 서브에이전트를 병렬로 실행합니다. 테스트, 린트, 타입 검사를 거쳐 머지한 뒤 아키텍처를 리뷰하고 필요한 수정을 반복하며 `progress.md`를 갱신합니다. Stop hook이 대화가 끝날 때마다 다음 작업을 이어갑니다.
+3. **Phase 3(완료):** 전체 코드베이스에 걸친 내용을 리뷰하고 치명적인 문제를 처리합니다. `/long-task complete`로 `.agent/audit.md`를 작성한 뒤 사용자에게 결과를 보고합니다.
 
 ## 상태 파일 (`.agent/`)
 
 | 파일             | 용도                                                | 업데이트 시점                                 |
 | ---------------- | --------------------------------------------------- | --------------------------------------------- |
-| `state.md`       | lifecycle 상태, phase, runaway 카운터               | 모든 슬래시 커맨드 + Stop hook 발동 시        |
-| `goal.md`        | 문제, 결과물, 수용 기준, non-goal                   | 셋업 시 1회                                   |
-| `plans.md`       | 아키텍처, 마일스톤, 태스크                          | 셋업 시 1회 + 스코프 발견 시 추가             |
+| `state.md`       | 진행 상태, 단계, 연속 실행 횟수                     | 모든 슬래시 커맨드와 Stop hook 실행 시        |
+| `goal.md`        | 문제, 결과물, 수용 기준, 제외할 목표                | 준비 단계에서 1회                             |
+| `plans.md`       | 아키텍처, 마일스톤, 작업                            | 준비 단계에서 1회 작성하고 범위가 늘면 추가   |
 | `standards.md`   | 코드 품질 기준 (모든 서브에이전트가 읽음)           | 1회                                           |
 | `implement.md`   | 서브에이전트 워크플로우 (모든 서브에이전트가 읽음)  | 1회                                           |
-| `progress.md`    | 현재 상태, 결정 사항, 아키텍처 요약                 | 모든 액션 후                                  |
-| `audit.md`       | 완료 audit: acceptance criteria → 실제 증거 매핑    | `/long-task complete` 실행 시 1회             |
+| `progress.md`    | 현재 상태, 결정 사항, 아키텍처 요약                 | 모든 작업 후                                  |
+| `audit.md`       | 완료 기준과 실제 근거의 연결                        | `/long-task complete` 실행 시 1회             |
 
 ## 프로젝트 구조
 
@@ -113,18 +113,18 @@ long-task/
         │   └── long_task.py               # lifecycle helper + Stop hook
         └── references/
             ├── project-templates.md       # `.agent/` 파일 템플릿
-            └── completion-audit.md        # 완료 audit 가이드
+            └── completion-audit.md        # 완료 확인 가이드
 ```
 
 ## 요구 사항
 
 - 스킬을 지원하는 에이전트 플랫폼 ([Claude Code](https://code.claude.com), Codex, opencode, Copilot CLI 등 — [메인 README](../README.ko.md#다른-에이전트-플랫폼에서-사용) 참조)
-- helper 스크립트와 Stop hook 동작을 위한 `python3`
+- 도우미 스크립트와 Stop hook 실행에 필요한 `python3`
 - Git 저장소 (worktree 서브에이전트에 필요)
 
 ## 크레딧
 
-lifecycle / Stop hook 설계는 codex `/goal` 을 Claude Code 로 복제한 [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal) 에서 가져왔습니다. 이 플러그인은 그 메커니즘을 다중 마일스톤 오케스트레이션과 결합합니다.
+작업 진행 방식과 Stop hook 설계는 Codex의 `/goal`을 Claude Code로 옮긴 [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal)에서 가져왔습니다. 이 플러그인은 그 방식을 여러 마일스톤과 병렬 작업에 맞게 확장했습니다.
 
 ## 라이선스
 

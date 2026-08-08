@@ -6,11 +6,11 @@
 
 ## 주요 기능
 
-- git diff, 커밋 범위, 브랜치 비교, 현재 세션 컨텍스트를 근거 기반 마크다운 핸드오프로 정리
-- `/gen-frontend-handoff`: 프론트엔드, 모바일, SDK 등 클라이언트가 소비해야 하는 백엔드 API 변경사항 전달
-- `/gen-backend-handoff`: API 계약, database migrations, jobs/queues, rollout, verification 중심의 백엔드 작업 인계
+- `git diff`, 커밋 범위, 브랜치 비교와 현재 세션 맥락을 근거가 담긴 Markdown 핸드오프로 정리
+- `/gen-frontend-handoff`: 프론트엔드, 모바일, SDK 등 클라이언트에 필요한 백엔드 API 변경 사항 전달
+- `/gen-backend-handoff`: API 계약, DB 마이그레이션, 백그라운드 작업과 큐, 배포, 검증을 중심으로 백엔드 작업 인계
 - `.handoffs/` 아래에 결과 파일 생성
-- `main...feature` 같은 사용자 지정 scope를 그대로 보존
+- `main...feature` 같은 사용자가 지정한 범위를 그대로 보존
 - 검증하지 않은 테스트, 배포, 런타임 동작은 사실처럼 쓰지 않고 미검증으로 표시
 
 ## 설치 방법
@@ -23,7 +23,7 @@ npx skills add -y -g chann/skills \
   --skill gen-backend-handoff
 ```
 
-**프로젝트 로컬:**
+**현재 프로젝트에 설치:**
 
 ```bash
 npx skills add chann/skills \
@@ -49,15 +49,15 @@ npx skills add chann/skills \
 > /gen-frontend-handoff main...feature-user-api
 > /gen-backend-handoff HEAD~5..HEAD
 > 현재 백엔드 API diff로 FE 핸드오프 문서 작성
-> 현재 Codex 세션 컨텍스트와 git diff로 백엔드 핸드오프 문서 작성
+> 현재 Codex 세션 맥락과 Git diff로 백엔드 핸드오프 문서 작성
 ```
 
-## Scope 규칙
+## 범위 규칙
 
-- 명시적 scope 없음: unstaged/staged 변경사항을 확인합니다.
-- 정확한 범위: 사용자가 지정한 range를 먼저 사용합니다.
+- 지정한 범위 없음: 스테이징되지 않은 변경과 스테이징된 변경을 확인합니다.
+- 정확한 범위: 사용자가 지정한 범위를 먼저 사용합니다.
 - 브랜치 비교: `main...feature` 같은 비교 표현을 그대로 사용합니다.
-- 세션 컨텍스트: 대화에서 제공되었거나 파일/명령으로 검증한 내용만 사용합니다.
+- 세션 맥락: 대화에서 제공되었거나 파일과 명령으로 확인한 내용만 사용합니다.
 
 ## 요구 사항
 
