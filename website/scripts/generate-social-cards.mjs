@@ -6,10 +6,34 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputDirectory = path.join(root, "public", "assets");
 const cards = [
-  { locale: "ko", lang: "ko", font: "Apple SD Gothic Neo", lines: ["어제의 반복이,", "오늘의 스킬로."] },
-  { locale: "en", lang: "en", font: "Arial", lines: ["Yesterday’s repetition", "becomes today’s skill."] },
-  { locale: "jp", lang: "ja", font: "Hiragino Sans", lines: ["昨日の繰り返しを、", "今日のスキルへ。"] },
-  { locale: "cn", lang: "zh-CN", font: "PingFang SC", lines: ["把昨天的重复，", "变成今天的技能。"] },
+  {
+    locale: "ko",
+    lang: "ko",
+    font: "Apple SD Gothic Neo",
+    lines: ["어제의 반복이,", "오늘의 스킬로."],
+    footer: "24개 스킬 · Claude Code + Codex · MIT",
+  },
+  {
+    locale: "en",
+    lang: "en",
+    font: "Arial",
+    lines: ["Yesterday’s repetition", "becomes today’s skill."],
+    footer: "24 packaged skills · Claude Code + Codex · MIT",
+  },
+  {
+    locale: "jp",
+    lang: "ja",
+    font: "Hiragino Sans",
+    lines: ["昨日の繰り返しを、", "今日のスキルへ。"],
+    footer: "24個のスキル · Claude Code + Codex · MIT",
+  },
+  {
+    locale: "cn",
+    lang: "zh-CN",
+    font: "PingFang SC",
+    lines: ["把昨天的重复，", "变成今天的技能。"],
+    footer: "24个技能 · Claude Code + Codex · MIT",
+  },
 ];
 
 function escapeXml(value) {
@@ -21,6 +45,7 @@ function escapeXml(value) {
 
 function svgFor(card) {
   const [first, second] = card.lines.map(escapeXml);
+  const footer = escapeXml(card.footer);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" lang="${card.lang}">
     <rect width="1200" height="630" fill="#000000"/>
     <rect x="72" y="64" width="1056" height="502" rx="24" fill="#181818"/>
@@ -28,7 +53,7 @@ function svgFor(card) {
     <text x="128" y="148" fill="#85a2ff" font-size="30" font-weight="650">chann/skills</text>
     <text x="128" y="306" fill="#f7f8ff" font-size="70" font-weight="700">${first}</text>
     <text x="128" y="390" fill="#f7f8ff" font-size="70" font-weight="700">${second}</text>
-    <text x="128" y="500" fill="#b4bad0" font-size="26">20 packaged skills · Claude Code + Codex · MIT</text>
+    <text x="128" y="500" fill="#b4bad0" font-size="26">${footer}</text>
   </svg>`;
 }
 

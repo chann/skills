@@ -28,17 +28,17 @@
       {
         "label": "可复用的指令",
         "title": "不再重复编写相同的指令。",
-        "description": "把执行顺序、示例和安全规则保存在稳定的SKILL.md中。重复请求可以保留相同的前缀，因此更容易利用支持模型的提示词缓存。"
+        "description": "把执行顺序、示例和安全规则一次写进SKILL.md。重复请求可以沿用相同的前缀，因此在支持的模型上更容易利用提示词缓存。"
       },
       {
         "label": "确定性脚本",
         "title": "让脚本处理确定性的工作。",
-        "description": "文件查找、格式检查、数据同步等结果明确的步骤由脚本执行。模型无需每次重新推理同一流程，从而减少交给LLM的工作。"
+        "description": "文件查找、格式检查、数据同步等结果明确的步骤由脚本执行。模型不必每次重新判断同一流程，从而减少交给LLM的工作。"
       },
       {
         "label": "聚焦判断",
         "title": "让LLM专注于判断。",
-        "description": "需求理解、代码审查、风险判断等需要上下文的部分交给模型；执行顺序和完成条件由技能固定。"
+        "description": "需求理解、代码审查、风险判断等需要上下文的工作交给模型；执行顺序和完成条件则事先写进技能。"
       }
     ]
   },
@@ -79,7 +79,7 @@
       }
     ],
     "status": "已完成",
-    "artifact": "report.html · tests passed · push confirmed"
+    "artifact": "report.html · 测试通过 · 推送已确认"
   },
   "catalog": {
     "label": "技能目录",
@@ -109,7 +109,7 @@
     "descriptionBetweenSelectors": "；在Claude Code中，名称前加",
     "descriptionAfterClaude": "。",
     "sharedInstructions": "共享指令",
-    "contractDescription": "从原始证据，到双语报告和理解度检查。"
+    "contractDescription": "根据原始依据生成双语报告，并检查理解程度。"
   },
   "faq": {
     "label": "常见问题",
@@ -125,7 +125,7 @@
         "answer": "提示词会随着对话结束而消失，技能则会作为文件保留下来。你可以对它进行版本管理、与团队共享，并通过名称反复调用，例如$review-me。"
       },
       {
-        "question": "使用技能一定能减少token用量吗？",
+        "question": "使用技能一定能减少令牌用量吗？",
         "answer": "不一定，也不保证节省。提示词缓存取决于模型、指令长度以及相同前缀是否得以保留。技能通过复用稳定指令并分离可脚本化步骤，来减少不必要的LLM工作。"
       },
       {
@@ -138,11 +138,11 @@
       },
       {
         "question": "安装后，电脑里会新增什么？",
-        "answer": "npx skills add会下载仓库，并让每个智能体链接到同一份源文件。源文件只保留一份，删除链接即可干净卸载。"
+        "answer": "npx skills add会下载仓库，并让每个智能体链接到同一份源文件。源文件只保留一份，删除这些链接即可完成卸载。"
       },
       {
-        "question": "技能会自行commit或push吗？",
-        "answer": "每个技能都会明确写出安全规则。例如，Git技能只允许显式暂存，禁止force push；如果push被拒绝，就会停止并报告。"
+        "question": "技能会自行提交或推送吗？",
+        "answer": "每个技能都会明确写出安全规则。例如，Git技能只暂存指定文件，并禁止强制推送；如果推送被拒绝，就会停止并报告原因。"
       },
       {
         "question": "可以只安装部分技能吗？",
@@ -154,7 +154,7 @@
       },
       {
         "question": "是否收费或有许可证限制？",
-        "answer": "没有。整个仓库都以MIT License开源。你可以fork仓库，并按团队规则调整这些技能。"
+        "answer": "没有。整个仓库都以MIT License开源。你可以复刻仓库，并按团队规则调整这些技能。"
       }
     ]
   },
@@ -223,7 +223,7 @@
     },
     "git": {
       "label": "Git",
-      "description": "安全地commit、push、merge和清理。"
+      "description": "安全地提交、推送、合并和清理。"
     },
     "handoff": {
       "label": "交接",
@@ -240,13 +240,13 @@
   },
   "skills": {
     "review-me": {
-      "summary": "沿着决策树，审查计划和设计中的每个最终选项。",
+      "summary": "逐一审查计划和设计中的重要选择，确保没有遗漏。",
       "whenToUse": "在实现前，需要彻底明确模糊选项、边界以及失败与恢复条件时",
-      "result": "审查完成的决策树、每个选项的完成标准、验收示例和明确的暂缓清单"
+      "result": "已确定的选择、各项完成标准、验收示例和明确的暂缓清单"
     },
     "code-review": {
       "summary": "从代码变更中找出缺陷与风险，并生成双语报告。",
-      "whenToUse": "在发布前审查PR、commit、branch或working tree时",
+      "whenToUse": "在发布前审查PR、提交、分支或工作区时",
       "result": "Markdown审查报告和独立运行的HTML审查报告"
     },
     "code-review-md": {
@@ -261,7 +261,7 @@
     },
     "diff-summary-md": {
       "summary": "不生成HTML，只把同一份变更说明保存为Markdown。",
-      "whenToUse": "需要把变更摘要直接放入仓库文档或issue时",
+      "whenToUse": "需要把变更摘要直接放入仓库文档或Issue时",
       "result": "结构清晰的韩语和英语Markdown"
     },
     "diff-summary-quiz": {
@@ -271,8 +271,8 @@
     },
     "diff-viewer": {
       "summary": "把当前Git diff渲染为易读的独立HTML页面。",
-      "whenToUse": "希望不做分析，直接在浏览器中查看原始patch时",
-      "result": "unified或split视图的HTML diff"
+      "whenToUse": "希望不做分析，直接在浏览器中查看原始补丁时",
+      "result": "统一视图或分栏视图的HTML diff"
     },
     "gen-docs": {
       "summary": "在保留现有表述的同时，创建或更新核心项目文档。",
@@ -280,19 +280,19 @@
       "result": "README、README.ko、ARCHITECTURE和USAGE"
     },
     "plan-summary": {
-      "summary": "将明确指定的计划、PRD、规格和设计整理为相互对齐的韩文与英文摘要。",
+      "summary": "将指定的计划、PRD、规格和设计整理为内容与依据相互对应的韩文和英文摘要。",
       "whenToUse": "团队需要快速理解所选文档中的目标、范围、决策、依赖、风险和未决问题时",
-      "result": "相互对齐的韩文与英文 PS-* Markdown 卡片，以及一份自包含双语 HTML 报告"
+      "result": "相互对应的韩文和英文PS-* Markdown卡片，以及一份可独立打开的双语HTML报告"
     },
     "plan-summary-md": {
-      "summary": "仅以韩文和英文 Markdown 输出相互对齐的计划摘要。",
-      "whenToUse": "计划摘要需要直接进入仓库文档、issue 或纯文本工作流时",
-      "result": "在 .plan-summaries/ 中生成两份经过验证的 Markdown 报告，不创建 HTML 或打开浏览器"
+      "summary": "仅以韩文和英文Markdown输出内容与依据相互对应的计划摘要。",
+      "whenToUse": "计划摘要需要直接进入仓库文档、Issue或纯文本工作流时",
+      "result": "在.plan-summaries/中生成两份经过验证的Markdown报告，不创建HTML或打开浏览器"
     },
     "plan-summary-quiz": {
-      "summary": "为双语计划摘要添加相互对齐的理解测验。",
+      "summary": "为双语计划摘要添加两种语言相互对应的理解测验。",
       "whenToUse": "用于入职培训、计划交接，或检验对需求和设计决策的理解时",
-      "result": "以 Markdown 和交互式离线 HTML 生成双语 PS-* 摘要与对齐的 QZ-* 问题"
+      "result": "以Markdown和交互式离线HTML生成双语PS-*摘要与相互对应的QZ-*问题"
     },
     "human-friendly-writing": {
       "summary": "在不改变内容的前提下，把 AI 写的韩文改写成自然的人类文风。",
@@ -300,62 +300,62 @@
       "result": "改写后的韩文文本，以及关于修改内容的简短说明"
     },
     "git-commit": {
-      "summary": "把working tree中的变更拆分成逻辑清晰的Conventional Commit。",
-      "whenToUse": "需要把混合变更整理成可审查的commit时",
-      "result": "一个或多个显式暂存的commit"
+      "summary": "把工作区中的变更拆分成逻辑清晰的Conventional Commit。",
+      "whenToUse": "需要把混合变更整理成便于审查的提交时",
+      "result": "一个或多个只暂存指定文件的提交"
     },
     "git-commit-push": {
-      "summary": "按逻辑单位commit，然后通过普通push发布到remote。",
+      "summary": "按逻辑单位提交，然后通过普通推送发布到远程仓库。",
       "whenToUse": "需要一次性整理并发布已完成的变更时",
-      "result": "Conventional Commits和remote push"
+      "result": "Conventional Commits和远程推送"
     },
     "git-commit-push-realtime": {
-      "summary": "每完成一个已验证的结果，就立即commit并push。",
-      "whenToUse": "希望在remote上为较长的实现保留可审查checkpoint时",
-      "result": "已验证的checkpoint，以及每次都确认过的remote发布状态"
+      "summary": "每完成一个经过验证的结果，就立即提交并推送。",
+      "whenToUse": "希望在远程仓库为较长的实现保留可审查的检查点时",
+      "result": "已验证的检查点，以及每次都确认过的远程发布状态"
     },
     "git-commit-realtime": {
-      "summary": "为每个已验证结果创建local commit，把push留到之后。",
+      "summary": "为每个经过验证的结果创建本地提交，把推送留到之后。",
       "whenToUse": "希望保留工作过程，但自行决定发布时间时",
-      "result": "不会触及remote的local checkpoint"
+      "result": "不会触及远程仓库的本地检查点"
     },
     "git-commit-rewrite": {
-      "summary": "把最近的commit标题改写为Conventional Commit格式。",
-      "whenToUse": "需要统一已有commit message的质量和结构时",
-      "result": "经过安全检查的一致commit历史"
+      "summary": "把最近的提交标题改写为Conventional Commit格式。",
+      "whenToUse": "需要统一已有提交消息的质量和结构时",
+      "result": "经过安全检查、格式一致的提交记录"
     },
     "git-merge-to-main": {
-      "summary": "把当前branch安全merge到main，并清理源branch。",
-      "whenToUse": "把feature branch集成到main时",
-      "result": "已验证的main merge和安全的branch删除"
+      "summary": "把当前分支安全合并到main，并清理源分支。",
+      "whenToUse": "把功能分支集成到main时",
+      "result": "经过验证的main合并和安全的分支删除"
     },
     "git-merge-to-dev": {
-      "summary": "把当前branch merge到dev或develop，并安全清理。",
-      "whenToUse": "把feature branch集成到开发branch时",
-      "result": "已验证的dev merge和安全的branch删除"
+      "summary": "把当前分支合并到dev或develop，并安全清理。",
+      "whenToUse": "把功能分支集成到开发分支时",
+      "result": "经过验证的dev合并和安全的分支删除"
     },
     "git-branch-cleanup": {
-      "summary": "只安全删除已经merge到受保护branch的local branch。",
-      "whenToUse": "需要无风险地清理积累的local branch时",
-      "result": "仅清理可safe delete的已merge branch"
+      "summary": "只删除已经合并到受保护分支的本地分支。",
+      "whenToUse": "需要安全清理积累的本地分支时",
+      "result": "仅清理可以安全删除的已合并分支"
     },
     "gen-frontend-handoff": {
-      "summary": "把backend变更整理成frontend和client工作所需的上下文。",
-      "whenToUse": "把API变更交接给web、mobile或SDK开发者时",
-      "result": "包含API规范、界面状态、错误处理和验证方法的frontend交接文档"
+      "summary": "把后端变更整理成前端和客户端工作所需的上下文。",
+      "whenToUse": "把API变更交接给Web、移动端或SDK开发者时",
+      "result": "包含API规范、界面状态、错误处理和验证方法的前端交接文档"
     },
     "gen-backend-handoff": {
-      "summary": "把API和数据变更整理成server工作所需的交接文档。",
-      "whenToUse": "把backend实现或运维工作交接给其他开发者时",
-      "result": "包含API、DB、job和rollout的backend handoff"
+      "summary": "把API和数据变更整理成服务器工作所需的交接文档。",
+      "whenToUse": "把后端实现或运维工作交接给其他开发者时",
+      "result": "包含API、DB、后台任务和发布信息的后端交接文档"
     },
     "long-task": {
-      "summary": "通过多个milestone和验证cycle，把大型项目完整推进到底。",
-      "whenToUse": "委派需要数小时完成的自主end-to-end实现时",
-      "result": "贯穿规划、并行工作、审查和完成审计的一体化执行"
+      "summary": "把大型项目分成多个阶段，并在验证后逐步推进到底。",
+      "whenToUse": "委派需要数小时完成的自主端到端实现时",
+      "result": "涵盖规划、并行工作、审查和完成确认的执行记录"
     },
     "work-summary": {
-      "summary": "从本地coding agent记录中生成指定日期范围的工作报告。",
+      "summary": "从本地编程智能体记录中生成指定日期范围的工作报告。",
       "whenToUse": "汇总今天、本周、本月或其他时间段的工作与请求时",
       "result": "简要或详细的Markdown工作报告，可按需保存到.work-summaries/"
     }

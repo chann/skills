@@ -16,9 +16,9 @@
   "hero": {
     "brand": "chann/skills",
     "headline": ["Yesterday’s repetition becomes", "today’s skill."],
-    "lede": "We turned repetitive Claude Code and Codex software work into {count} verifiable workflows. Stable instructions are easier to reuse with prompt caching, while scripted steps leave the LLM free to focus on judgment.",
+    "lede": "We turned recurring Claude Code and Codex software work into {count} workflows you can verify. Reuse the same instructions with prompt caching, and let scripts handle predictable steps so the LLM can focus on judgment.",
     "primaryAction": "Explore {count} skills",
-    "proof": "{count} canonical workflows · {categories} categories · Claude Code + Codex · MIT"
+    "proof": "{count} ready-to-use workflows · {categories} categories · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "Why skills",
@@ -28,17 +28,17 @@
       {
         "label": "Reusable instructions",
         "title": "Stop rebuilding the same instructions.",
-        "description": "Keep the sequence, examples, and safety rules in a stable SKILL.md. Repeated requests retain the same prefix, creating a structure that works well with prompt caching on supported models."
+        "description": "Write the sequence, examples, and safety rules once in SKILL.md. Repeated requests can reuse the same prefix, making prompt caching easier to use on models that support it."
       },
       {
         "label": "Deterministic scripts",
         "title": "Let scripts handle predictable work.",
-        "description": "Run steps with clear outcomes—file discovery, format checks, and data synchronization—as scripts. The model no longer has to reason through the same procedure every time, reducing the work assigned to the LLM."
+        "description": "Use scripts for steps with clear outcomes, such as file discovery, format checks, and data synchronization. The model no longer has to work through the same procedure every time."
       },
       {
         "label": "Focused judgment",
         "title": "Keep the LLM focused on judgment.",
-        "description": "Use the model for requirements, code review, and risk decisions that need context. The skill keeps the execution order and completion criteria fixed."
+        "description": "Use the model for requirements, code review, and risk decisions that need context. Record the execution order and completion criteria in the skill."
       }
     ]
   },
@@ -46,7 +46,7 @@
     "label": "Repeatable by design",
     "lines": [
       "A good prompt disappears after one use.",
-      "Turn it into a skill, and it becomes part of your foundation."
+      "Turn it into a skill, and it becomes part of how you work."
     ],
     "stats": {
       "skills": "Packaged skills",
@@ -185,7 +185,7 @@
     "ready": "ready",
     "tab": "SKILL.md",
     "kicker": "DECISION REVIEW",
-    "title": ["Review every decision", "all the way to the last branch."],
+    "title": ["Review every decision", "all the way to the final choice."],
     "lede": "Trace assumptions through the final choice, then separate confirmed evidence from the risks that remain.",
     "proof": ["12 decisions traced", "3 risks surfaced", "report ready"]
   },
@@ -240,9 +240,9 @@
   },
   "skills": {
     "review-me": {
-      "summary": "Follow the decision tree to review every final choice in a plan or design.",
+      "summary": "Review every important choice in a plan or design so nothing is left unresolved.",
       "whenToUse": "Before implementation, when ambiguous choices, boundaries, and failure or recovery conditions must be resolved",
-      "result": "A completed decision tree, completion criteria for each choice, acceptance examples, and an explicit deferral list"
+      "result": "Resolved choices, completion criteria for each one, acceptance examples, and an explicit deferral list"
     },
     "code-review": {
       "summary": "Find defects and risks in code changes and produce a bilingual report.",
@@ -280,19 +280,19 @@
       "result": "README, README.ko, ARCHITECTURE, and USAGE"
     },
     "plan-summary": {
-      "summary": "Summarize explicit plans, PRDs, specifications, and designs in aligned Korean and English.",
+      "summary": "Summarize explicit plans, PRDs, specifications, and designs in matching Korean and English reports.",
       "whenToUse": "When a team needs the goals, scope, decisions, dependencies, risks, and open questions from selected documents",
       "result": "Korean and English PS-* Markdown cards plus one self-contained bilingual HTML report"
     },
     "plan-summary-md": {
-      "summary": "Write the aligned plan summary as Korean and English Markdown only.",
+      "summary": "Write the matching Korean and English plan summaries as Markdown only.",
       "whenToUse": "When a plan summary belongs in repository docs, an issue, or another text-only workflow",
       "result": "Two validated Markdown reports under .plan-summaries/ with no HTML or browser open"
     },
     "plan-summary-quiz": {
-      "summary": "Add an aligned comprehension quiz to a bilingual plan summary.",
+      "summary": "Add a corresponding comprehension quiz to a bilingual plan summary.",
       "whenToUse": "For onboarding, plan handoffs, or checking understanding of requirements and design decisions",
-      "result": "Bilingual PS-* summaries and aligned QZ-* questions in Markdown and interactive offline HTML"
+      "result": "Bilingual PS-* summaries and corresponding QZ-* questions in Markdown and interactive offline HTML"
     },
     "human-friendly-writing": {
       "summary": "Rewrite AI-written Korean text into natural, human-sounding prose without changing its meaning.",
@@ -352,7 +352,7 @@
     "long-task": {
       "summary": "Run a large project end to end through milestones and verification cycles.",
       "whenToUse": "When delegating an autonomous implementation that will take several hours",
-      "result": "A connected execution spanning planning, parallel work, review, and a completion audit"
+      "result": "An execution record covering planning, parallel work, review, and completion checks"
     },
     "work-summary": {
       "summary": "Create a date-range work report from local coding-agent history.",

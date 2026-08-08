@@ -18,7 +18,7 @@
     "headline": ["昨日の繰り返しを、", "今日のスキルへ。"],
     "lede": "Claude CodeとCodexで繰り返していたソフトウェア作業を、検証可能な{count}個のワークフローにしました。指示はキャッシュしやすい安定した形で再利用し、結果が決まっている手順はスクリプトに任せて、LLMを必要な判断に集中させます。",
     "primaryAction": "{count}個のスキルを見る",
-    "proof": "{count}個の正式ワークフロー · {categories}カテゴリー · Claude Code + Codex · MIT"
+    "proof": "{count}個の実用ワークフロー · {categories}カテゴリー · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "スキルを使う理由",
@@ -28,17 +28,17 @@
       {
         "label": "再利用できる指示",
         "title": "同じ指示を作り直しません。",
-        "description": "実行順序、例、安全規則を安定したSKILL.mdとして維持します。繰り返し依頼でも同じ前半部分が保たれるため、対応モデルのプロンプトキャッシュを活用しやすい構造になります。"
+        "description": "実行順序、例、安全規則をSKILL.mdに一度まとめておきます。繰り返しの依頼でも同じ前半部分を使えるため、対応モデルではプロンプトキャッシュを活用しやすくなります。"
       },
       {
-        "label": "決定的なスクリプト",
+        "label": "確実に実行するスクリプト",
         "title": "決まった作業はスクリプトに任せます。",
-        "description": "ファイル探索、形式チェック、データ同期など、結果が明確な手順はスクリプトで実行します。同じ手順をモデルが毎回推論し直す必要がなくなり、LLMに任せる作業を減らせます。"
+        "description": "ファイル探索、形式チェック、データ同期など、結果が明確な手順はスクリプトで実行します。モデルが同じ手順を毎回考え直す必要がなくなり、LLMに任せる作業を減らせます。"
       },
       {
         "label": "判断に集中",
         "title": "LLMは判断に集中します。",
-        "description": "要件の解釈、コードレビュー、リスク判断など、文脈が必要な部分にモデルを使います。実行順序と完了条件はスキルが固定します。"
+        "description": "要件の解釈、コードレビュー、リスク判断など、文脈が必要な作業はモデルに任せます。実行順序と完了条件はスキルにあらかじめ記録します。"
       }
     ]
   },
@@ -79,7 +79,7 @@
       }
     ],
     "status": "完了",
-    "artifact": "report.html · tests passed · push confirmed"
+    "artifact": "report.html · テスト成功 · プッシュ確認済み"
   },
   "catalog": {
     "label": "スキルカタログ",
@@ -109,7 +109,7 @@
     "descriptionBetweenSelectors": "を、Claude Codeでは",
     "descriptionAfterClaude": "を付けます。",
     "sharedInstructions": "共通の指示",
-    "contractDescription": "原典の根拠から、日英レポートと理解度確認まで。"
+    "contractDescription": "原資料の根拠をもとに日英レポートを作成し、理解度まで確認します。"
   },
   "faq": {
     "label": "FAQ",
@@ -138,11 +138,11 @@
       },
       {
         "question": "インストールすると、PCに何が追加されますか？",
-        "answer": "npx skills addがリポジトリを取得し、各エージェントが同じ原本を読めるようリンクします。原本は1か所に保たれ、リンクを削除すればきれいにアンインストールできます。"
+        "answer": "npx skills addがリポジトリを取得し、各エージェントが同じソースを参照するようリンクします。ソースは1か所に保たれ、リンクを削除すればきれいにアンインストールできます。"
       },
       {
-        "question": "スキルが勝手にcommitやpushをしませんか？",
-        "answer": "各スキルには安全規則が明記されています。たとえばGitスキルは明示的なステージングだけを使い、force pushを禁止し、pushが拒否された場合は停止して報告します。"
+        "question": "スキルが勝手にコミットやプッシュをしませんか？",
+        "answer": "各スキルには安全規則が明記されています。たとえばGitスキルは指定したファイルだけをステージングし、強制プッシュを禁止します。プッシュが拒否された場合は停止して状況を報告します。"
       },
       {
         "question": "一部のスキルだけをインストールできますか？",
@@ -154,7 +154,7 @@
       },
       {
         "question": "料金やライセンス上の制限はありますか？",
-        "answer": "ありません。すべてMIT Licenseのオープンソースです。リポジトリをforkし、チームの規則に合わせて変更できます。"
+        "answer": "ありません。すべてMIT Licenseのオープンソースです。リポジトリをフォークし、チームの規則に合わせて変更できます。"
       }
     ]
   },
@@ -223,7 +223,7 @@
     },
     "git": {
       "label": "Git",
-      "description": "commit、push、merge、整理を安全に実行します。"
+      "description": "コミット、プッシュ、マージ、整理を安全に実行します。"
     },
     "handoff": {
       "label": "引き継ぎ",
@@ -240,13 +240,13 @@
   },
   "skills": {
     "review-me": {
-      "summary": "意思決定ツリーをたどり、計画と設計の最後の選択肢までレビューします。",
+      "summary": "計画や設計で見落とした判断がないよう、最後の選択肢までレビューします。",
       "whenToUse": "実装前に、曖昧な選択、境界、失敗・復旧条件を最後まで確定したいとき",
-      "result": "レビュー済みの意思決定ツリー、選択肢ごとの完了条件、受け入れ例、明示的な保留一覧"
+      "result": "確定した選択肢、それぞれの完了条件、受け入れ例、明示的な保留一覧"
     },
     "code-review": {
       "summary": "コード変更から不具合とリスクを見つけ、日英レポートを作成します。",
-      "whenToUse": "リリース前にPR、commit、branch、working treeをレビューするとき",
+      "whenToUse": "リリース前にPR、コミット、ブランチ、作業ツリーをレビューするとき",
       "result": "Markdownレビューと単体で動くHTMLレビュー"
     },
     "code-review-md": {
@@ -261,7 +261,7 @@
     },
     "diff-summary-md": {
       "summary": "同じ変更説明をHTMLなしのMarkdownだけで保存します。",
-      "whenToUse": "変更サマリーをリポジトリ文書やissueにそのまま貼りたいとき",
+      "whenToUse": "変更サマリーをリポジトリ文書やIssueにそのまま貼りたいとき",
       "result": "整理された韓国語と英語のMarkdown"
     },
     "diff-summary-quiz": {
@@ -271,28 +271,28 @@
     },
     "diff-viewer": {
       "summary": "現在のGit diffを読みやすい単体HTMLとして表示します。",
-      "whenToUse": "分析せずに元のpatchをブラウザーで確認したいとき",
-      "result": "unifiedまたはsplit形式のHTML diff"
+      "whenToUse": "分析せずに元のパッチをブラウザーで確認したいとき",
+      "result": "統合表示または分割表示のHTML diff"
     },
     "gen-docs": {
       "summary": "既存の文面を保ちながら、主要なプロジェクト文書を作成・更新します。",
-      "whenToUse": "README、architecture、usage文書がコードとずれたとき",
+      "whenToUse": "README、アーキテクチャ、利用方法の文書がコードとずれたとき",
       "result": "README、README.ko、ARCHITECTURE、USAGE"
     },
     "plan-summary": {
-      "summary": "明示した計画、PRD、仕様、設計を、対応の取れた韓国語と英語のレポートに要約します。",
+      "summary": "指定した計画、PRD、仕様、設計を、内容と根拠が対応する韓国語と英語のレポートに要約します。",
       "whenToUse": "選択した文書の目標、範囲、決定、依存関係、リスク、未解決事項をチームで素早く把握したいとき",
-      "result": "韓国語と英語で対応する PS-* Markdown カードと、自己完結型の二言語 HTML レポート"
+      "result": "韓国語と英語で対応するPS-* Markdownカードと、単体で開ける二言語HTMLレポート"
     },
     "plan-summary-md": {
-      "summary": "対応の取れた計画要約を、韓国語と英語の Markdown のみで作成します。",
-      "whenToUse": "計画要約をリポジトリ文書、issue、またはテキスト専用の工程へ直接入れたいとき",
-      "result": "HTML やブラウザー表示なしで .plan-summaries/ に生成される検証済み Markdown レポート 2 件"
+      "summary": "内容と根拠が対応する計画要約を、韓国語と英語のMarkdownだけで作成します。",
+      "whenToUse": "計画要約をリポジトリ文書、Issue、またはテキストだけのワークフローへ直接入れたいとき",
+      "result": "HTMLやブラウザー表示なしで.plan-summaries/に生成される、検証済みMarkdownレポート2件"
     },
     "plan-summary-quiz": {
-      "summary": "二言語の計画要約に、対応の取れた理解度クイズを追加します。",
+      "summary": "二言語の計画要約に、両言語で対応する理解度クイズを追加します。",
       "whenToUse": "オンボーディング、計画の引き継ぎ、要件や設計判断の理解確認を行うとき",
-      "result": "Markdown と対話型オフライン HTML による二言語の PS-* 要約と対応する QZ-* 問題"
+      "result": "Markdownと対話型オフラインHTMLで作成した二言語のPS-*要約と、対応するQZ-*問題"
     },
     "human-friendly-writing": {
       "summary": "AI が書いた韓国語の文章を、意味を変えずに人が書いたような自然な文体に整えます。",
@@ -300,62 +300,62 @@
       "result": "語彙と文体を整えた書き直しテキストと、変更点の短い説明"
     },
     "git-commit": {
-      "summary": "working treeの変更を論理的なConventional Commit単位に分けます。",
-      "whenToUse": "混在した変更をレビュー可能なcommitに整理するとき",
-      "result": "明示的にステージされた1件以上のcommit"
+      "summary": "作業ツリーの変更を論理的なConventional Commit単位に分けます。",
+      "whenToUse": "混在した変更をレビューしやすいコミットに整理するとき",
+      "result": "指定したファイルだけをステージングした1件以上のコミット"
     },
     "git-commit-push": {
-      "summary": "論理単位でcommitし、通常のpushでremoteへ反映します。",
+      "summary": "論理単位でコミットし、通常のプッシュでリモートへ反映します。",
       "whenToUse": "完了した変更を整理して一度に公開するとき",
-      "result": "Conventional Commitsとremoteへのpush"
+      "result": "Conventional Commitsとリモートへのプッシュ"
     },
     "git-commit-push-realtime": {
-      "summary": "検証済みの結果が完成するたび、commitしてすぐにpushします。",
-      "whenToUse": "長い実装をremote上のレビュー可能なcheckpointとして残すとき",
-      "result": "検証済みcheckpointと、毎回確認されたremote反映状態"
+      "summary": "検証済みの結果が完成するたび、コミットしてすぐにプッシュします。",
+      "whenToUse": "長い実装をリモート上のレビュー可能なチェックポイントとして残すとき",
+      "result": "検証済みのチェックポイントと、毎回確認されたリモート反映状態"
     },
     "git-commit-realtime": {
-      "summary": "検証済みの結果ごとにlocal commitを作り、pushは後に残します。",
+      "summary": "検証済みの結果ごとにローカルコミットを作り、プッシュは後で行います。",
       "whenToUse": "作業履歴を残しつつ、公開時点は自分で決めたいとき",
-      "result": "remoteに触れないlocal checkpoint"
+      "result": "リモートに触れないローカルチェックポイント"
     },
     "git-commit-rewrite": {
-      "summary": "最近のcommitタイトルをConventional Commit形式に書き直します。",
-      "whenToUse": "既存のcommit messageを一貫した形式に整えるとき",
-      "result": "安全確認を経た一貫性のあるcommit履歴"
+      "summary": "最近のコミットタイトルをConventional Commit形式に書き直します。",
+      "whenToUse": "既存のコミットメッセージを一貫した形式に整えるとき",
+      "result": "安全確認を経た一貫性のあるコミット履歴"
     },
     "git-merge-to-main": {
-      "summary": "現在のbranchをmainへ安全にmergeし、元のbranchを整理します。",
-      "whenToUse": "feature branchをmainへ統合するとき",
-      "result": "検証済みのmain mergeと安全なbranch削除"
+      "summary": "現在のブランチをmainへ安全にマージし、元のブランチを整理します。",
+      "whenToUse": "機能ブランチをmainへ統合するとき",
+      "result": "検証済みのmainへのマージと安全なブランチ削除"
     },
     "git-merge-to-dev": {
-      "summary": "現在のbranchをdevまたはdevelopへmergeし、安全に整理します。",
-      "whenToUse": "feature branchを開発用branchへ統合するとき",
-      "result": "検証済みのdev mergeと安全なbranch削除"
+      "summary": "現在のブランチをdevまたはdevelopへマージし、安全に整理します。",
+      "whenToUse": "機能ブランチを開発用ブランチへ統合するとき",
+      "result": "検証済みのdevへのマージと安全なブランチ削除"
     },
     "git-branch-cleanup": {
-      "summary": "保護branchへmerge済みのlocal branchだけを安全に削除します。",
-      "whenToUse": "増えたlocal branchをリスクなく整理するとき",
-      "result": "safe delete可能なmerge済みbranchだけの整理"
+      "summary": "保護ブランチへマージ済みのローカルブランチだけを安全に削除します。",
+      "whenToUse": "増えたローカルブランチを安全に整理するとき",
+      "result": "安全に削除できるマージ済みブランチだけを整理"
     },
     "gen-frontend-handoff": {
-      "summary": "backend変更をfrontendとclient作業に必要な文脈へ変換します。",
-      "whenToUse": "API変更をweb、mobile、SDK開発者へ引き継ぐとき",
-      "result": "API仕様、画面状態、エラー処理、検証方法をまとめたfrontend引き継ぎ文書"
+      "summary": "バックエンドの変更を、フロントエンドとクライアント作業に必要な文脈へ整理します。",
+      "whenToUse": "API変更をWeb、モバイル、SDK開発者へ引き継ぐとき",
+      "result": "API仕様、画面状態、エラー処理、検証方法をまとめたフロントエンド引き継ぎ文書"
     },
     "gen-backend-handoff": {
-      "summary": "APIとデータの変更をserver作業向けの引き継ぎ文書にまとめます。",
-      "whenToUse": "backend実装や運用作業を別の開発者へ引き継ぐとき",
-      "result": "API、DB、job、rolloutを含むbackend handoff"
+      "summary": "APIとデータの変更を、サーバー作業向けの引き継ぎ文書にまとめます。",
+      "whenToUse": "バックエンドの実装や運用作業を別の開発者へ引き継ぐとき",
+      "result": "API、DB、バックグラウンドジョブ、リリース情報を含むバックエンド引き継ぎ文書"
     },
     "long-task": {
-      "summary": "大きなプロジェクトを複数のmilestoneと検証cycleで最後まで進めます。",
-      "whenToUse": "数時間にわたるend-to-end実装を自律的に任せるとき",
-      "result": "計画、並行作業、レビュー、完了監査をつないだ実行"
+      "summary": "大きなプロジェクトを複数の段階に分け、検証しながら最後まで進めます。",
+      "whenToUse": "数時間にわたる一連の実装を自律的に任せるとき",
+      "result": "計画、並行作業、レビュー、完了確認をまとめた実行記録"
     },
     "work-summary": {
-      "summary": "ローカルのcoding agent履歴から期間指定の作業レポートを作ります。",
+      "summary": "ローカルのコーディングエージェント履歴から期間指定の作業レポートを作ります。",
       "whenToUse": "今日、今週、今月など、期間ごとの作業内容と依頼をまとめるとき",
       "result": "要約または詳細なMarkdown作業レポート（必要に応じて.work-summaries/配下）"
     }
