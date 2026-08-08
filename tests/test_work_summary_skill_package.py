@@ -64,6 +64,8 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
             "`yesterday`",
             "`this week` / `last week`",
             "`this month` / `last month`",
+            "`this quarter` / `last quarter`",
+            "`this year` / `last year`",
             "`YYYY-MM-DD..YYYY-MM-DD`",
             "user's local timezone",
             "Monday-start",
@@ -71,6 +73,21 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
         ):
             with self.subTest(contract=contract):
                 self.assertIn(contract, text)
+
+    def test_skill_classifies_default_save_paths_by_requested_period(self) -> None:
+        text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+
+        for path_contract in (
+            ".work-summaries/daily/<YYYY>/<YYYY-MM-DD>[-detailed].md",
+            ".work-summaries/weekly/<ISO-week-year>/<YYYY-Www>[-detailed].md",
+            ".work-summaries/monthly/<YYYY>/<YYYY-MM>[-detailed].md",
+            ".work-summaries/quarterly/<YYYY>/<YYYY-Qn>[-detailed].md",
+            ".work-summaries/yearly/<YYYY>[-detailed].md",
+            ".work-summaries/custom/<start>--<end>[-detailed].md",
+            "explicit output path",
+        ):
+            with self.subTest(path_contract=path_contract):
+                self.assertIn(path_contract, text)
 
     def test_skill_mines_stores_read_only_and_locally(self) -> None:
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
@@ -126,7 +143,9 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("work-summary", payload["skill_name"])
-        self.assertEqual([1, 2, 3, 4], [item["id"] for item in payload["evals"]])
+        self.assertEqual(
+            [1, 2, 3, 4, 5], [item["id"] for item in payload["evals"]]
+        )
         prompts = " ".join(item["prompt"] for item in payload["evals"])
         assertions = " ".join(
             assertion
@@ -135,9 +154,11 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
         )
         self.assertIn("today", prompts)
         self.assertIn("this week", prompts)
+        self.assertIn("last quarter", prompts)
         self.assertIn("no recorded activity", assertions)
         self.assertIn("local timezone", assertions)
         self.assertIn("read-only", assertions)
+        self.assertIn("quarterly", assertions)
 
     def test_readmes_document_installation_and_selectors(self) -> None:
         for path in (PACKAGE / "README.md", PACKAGE / "README.ko.md"):

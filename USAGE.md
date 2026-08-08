@@ -131,14 +131,16 @@ original. File input is rewritten to a sibling file, never overwritten.
 
 | Command | Action |
 |---|---|
-| `/work-summary [range]` | Summarize coding-agent work for `today` (default), `yesterday`, `this week`, `last week`, `this month`, `last month`, a single day, or `YYYY-MM-DD..YYYY-MM-DD` as a Markdown report |
+| `/work-summary [range]` | Summarize coding-agent work for `today` (default), `yesterday`, this/last week, month, quarter, or year, a single day, or `YYYY-MM-DD..YYYY-MM-DD` as a Markdown report |
 
 Codex invokes the same contract as `$work-summary [range]`. The skill mines
 the local history stores of Claude Code, Codex, opencode, and agy read-only
 (silently skipping absent ones), buckets records in the user's local timezone,
 and replies with a summary or — on request — a detailed report that adds a
 timeline and per-request log. Reports stay local: history content is never
-sent anywhere, and a file is written under `.work-summaries/` only when asked.
+sent anywhere, and a file is written only when asked. Default save paths are
+grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`,
+`yearly`, or `custom`; a user-supplied output path takes priority.
 
 ### plan-summary
 
@@ -343,6 +345,7 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 
 # Report what was worked on across coding agents
 > /work-summary this week
+> /work-summary last quarter detailed
 > /work-summary 2026-07-01..2026-07-31 detailed
 
 # Summarize explicit planning documents, optionally as Markdown only or with a quiz

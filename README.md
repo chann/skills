@@ -163,13 +163,15 @@ Also triggers on phrases like *"build this whole project"*, *"do this autonomous
 
 | Claude Code | Codex | Action |
 | ----------- | ----- | ------ |
-| `/work-summary [range]` | `$work-summary [range]` | Generate a Markdown work report for today, this week, this month, or a custom date span |
+| `/work-summary [range]` | `$work-summary [range]` | Generate a Markdown work report for a day, week, month, quarter, year, or custom date span |
 
 `work-summary` reads the local session history of Claude Code, Codex, opencode,
 and agy without modifying it. It groups activity in your local timezone and
 reports what was requested and completed — a summary by default, or a detailed
 report with a timeline and request log. It also triggers on phrases like
-*"오늘 작업 요약해줘"* and *"what did I work on this week"*.
+*"오늘 작업 요약해줘"* and *"what did I work on this week"*. Saved reports
+are grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`,
+`yearly`, or `custom` unless an explicit path is supplied.
 
 ### plan-summary → [details](plan-summary/README.md)
 

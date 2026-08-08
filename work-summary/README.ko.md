@@ -3,8 +3,8 @@
 [English](README.md) · [← 메인으로](../README.ko.md)
 
 Claude Code, Codex, opencode, agy 같은 코딩 에이전트가 로컬에 남긴 세션
-기록에서 날짜 범위 작업 보고서를 만드는 스킬입니다. 오늘, 이번 주, 이번 달,
-또는 기간을 직접 지정하면 무엇을 요청했고 무엇을 했는지 요약하거나 상세
+기록에서 날짜 범위 작업 보고서를 만드는 스킬입니다. 오늘, 주간, 월간, 분기,
+연간 또는 직접 지정한 기간에 무엇을 요청했고 무엇을 했는지 요약하거나 상세
 보고서로 정리합니다.
 
 ## 무엇이 다른가요?
@@ -33,19 +33,21 @@ npx skills add chann/skills --skill work-summary
 
 | Claude Code | Codex | 동작 |
 |---|---|---|
-| `/work-summary [범위]` | `$work-summary [범위]` | 오늘·어제·이번 주·이번 달 또는 `YYYY-MM-DD..YYYY-MM-DD` 범위의 Markdown 작업 보고서 |
+| `/work-summary [범위]` | `$work-summary [범위]` | 오늘·어제 또는 주간·월간·분기·연간·직접 지정한 범위의 Markdown 작업 보고서 |
 
 예시:
 
 ```text
 /work-summary this week
+$work-summary last quarter detailed
 $work-summary 2026-07-01..2026-07-31 상세 리포트
 오늘 뭐 했는지 요약해줘
 ```
 
-인자가 없으면 오늘 작업을 요약합니다. "상세"를 요청하면 타임라인과
-요청 로그가 추가되고, 파일 저장을 요청하면 `.work-summaries/` 아래에
-저장합니다.
+인자가 없으면 오늘 작업을 요약합니다. "상세"를 요청하면 타임라인과 요청
+로그가 추가됩니다. 파일 저장을 요청하면 `.work-summaries/` 아래의 `daily`,
+`weekly`, `monthly`, `quarterly`, `yearly`, `custom` 폴더로 나눠 저장하며,
+사용자가 경로를 직접 지정했다면 그 경로를 우선합니다.
 
 ## 동작 원칙
 

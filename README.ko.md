@@ -147,12 +147,14 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직
 
 | Claude Code | Codex | 동작 |
 | ----------- | ----- | ---- |
-| `/work-summary [범위]` | `$work-summary [범위]` | 오늘, 이번 주, 이번 달 또는 사용자 지정 기간의 작업 내역을 Markdown 보고서로 생성 |
+| `/work-summary [범위]` | `$work-summary [범위]` | 일간·주간·월간·분기·연간 또는 사용자 지정 기간의 작업 내역을 Markdown 보고서로 생성 |
 
 `work-summary`는 Claude Code, Codex, opencode, agy가 로컬에 남긴 세션 기록을
 읽기 전용으로 수집해 로컬 타임존 기준으로 정리합니다. 기본은 요약이고, 요청
 시 타임라인과 요청 로그가 있는 상세 보고서를 만듭니다. *"오늘 작업 요약해줘"*,
-*"이번주에 뭐 했는지 정리해줘"* 같은 말로도 자동 실행됩니다.
+*"이번주에 뭐 했는지 정리해줘"* 같은 말로도 자동 실행됩니다. 저장을 요청하면
+`.work-summaries/` 아래의 기간별 폴더로 나누며, 직접 지정한 경로가 있으면 그
+경로를 우선합니다.
 
 ### plan-summary → [상세](plan-summary/README.ko.md)
 

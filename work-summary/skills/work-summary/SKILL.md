@@ -1,6 +1,6 @@
 ---
 name: work-summary
-description: Use when the user wants coding-agent work history summarized or reported for a date range — today, yesterday, this week, this month, or an explicit YYYY-MM-DD..YYYY-MM-DD span — from local Claude Code, Codex, opencode, and agy session stores. Trigger on phrases like "오늘 작업 요약해줘", "이번주에 뭐 했는지 정리해줘", "이번달 작업 상세 리포트", "what did I work on this week", "summarize my coding sessions", "/work-summary", or "$work-summary". Generates a Markdown summary or detailed report; for explaining one git change use diff-summary instead.
+description: Use when the user wants coding-agent work history summarized or reported for today, yesterday, this or last week, month, quarter, or year, one date, or an explicit YYYY-MM-DD..YYYY-MM-DD span from local Claude Code, Codex, opencode, and agy session stores. Trigger on phrases like "오늘 작업 요약해줘", "이번 분기 작업 정리해줘", "올해 작업 상세 리포트", "what did I work on this quarter", "summarize my coding sessions", "/work-summary", or "$work-summary"; for one Git change use diff-summary instead.
 ---
 
 # Work Summary
@@ -34,8 +34,15 @@ Parse the request; default to `today` at summary depth across all projects.
 | `yesterday` | the previous local calendar day |
 | `this week` / `last week` | Monday-start weeks in local time |
 | `this month` / `last month` | local calendar months |
+| `this quarter` / `last quarter` | local calendar quarters: Q1 Jan–Mar, Q2 Apr–Jun, Q3 Jul–Sep, Q4 Oct–Dec |
+| `this year` / `last year` | local calendar years |
 | `YYYY-MM-DD` | that single local day |
 | `YYYY-MM-DD..YYYY-MM-DD` | inclusive custom span |
+
+Current week, month, quarter, and year ranges start at the local calendar
+boundary and end now. Previous periods cover the complete local calendar
+period. Weekly labels and directories use the ISO week-year that matches the
+Monday-start week.
 
 - Depth becomes detailed when the user asks for detail ("상세", "자세히",
   "detailed", "full report"); a detailed report adds the timeline and
@@ -125,8 +132,19 @@ totals match the collected counts.
 ## 4. Deliver the report
 
 Reply with the full Markdown report. Write a file only when the user asks for
-one: save it as `.work-summaries/<start>--<end>[-detailed].md` under the
-current project (creating the directory as needed), and suggest — never
-apply — a `.work-summaries/` ignore entry in repositories that track it.
-Never stage or commit a report; it can quote prompts from unrelated private
-projects.
+one. If the user gives an explicit output path, use it. Otherwise create the
+matching directory under the current project and classify the path from the
+requested range syntax, not from coincidental start and end dates:
+
+| Request class | Default path |
+| --- | --- |
+| `today`, `yesterday`, `YYYY-MM-DD` | `.work-summaries/daily/<YYYY>/<YYYY-MM-DD>[-detailed].md` |
+| `this week`, `last week` | `.work-summaries/weekly/<ISO-week-year>/<YYYY-Www>[-detailed].md` |
+| `this month`, `last month` | `.work-summaries/monthly/<YYYY>/<YYYY-MM>[-detailed].md` |
+| `this quarter`, `last quarter` | `.work-summaries/quarterly/<YYYY>/<YYYY-Qn>[-detailed].md` |
+| `this year`, `last year` | `.work-summaries/yearly/<YYYY>[-detailed].md` |
+| `YYYY-MM-DD..YYYY-MM-DD` | `.work-summaries/custom/<start>--<end>[-detailed].md` |
+
+Suggest — never apply — a `.work-summaries/` ignore entry in repositories
+that track it. Never stage or commit a report; it can quote prompts from
+unrelated private projects.

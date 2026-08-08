@@ -3,9 +3,9 @@
 [한국어](README.ko.md) · [← back to main](../README.md)
 
 Turn the local session history kept by Claude Code, Codex, opencode, and agy
-into a Markdown work report for a date range. Ask for today, this week, this
-month, or an explicit span to get a summary or a detailed account of what was
-requested and completed.
+into a Markdown work report for a date range. Ask for today, a week, month,
+quarter, year, or an explicit span to get a summary or a detailed account of
+what was requested and completed.
 
 ## Why it is different
 
@@ -32,19 +32,21 @@ npx skills add chann/skills --skill work-summary
 
 | Claude Code | Codex | Action |
 |---|---|---|
-| `/work-summary [range]` | `$work-summary [range]` | Markdown work report for today, yesterday, this/last week, this/last month, or `YYYY-MM-DD..YYYY-MM-DD` |
+| `/work-summary [range]` | `$work-summary [range]` | Markdown work report for today, yesterday, this/last week, month, quarter, or year, or `YYYY-MM-DD..YYYY-MM-DD` |
 
 Examples:
 
 ```text
 /work-summary this week
+$work-summary last quarter detailed
 $work-summary detailed report for 2026-07-01..2026-07-31
 오늘 뭐 했는지 요약해줘
 ```
 
 With no argument it reports today at summary depth. Ask for "detailed" (or
-"상세") to add a timeline and a per-request log; ask for a file to save the
-report under `.work-summaries/`.
+"상세") to add a timeline and a per-request log. A requested file is grouped
+under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`, `yearly`, or
+`custom`; an explicit output path takes priority.
 
 ## Behavior
 

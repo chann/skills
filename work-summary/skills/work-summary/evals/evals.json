@@ -44,6 +44,17 @@
         "Notes present-but-unreadable stores as skipped in the Sources line",
         "Delivers the report in the reply and writes a file only when asked"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "Use $work-summary to save a detailed work summary for last quarter.",
+      "expected_output": "A detailed Markdown report for the complete previous local calendar quarter saved under its quarterly year and YYYY-Qn label.",
+      "files": [],
+      "assertions": [
+        "Resolves last quarter as the complete previous local calendar quarter using Q1 January-March, Q2 April-June, Q3 July-September, and Q4 October-December",
+        "Saves the report as .work-summaries/quarterly/<YYYY>/<YYYY-Qn>-detailed.md because no explicit output path was supplied",
+        "Creates only the requested report and never stages or commits it"
+      ]
     }
   ]
 }
