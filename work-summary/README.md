@@ -54,7 +54,12 @@ under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`, `yearly`, or
 - Local-only: history content never leaves the machine
 - Buckets in the user's local timezone; weeks start Monday
 - Reports only recorded facts — empty ranges say so
+- Writes Korean reports in plain prose and optionally uses `human-friendly-writing` when already available
 - Replies with Markdown; writes a file only on request and never commits it
+
+The selector remains complete when installed alone. It never installs or
+requires `human-friendly-writing`; its own natural-Korean rules apply when the
+optional skill is unavailable.
 
 ## Package layout
 

@@ -195,6 +195,11 @@ translation-ese style while preserving facts, numbers, and established
 technical terms. Also triggers on phrases like *"AI 용어 없애줘"* and *"사람답게
 다듬어줘"*.
 
+`gen-docs`, the plan-summary family, both handoff generators, and `work-summary`
+include their own natural-Korean rules. When `human-friendly-writing` is already
+available they may use it as an optional final pass, but every selector remains
+fully functional when installed alone.
+
 ## Documentation
 
 - [Usage](USAGE.md) — install, full command reference, configuration, examples, and troubleshooting

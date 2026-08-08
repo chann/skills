@@ -57,6 +57,21 @@ Extract the server-side continuation surface:
 
 Do not claim unverified tests, deploys, or runtime behavior. If there is no command output proving it, write "Not verified in this handoff."
 
+## Natural Korean Prose
+
+When the handoff is in Korean, write reader-facing text as plain, concrete
+Korean prose. Use direct sentences; avoid translation-like rhythm, vague AI
+filler, and internal method vocabulary. Preserve facts, numbers, dates, proper
+nouns, code identifiers, commands, quotes, links, API fields, and evidence.
+
+This selector is self-contained. If the runtime already exposes
+`human-friendly-writing`, it is an optional final pass over only the newly
+authored Korean draft before writing the handoff. Do not install, fetch, or
+require it. If it is absent or unreadable, continue silently with the rules
+above and complete the handoff. After an optional pass, run the normal
+validation again. The pass may change wording only, never evidence, template
+headings, API details, or the Continuation Prompt's instructions.
+
 ## Output
 
 Write the handoff to:

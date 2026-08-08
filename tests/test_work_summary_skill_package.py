@@ -144,7 +144,7 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
 
         self.assertEqual("work-summary", payload["skill_name"])
         self.assertEqual(
-            [1, 2, 3, 4, 5], [item["id"] for item in payload["evals"]]
+            [1, 2, 3, 4, 5, 6], [item["id"] for item in payload["evals"]]
         )
         prompts = " ".join(item["prompt"] for item in payload["evals"])
         assertions = " ".join(
@@ -155,10 +155,12 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
         self.assertIn("today", prompts)
         self.assertIn("this week", prompts)
         self.assertIn("last quarter", prompts)
+        self.assertIn("human-friendly-writing is unavailable", prompts)
         self.assertIn("no recorded activity", assertions)
         self.assertIn("local timezone", assertions)
         self.assertIn("read-only", assertions)
         self.assertIn("quarterly", assertions)
+        self.assertIn("does not install", assertions)
 
     def test_readmes_document_installation_and_selectors(self) -> None:
         for path in (PACKAGE / "README.md", PACKAGE / "README.ko.md"):

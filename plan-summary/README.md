@@ -45,6 +45,9 @@ npx skills add chann/skills --skill plan-summary-quiz
 ```
 
 The Markdown and quiz variants carry synchronized copies of the workflow, collector, generator, and HTML template. A standalone exact-selector installation does not depend on a sibling skill directory.
+All three selectors also carry their own natural-Korean fallback. If the
+runtime already exposes `human-friendly-writing`, they may use it as an
+optional wording-only pass before validation; they never install or require it.
 
 ## Input boundary
 
@@ -55,6 +58,8 @@ The packaged `collect_plan_evidence.py` reads a bounded JSON request from standa
 ## Report requirements
 
 Korean and English reports use the same evidence map. Their source order, digests, `PS-*` card IDs, categories, and source references must match. The generator rejects mismatches rather than silently dropping a claim.
+Korean prose stays direct and concrete. The same alignment and artifact
+validation runs again after any optional writing pass.
 
 `plan-summary-quiz` adds corresponding `QZ-*` questions with 2–6 options, exactly one correct answer, and evidence-backed explanations. Both languages keep the same option count and answer position.
 

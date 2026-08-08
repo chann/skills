@@ -39,6 +39,22 @@ Omit sections with no evidence. Do not invent support matrices, flags, environme
 8. Show per-file diffs and wait for confirmation.
 9. Write only confirmed docs.
 
+## Natural Korean Prose
+
+Write newly authored `README.ko.md` text as plain, concrete Korean prose. Use
+direct sentences; avoid translation-like rhythm, vague AI filler, and internal
+method vocabulary. Preserve facts, numbers, dates, proper nouns, code
+identifiers, commands, quotes, links, and the faithful relationship with
+`README.md`. Never rewrite preserved custom prose merely to change its style.
+
+This selector is self-contained. If the runtime already exposes
+`human-friendly-writing`, it is an optional final pass over only the newly
+authored Korean draft before showing the diff. Do not install, fetch, or
+require it. If it is absent or unreadable, continue silently with the rules
+above and complete the documents. After an optional pass, run the normal
+validation and faithful-mirror check again. The pass may change wording only,
+never evidence, fixed template structure, or preserved prose.
+
 ## Update-in-Place Rules
 
 - Parse existing docs by `#` and `##` headings.

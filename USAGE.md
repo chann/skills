@@ -127,6 +127,12 @@ terms (API, 토큰, 프롬프트, 커밋, 멱등, …) never change; unlisted te
 replaced only when a three-part judgment test passes, and doubt keeps the
 original. File input is rewritten to a sibling file, never overwritten.
 
+`gen-docs`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, both
+handoff generators, and `work-summary` have a self-contained natural-Korean
+fallback. They may use `human-friendly-writing` as an optional wording-only
+pass when the runtime already exposes it, but never install or require it.
+Missing optional support does not change their output or completion behavior.
+
 ### work-summary
 
 | Command | Action |

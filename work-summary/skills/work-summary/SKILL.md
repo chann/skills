@@ -81,6 +81,21 @@ not as skipped.
 This step is complete when every existing store is either mined for the range
 or recorded as skipped with a reason.
 
+## Natural Korean Prose
+
+When the report is in Korean, write reader-facing text as plain, concrete
+Korean prose. Use direct sentences; avoid translation-like rhythm, vague AI
+filler, and internal method vocabulary. Preserve every mined fact, count,
+date, project path, code identifier, command, quote, link, and source label.
+
+This selector is self-contained. If the runtime already exposes
+`human-friendly-writing`, it is an optional final pass over only the newly
+authored Korean draft before delivery or file writing. Do not install, fetch,
+or require it. If it is absent or unreadable, continue silently with the rules
+above and complete the report. After an optional pass, run the normal
+validation and recount totals. The pass may change wording only, never mined
+evidence, English section headings, dates, or report structure.
+
 ## 3. Compose the Markdown report
 
 Build the report in this shape; omit the two detailed-only sections at

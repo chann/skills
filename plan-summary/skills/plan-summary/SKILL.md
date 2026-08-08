@@ -60,6 +60,21 @@ Preserve explicit status, priority, owner, deadline, requirement ID, and decisio
 
 Do not pad a fixed number of cards. Omit empty dimensions and avoid repeating one claim across cards.
 
+## Natural Korean Prose
+
+Write the Korean report as plain, concrete Korean prose. Use direct sentences;
+avoid translation-like rhythm, vague AI filler, and internal method vocabulary.
+Preserve every source-backed fact, number, date, proper noun, code identifier,
+command, quote, link, digest, `PS-*` / `QZ-*` ID, and parser-significant key.
+
+This selector is self-contained. If the runtime already exposes
+`human-friendly-writing`, it is an optional final pass over only the newly
+authored Korean draft before generation. Do not install, fetch, or require it.
+If it is absent or unreadable, continue silently with the rules above and
+complete the report. After an optional pass, run the normal validation and
+bilingual alignment checks again. The pass may change wording only, never the
+evidence map, source text, structural labels, or Korean/English meaning.
+
 ## Stable Bilingual Report Contract
 
 Author Korean and English from the same evidence map. Translation must not add, remove, strengthen, or weaken a claim. Both reports have the same date, ordered sources, source digests, `PS-*` IDs, categories, source references, and card order.

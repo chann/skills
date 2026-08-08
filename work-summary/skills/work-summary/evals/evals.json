@@ -55,6 +55,17 @@
         "Saves the report as .work-summaries/quarterly/<YYYY>/<YYYY-Qn>-detailed.md because no explicit output path was supplied",
         "Creates only the requested report and never stages or commits it"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Use $work-summary to save today's Korean report when human-friendly-writing is unavailable.",
+      "expected_output": "A complete Korean Markdown work summary written with the work-summary skill's own natural-prose rules and saved to the daily path without acquiring another skill.",
+      "files": [],
+      "assertions": [
+        "Continues silently and produces the complete report when the optional human-friendly-writing skill is unavailable",
+        "Uses plain concrete Korean while preserving every mined fact, count, date, project path, quote, and source label",
+        "Writes the requested daily report but does not install, fetch, require, stage, or commit another skill or the report"
+      ]
     }
   ]
 }

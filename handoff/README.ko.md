@@ -12,6 +12,7 @@
 - `.handoffs/` 아래에 결과 파일 생성
 - `main...feature` 같은 사용자가 지정한 범위를 그대로 보존
 - 검증하지 않은 테스트, 배포, 런타임 동작은 사실처럼 쓰지 않고 미검증으로 표시
+- 한국어 핸드오프는 자연스럽고 구체적으로 쓰며, `human-friendly-writing`이 이미 있으면 마지막에 한 번 더 다듬음
 
 ## 설치 방법
 
@@ -35,6 +36,10 @@ npx skills add chann/skills \
 
 한 줄 selector 형식: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 백엔드 단독 selector 형식: `npx skills add chann/skills --skill gen-backend-handoff`
+
+각 스킬은 단독으로 작동합니다. `human-friendly-writing`을 설치하거나 요구하지
+않으며, 사용할 수 없는 환경에서는 각 스킬에 포함된 문체 규칙만으로 문서를
+완성합니다.
 
 ## 사용 방법
 

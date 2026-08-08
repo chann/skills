@@ -11,6 +11,7 @@
 - 자세한 명령, 옵션, 설정, 예제, 문제 해결은 `USAGE.md`로 분리
 - 구성 요소, 데이터 흐름, 디렉토리 구조, 설계 결정은 `ARCHITECTURE.md`로 분리
 - 제목을 기준으로 기존 내용을 갱신하고 `<!-- doc-skill:keep -->`이 있는 사람이 쓴 섹션은 보존
+- 새로 쓰는 한국어는 자연스럽고 구체적으로 작성하며, `human-friendly-writing`이 있으면 마지막에 한 번 더 다듬음
 - 파일별 diff와 확인을 받은 뒤에만 작성
 
 ## 설치
@@ -55,6 +56,9 @@ ln -s "$(pwd)/skills/doc-skill/skills/gen-docs" ~/.claude/skills/gen-docs
 ```
 
 스킬은 프로젝트를 분석해 문서 초안을 만들고 diff를 보여준 뒤, 확인받은 파일만 작성합니다.
+`gen-docs`만 설치해도 모든 기능을 쓸 수 있습니다. `human-friendly-writing`을
+설치하거나 요구하지 않으며, 이미 사용할 수 있을 때만 새로 쓴 한국어를 diff
+표시 전에 한 번 더 다듬습니다.
 
 ## 자세한 문서
 

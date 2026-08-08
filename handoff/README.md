@@ -12,6 +12,7 @@ Handoff document generators for passing work between backend, frontend/client, a
 - Writes output to `.handoffs/`
 - Preserves the user-specified scope, including branch comparisons such as `main...feature`
 - Marks unverified tests, deploys, and runtime behavior as unverified instead of presenting assumptions as facts
+- Writes Korean handoffs in plain prose and optionally uses `human-friendly-writing` when the runtime already provides it
 
 ## Installation
 
@@ -35,6 +36,10 @@ Use the actual skill names with `--skill`; this plugin packages both handoff gen
 
 One-line selector form: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 Backend-only selector form: `npx skills add chann/skills --skill gen-backend-handoff`
+
+Each selector works by itself. Neither one installs or requires
+`human-friendly-writing`; its built-in writing rules remain the fallback when
+that optional skill is unavailable.
 
 ## Usage
 
