@@ -354,6 +354,11 @@
       "whenToUse": "When delegating an autonomous implementation that will take several hours",
       "result": "An execution record covering planning, parallel work, review, and completion checks"
     },
+    "build-reinstall": {
+      "summary": "Build the current project, reinstall it with project-owned commands, and verify that the installed result matches the new build.",
+      "whenToUse": "After code work is complete and a local app or CLI must be replaced with the new build",
+      "result": "Build, reinstall, smoke-check, and SHA-256 installed-artifact evidence"
+    },
     "work-summary": {
       "summary": "Create a date-range work report from local coding-agent history.",
       "whenToUse": "When summarizing requests and work completed today, this week, this month, or another period",

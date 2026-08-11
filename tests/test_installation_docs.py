@@ -26,6 +26,8 @@ INSTALL_DOCS = [
     ROOT / "plan-summary" / "README.ko.md",
     ROOT / "human-friendly-writing" / "README.md",
     ROOT / "human-friendly-writing" / "README.ko.md",
+    ROOT / "build-reinstall" / "README.md",
+    ROOT / "build-reinstall" / "README.ko.md",
 ]
 
 CODE_REVIEW_READMES = [
@@ -96,7 +98,7 @@ class InstallationDocsTests(unittest.TestCase):
 
     def test_every_skill_declares_claude_code_and_codex_interfaces(self) -> None:
         skill_paths = sorted(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(25, len(skill_paths))
+        self.assertEqual(26, len(skill_paths))
 
         for skill_path in skill_paths:
             selector = skill_path.parent.name
@@ -173,9 +175,9 @@ class InstallationDocsTests(unittest.TestCase):
                     self.assertIn(f"/{selector}", text)
                     self.assertIn(f"${selector}", text)
                 self.assertIn(".plan-summaries/", text)
-                self.assertIn("24", text)
                 self.assertIn("25", text)
-                self.assertIn("9", text)
+                self.assertIn("26", text)
+                self.assertIn("10", text)
 
     def test_plan_summary_readmes_publish_exact_installs_and_boundaries(self) -> None:
         for path in PLAN_SUMMARY_READMES:

@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-24 practical agent workflows and 25 installable Codex selectors, packaged across 9 plugins.
+25 practical agent workflows and 26 installable Codex selectors, packaged across 10 plugins.
 
 ## Website
 
@@ -29,6 +29,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, and local branch cleanup |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
 | **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
+| **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the new result with project-owned commands, and verify the installed copy |
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
 | **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
 | **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean into natural prose by removing awkward jargon and smoothing the style without changing meaning |
@@ -69,6 +70,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [git-skill installation](git-skill/README.md#installation)
 - [handoff installation](handoff/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
+- [build-reinstall installation](build-reinstall/README.md#installation)
 - [work-summary installation](work-summary/README.md#installation)
 - [plan-summary installation](plan-summary/README.md#installation)
 - [human-friendly-writing installation](human-friendly-writing/README.md#installation)
@@ -78,6 +80,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - Diff summary only: `npx skills add chann/skills --skill diff-summary`
 - Review-me only: `npx skills add chann/skills --skill review-me`
 - Work summary only: `npx skills add chann/skills --skill work-summary`
+- Build-reinstall only: `npx skills add chann/skills --skill build-reinstall`
 - Plan-summary family: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 - Human-friendly-writing only: `npx skills add chann/skills --skill human-friendly-writing`
 - Codex `$gcpr`: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
@@ -149,6 +152,17 @@ recorded and confirmed.
 
 
 Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
+
+### build-reinstall → [details](build-reinstall/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/build-reinstall [project-root]` | `$build-reinstall [project-root]` | Build, reinstall, and verify the installed local result |
+
+`build-reinstall` runs only when explicitly requested. It reads project-owned
+instructions or optional `.build-reinstall.yaml`, shows the exact commands and
+targets, builds before changing the installed copy, then runs smoke checks and
+compares declared built/installed files with SHA-256.
 
 ### handoff → [details](handoff/README.md)
 

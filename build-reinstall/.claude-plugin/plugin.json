@@ -1,0 +1,5 @@
+{
+  "name": "build-reinstall",
+  "description": "Build a local project, reinstall the newly built result with project-owned commands, and verify the installed copy.",
+  "version": "0.1.0"
+}

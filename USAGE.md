@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 24 canonical workflows and 25 installable Codex selectors across 9 workflow plugins.
+This repository exposes 25 canonical workflows and 26 installable Codex selectors across 10 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [build-reinstall](build-reinstall/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md).
 
 ## Quick start
 
@@ -58,6 +58,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
 > /long-task build a CLI todo app end to end
+> /build-reinstall                            # build, reinstall, verify installed artifact
 > /work-summary this week                   # Markdown report of the week's agent work
 > /plan-summary docs/plan.md docs/design.md # Korean + English plan summary + HTML
 > /plan-summary-md docs/prd.md              # Korean + English Markdown only
@@ -91,6 +92,7 @@ These are the exact names published by every package:
 | Frontend handoff | `/gen-frontend-handoff` | `$gen-frontend-handoff` |
 | Backend handoff | `/gen-backend-handoff` | `$gen-backend-handoff` |
 | Autonomous long task | `/long-task` | `$long-task` |
+| Build and reinstall | `/build-reinstall` | `$build-reinstall` |
 | Work-history report | `/work-summary` | `$work-summary` |
 | Plan document summary | `/plan-summary` | `$plan-summary` |
 | Markdown-only plan summary | `/plan-summary-md` | `$plan-summary-md` |
@@ -132,6 +134,20 @@ handoff generators, and `work-summary` have a self-contained natural-Korean
 fallback. They may use `human-friendly-writing` as an optional wording-only
 pass when the runtime already exposes it, but never install or require it.
 Missing optional support does not change their output or completion behavior.
+
+### build-reinstall
+
+| Command | Action |
+|---|---|
+| `/build-reinstall [project-root]` | Build the project, reinstall the new local result, and verify the installed copy |
+
+Codex invokes the same workflow as `$build-reinstall [project-root]`. The skill
+runs only after explicit invocation. It prefers optional root
+`.build-reinstall.yaml`, then project instructions and declared scripts. Before
+execution it shows the exact build and reinstall commands, target paths, smoke
+checks, and artifact comparisons. Build failure leaves the installed copy
+untouched; full success requires the configured smoke checks and matching
+SHA-256 values for declared built and installed files.
 
 ### work-summary
 
@@ -291,6 +307,9 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | `/long-task clear` | Delete `.agent/state.md` (keeps the other `.agent/` files) |
 | `/long-task complete` | Run the completion audit and finish the run |
 
+`build-reinstall` is separate from `long-task`: completing an autonomous task
+does not trigger a reinstall automatically.
+
 ## Configuration
 
 ### Environment variables
@@ -314,6 +333,11 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | `.work-summaries/` | `work-summary` | Markdown work reports, written only on request; gitignored |
 | `~/.claude/settings.json` | `long-task` | Stop hook installed under `hooks.Stop` on first run |
 
+`.build-reinstall.yaml` is optional read-only project configuration. The skill
+never creates or edits it automatically; copy the packaged
+`references/build-reinstall.example.yaml` only when the project needs explicit
+commands.
+
 `.reviews/`, `.diff-summaries/`, `.plan-summaries/`, and `.diffs/` are already in this repository's `.gitignore`. In another repository the skills may suggest the matching ignore entry, but never edit `.gitignore` automatically.
 
 ## Examples
@@ -336,6 +360,9 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 
 # Build a longer change and publish each verified outcome as it completes
 > /git-commit-push-realtime
+
+# Rebuild a finished local project, reinstall it, and verify the installed copy
+> /build-reinstall
 
 # Refresh this repo's docs (root from cwd, or pass a path)
 > /gen-docs
@@ -374,6 +401,8 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 | `/diff-summary` reports an invalid or empty scope | The requested ref/range is unresolved or contains no changes | Correct the exact scope; the skill will not silently fall back to the working tree |
 | `/code-review` wrote no file | Report generation did not complete | inspect the handoff warning and rerun `/code-review`; use `/code-review-md` only when HTML is not wanted |
 | `/plan-summary` asks for a source | No explicit file was supplied | pass one or more `.md`, `.markdown`, or `.txt` UTF-8 paths; the skill will not auto-discover documents |
+| `/build-reinstall` stops before install | Build, target, or verification evidence is ambiguous | add project instructions or copy and fill `references/build-reinstall.example.yaml` as `.build-reinstall.yaml` |
+| Reinstall command exits zero but verification fails | Smoke check failed or installed SHA-256 differs from the built file | keep the result marked failed and inspect the exact command or artifact pair |
 | long-task won't auto-continue | `.agent/state.md` missing or not `active` | run `/long-task` to start, or `/long-task resume` |
 | long-task stopped early | hit `LONG_TASK_MAX_STOP_CONTINUES` | raise it, e.g. `export LONG_TASK_MAX_STOP_CONTINUES=1000` |
 

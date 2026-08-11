@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 9 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `work-summary`, `plan-summary`, and `human-friendly-writing` — that together expose 24 canonical workflows through 25 installable Codex selectors.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 10 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, and `human-friendly-writing` — that together expose 25 canonical workflows through 26 installable Codex selectors.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
@@ -23,6 +23,7 @@ default prompt.
 | `git-skill` | 0.8.0 | `git-commit`, `git-commit-push`, `git-commit-push-realtime`, `gcpr` (selector alias), `git-commit-realtime`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup` | Conventional-Commit creation, one-shot or realtime checkpoint commits and pushes, history rewrite, guarded merges, and merged-branch cleanup |
 | `handoff` | 0.2.0 | `gen-frontend-handoff`, `gen-backend-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context |
 | `long-task` | 0.3.0 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
+| `build-reinstall` | 0.1.0 | `build-reinstall` | Build a project with project-owned commands, reinstall its local result, and verify the installed copy with smoke checks and artifact digests |
 | `work-summary` | 0.1.0 | `work-summary` | Daily, weekly, monthly, quarterly, yearly, or custom Markdown work reports mined read-only from local coding-agent history stores |
 | `plan-summary` | 1.0.0 | `plan-summary`, `plan-summary-md`, `plan-summary-quiz` | Summarize explicit plan, PRD, specification, and design files as aligned Korean/English Markdown with optional interactive HTML quizzes |
 | `human-friendly-writing` | 0.1.0 | `human-friendly-writing` | Rewrite AI-written Korean text into natural, human-sounding prose — slop-term lexicon plus style pass, meaning-preserving |
@@ -49,6 +50,7 @@ Every plugin shares the same layout:
 - **`git-skill`** keeps its single Python helper, `rewrite_msg.py`, under `git-commit/scripts/`; the `git-commit-rewrite` workflow shares it. `git-commit-push-realtime` composes the `git-commit` and `git-commit-push` safety contracts with outcome-based checkpoint planning, per-checkpoint verification, immediate ordinary pushes, and upstream-parity proof. `git-commit-realtime` applies the same checkpoint planning and verification while never touching the remote: it composes the `git-commit` contract alone and reports unpushed checkpoint hashes instead of push parity.
 - **`handoff`** keeps both handoff generators as self-contained `SKILL.md` files. `gen-frontend-handoff` focuses on client-visible API contract changes, type/rendering/error-state work, and `client action 없음` for DB-only changes. `gen-backend-handoff` focuses on API contracts, database migrations, jobs/queues, rollout, verification, and backend continuation prompts.
 - **`long-task`** carries `long_task.py` (lifecycle commands + Stop-hook installer) and two references (`completion-audit`, `project-templates`).
+- **`build-reinstall`** is an explicit-only local installation workflow. Its `SKILL.md` resolves project-owned build, reinstall, and verification commands, requires build success before changing the installed target, and separates unavailable runtime proof from checks that passed. `references/build-reinstall.example.yaml` documents optional version 1 configuration with explicit target paths and built/installed SHA-256 pairs.
 - **`work-summary`** is a read-only reporter over local agent history. Its `SKILL.md` owns the date-range grammar, local-timezone bucketing, period-classified save paths, store mining order, summary/detailed report contract, and self-contained Korean prose fallback; `references/agent-history-stores.md` maps each store's paths, record shapes, timestamp fields, and epoch units so the workflow filters records instead of guessing.
 - **`plan-summary`** owns the explicit-file boundary and evidence-first document workflow. `collect_plan_evidence.py` returns ordered UTF-8 contents and SHA-256 identities from a bounded JSON request; `generate_plan_summary.py` validates aligned `PS-*` and optional `QZ-*` contracts, derives collision-safe names, and assembles offline HTML from `summary-template.html`. `plan-summary-md` and `plan-summary-quiz` bundle byte-synchronized workflow, natural-Korean fallback, and runtime copies so exact-selector installs remain executable.
 - **`doc-skill`** carries four output templates under `gen-docs/templates/` and keeps its natural-Korean fallback inside `gen-docs` rather than depending on another package.
@@ -74,7 +76,7 @@ Every plugin shares the same layout:
 1. The user types a slash command (e.g. `/code-review-md`) or triggers a skill by natural language.
 2. Claude Code loads the matching `commands/*.md`, which points at the skill.
 3. The skill runs its `SKILL.md` workflow, loading `references/` and invoking bundled scripts through a canonical absolute Python executable in `-I` isolated mode as needed.
-4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, plan summaries under `.plan-summaries/`, raw diff reports under `.diffs/`, work reports in the reply or under `.work-summaries/`, git history changes, or `long-task` state under `.agent/`.
+4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, plan summaries under `.plan-summaries/`, raw diff reports under `.diffs/`, work reports in the reply or under `.work-summaries/`, a verified local install from `build-reinstall`, git history changes, or `long-task` state under `.agent/`.
 
 ### Invocation (Codex)
 
@@ -214,6 +216,14 @@ skills/
 │   │   ├── scripts/long_task.py      # lifecycle + Stop hook
 │   │   └── references/               # completion-audit.md, project-templates.md
 │   └── README.md · README.ko.md
+├── build-reinstall/                  # plugin (v0.1.0)
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/build-reinstall.md   # /build-reinstall
+│   ├── skills/build-reinstall/
+│   │   ├── SKILL.md                  # build → reinstall → installed proof
+│   │   ├── agents/openai.yaml
+│   │   └── references/build-reinstall.example.yaml
+│   └── README.md · README.ko.md
 ├── work-summary/                     # plugin (v0.1.0)
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/work-summary.md      # /work-summary
@@ -254,7 +264,8 @@ skills/
 ## Design decisions
 
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
-- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `work-summary`, and `plan-summary` are versioned and installable independently, so users adopt only what they need.
+- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, and `human-friendly-writing` are versioned and installable independently, so users adopt only what they need.
+- **Local reinstall is explicit and evidence-based.** `build-reinstall` never runs as a completion hook. It chooses commands from optional versioned YAML or project-owned instructions, stops before installation when the build or target is unresolved, and reports success only after installed-result verification.
 - **Natural prose is an optional enhancement, not a dependency.** Document-generating selectors carry a compact built-in Korean writing contract. They may use `human-friendly-writing` when the runtime already exposes it, but never install, fetch, or require it; missing support cannot block or reduce output.
 - **Work reporting is read-only and local.** `work-summary` mines the machine's own agent history stores, never mutates them, keeps history content off the network, and leaves generated reports out of version control (`.work-summaries/` is ignored here).
 - **Leaf-complete decision review is distinct from code review.** `review-me` resolves plans, designs, and choices conversationally; `code-review` evaluates concrete Git changes for defects. The former stays user-invoked and read-only through confirmation, while the latter may trigger naturally from a diff-review request and writes reports.

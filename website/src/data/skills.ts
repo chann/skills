@@ -33,6 +33,7 @@ export type SkillId =
   | "gen-frontend-handoff"
   | "gen-backend-handoff"
   | "long-task"
+  | "build-reinstall"
   | "work-summary";
 
 export interface SkillDefinition {
@@ -255,6 +256,15 @@ export const skillDefinitions = [
     claudeSelector: "/long-task",
     codexSelector: "$long-task",
     tags: ["automation", "orchestration", "milestone", "agent"],
+  },
+  {
+    id: "build-reinstall",
+    title: "Build and Reinstall",
+    category: "automation",
+    example: "$build-reinstall",
+    claudeSelector: "/build-reinstall",
+    codexSelector: "$build-reinstall",
+    tags: ["automation", "build", "install", "verify", "sha256"],
   },
   {
     id: "work-summary",

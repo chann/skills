@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build and Reinstall"
+  short_description: "Build, reinstall, and verify a local project artifact"
+  default_prompt: "Use $build-reinstall to build this project, reinstall the new result, and verify the installed copy."

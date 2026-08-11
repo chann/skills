@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 24개의 실용적인 에이전트 워크플로와 25개의 설치 가능한 Codex selector를 9개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 25개의 실용적인 에이전트 워크플로와 26개의 설치 가능한 Codex selector를 10개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -27,6 +27,7 @@ npm --prefix website run dev
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시, 히스토리 재작성, main/dev 머지, 로컬 브랜치 정리 |
 | **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락을 바탕으로 프론트엔드/백엔드 핸드오프 문서 생성                |
 | **[long-task](long-task/README.ko.md)**             | 여러 마일스톤에 걸친 프로젝트를 자율적으로 진행 — 병렬 worktree 서브에이전트 실행과 마일스톤별 리뷰 |
+| **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인                     |
 | **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
 | **[plan-summary](plan-summary/README.ko.md)**       | 지정한 계획·PRD·명세·설계를 한국어와 영어로 요약하고 Markdown 전용판과 퀴즈판 제공             |
 | **[human-friendly-writing](human-friendly-writing/README.ko.md)** | AI가 쓴 한국어를 뜻은 그대로 두고 사람이 쓴 것 같은 자연스러운 문장으로 재작성                 |
@@ -66,6 +67,7 @@ npx skills add chann/skills \
 - [git-skill 설치](git-skill/README.ko.md#설치-방법)
 - [handoff 설치](handoff/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
+- [build-reinstall 설치](build-reinstall/README.ko.md#설치)
 - [work-summary 설치](work-summary/README.ko.md#설치-방법)
 - [plan-summary 설치](plan-summary/README.ko.md#설치)
 - [human-friendly-writing 설치](human-friendly-writing/README.ko.md#설치)
@@ -75,6 +77,7 @@ npx skills add chann/skills \
 - diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 - review-me만 설치: `npx skills add chann/skills --skill review-me`
 - work-summary만 설치: `npx skills add chann/skills --skill work-summary`
+- build-reinstall만 설치: `npx skills add chann/skills --skill build-reinstall`
 - plan-summary 제품군 설치: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 - human-friendly-writing만 설치: `npx skills add chann/skills --skill human-friendly-writing`
 - Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
@@ -135,6 +138,17 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직
 | `/long-task` | `$long-task` | 병렬 worktree 서브에이전트와 단계별 리뷰를 거쳐 프로젝트를 처음부터 끝까지 자율적으로 구현 |
 
 *"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 말로도 자동 실행됩니다.
+
+### build-reinstall → [상세](build-reinstall/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/build-reinstall [프로젝트-루트]` | `$build-reinstall [프로젝트-루트]` | 빌드하고 다시 설치한 뒤 설치 결과 확인 |
+
+`build-reinstall`은 사용자가 직접 요청할 때만 실행됩니다. 프로젝트 문서나 선택형
+`.build-reinstall.yaml`에서 명령과 대상을 확인하고, 설치된 결과를 바꾸기 전에
+먼저 빌드합니다. 재설치 뒤에는 스모크 검사를 실행하고 지정된 빌드·설치 파일의
+SHA-256이 같은지 확인합니다.
 
 ### handoff → [상세](handoff/README.ko.md)
 

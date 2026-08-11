@@ -1,0 +1,22 @@
+# Copy this file to <repository-root>/.build-reinstall.yaml and replace the
+# example commands and paths with project-owned values.
+version: 1
+working_directory: "."
+
+build:
+  commands:
+    - "pnpm build"
+
+reinstall:
+  commands:
+    - "pnpm install:app"
+  targets:
+    - "/Applications/Example.app"
+
+verify:
+  commands:
+    - "pnpm smoke:app"
+  artifacts:
+    - built: "src-tauri/target/release/bundle/macos/Example.app/Contents/MacOS/Example"
+      installed: "/Applications/Example.app/Contents/MacOS/Example"
+      compare: "sha256"
