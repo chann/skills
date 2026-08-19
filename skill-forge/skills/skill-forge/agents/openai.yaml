@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Forge"
+  short_description: "Author a skill package that satisfies the whole contract"
+  default_prompt: "Use $skill-forge to create a new skill package and publish it to the catalog and every locale."

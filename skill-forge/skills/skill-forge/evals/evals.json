@@ -1,0 +1,51 @@
+{
+  "skill_name": "skill-forge",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $skill-forge to add a skill that turns a failing CI run into a triage note.",
+      "expected_output": "Fixes the trigger phrasings, the artifact path, the nearest existing skill, and the owning plugin before writing files, then creates the full package plus catalog, locale, count, and test updates.",
+      "files": [],
+      "assertions": [
+        "The trigger, artifact, nearest neighbour, and owning plugin are settled before any file is written.",
+        "SKILL.md, agents/openai.yaml, commands/<name>.md, and evals/evals.json are all created.",
+        "The website catalog, all four locale files, and the published counts are updated in the same change.",
+        "The run ends by executing the contract audit rather than declaring the package finished."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "스킬 하나 새로 만들어줘. 이미 있는 diff-summary랑 거의 같은데 출력만 조금 다른 거야.",
+      "expected_output": "Identifies diff-summary as the nearest neighbour, reports that the difference is a mode rather than a separate workflow, and proposes extending the existing skill instead of adding a duplicate package.",
+      "files": [],
+      "assertions": [
+        "The nearest existing skill is read before a new package is proposed.",
+        "A near-duplicate is refused rather than packaged, with the overlap stated concretely.",
+        "An alternative is offered: extend the existing skill or give the new one a distinct artifact."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use /skill-forge to rename gen-docs to project-docs.",
+      "expected_output": "Renames the directory, frontmatter name, both selectors, the command file, and the Codex default prompt, then updates the catalog id, four locales, published counts, install links, and tests, and proves the rename with the audit.",
+      "files": [],
+      "assertions": [
+        "Every selector token, including the Codex default prompt, follows the new name.",
+        "The old catalog id is replaced rather than left beside the new one.",
+        "Documentation install links and published counts are updated in the same change.",
+        "The contract audit is run and reports no violations before the rename is called complete."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The audit says my new skill fails C6 because it only has one eval. Just lower the minimum so it passes.",
+      "expected_output": "Refuses to change the threshold and writes the missing evals instead, covering the happy path, a boundary or refusal, and a case where a sibling skill would be the wrong choice.",
+      "files": [],
+      "assertions": [
+        "The contract threshold is not lowered to make the package pass.",
+        "The missing evals are authored with at least two assertions each.",
+        "The added evals cover a boundary or refusal case, not only the happy path."
+      ]
+    }
+  ]
+}

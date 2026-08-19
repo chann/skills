@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 10 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, and `human-friendly-writing` — that together expose 25 canonical workflows through 26 installable Codex selectors.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 11 independent plugins — `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, `human-friendly-writing`, and `skill-forge` — that together expose 27 canonical workflows through 28 installable Codex selectors.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
@@ -27,6 +27,7 @@ default prompt.
 | `work-summary` | 0.1.0 | `work-summary` | Daily, weekly, monthly, quarterly, yearly, or custom Markdown work reports mined read-only from local coding-agent history stores |
 | `plan-summary` | 1.0.0 | `plan-summary`, `plan-summary-md`, `plan-summary-quiz` | Summarize explicit plan, PRD, specification, and design files as aligned Korean/English Markdown with optional interactive HTML quizzes |
 | `human-friendly-writing` | 0.1.0 | `human-friendly-writing` | Rewrite AI-written Korean text into natural, human-sounding prose — slop-term lexicon plus style pass, meaning-preserving |
+| `skill-forge` | 0.1.0 | `skill-forge`, `skill-audit` | Author skill packages against the nine-rule skill contract and audit every packaged skill against it, from frontmatter and Codex descriptor through catalog, locales, and published counts |
 
 ### Skill internals
 
@@ -54,6 +55,7 @@ Every plugin shares the same layout:
 - **`work-summary`** is a read-only reporter over local agent history. Its `SKILL.md` owns the date-range grammar, local-timezone bucketing, period-classified save paths, store mining order, summary/detailed report contract, and self-contained Korean prose fallback; `references/agent-history-stores.md` maps each store's paths, record shapes, timestamp fields, and epoch units so the workflow filters records instead of guessing.
 - **`plan-summary`** owns the explicit-file boundary and evidence-first document workflow. `collect_plan_evidence.py` returns ordered UTF-8 contents and SHA-256 identities from a bounded JSON request; `generate_plan_summary.py` validates aligned `PS-*` and optional `QZ-*` contracts, derives collision-safe names, and assembles offline HTML from `summary-template.html`. `plan-summary-md` and `plan-summary-quiz` bundle byte-synchronized workflow, natural-Korean fallback, and runtime copies so exact-selector installs remain executable.
 - **`doc-skill`** carries four output templates under `gen-docs/templates/` and keeps its natural-Korean fallback inside `gen-docs` rather than depending on another package.
+- **`skill-forge`** owns the repository's skill contract. `skills/skill-forge/references/skill-package-contract.md` states rules C1 through C9 — name parity, description grammar, invocation-mode declaration, Codex descriptor, slash command, evals, catalog and locale parity, plugin manifest, and published counts — and `references/description-grammar.md` explains how a description earns reliable invocation. `skill-audit` carries the executable form, `scripts/audit_skills.py`: a stdlib-only walker over `*/skills/*/SKILL.md` that reports each violation as rule, skill, detail, and file, emits text, JSON, or Markdown, and exits non-zero so it works as a merge gate. `tests/test_skill_contract.py` runs it over this repository, which is why a half-published skill fails the suite rather than shipping.
 - **`human-friendly-writing`** rewrites AI-written Korean prose without moving meaning. Its `SKILL.md` owns the hard preservation rules, the three-part judgment test for unlisted slop terms, and the ban on leaked method vocabulary; `references/slop-lexicon.md` carries the replaceable-term tables plus the keep list of established technical terms, and `references/style-rules.md` carries the translation-ese/rhythm/tone pass with the final self-check checklist.
 
 ### Supporting files

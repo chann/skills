@@ -233,6 +233,10 @@
       "label": "Automation",
       "description": "Run large projects through verifiable milestones."
     },
+    "authoring": {
+      "label": "Authoring",
+      "description": "Build and check skill packages against one contract."
+    },
     "report": {
       "label": "Report",
       "description": "Turn agent history into reports for a date range."
@@ -358,6 +362,16 @@
       "summary": "Build the current project, reinstall it with project-owned commands, and verify that the installed result matches the new build.",
       "whenToUse": "After code work is complete and a local app or CLI must be replaced with the new build",
       "result": "Build, reinstall, smoke-check, and SHA-256 installed-artifact evidence"
+    },
+    "skill-forge": {
+      "summary": "Author a skill package against the contract and publish every surface it needs.",
+      "whenToUse": "When adding, renaming, or repairing a skill so it follows the same rules as the rest",
+      "result": "SKILL.md, Codex descriptor, slash command, evals, catalog, four locales, counts, and tests"
+    },
+    "skill-audit": {
+      "summary": "Check every packaged skill against the nine contract rules and report what fails.",
+      "whenToUse": "Before a merge or release, to confirm packages and the catalog have not drifted apart",
+      "result": "A violation list naming rule, skill, and file, plus a non-zero exit code"
     },
     "work-summary": {
       "summary": "Create a date-range work report from local coding-agent history.",

@@ -1,0 +1,5 @@
+{
+  "name": "skill-forge",
+  "description": "Author, extend, and audit skill packages against one contract — SKILL.md, Codex descriptor, slash command, evals, website catalog, localized copy, and published counts.",
+  "version": "0.1.0"
+}

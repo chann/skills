@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 25 canonical workflows and 26 installable Codex selectors across 10 workflow plugins.
+This repository exposes 27 canonical workflows and 28 installable Codex selectors across 11 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, or `gen-backend-handoff`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [build-reinstall](build-reinstall/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [build-reinstall](build-reinstall/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md), [skill-forge](skill-forge/README.md).
 
 ## Quick start
 
@@ -64,6 +64,8 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /plan-summary-md docs/prd.md              # Korean + English Markdown only
 > /plan-summary-quiz docs/spec.md           # bilingual summary + aligned quiz
 > /human-friendly-writing docs/note.ko.md   # AI가 쓴 한국어를 사람 문장으로
+> /skill-forge add a CI triage skill        # author a package and publish every surface
+> /skill-audit                              # report packages that break the skill contract
 ```
 
 ### Explicit selectors
@@ -98,8 +100,22 @@ These are the exact names published by every package:
 | Markdown-only plan summary | `/plan-summary-md` | `$plan-summary-md` |
 | Plan summary quiz | `/plan-summary-quiz` | `$plan-summary-quiz` |
 | Human-friendly Korean rewrite | `/human-friendly-writing` | `$human-friendly-writing` |
+| Skill package authoring | `/skill-forge` | `$skill-forge` |
+| Skill contract audit | `/skill-audit` | `$skill-audit` |
 
 ## Command reference
+
+### skill-forge
+
+| Command | Action |
+|---|---|
+| `/skill-forge [skill name or request]` | Author or repair a skill package and publish its catalog entry, four locales, counts, and tests in the same change |
+| `/skill-audit [skill or repository path]` | Report every packaged skill that violates a contract rule, with the rule, skill, and file |
+
+Codex invokes the same workflows as `$skill-forge [skill name or request]` and
+`$skill-audit [skill or repository path]`. The audit is read-only unless the
+user asks for the repairs, and neither workflow relaxes a contract rule to make
+a package pass.
 
 ### review-me
 

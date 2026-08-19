@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Audit"
+  short_description: "Check every packaged skill against the contract"
+  default_prompt: "Use $skill-audit to report every skill package that violates the contract."

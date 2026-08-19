@@ -4,6 +4,7 @@ export const categoryOrder = [
   "git",
   "handoff",
   "automation",
+  "authoring",
   "report",
 ] as const;
 
@@ -34,6 +35,8 @@ export type SkillId =
   | "gen-backend-handoff"
   | "long-task"
   | "build-reinstall"
+  | "skill-forge"
+  | "skill-audit"
   | "work-summary";
 
 export interface SkillDefinition {
@@ -265,6 +268,24 @@ export const skillDefinitions = [
     claudeSelector: "/build-reinstall",
     codexSelector: "$build-reinstall",
     tags: ["automation", "build", "install", "verify", "sha256"],
+  },
+  {
+    id: "skill-forge",
+    title: "Skill Forge",
+    category: "authoring",
+    example: "$skill-forge add a skill that triages a failing CI run",
+    claudeSelector: "/skill-forge",
+    codexSelector: "$skill-forge",
+    tags: ["skill", "authoring", "contract", "catalog", "scaffold"],
+  },
+  {
+    id: "skill-audit",
+    title: "Skill Audit",
+    category: "authoring",
+    example: "$skill-audit",
+    claudeSelector: "/skill-audit",
+    codexSelector: "$skill-audit",
+    tags: ["skill", "audit", "contract", "lint", "ci"],
   },
   {
     id: "work-summary",

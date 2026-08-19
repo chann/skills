@@ -5,6 +5,25 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+
+def published_counts() -> tuple[int, int, int]:
+    """Workflow, selector, and plugin counts derived from the packaged tree."""
+    selectors = len(list(ROOT.glob("*/skills/*/SKILL.md")))
+    catalog = (ROOT / "website" / "src" / "data" / "skills.ts").read_text(
+        encoding="utf-8"
+    )
+    workflows = len(re.findall(r'^\s*id: "([^"]+)",$', catalog, re.MULTILINE))
+    plugins = len(list(ROOT.glob("*/.claude-plugin/plugin.json")))
+    return workflows, selectors, plugins
+
+
+def documented_selector_count() -> int:
+    """The selector count published in USAGE.md."""
+    text = (ROOT / "USAGE.md").read_text(encoding="utf-8")
+    match = re.search(r"(\d+) installable Codex selectors", text)
+    assert match, "USAGE.md must publish an installable Codex selector count"
+    return int(match.group(1))
+
 INSTALL_DOCS = [
     ROOT / "USAGE.md",
     ROOT / "code-review" / "README.md",
@@ -28,6 +47,8 @@ INSTALL_DOCS = [
     ROOT / "human-friendly-writing" / "README.ko.md",
     ROOT / "build-reinstall" / "README.md",
     ROOT / "build-reinstall" / "README.ko.md",
+    ROOT / "skill-forge" / "README.md",
+    ROOT / "skill-forge" / "README.ko.md",
 ]
 
 CODE_REVIEW_READMES = [
@@ -98,7 +119,9 @@ class InstallationDocsTests(unittest.TestCase):
 
     def test_every_skill_declares_claude_code_and_codex_interfaces(self) -> None:
         skill_paths = sorted(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(26, len(skill_paths))
+        # The packaged tree, not a hand-maintained number, is the source of
+        # truth; the docs must follow it.
+        self.assertEqual(documented_selector_count(), len(skill_paths))
 
         for skill_path in skill_paths:
             selector = skill_path.parent.name
@@ -175,9 +198,8 @@ class InstallationDocsTests(unittest.TestCase):
                     self.assertIn(f"/{selector}", text)
                     self.assertIn(f"${selector}", text)
                 self.assertIn(".plan-summaries/", text)
-                self.assertIn("25", text)
-                self.assertIn("26", text)
-                self.assertIn("10", text)
+                for count in published_counts():
+                    self.assertIn(str(count), text)
 
     def test_plan_summary_readmes_publish_exact_installs_and_boundaries(self) -> None:
         for path in PLAN_SUMMARY_READMES:

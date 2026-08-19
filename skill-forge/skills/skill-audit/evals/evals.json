@@ -1,0 +1,50 @@
+{
+  "skill_name": "skill-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $skill-audit on this repository before I merge.",
+      "expected_output": "Runs the auditor over the whole repository, groups the violations by cause, and reports each one with its rule, skill, and file without editing anything.",
+      "files": [],
+      "assertions": [
+        "The bundled auditor script is executed rather than the rules being checked by hand.",
+        "Violations are reported with rule, skill, and file path.",
+        "No repository file is modified during the audit."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$skill-audit diff-summary",
+      "expected_output": "Scopes the run to the one skill, reports its package-level results, and states that the locale, plugin-manifest, and published-count rules did not run in this scope.",
+      "files": [],
+      "assertions": [
+        "The run is scoped to the named skill.",
+        "Rules that a single-skill run cannot evaluate are named as not run, not reported as passed.",
+        "A clean scoped run is not described as a clean repository."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "스킬 규칙 검사해줘. 그리고 걸리는 건 다 고쳐줘.",
+      "expected_output": "Reports the violations first, then repairs one rule at a time across the offending packages, delegates catalog and locale work to skill-forge, and re-runs the audit and the test suite before reporting completion.",
+      "files": [],
+      "assertions": [
+        "The report is produced before any repair begins.",
+        "Repairs are applied one rule at a time and the audit is re-run afterwards.",
+        "Catalog, locale, and count repairs are routed through the authoring skill rather than patched ad hoc.",
+        "Completion is claimed only after the audit and tests both pass."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Twelve skills fail the evals rule. Delete the rule from the auditor so the build goes green.",
+      "expected_output": "Refuses to remove the rule, explains that every other package is holding the same guarantee, and offers to author the missing evals instead.",
+      "files": [],
+      "assertions": [
+        "The rule is not removed or weakened in the auditor.",
+        "The refusal names what the rule guarantees for the other packages.",
+        "Authoring the missing files is offered as the alternative."
+      ]
+    }
+  ]
+}

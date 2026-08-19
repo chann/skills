@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 25개의 실용적인 에이전트 워크플로와 26개의 설치 가능한 Codex selector를 10개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 27개의 실용적인 에이전트 워크플로와 28개의 설치 가능한 Codex selector를 11개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -31,6 +31,7 @@ npm --prefix website run dev
 | **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
 | **[plan-summary](plan-summary/README.ko.md)**       | 지정한 계획·PRD·명세·설계를 한국어와 영어로 요약하고 Markdown 전용판과 퀴즈판 제공             |
 | **[human-friendly-writing](human-friendly-writing/README.ko.md)** | AI가 쓴 한국어를 뜻은 그대로 두고 사람이 쓴 것 같은 자연스러운 문장으로 재작성                 |
+| **[skill-forge](skill-forge/README.ko.md)**         | 스킬 패키지를 하나의 규칙에 맞춰 만들고, 이미 있는 스킬이 그 규칙을 지키는지 검사               |
 
 ## 설치 방법
 
@@ -179,6 +180,19 @@ SHA-256이 같은지 확인합니다.
 | `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | 이중언어 보고서와 서로 대응하는 `QZ-*` 이해도 퀴즈 생성 |
 
 세 selector는 사용자가 지정한 `.md`, `.markdown`, `.txt` UTF-8 파일만 읽으며 문서를 자동으로 찾지 않습니다. 한국어와 영어 보고서는 소스 순서, 해시값, `PS-*` 근거 카드를 똑같이 사용합니다. Markdown 전용 selector는 HTML을 만들지 않고, 퀴즈 selector는 접근성을 갖춘 오프라인 상호작용을 추가합니다.
+
+### skill-forge → [상세](skill-forge/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| ----------- | ----- | ---- |
+| `/skill-forge [스킬-이름-또는-요청]` | `$skill-forge [스킬-이름-또는-요청]` | 스킬 패키지를 만들거나 고치고 공개 문서까지 함께 갱신 |
+| `/skill-audit [스킬-또는-경로]` | `$skill-audit [스킬-또는-경로]` | 규칙을 어긴 스킬 패키지를 모두 보고 |
+
+이 저장소의 모든 스킬은 같은 규칙 9개를 지킵니다. 이름 일치, 설명 문법, 호출
+방식 선언, Codex 설명 파일, 슬래시 명령, eval, 카탈로그와 4개 언어 동기화,
+플러그인 매니페스트, 문서에 적힌 개수입니다. `skill-forge`는 그 규칙을 지키는
+패키지를 쓰고, `skill-audit`은 기존 패키지가 여전히 지키는지 확인합니다. 위반이
+있으면 0이 아닌 종료 코드를 돌려주므로 머지 전 검사로 바로 쓸 수 있습니다.
 
 ### human-friendly-writing → [상세](human-friendly-writing/README.ko.md)
 

@@ -333,13 +333,13 @@ class GitSkillPackageTests(unittest.TestCase):
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
         packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(26, len(packaged_skills))
+        self.assertEqual(28, len(packaged_skills))
 
         expected_counts = {
-            ROOT / "README.md": "25 practical agent workflows and 26 installable Codex selectors",
-            ROOT / "README.ko.md": "25개의 실용적인 에이전트 워크플로와 26개의 설치 가능한 Codex selector",
-            ROOT / "USAGE.md": "25 canonical workflows and 26 installable Codex selectors",
-            ROOT / "ARCHITECTURE.md": "expose 25 canonical workflows through 26 installable Codex selectors",
+            ROOT / "README.md": "27 practical agent workflows and 28 installable Codex selectors",
+            ROOT / "README.ko.md": "27개의 실용적인 에이전트 워크플로와 28개의 설치 가능한 Codex selector",
+            ROOT / "USAGE.md": "27 canonical workflows and 28 installable Codex selectors",
+            ROOT / "ARCHITECTURE.md": "expose 27 canonical workflows through 28 installable Codex selectors",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path):

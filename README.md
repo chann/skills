@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-25 practical agent workflows and 26 installable Codex selectors, packaged across 10 plugins.
+27 practical agent workflows and 28 installable Codex selectors, packaged across 11 plugins.
 
 ## Website
 
@@ -33,6 +33,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
 | **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
 | **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean into natural prose by removing awkward jargon and smoothing the style without changing meaning |
+| **[skill-forge](skill-forge/README.md)** | Author skill packages against one contract and audit every packaged skill against it |
 
 
 ## Installation
@@ -74,6 +75,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [work-summary installation](work-summary/README.md#installation)
 - [plan-summary installation](plan-summary/README.md#installation)
 - [human-friendly-writing installation](human-friendly-writing/README.md#installation)
+- [skill-forge installation](skill-forge/README.md#installation)
 
 - Handoff only: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
 - Backend handoff only: `npx skills add chann/skills --skill gen-backend-handoff`
@@ -196,6 +198,19 @@ are grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`,
 | `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus corresponding `QZ-*` comprehension quizzes |
 
 The three selectors read only explicit `.md`, `.markdown`, or `.txt` UTF-8 files. They never auto-discover documents. Reports share ordered source digests and `PS-*` evidence cards; the Markdown-only selector emits no HTML, while the quiz selector adds accessible offline interaction.
+
+### skill-forge → [details](skill-forge/README.md)
+
+| Claude Code | Codex | Action |
+| ----------- | ----- | ------ |
+| `/skill-forge [skill-name-or-request]` | `$skill-forge [skill-name-or-request]` | Author or repair a skill package and publish every surface it needs |
+| `/skill-audit [skill-or-path]` | `$skill-audit [skill-or-path]` | Report every packaged skill that violates the skill contract |
+
+Every skill in this repository satisfies the same nine rules — name parity,
+description grammar, invocation mode, Codex descriptor, slash command, evals,
+catalog and locale parity, plugin manifest, and published counts. `skill-forge`
+writes a package that satisfies them; `skill-audit` proves an existing one still
+does, and exits non-zero so it works as a merge gate.
 
 ### human-friendly-writing → [details](human-friendly-writing/README.md)
 
