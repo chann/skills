@@ -1,0 +1,62 @@
+{
+  "skill_name": "research-brief",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $research-brief to find out whether our HTTP client retries idempotent requests by default, and what it does on a 429.",
+      "expected_output": "Sharpens the question, reads the library's own documentation and source, and writes a brief with a bottom-line answer and a claim table naming each source's tier and the version it was verified against.",
+      "files": [],
+      "assertions": [
+        "The bottom-line answer appears before the evidence, with a stated confidence level.",
+        "Every claim in the table names its source, its tier, and the version or date it was verified against.",
+        "The library's own source or reference documentation is cited rather than a third-party write-up.",
+        "The brief is written to `.research/` and its path is reported."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "이 라이브러리 기본 타임아웃이 몇 초인지 조사해줘. 블로그마다 다르게 적혀 있어.",
+      "expected_output": "Treats the blog posts as leads, goes to the first-party documentation and source, and records the disagreement in the contradiction ledger with the resolution and its reason.",
+      "files": [],
+      "assertions": [
+        "Community sources are used as leads and are not stated as fact.",
+        "A first-party source is read and cited for the answer.",
+        "Disagreeing sources are both recorded with the resolution and the reason for it.",
+        "Neither side of the disagreement is deleted to make the brief read cleanly."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Research whether this managed service supports cross-region replication. The spec page is behind a paywall we do not have.",
+      "expected_output": "Reports the source it could not reach as a limitation, keeps the unverified claim labeled, and lists what would resolve it under open questions.",
+      "files": [],
+      "assertions": [
+        "The unreachable source is recorded as a limitation of the brief rather than filled in with a guess.",
+        "The unresolved claim stays labeled unverified instead of being written as fact.",
+        "Open questions names the exact source or observation that would resolve it."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Summarize docs/architecture.md for me — I need to understand our own design.",
+      "expected_output": "Reports that the material is already in hand and routes the request to plan-summary rather than researching it.",
+      "files": [],
+      "assertions": [
+        "The request is routed to `plan-summary` by name.",
+        "No research brief is produced for a document the user already has.",
+        "The distinction between summarizing held material and finding new material is stated."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "$research-brief — you have enough. Drop the open questions section, it makes the brief look unfinished, and just say 'latest version' instead of pinning numbers.",
+      "expected_output": "Keeps the open questions section, explains why an empty one must still say so, and refuses to replace the pinned versions with \"latest\".",
+      "files": [],
+      "assertions": [
+        "The open questions section is retained; if empty it states why in one line.",
+        "Claims keep the concrete version or date they were verified against rather than \"latest\".",
+        "The refusal explains that the pinned version is what lets a reader tell a stale brief from a wrong one."
+      ]
+    }
+  ]
+}

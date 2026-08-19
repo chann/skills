@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 28개의 실용적인 에이전트 워크플로와 29개의 설치 가능한 Codex selector를 12개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 29개의 실용적인 에이전트 워크플로와 30개의 설치 가능한 Codex selector를 13개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -24,6 +24,7 @@ npm --prefix website run dev
 | **[code-review](code-review/README.ko.md)**         | Git 변경 사항 분석 — 변경 내용을 설명하는 diff 요약, 심각도별 리뷰, 원본 HTML diff 뷰어        |
 | **[review-me](review-me/README.ko.md)**             | 계획과 설계의 중요한 세부 결정을 한 번에 하나씩 모두 검토                                      |
 | **[bug-hunt](bug-hunt/README.ko.md)**               | 버그를 재현하고 가설을 반증하며 원인을 좁힌 뒤, 먼저 실패한 검사로 수정을 고정                  |
+| **[research-brief](research-brief/README.ko.md)**   | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김                   |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신             |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시, 히스토리 재작성, main/dev 머지, 로컬 브랜치 정리 |
 | **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락을 바탕으로 프론트엔드/백엔드 핸드오프 문서 생성                |
@@ -193,6 +194,18 @@ SHA-256이 같은지 확인합니다.
 반복하지 않습니다. 같은 계층에서 세 번 실패하면 범위를 넓힙니다. 수정은 버그 자체
 때문에 실패하는 검사가 생긴 뒤에만 들어가고, 기록은 `.bug-hunts/`에 남습니다.
 재현하지 못했다면 추측으로 고치지 않고 재현되지 않았다고 보고합니다.
+
+### research-brief → [상세](research-brief/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| ----------- | ----- | ---- |
+| `/research-brief [질문]` | `$research-brief [질문]` | 기술 질문을 1차 출처로 확인하고 근거를 붙인 문서를 남김 |
+
+주장마다 출처, 그 출처의 등급, 어느 버전이나 날짜를 기준으로 확인했는지를 함께
+적습니다. T1은 명세나 1차 소스 코드이고, T3 커뮤니티 자료는 답이 아니라 T1으로
+가는 단서입니다. 어긋나는 출처는 둘 다 남기고 어느 쪽을 택했는지와 이유를
+적습니다. 결론과 확신 수준은 맨 위에 두고, 남은 의문 항목은 비어 있어도 반드시
+남깁니다.
 
 ### skill-forge → [상세](skill-forge/README.ko.md)
 

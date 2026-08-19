@@ -287,6 +287,11 @@
       "whenToUse": "When a bug's cause is not obvious, a test fails intermittently, or something suddenly got slower",
       "result": "A recorded reproduction, a falsification ledger, a failing-first check, and a record under .bug-hunts/"
     },
+    "research-brief": {
+      "summary": "Answer a technical question from primary sources, with every claim tiered and version-pinned.",
+      "whenToUse": "When behavior or a specification must be confirmed against official sources you can check again later",
+      "result": "A bottom-line answer with confidence, a tiered claim table, a contradiction ledger, and open questions"
+    },
     "gen-docs": {
       "summary": "Create or update core project docs while preserving existing wording.",
       "whenToUse": "When README, architecture, or usage docs have drifted from the code",

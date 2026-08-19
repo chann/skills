@@ -10,6 +10,7 @@ __pycache__/
 .diffs/
 .work-summaries/
 .bug-hunts/
+.research/
 workspace/
 .gstack/
 .superpowers/

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research Brief"
+  short_description: "Answer a question from primary sources and cite every claim"
+  default_prompt: "Use $research-brief to answer this question from primary sources and write a cited brief."

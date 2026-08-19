@@ -20,6 +20,7 @@ export type SkillId =
   | "diff-summary-quiz"
   | "diff-viewer"
   | "bug-hunt"
+  | "research-brief"
   | "gen-docs"
   | "plan-summary"
   | "plan-summary-md"
@@ -124,6 +125,15 @@ export const skillDefinitions = [
     claudeSelector: "/bug-hunt",
     codexSelector: "$bug-hunt",
     tags: ["debug", "diagnosis", "regression", "flaky", "root-cause"],
+  },
+  {
+    id: "research-brief",
+    title: "Research Brief",
+    category: "engineering",
+    example: "$research-brief does this client retry idempotent requests by default?",
+    claudeSelector: "/research-brief",
+    codexSelector: "$research-brief",
+    tags: ["research", "sources", "citation", "primary", "brief"],
   },
   {
     id: "gen-docs",

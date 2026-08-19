@@ -51,6 +51,8 @@ INSTALL_DOCS = [
     ROOT / "skill-forge" / "README.ko.md",
     ROOT / "bug-hunt" / "README.md",
     ROOT / "bug-hunt" / "README.ko.md",
+    ROOT / "research-brief" / "README.md",
+    ROOT / "research-brief" / "README.ko.md",
 ]
 
 CODE_REVIEW_READMES = [
