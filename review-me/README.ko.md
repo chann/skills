@@ -14,12 +14,10 @@
 모두 명시되어야 결정이 끝납니다. 마지막에는 빠뜨린 관점이 없는지 확인한
 뒤에만 완료를 선언합니다.
 
-Matt Pocock의
-[`grill-me`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me)와
-[`grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling)
-스킬을 참고했습니다. 인터뷰 과정을 스킬 안에 담고, 답변에서 새로 드러난
-결정을 계속 따라가며 세부 내용의 누락을 확인하고, 마지막 기록을 사용자에게
-확인받도록 확장했습니다.
+인터뷰 절차를 진행하는 사람의 머릿속이 아니라 스킬 안에 담았습니다. 답변마다
+거기서 새로 생기는 결정을 읽어내고, 새 결정은 의존 순서에 맞춰 대기열에
+넣습니다. 전제가 바뀐 결정은 예전 결론을 그대로 두지 않고 다시 엽니다. 기록된
+결정 트리가 자체 점검을 통과하고 사용자가 확인해야 리뷰가 끝납니다.
 
 ## 설치 방법
 

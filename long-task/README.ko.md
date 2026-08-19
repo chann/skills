@@ -2,7 +2,7 @@
 
 [English](README.md) · [← 메인으로](../README.ko.md)
 
-**여러 마일스톤에 걸친 장시간 작업**을 사람의 개입 없이 몇 시간에서 며칠 동안 자율적으로 진행하는 스킬입니다. [jthack/claude-goal](https://github.com/jthack/claude-goal)의 `/goal` 진행 방식과 Git worktree에서 실행하는 병렬 서브에이전트를 결합했습니다.
+**여러 마일스톤에 걸친 장시간 작업**을 사람의 개입 없이 몇 시간에서 며칠 동안 자율적으로 진행하는 스킬입니다. 멈췄다 이어갈 수 있는 실행 흐름과 Git worktree에서 돌아가는 병렬 서브에이전트를 결합했습니다.
 
 ## 주요 기능
 
@@ -121,10 +121,6 @@ long-task/
 - 스킬을 지원하는 에이전트 플랫폼 ([Claude Code](https://code.claude.com), Codex, opencode, Copilot CLI 등 — [메인 README](../README.ko.md#다른-에이전트-플랫폼에서-사용) 참조)
 - 도우미 스크립트와 Stop hook 실행에 필요한 `python3`
 - Git 저장소 (worktree 서브에이전트에 필요)
-
-## 크레딧
-
-작업 진행 방식과 Stop hook 설계는 Codex의 `/goal`을 Claude Code로 옮긴 [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal)에서 가져왔습니다. 이 플러그인은 그 방식을 여러 마일스톤과 병렬 작업에 맞게 확장했습니다.
 
 ## 라이선스
 

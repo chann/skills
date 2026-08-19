@@ -135,14 +135,15 @@ class ReviewMeSkillPackageTests(unittest.TestCase):
         self.assertIn("reopens every descendant", assertions)
         self.assertIn("Final completion requires", assertions)
 
-    def test_readmes_document_installation_and_inspiration(self) -> None:
+    def test_readmes_document_installation_without_third_party_credit(self) -> None:
         for path in (PACKAGE / "README.md", PACKAGE / "README.ko.md"):
             with self.subTest(path=path.relative_to(ROOT)):
                 text = path.read_text(encoding="utf-8")
                 self.assertEqual(2, text.count("chann/skills --skill review-me"))
                 self.assertIn("/review-me", text)
                 self.assertIn("$review-me", text)
-                self.assertIn("mattpocock/skills", text)
+                self.assertNotIn("mattpocock", text)
+                self.assertNotIn("inspired by", text)
 
     def test_skills_cli_discovers_review_me(self) -> None:
         env = os.environ.copy()

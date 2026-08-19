@@ -2,7 +2,7 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-Runs **long, multi-milestone projects** autonomously for hours or days without human intervention. It combines the `/goal` lifecycle from [jthack/claude-goal](https://github.com/jthack/claude-goal) with parallel subagents in Git worktrees.
+Runs **long, multi-milestone projects** autonomously for hours or days without human intervention. It combines a pausable run lifecycle with parallel subagents in Git worktrees.
 
 ## What it does
 
@@ -121,10 +121,6 @@ long-task/
 - An agent platform that supports skills ([Claude Code](https://code.claude.com), Codex, opencode, Copilot CLI, etc. — see [main README](../README.md#use-on-other-agent-platforms))
 - `python3` for the helper script and Stop hook
 - Git repository (worktree subagents need this)
-
-## Credits
-
-The lifecycle and Stop-hook design comes from [github.com/jthack/claude-goal](https://github.com/jthack/claude-goal), which brings Codex's `/goal` workflow to Claude Code. This plugin extends it to multi-milestone projects with parallel work.
 
 ## License
 

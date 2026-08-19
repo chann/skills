@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Long-Task lifecycle helper for Claude Code.
 
-Inspired by github.com/jthack/claude-goal. Adds codex-style /goal-like
-lifecycle commands (status / pause / resume / clear / complete) on top of
-the long-task orchestrator, plus a Stop hook that auto-continues the run
+Adds lifecycle commands (status / pause / resume / clear / complete) on top
+of the long-task orchestrator, plus a Stop hook that auto-continues the run
 until the task is paused, cleared, or completed.
 
 State lives in markdown files inside `<project>/.agent/`:

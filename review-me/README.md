@@ -15,13 +15,11 @@ alternatives, broader consequences, and observable proof are explicit. Before
 claiming completion, the skill checks that every relevant point of view has
 been covered.
 
-This skill is inspired by Matt Pocock's
-[`grill-me`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me)
-and
-[`grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling)
-skills. It builds the interview loop into the skill, follows newly uncovered
-decisions, checks each one for missing details, and asks the user to confirm the
-final record.
+The interview loop lives inside the skill rather than in the operator's head.
+Each answer is read for the decisions it creates, every new decision joins the
+frontier in dependency order, and a decision whose assumptions changed is
+reopened instead of left stale. Nothing closes until the recorded tree passes
+its own audit and the user confirms it.
 
 ## Installation
 
