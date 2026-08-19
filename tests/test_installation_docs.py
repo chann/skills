@@ -49,6 +49,8 @@ INSTALL_DOCS = [
     ROOT / "build-reinstall" / "README.ko.md",
     ROOT / "skill-forge" / "README.md",
     ROOT / "skill-forge" / "README.ko.md",
+    ROOT / "bug-hunt" / "README.md",
+    ROOT / "bug-hunt" / "README.ko.md",
 ]
 
 CODE_REVIEW_READMES = [

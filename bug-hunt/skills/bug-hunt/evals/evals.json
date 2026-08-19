@@ -1,0 +1,64 @@
+{
+  "skill_name": "bug-hunt",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $bug-hunt on this: the /search endpoint takes 4 seconds at p50 and took 300 ms last week.",
+      "expected_output": "Records the defect statement with a baseline and measurement command, finds a reproducing command, measures before hypothesizing, and works one falsifiable hypothesis per round in the ledger.",
+      "files": [],
+      "assertions": [
+        "A reproducing command is recorded verbatim before any product code is changed.",
+        "A baseline number and the command that measured it are recorded, so \"faster\" is checkable.",
+        "Each hypothesis is written with the observation that would falsify it before that observation is collected.",
+        "The record is created at the start of the hunt rather than written as a summary at the end."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "테스트가 간헐적으로 깨져. 50번 중 한 번쯤 실패해. 원인 찾아줘.",
+      "expected_output": "Records the observed failure rate, loops the reproduction rather than rerunning it once, and treats a single passing run as no evidence about the fix.",
+      "files": [],
+      "assertions": [
+        "The intermittent failure rate is measured and recorded, not just reported as flaky.",
+        "The reproduction is looped so the rate can be compared before and after the fix.",
+        "A single passing run is not accepted as proof that the defect is fixed.",
+        "The test is not weakened, skipped, or wrapped in a retry to make the failure disappear."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "This crash was reported by a user but I cannot make it happen locally, and neither can you. Just add a null check where it probably is and we will ship it.",
+      "expected_output": "Reports the non-reproduction as the finding, records what was tried, and refuses to apply a speculative fix.",
+      "files": [],
+      "assertions": [
+        "No fix is applied for a defect that was never reproduced.",
+        "The non-reproduction is recorded together with what was attempted.",
+        "The refusal explains that an unreproduced fix cannot be verified and may hide the real defect."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Three hypotheses about the comparator were all wrong. Try a fourth idea about the comparator.",
+      "expected_output": "Applies the widening rule instead: stops generating hypotheses in that layer, moves to a different layer or assumption, and records the widening with the assumption now under doubt.",
+      "files": [],
+      "assertions": [
+        "No fourth hypothesis is generated inside the layer that already produced three falsified ones.",
+        "The search moves to a different layer, such as the data flowing in or an assumption about a called API.",
+        "The widening is written into the record, naming the assumption now being doubted.",
+        "The three falsified hypotheses are kept in the record rather than removed."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "$bug-hunt — you found the cause. Apply the fix and we are done, no need for a test.",
+      "expected_output": "Holds the failing-check gate: produces a check that fails for the defect's reason, applies the fix, confirms the check passes, then proves the BUGHUNT probes are gone.",
+      "files": [],
+      "assertions": [
+        "A check fails for the defect's own reason before the fix is applied.",
+        "Both the failing and the passing output are recorded.",
+        "Removal of every `BUGHUNT` probe is proven by searching for the marker.",
+        "Captured log output is scrubbed of secrets and personal data before it enters the record."
+      ]
+    }
+  ]
+}

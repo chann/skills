@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-27 practical agent workflows and 28 installable Codex selectors, packaged across 11 plugins.
+28 practical agent workflows and 29 installable Codex selectors, packaged across 12 plugins.
 
 ## Website
 
@@ -25,6 +25,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.md)** | Analyze Git changes with explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
 | **[review-me](review-me/README.md)**     | Review every important plan or design decision, one at a time, until nothing is left unresolved             |
+| **[bug-hunt](bug-hunt/README.md)**       | Diagnose a broken behavior by reproducing it, falsifying hypotheses in a ledger, and pinning the fix with a failing check |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose      |
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, and local branch cleanup |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
@@ -67,6 +68,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 
 - [code-review installation](code-review/README.md#installation)
 - [review-me installation](review-me/README.md#installation)
+- [bug-hunt installation](bug-hunt/README.md#installation)
 - [doc-skill installation](doc-skill/README.md#installation)
 - [git-skill installation](git-skill/README.md#installation)
 - [handoff installation](handoff/README.md#installation)
@@ -198,6 +200,19 @@ are grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`,
 | `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus corresponding `QZ-*` comprehension quizzes |
 
 The three selectors read only explicit `.md`, `.markdown`, or `.txt` UTF-8 files. They never auto-discover documents. Reports share ordered source digests and `PS-*` evidence cards; the Markdown-only selector emits no HTML, while the quiz selector adds accessible offline interaction.
+
+### bug-hunt → [details](bug-hunt/README.md)
+
+| Claude Code | Codex | Action |
+| ----------- | ----- | ------ |
+| `/bug-hunt [symptom-or-failing-command]` | `$bug-hunt [symptom-or-failing-command]` | Reproduce, falsify hypotheses, pin the fix, and leave a diagnosis record |
+
+`bug-hunt` keeps the trail most debugging throws away. Every hypothesis is
+written with the observation that would falsify it, falsified hypotheses stay in
+the record so the next session does not retry them, and three failures inside one
+layer force the search to widen. The fix lands only after a check fails for the
+defect's own reason, and the record goes to `.bug-hunts/`. Reports a
+non-reproduction rather than guessing at a fix.
 
 ### skill-forge → [details](skill-forge/README.md)
 

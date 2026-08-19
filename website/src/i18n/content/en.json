@@ -217,6 +217,10 @@
       "label": "Review",
       "description": "Review plans and changes, explain them, and find defects."
     },
+    "engineering": {
+      "label": "Diagnosis",
+      "description": "Reproduce a broken behavior and narrow it to its cause."
+    },
     "docs": {
       "label": "Docs",
       "description": "Bring project documentation back in sync with the code."
@@ -277,6 +281,11 @@
       "summary": "Render the current Git diff as a readable standalone HTML page.",
       "whenToUse": "When you want to inspect the raw patch in a browser without analysis",
       "result": "A unified or split-view HTML diff"
+    },
+    "bug-hunt": {
+      "summary": "Reproduce first, falsify hypotheses in a ledger, and pin the fix with a check that failed first.",
+      "whenToUse": "When a bug's cause is not obvious, a test fails intermittently, or something suddenly got slower",
+      "result": "A recorded reproduction, a falsification ledger, a failing-first check, and a record under .bug-hunts/"
     },
     "gen-docs": {
       "summary": "Create or update core project docs while preserving existing wording.",

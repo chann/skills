@@ -9,6 +9,7 @@ __pycache__/
 .plan-summaries/
 .diffs/
 .work-summaries/
+.bug-hunts/
 workspace/
 .gstack/
 .superpowers/

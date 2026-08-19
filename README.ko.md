@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 27개의 실용적인 에이전트 워크플로와 28개의 설치 가능한 Codex selector를 11개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 28개의 실용적인 에이전트 워크플로와 29개의 설치 가능한 Codex selector를 12개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -23,6 +23,7 @@ npm --prefix website run dev
 | --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[code-review](code-review/README.ko.md)**         | Git 변경 사항 분석 — 변경 내용을 설명하는 diff 요약, 심각도별 리뷰, 원본 HTML diff 뷰어        |
 | **[review-me](review-me/README.ko.md)**             | 계획과 설계의 중요한 세부 결정을 한 번에 하나씩 모두 검토                                      |
+| **[bug-hunt](bug-hunt/README.ko.md)**               | 버그를 재현하고 가설을 반증하며 원인을 좁힌 뒤, 먼저 실패한 검사로 수정을 고정                  |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신             |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시, 히스토리 재작성, main/dev 머지, 로컬 브랜치 정리 |
 | **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락을 바탕으로 프론트엔드/백엔드 핸드오프 문서 생성                |
@@ -180,6 +181,18 @@ SHA-256이 같은지 확인합니다.
 | `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | 이중언어 보고서와 서로 대응하는 `QZ-*` 이해도 퀴즈 생성 |
 
 세 selector는 사용자가 지정한 `.md`, `.markdown`, `.txt` UTF-8 파일만 읽으며 문서를 자동으로 찾지 않습니다. 한국어와 영어 보고서는 소스 순서, 해시값, `PS-*` 근거 카드를 똑같이 사용합니다. Markdown 전용 selector는 HTML을 만들지 않고, 퀴즈 selector는 접근성을 갖춘 오프라인 상호작용을 추가합니다.
+
+### bug-hunt → [상세](bug-hunt/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| ----------- | ----- | ---- |
+| `/bug-hunt [증상-또는-실패-명령]` | `$bug-hunt [증상-또는-실패-명령]` | 재현하고 가설을 반증하며 원인을 좁힌 뒤 진단 기록을 남김 |
+
+`bug-hunt`는 보통의 디버깅이 버리는 흔적을 남깁니다. 가설마다 그 가설이 틀렸음을
+보여줄 관찰을 먼저 적고, 반증된 가설도 지우지 않아서 다음 세션이 같은 시도를
+반복하지 않습니다. 같은 계층에서 세 번 실패하면 범위를 넓힙니다. 수정은 버그 자체
+때문에 실패하는 검사가 생긴 뒤에만 들어가고, 기록은 `.bug-hunts/`에 남습니다.
+재현하지 못했다면 추측으로 고치지 않고 재현되지 않았다고 보고합니다.
 
 ### skill-forge → [상세](skill-forge/README.ko.md)
 

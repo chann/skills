@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bug Hunt"
+  short_description: "Diagnose a defect with a falsification ledger and a pinned fix"
+  default_prompt: "Use $bug-hunt to find the cause of this failure and pin the fix with a check that fails first."

@@ -1,5 +1,6 @@
 export const categoryOrder = [
   "review",
+  "engineering",
   "docs",
   "git",
   "handoff",
@@ -18,6 +19,7 @@ export type SkillId =
   | "diff-summary-md"
   | "diff-summary-quiz"
   | "diff-viewer"
+  | "bug-hunt"
   | "gen-docs"
   | "plan-summary"
   | "plan-summary-md"
@@ -113,6 +115,15 @@ export const skillDefinitions = [
     claudeSelector: "/diff-viewer",
     codexSelector: "$diff-viewer",
     tags: ["diff", "viewer", "html", "git"],
+  },
+  {
+    id: "bug-hunt",
+    title: "Bug Hunt",
+    category: "engineering",
+    example: "$bug-hunt the /search endpoint got 10x slower this week",
+    claudeSelector: "/bug-hunt",
+    codexSelector: "$bug-hunt",
+    tags: ["debug", "diagnosis", "regression", "flaky", "root-cause"],
   },
   {
     id: "gen-docs",

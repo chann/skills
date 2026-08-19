@@ -1,0 +1,5 @@
+{
+  "name": "bug-hunt",
+  "description": "Diagnose a broken behavior with a written hypothesis ledger — reproduce first, falsify one hypothesis per round, pin the fix with a check that failed for the defect's reason, and leave a diagnosis record.",
+  "version": "0.1.0"
+}

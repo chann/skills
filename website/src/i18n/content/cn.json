@@ -217,6 +217,10 @@
       "label": "审查",
       "description": "审查并解释计划与变更，找出缺陷。"
     },
+    "engineering": {
+      "label": "定位原因",
+      "description": "复现异常行为，依据证据收敛到根因。"
+    },
     "docs": {
       "label": "文档",
       "description": "让项目文档与当前代码保持一致。"
@@ -277,6 +281,11 @@
       "summary": "把当前Git diff渲染为易读的独立HTML页面。",
       "whenToUse": "希望不做分析，直接在浏览器中查看原始补丁时",
       "result": "统一视图或分栏视图的HTML diff"
+    },
+    "bug-hunt": {
+      "summary": "先复现，再通过反证逐步收敛原因，并用先失败的检查锁定修复。",
+      "whenToUse": "原因不明的缺陷、间歇失败的测试，或突然变慢的行为需要定位时",
+      "result": "复现命令、反证记录、先失败的检查，以及 .bug-hunts/ 下的诊断记录"
     },
     "gen-docs": {
       "summary": "在保留现有表述的同时，创建或更新核心项目文档。",
