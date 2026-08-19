@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-30 practical agent workflows and 31 installable Codex selectors, packaged across 13 plugins.
+31 practical agent workflows and 32 installable Codex selectors, packaged across 13 plugins.
 
 ## Website
 
@@ -29,7 +29,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose      |
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, conflict resolution, and local branch cleanup |
-| **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
+| **[handoff](handoff/README.md)**         | Generate frontend/client, backend/server, and session-to-session handoff docs from git diffs, ranges, and session context |
 | **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
 | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the new result with project-owned commands, and verify the installed copy |
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
@@ -81,7 +81,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [human-friendly-writing installation](human-friendly-writing/README.md#installation)
 - [skill-forge installation](skill-forge/README.md#installation)
 
-- Handoff only: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
+- Handoff only: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`
 - Backend handoff only: `npx skills add chann/skills --skill gen-backend-handoff`
 - Diff summary only: `npx skills add chann/skills --skill diff-summary`
 - Review-me only: `npx skills add chann/skills --skill review-me`
@@ -178,6 +178,7 @@ compares declared built/installed files with SHA-256.
 | ------------------------- | ------------------------ | --------------------------------------------------------------------------------- |
 | `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | Write a frontend/client handoff from backend API diffs, ranges, or session context |
 | `/gen-backend-handoff`    | `$gen-backend-handoff`   | Write a backend/server handoff from code, API, DB, job, or rollout changes         |
+| `/gen-session-handoff`    | `$gen-session-handoff`   | Hand this session to a fresh agent: proven vs unproven state, decisions, traps, next actions, resume prompt |
 
 ### work-summary → [details](work-summary/README.md)
 

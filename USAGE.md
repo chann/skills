@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 30 canonical workflows and 31 installable Codex selectors across 13 workflow plugins.
+This repository exposes 31 canonical workflows and 32 installable Codex selectors across 13 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `bug-hunt`, `research-brief`, `git-resolve-conflicts`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Bug-hunt-only install: `npx skills add chann/skills --skill bug-hunt`. Research-brief-only install: `npx skills add chann/skills --skill research-brief`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff`, `bug-hunt`, `research-brief`, `git-resolve-conflicts`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Bug-hunt-only install: `npx skills add chann/skills --skill bug-hunt`. Research-brief-only install: `npx skills add chann/skills --skill research-brief`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -58,6 +58,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /gen-docs                                   # generate/update project docs
 > /gen-frontend-handoff main...feature-api  # hand off backend API changes to client work
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
+> /gen-session-handoff                      # hand this session to a fresh agent
 > /long-task build a CLI todo app end to end
 > /build-reinstall                            # build, reinstall, verify installed artifact
 > /work-summary this week                   # Markdown report of the week's agent work
@@ -97,6 +98,7 @@ These are the exact names published by every package:
 | Conflict resolution | `/git-resolve-conflicts` | `$git-resolve-conflicts` |
 | Frontend handoff | `/gen-frontend-handoff` | `$gen-frontend-handoff` |
 | Backend handoff | `/gen-backend-handoff` | `$gen-backend-handoff` |
+| Session handoff | `/gen-session-handoff` | `$gen-session-handoff` |
 | Autonomous long task | `/long-task` | `$long-task` |
 | Build and reinstall | `/build-reinstall` | `$build-reinstall` |
 | Work-history report | `/work-summary` | `$work-summary` |

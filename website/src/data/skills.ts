@@ -37,6 +37,7 @@ export type SkillId =
   | "git-branch-cleanup"
   | "gen-frontend-handoff"
   | "gen-backend-handoff"
+  | "gen-session-handoff"
   | "long-task"
   | "build-reinstall"
   | "skill-forge"
@@ -281,6 +282,15 @@ export const skillDefinitions = [
     claudeSelector: "/gen-backend-handoff",
     codexSelector: "$gen-backend-handoff",
     tags: ["handoff", "backend", "api", "database"],
+  },
+  {
+    id: "gen-session-handoff",
+    title: "Generate Session Handoff",
+    category: "handoff",
+    example: "$gen-session-handoff so a new agent can continue tomorrow",
+    claudeSelector: "/gen-session-handoff",
+    codexSelector: "$gen-session-handoff",
+    tags: ["handoff", "session", "resume", "context", "agent"],
   },
   {
     id: "long-task",

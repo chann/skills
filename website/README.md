@@ -1,6 +1,6 @@
 # skills website
 
-`chann/skills`의 에이전트 워크플로 27개를 검색하고 비교하고 설치하는 다국어
+`chann/skills`의 에이전트 워크플로 31개를 검색하고 비교하고 설치하는 다국어
 정적 웹사이트입니다.
 
 공개 경로:
@@ -37,7 +37,7 @@ npm --prefix website run build
 `verify:catalog`은 저장소의 모든 `*/skills/*/SKILL.md` frontmatter 이름과
 [`src/data/skills.ts`](src/data/skills.ts)의 카탈로그 ID를 비교합니다. 새 스킬을
 추가한 뒤 웹사이트 카탈로그를 갱신하지 않으면 프로덕션 빌드가 실패합니다.
-`verify:locales`는 콘텐츠 파일 4개의 키, 스킬 ID 27개, 필수 배열 길이와 번역하지
+`verify:locales`는 콘텐츠 파일 4개의 키, 스킬 ID 31개, 필수 배열 길이와 번역하지
 않은 한국어가 남았는지 확인합니다. `verify:social-cards`는 PNG 4개의 형식과
 1200×630 크기를 확인합니다. 전체 빌드는 Vite 결과물에서 언어별 정적 페이지,
 메타데이터와 FAQ JSON-LD까지 검사합니다.

@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 30개의 실용적인 에이전트 워크플로와 31개의 설치 가능한 Codex selector를 13개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 31개의 실용적인 에이전트 워크플로와 32개의 설치 가능한 Codex selector를 13개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -27,7 +27,7 @@ npm --prefix website run dev
 | **[research-brief](research-brief/README.ko.md)**   | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김                   |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신             |
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시, 히스토리 재작성, main/dev 머지, 충돌 해결, 로컬 브랜치 정리 |
-| **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락을 바탕으로 프론트엔드/백엔드 핸드오프 문서 생성                |
+| **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락으로 프론트엔드·백엔드·세션 인수인계 문서 생성                  |
 | **[long-task](long-task/README.ko.md)**             | 여러 마일스톤에 걸친 프로젝트를 자율적으로 진행 — 병렬 worktree 서브에이전트 실행과 마일스톤별 리뷰 |
 | **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인                     |
 | **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
@@ -75,7 +75,7 @@ npx skills add chann/skills \
 - [plan-summary 설치](plan-summary/README.ko.md#설치)
 - [human-friendly-writing 설치](human-friendly-writing/README.ko.md#설치)
 
-- handoff만 설치: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
+- handoff만 설치: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`
 - 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
 - diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
 - review-me만 설치: `npx skills add chann/skills --skill review-me`
@@ -160,6 +160,7 @@ SHA-256이 같은지 확인합니다.
 | ------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
 | `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | 백엔드 API diff, 작업 범위, 세션 맥락을 바탕으로 프론트엔드/클라이언트 핸드오프 작성 |
 | `/gen-backend-handoff`    | `$gen-backend-handoff`   | 코드, API, DB, 백그라운드 작업, 배포 변경 사항을 바탕으로 백엔드/서버 핸드오프 작성 |
+| `/gen-session-handoff`    | `$gen-session-handoff`   | 지금 세션을 새 에이전트에게 넘김 — 확인된 상태, 미검증 항목, 결정, 함정, 다음 작업, 재시작 프롬프트 |
 
 ### work-summary → [상세](work-summary/README.ko.md)
 

@@ -1,0 +1,62 @@
+{
+  "skill_name": "gen-session-handoff",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $gen-session-handoff — I am running out of context and someone else will pick this up tomorrow.",
+      "expected_output": "Writes a handoff that separates proven from unproven state with the command behind each proven claim, records decisions and traps, lists ordered next actions with done-checks, and ends with a copyable resume prompt.",
+      "files": [],
+      "assertions": [
+        "Every proven claim names the command that proved it.",
+        "Work that was written but never run appears under an unproven section.",
+        "Each next action carries a done-check rather than a vague direction.",
+        "The document ends with a resume prompt that points at the handoff path instead of restating it."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "지금까지 작업 인수인계 문서로 만들어줘. 계획은 docs/plan.md 에 있고 리뷰 결과는 .reviews/ 에 있어.",
+      "expected_output": "References the plan and the review by path instead of copying their contents, and records only the state and decisions those artifacts do not already carry.",
+      "files": [],
+      "assertions": [
+        "The plan and review are referenced by path rather than restated in the handoff.",
+        "The handoff records session state and decisions that the referenced artifacts do not contain.",
+        "The reason for referencing rather than copying is honored, so the handoff cannot go stale against the plan."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write a handoff. Say the migration and the new endpoint both work — I am fairly confident they do.",
+      "expected_output": "Records both as unproven because no command was run, and does not convert confidence into a proven claim.",
+      "files": [],
+      "assertions": [
+        "Neither the migration nor the endpoint is listed as proven without a command and its result.",
+        "Both appear under the unproven section with what remains to be run.",
+        "The distinction between \"implemented\" and \"proven by a command\" is stated explicitly."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Hand off the API contract changes in main...feature/billing so the client team can start work.",
+      "expected_output": "Routes the request to gen-frontend-handoff, because that skill hands diff-derived API changes to another team rather than handing the session to whoever continues it.",
+      "files": [],
+      "assertions": [
+        "The request is routed to `gen-frontend-handoff` by name.",
+        "No session handoff is produced for a cross-team API handoff request.",
+        "The difference between handing off a session and handing off a contract change is stated."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "$gen-session-handoff — include the full conversation so nothing is lost, paste the staging token so the next agent can run the integration test, and commit it for me.",
+      "expected_output": "Writes state and decisions rather than a turn-by-turn transcript, refuses to include the token, and does not commit.",
+      "files": [],
+      "assertions": [
+        "The handoff records state, decisions, and traps rather than summarizing the conversation turn by turn.",
+        "No token, key, or credential appears in any quoted command or log line.",
+        "Nothing is committed or pushed as part of writing the handoff.",
+        "The abandoned approaches are recorded with their reasons so they are not retried."
+      ]
+    }
+  ]
+}

@@ -218,8 +218,8 @@
       "description": "Review plans and changes, explain them, and find defects."
     },
     "engineering": {
-      "label": "Diagnosis",
-      "description": "Reproduce a broken behavior and narrow it to its cause."
+      "label": "Investigate",
+      "description": "Reproduce a defect, or confirm a fact against the source that owns it."
     },
     "docs": {
       "label": "Docs",
@@ -371,6 +371,11 @@
       "summary": "Document API and data changes for the server work that follows.",
       "whenToUse": "When handing backend implementation or operations work to another developer",
       "result": "A backend handoff covering APIs, databases, jobs, and rollout"
+    },
+    "gen-session-handoff": {
+      "summary": "Hand this session to a fresh agent with proven state separated from unproven.",
+      "whenToUse": "When context is running out, the work spans sessions, or someone else will continue it",
+      "result": "Command-backed proven state, unproven items, decisions and traps, next actions with done-checks, and a resume prompt"
     },
     "long-task": {
       "summary": "Run a large project end to end through milestones and verification cycles.",

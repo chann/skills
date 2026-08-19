@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Session Handoff"
+  short_description: "Hand this session over with proven and unproven state split"
+  default_prompt: "Use $gen-session-handoff to write a handoff a fresh agent can resume this work from."

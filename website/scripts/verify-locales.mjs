@@ -35,8 +35,8 @@ const canonicalIds = [...skillsSource.matchAll(/^\s+id: "([^"]+)",$/gm)].map(
   (match) => match[1],
 );
 
-if (canonicalIds.length !== 30 || new Set(canonicalIds).size !== 30) {
-  throw new Error(`Expected 30 unique canonical skill IDs, found ${canonicalIds.length}.`);
+if (canonicalIds.length !== 31 || new Set(canonicalIds).size !== 31) {
+  throw new Error(`Expected 31 unique canonical skill IDs, found ${canonicalIds.length}.`);
 }
 
 const localizedContent = Object.fromEntries(
@@ -73,7 +73,7 @@ for (const locale of requiredLocales) {
   const localizedIds = Object.keys(content.skills ?? {});
   const missing = canonicalIds.filter((id) => !localizedIds.includes(id));
   const extra = localizedIds.filter((id) => !canonicalIds.includes(id));
-  if (localizedIds.length !== 30 || missing.length || extra.length) {
+  if (localizedIds.length !== 31 || missing.length || extra.length) {
     throw new Error(
       `${locale}: skill IDs differ (missing: ${missing.join(", ") || "none"}; extra: ${extra.join(", ") || "none"}).`,
     );

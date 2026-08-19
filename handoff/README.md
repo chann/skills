@@ -9,6 +9,7 @@ Handoff document generators for passing work between backend, frontend/client, a
 - Creates evidence-based markdown handoffs from git diffs, commit ranges, branch comparisons, and current session context
 - Provides `/gen-frontend-handoff` for backend API changes that frontend, mobile, SDK, or other clients need to consume
 - Provides `/gen-backend-handoff` for server-side continuation work covering API contracts, database migrations, jobs, rollout, and verification
+- Provides `/gen-session-handoff` for handing the current session to a fresh agent, separating proven state from unproven and ending with a copyable resume prompt
 - Writes output to `.handoffs/`
 - Preserves the user-specified scope, including branch comparisons such as `main...feature`
 - Marks unverified tests, deploys, and runtime behavior as unverified instead of presenting assumptions as facts
@@ -21,7 +22,8 @@ Handoff document generators for passing work between backend, frontend/client, a
 ```bash
 npx skills add -y -g chann/skills \
   --skill gen-frontend-handoff \
-  --skill gen-backend-handoff
+  --skill gen-backend-handoff \
+  --skill gen-session-handoff
 ```
 
 **Project-local:**
@@ -29,12 +31,13 @@ npx skills add -y -g chann/skills \
 ```bash
 npx skills add chann/skills \
   --skill gen-frontend-handoff \
-  --skill gen-backend-handoff
+  --skill gen-backend-handoff \
+  --skill gen-session-handoff
 ```
 
 Use the actual skill names with `--skill`; this plugin packages both handoff generators together.
 
-One-line selector form: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff`
+One-line selector form: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`
 Backend-only selector form: `npx skills add chann/skills --skill gen-backend-handoff`
 
 Each selector works by itself. Neither one installs or requires
@@ -47,6 +50,7 @@ that optional skill is unavailable.
 |---|---|---|
 | `/gen-frontend-handoff` | `$gen-frontend-handoff` | Frontend/client handoff at `.handoffs/<date>_<scope>_frontend.md` |
 | `/gen-backend-handoff` | `$gen-backend-handoff` | Backend/server handoff at `.handoffs/<date>_<scope>_backend.md` |
+| `/gen-session-handoff` | `$gen-session-handoff` | Session handoff at `.handoffs/<date>_<slug>_session.md` |
 
 Examples:
 
@@ -55,6 +59,8 @@ Examples:
 > /gen-backend-handoff HEAD~5..HEAD
 > Create a FE handoff from the current backend API diff
 > Create a backend handoff from the current Codex session context and git diff
+> /gen-session-handoff
+> Write a handoff so a new agent can continue this work tomorrow
 ```
 
 ## Scope rules
@@ -63,6 +69,7 @@ Examples:
 - Exact range: use the user-provided range first.
 - Branch comparison: use the exact comparison, such as `main...feature`.
 - Session context: use only context provided in the conversation or verified from files/commands.
+- `gen-session-handoff` hands off the session itself, so its scope is the conversation plus the repository state rather than a diff. Every claim that something works names the command that proved it; everything else is recorded as unproven.
 
 ## Requirements
 

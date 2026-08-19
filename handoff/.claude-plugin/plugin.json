@@ -1,5 +1,5 @@
 {
   "name": "handoff",
-  "description": "Handoff document generation skills for frontend/client and backend/server developers. Turns git diffs, commit ranges, branch comparisons, and session context into evidence-based continuation documents.",
-  "version": "0.2.0"
+  "description": "Handoff document generators — frontend/client and backend/server handoffs from diffs, ranges, and branch comparisons, plus session-to-session handoffs that separate proven state from unproven.",
+  "version": "0.3.0"
 }
