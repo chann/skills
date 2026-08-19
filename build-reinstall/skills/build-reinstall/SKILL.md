@@ -1,6 +1,6 @@
 ---
 name: build-reinstall
-description: Build the current project, reinstall the newly built local app or CLI with project-owned commands, and verify that the installed copy matches the build. Use only when the user explicitly invokes /build-reinstall or $build-reinstall, or explicitly asks to build and reinstall after completing development work.
+description: Use when the user explicitly invokes "/build-reinstall" or "$build-reinstall", or explicitly asks to build and reinstall a local app or CLI after finishing development work, including "빌드하고 다시 설치해줘", "새로 빌드해서 설치까지", or "rebuild and reinstall the CLI". Builds with project-owned commands, reinstalls only a proven build, and verifies that the installed copy matches it. Never start it on its own as a post-completion step.
 ---
 
 # Build and Reinstall

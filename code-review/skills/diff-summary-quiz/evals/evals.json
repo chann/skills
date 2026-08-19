@@ -1,0 +1,49 @@
+{
+  "skill_name": "diff-summary-quiz",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이 변경 이해했는지 퀴즈로 확인해줘. main..feature/billing 범위야.",
+      "expected_output": "Produces the aligned bilingual summary for the exact range and appends aligned `## Quiz` sections rendered as an interactive multiple-choice quiz.",
+      "files": [],
+      "assertions": [
+        "The bundled base workflow is read before evidence collection begins.",
+        "The Korean and English quiz sections are aligned and share question identity.",
+        "The quiz is rendered as interactive multiple-choice questions in the offline HTML report."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Quiz me on this diff. It is a two-line typo fix in one README.",
+      "expected_output": "Authors fewer than five questions rather than padding, and states no fact that the report's evidence does not support.",
+      "files": [],
+      "assertions": [
+        "The question count is reduced instead of padded when the diff cannot support five.",
+        "No question asserts a fact absent from the report's evidence.",
+        "The summary cards themselves remain evidence-based rather than inflated to justify questions."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Summarize main..dev for me. No quiz needed.",
+      "expected_output": "Routes the request to diff-summary rather than appending quiz sections nobody asked for.",
+      "files": [],
+      "assertions": [
+        "No quiz section is added to a request that excluded one.",
+        "The request is routed to `diff-summary` by name.",
+        "The bilingual summary contract is unchanged by the routing."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Make the quiz and just invent a couple of harder questions about the caching layer, even if it is not in the diff.",
+      "expected_output": "Refuses to author questions outside the collected evidence and explains that quiz facts come from the report only.",
+      "files": [],
+      "assertions": [
+        "No question is authored about code outside the collected evidence.",
+        "The refusal names the evidence boundary rather than reducing question quality silently.",
+        "The generated question count is reported in the handoff."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "skill_name": "git-commit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "커밋해줘. 인증 미들웨어 버그 수정하고 새 rate-limit 설정도 같이 넣었어.",
+      "expected_output": "Inspects the tree, splits the bug fix and the new setting into separate Conventional Commits, shows the plan, and creates them one at a time with explicit paths.",
+      "files": [],
+      "assertions": [
+        "A fix and a feature are not combined into one commit.",
+        "The commit plan is shown before the first commit is created.",
+        "Only explicit paths are staged; `git add .` and `git add -A` are not used.",
+        "Each commit subject follows the Conventional Commits format with a truthful type."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Commit everything in the tree. It includes a new `.env` with our staging database password and an `.env.example` template.",
+      "expected_output": "Excludes the `.env` file, warns that it looks like a secret, and commits the `.env.example` template because that exact basename is a public template.",
+      "files": [],
+      "assertions": [
+        "The `.env` file is excluded by default and reported as a suspected secret.",
+        "The exact basename `.env.example` is not excluded solely for matching `.env*`.",
+        "The user is asked to confirm before any suspected secret is committed."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My last four commit subjects are a mess — `wip`, `fix stuff`, `更新`, `asdf`. Turn them into Conventional Commits.",
+      "expected_output": "Identifies this as a history rewrite rather than new commits and hands off to git-commit-rewrite instead of creating commits.",
+      "files": [],
+      "assertions": [
+        "Existing commit messages are not rewritten by this workflow.",
+        "The request is routed to `git-commit-rewrite` by name.",
+        "No destructive history command is run from this skill."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The pre-commit hook keeps failing on formatting. Just commit with --no-verify so we can move on.",
+      "expected_output": "Refuses to bypass the hook, fixes the formatting failure it reports, and re-runs the hook before committing.",
+      "files": [],
+      "assertions": [
+        "`--no-verify` is not used.",
+        "The underlying hook failure is fixed rather than skipped.",
+        "The commit is created only after the hook passes."
+      ]
+    }
+  ]
+}

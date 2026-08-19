@@ -1,0 +1,49 @@
+{
+  "skill_name": "code-review-md",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "마크다운 리뷰 보고서만 만들어줘. HEAD~3..HEAD 범위야.",
+      "expected_output": "Runs the shared code-review analysis over the requested range and stops after writing the Markdown artifact under `.reviews/`, with no HTML file and no browser open.",
+      "files": [],
+      "assertions": [
+        "The Markdown report is written under `.reviews/` with the shared naming rule.",
+        "No HTML report is generated and no browser is opened.",
+        "The shared evidence-first writing contract from `code-review` is applied unchanged."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Save a markdown review of the working tree. I want to paste it into a PR comment.",
+      "expected_output": "Produces the Markdown artifact and a fact-only handoff carrying severity counts, overall risk, the artifact path, and the verification performed.",
+      "files": [],
+      "assertions": [
+        "The handoff reports severity counts and the artifact path instead of repeating the report prose.",
+        "No fixed finding count is promised before the analysis completes.",
+        "The report body is suitable to paste without an HTML dependency."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review the last commit and open the styled HTML report for me.",
+      "expected_output": "Reports that HTML output belongs to the default workflow and routes the request to code-review.",
+      "files": [],
+      "assertions": [
+        "No HTML report is produced by this skill.",
+        "The request is routed to `code-review` by name.",
+        "The Markdown-only boundary is stated rather than quietly extended."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Markdown review only. Go ahead and put `.reviews/` into .gitignore for me since you are already writing there.",
+      "expected_output": "Suggests the ignore line in the handoff and leaves `.gitignore` untouched.",
+      "files": [],
+      "assertions": [
+        "`.gitignore` is not modified automatically.",
+        "The suggestion appears only because an artifact was generated and `.reviews/` is not already ignored.",
+        "The refusal names the same rule the main review workflow applies."
+      ]
+    }
+  ]
+}

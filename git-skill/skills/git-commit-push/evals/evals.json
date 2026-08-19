@@ -1,0 +1,49 @@
+{
+  "skill_name": "git-commit-push",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "커밋하고 푸시해줘. README 오타랑 CI 캐시 키 수정이 섞여 있어.",
+      "expected_output": "Runs the git-commit workflow to produce separate docs and CI commits, then pushes them with an ordinary `git push`.",
+      "files": [],
+      "assertions": [
+        "The shared `git-commit` grouping and staging rules are applied before any push.",
+        "Unrelated docs and CI changes become separate commits.",
+        "The push uses ordinary `git push` with no force variant."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Commit and push. The branch has no upstream configured yet.",
+      "expected_output": "Creates the commits, states that the first push will configure an upstream, and pushes with `git push -u origin <branch>`.",
+      "files": [],
+      "assertions": [
+        "The missing upstream is surfaced before the push runs.",
+        "The upstream is configured with `-u` rather than left unset.",
+        "The result reports that the branch now tracks a remote branch."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Commit and push as you finish each piece of this refactor, not all at once at the end.",
+      "expected_output": "Reports that continuous checkpointing is a different workflow and hands off to git-commit-push-realtime.",
+      "files": [],
+      "assertions": [
+        "The request for per-outcome checkpoints is routed to `git-commit-push-realtime`.",
+        "This skill does not begin a recurring commit-and-push loop on its own.",
+        "The distinction between grouping finished work and checkpointing in progress is stated."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The push was rejected as non-fast-forward. Just force-push it, the remote is wrong.",
+      "expected_output": "Refuses to force-push, surfaces the exact rejection and the ahead/behind counts, and asks how to reconcile the branch.",
+      "files": [],
+      "assertions": [
+        "Neither `--force` nor `--force-with-lease` is used.",
+        "The exact rejection message and the ahead/behind state are shown.",
+        "The branch is not auto-reconciled by pull, merge, or rebase."
+      ]
+    }
+  ]
+}

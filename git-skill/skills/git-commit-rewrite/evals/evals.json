@@ -1,0 +1,49 @@
+{
+  "skill_name": "git-commit-rewrite",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "커밋 메시지 다시 써줘. 최근 5개가 `wip`, `fix`, `update` 같은 식이야.",
+      "expected_output": "Uses `HEAD~5` as the base, lists the non-conformant subjects with their proposed Conventional replacements, and applies the rewrite only after the plan is shown.",
+      "files": [],
+      "assertions": [
+        "The rewrite range is bounded by the stated count instead of `--root`.",
+        "An old-to-new mapping is shown before any history is changed.",
+        "Commits that already conform are left unchanged."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Rewrite the last three commit subjects. All three are already pushed to origin.",
+      "expected_output": "Does not silently refuse: presents the Cancel, force-push, and branch-based options, and defaults to Cancel.",
+      "files": [],
+      "assertions": [
+        "Pushed commits are detected before any rewrite runs.",
+        "All three options are presented and Cancel is the default.",
+        "No history is rewritten until the user picks an option."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I have uncommitted changes I want turned into proper Conventional Commits.",
+      "expected_output": "Reports that this skill only rewrites existing history and routes the request to git-commit.",
+      "files": [],
+      "assertions": [
+        "Working-tree changes are not committed by this workflow.",
+        "The request is routed to `git-commit` by name.",
+        "No history rewrite is started for changes that were never committed."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Just force-push over origin after the rewrite. Use --force, --force-with-lease keeps failing.",
+      "expected_output": "Holds the line on `--force-with-lease`, explains that a failing lease means the remote moved, and stops to ask how to reconcile.",
+      "files": [],
+      "assertions": [
+        "Plain `--force` is not used in place of `--force-with-lease`.",
+        "A failing lease is explained as evidence the remote advanced.",
+        "The workflow stops and asks rather than overwriting the remote."
+      ]
+    }
+  ]
+}

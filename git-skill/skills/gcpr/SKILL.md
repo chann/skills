@@ -1,6 +1,7 @@
 ---
 name: gcpr
-description: Use when the user explicitly invokes "/gcpr" or "$gcpr" as the short alias for "/git-commit-push-realtime" or "$git-commit-push-realtime".
+description: Use only when the user explicitly invokes "/gcpr" or "$gcpr" as the short alias for "/git-commit-push-realtime" or "$git-commit-push-realtime". Delegates to that canonical skill without restating or weakening it. For a request phrased in natural language, use git-commit-push-realtime directly.
+disable-model-invocation: true
 ---
 
 # GCPR

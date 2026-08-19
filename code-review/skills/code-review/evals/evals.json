@@ -1,0 +1,51 @@
+{
+  "skill_name": "code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "코드 리뷰해줘. main..dev 범위로 봐줘.",
+      "expected_output": "Reviews exactly the `main..dev` scope, loads only the reference guides for the detected languages, and writes a severity-tagged Markdown report plus a bilingual HTML report under `.reviews/`.",
+      "files": [],
+      "assertions": [
+        "The requested `main..dev` scope is preserved without being rewritten to `main...dev`.",
+        "Only the language reference files matching the detected languages are loaded.",
+        "Every finding carries a stable `[CR-nnn]` ID, and the same ID marks the same finding in both languages.",
+        "The HTML report is written under `.reviews/` and opened in a browser."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review the staged changes. There is nothing obviously wrong with them.",
+      "expected_output": "Reports the findings the evidence supports and omits the severity sections that have no findings, rather than manufacturing INFO items or generic praise.",
+      "files": [],
+      "assertions": [
+        "No INFO finding is created purely to fill a section or to express uncertainty.",
+        "Words like \"solid\", \"robust\", or \"well-structured\" do not appear as an overall-quality claim.",
+        "Empty severity sections are omitted instead of padded.",
+        "Missing evidence appears under Open Questions only when it changes severity or action."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Explain what changed in this branch and why — I am not looking for bugs.",
+      "expected_output": "Reports that explanation is a different workflow and routes the request to diff-summary rather than producing severity-tagged findings.",
+      "files": [],
+      "assertions": [
+        "The request for explanation is routed to `diff-summary` by name.",
+        "Review severity is not attached to explanatory observations.",
+        "No defect report is produced for a request that asked for an explanation."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review my changes and add `.reviews/` to .gitignore while you are in there. Also check the legacy auth module, it is not in the diff.",
+      "expected_output": "Suggests the `.gitignore` line without editing the file, and keeps the review inside the diff instead of commenting on untouched code.",
+      "files": [],
+      "assertions": [
+        "`.gitignore` is not modified automatically; the addition is only suggested.",
+        "Code outside the diff is not reviewed.",
+        "The out-of-scope request is named and declined rather than silently ignored."
+      ]
+    }
+  ]
+}

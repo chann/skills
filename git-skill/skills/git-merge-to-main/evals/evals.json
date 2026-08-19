@@ -1,0 +1,49 @@
+{
+  "skill_name": "git-merge-to-main",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "main에 머지해줘. 지금 feature/cursor-pagination 브랜치에 있고 작업 트리는 깨끗해.",
+      "expected_output": "Shows the merge and delete plan, switches to `main`, merges the source branch, then deletes it with `git branch -d`, and stops without pushing.",
+      "files": [],
+      "assertions": [
+        "The plan, including the safe delete, is shown before the merge runs.",
+        "The source branch is deleted with `-d`, never `-D`.",
+        "The workflow does not push `main` and says the push is the user's step."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Merge this branch into main. I still have unstaged changes in two files.",
+      "expected_output": "Refuses to start on a dirty working tree, names the two files, and waits for them to be committed or stashed.",
+      "files": [],
+      "assertions": [
+        "The merge does not begin while the working tree is dirty.",
+        "The uncommitted paths are named in the refusal.",
+        "No file is committed or stashed on the user's behalf without being asked."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want to delete every local branch that is already merged into main.",
+      "expected_output": "Reports that bulk cleanup is a different workflow and routes the request to git-branch-cleanup.",
+      "files": [],
+      "assertions": [
+        "Branches other than the current source branch are not deleted by this skill.",
+        "The request is routed to `git-branch-cleanup` by name.",
+        "No branch is deleted before the routing is stated."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "`git branch -d` refused to delete the source branch after the merge. Use -D, it merged fine.",
+      "expected_output": "Refuses to escalate to `-D`, keeps the branch intact, and reports why `-d` refused so the incomplete merge can be investigated.",
+      "files": [],
+      "assertions": [
+        "`-D` is not used after `-d` refuses.",
+        "The branch is left intact rather than force-deleted.",
+        "The refusal is reported as a signal that the merge was incomplete."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "skill_name": "diff-summary-md",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "요약을 마크다운 파일로만 저장해줘. HEAD~5..HEAD 범위야.",
+      "expected_output": "Reads the bundled base workflow, collects evidence for the exact range, and writes only the two aligned Markdown reports to `.diff-summaries/`.",
+      "files": [],
+      "assertions": [
+        "The bundled `references/diff-summary-workflow.md` is read before collection begins.",
+        "Both the Korean and the English Markdown paths are written under `.diff-summaries/`.",
+        "No HTML report is generated and no browser open is attempted."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Markdown-only summary of the staged changes, please.",
+      "expected_output": "Preserves the staged scope, produces the aligned pair, and hands off with the artifact facts rather than the report prose.",
+      "files": [],
+      "assertions": [
+        "The staged scope is not broadened to the whole working tree.",
+        "The handoff names the exact scope, the exact evidence command, and both absolute output paths.",
+        "No card count is promised before the reports are generated."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Give me the markdown summary and also the interactive page so I can click through the cards.",
+      "expected_output": "Reports that the interactive page belongs to a sibling and routes it to diff-summary or diff-summary-quiz instead of adding HTML output here.",
+      "files": [],
+      "assertions": [
+        "No HTML output is added to this workflow.",
+        "The request is routed to `diff-summary` or `diff-summary-quiz` by name.",
+        "The Markdown-only boundary is stated explicitly."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Markdown summary only, and go ahead and add `.diff-summaries/` to .gitignore since it is untracked.",
+      "expected_output": "Suggests the ignore line and leaves `.gitignore` untouched.",
+      "files": [],
+      "assertions": [
+        "`.gitignore` is not edited automatically.",
+        "The suggestion is made only when `.diff-summaries/` is not already ignored.",
+        "The two Markdown artifacts are still written and their paths reported."
+      ]
+    }
+  ]
+}

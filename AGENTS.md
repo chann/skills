@@ -1,5 +1,32 @@
 # Repository instructions
 
+## Follow one skill contract
+
+Every packaged skill obeys the same nine rules — name parity, description
+grammar, invocation-mode declaration, Codex descriptor, slash command, evals,
+catalog and locale parity, plugin manifest, and published counts. The rules are
+stated once, in
+[`skill-forge/skills/skill-forge/references/skill-package-contract.md`](skill-forge/skills/skill-forge/references/skill-package-contract.md).
+
+Two of them are easy to get wrong and worth restating here:
+
+- A description opens with `Use when` or `Use only when`, names real triggers,
+  and carries both the `/<name>` and `$<name>` selectors.
+- `Use only when` and `disable-model-invocation: true` imply each other. Use
+  that pair only for selector aliases and workflows that must never start on
+  their own.
+
+Run the audit before finishing any skill change:
+
+```bash
+python3 skill-forge/skills/skill-audit/scripts/audit_skills.py --root .
+```
+
+A failing rule is a missing file or a mismatched string. Fix the package, never
+the rule — `tests/test_skill_contract.py` and every other skill depend on the
+guarantee holding. Use `skill-forge` when adding or repairing a package; it owns
+the publishing steps the audit only checks.
+
 ## Keep skills and the website in sync
 
 Whenever you `add`, `modify`, or `delete` an installable skill, command, or

@@ -1,0 +1,49 @@
+{
+  "skill_name": "git-merge-to-dev",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "dev에 머지해줘. 지금 fix/session-expiry 브랜치야.",
+      "expected_output": "Resolves the target to `dev`, follows the git-merge-to-main workflow with that target substituted, merges, and safe-deletes the source branch.",
+      "files": [],
+      "assertions": [
+        "The target branch is resolved to `dev`, falling back to `develop` only when `dev` is absent.",
+        "The shared `git-merge-to-main` workflow is read and followed with the resolved target.",
+        "The source branch is deleted with `-d`, never `-D`."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Merge into dev. This repository has neither a `dev` nor a `develop` branch.",
+      "expected_output": "Reports that no dev target exists, names both candidates it looked for, and stops instead of creating a branch or picking another target.",
+      "files": [],
+      "assertions": [
+        "Both `dev` and `develop` are checked before the workflow stops.",
+        "No branch is created to satisfy the request.",
+        "`main` is not silently substituted as the target."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Merge my current branch into main and delete it.",
+      "expected_output": "Routes the request to git-merge-to-main rather than resolving a dev target.",
+      "files": [],
+      "assertions": [
+        "The `main` target is handled by `git-merge-to-main`, named explicitly.",
+        "No dev-target resolution is applied to a `main` request.",
+        "No merge is performed by this skill for the `main` target."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I am on `develop` itself. Merge it into dev and delete develop afterwards.",
+      "expected_output": "Treats the source as protected, performs no self-merge, and refuses to delete a protected branch.",
+      "files": [],
+      "assertions": [
+        "A protected source branch is not deleted.",
+        "A branch is not merged into itself.",
+        "The protected-branch list is stated as the reason for the refusal."
+      ]
+    }
+  ]
+}

@@ -159,6 +159,7 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                         [
                             Path("SKILL.md"),
                             Path("agents/openai.yaml"),
+                            Path("evals/evals.json"),
                             *canonical_files,
                         ]
                     ),

@@ -1,0 +1,49 @@
+{
+  "skill_name": "human-friendly-writing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이 문서 AI 티 좀 없애줘. \"계약을 준수하는 엔벨로프\" 같은 표현이 계속 나와.",
+      "expected_output": "Replaces the AI-flavored jargon and smooths the translation-ese rhythm while leaving every fact, number, and established technical term exactly as it was.",
+      "files": [],
+      "assertions": [
+        "No fact, claim, number, date, or proper noun is added, removed, or reordered.",
+        "AI-flavored jargon such as 계약 and 엔벨로프 is replaced with ordinary Korean.",
+        "Established technical terms such as 커밋 and 프롬프트 are left untouched."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "docs/note.ko.md 를 사람답게 다듬어줘.",
+      "expected_output": "Rewrites the file's Korean prose and saves the result beside it rather than overwriting the source.",
+      "files": [],
+      "assertions": [
+        "The source file is never overwritten.",
+        "The rewrite is saved to a separate path and that path is reported.",
+        "Only style, rhythm, and expression change; the content is unchanged."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Please rewrite this English release note so it reads more naturally.",
+      "expected_output": "Reports that the skill handles Korean text only and declines rather than rewriting English prose.",
+      "files": [],
+      "assertions": [
+        "English input is declined instead of rewritten.",
+        "The Korean-only boundary is stated explicitly.",
+        "No translation is attempted in either direction."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "다듬으면서 오탈자도 고치고, 너무 긴 문단은 내용을 좀 줄여줘.",
+      "expected_output": "Fixes only what the style pass covers, and refuses to cut content or act as a spell-checker.",
+      "files": [],
+      "assertions": [
+        "No content is removed to shorten a paragraph.",
+        "The skill states that proofreading and content editing are out of scope.",
+        "Leaked method vocabulary such as 프런티어 or 게이트 does not appear in the rewritten text."
+      ]
+    }
+  ]
+}

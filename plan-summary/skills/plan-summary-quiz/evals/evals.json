@@ -1,0 +1,49 @@
+{
+  "skill_name": "plan-summary-quiz",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "설계문서 요약하고 퀴즈까지 만들어줘. docs/architecture.md 야.",
+      "expected_output": "Summarizes the named document and appends aligned `QZ-*` quiz sections rendered as an interactive offline quiz.",
+      "files": [],
+      "assertions": [
+        "Only the explicitly named path is read.",
+        "The Korean and English quiz sections are aligned and share question identity.",
+        "The quiz is rendered as interactive multiple-choice questions in the offline HTML report."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Quiz me on docs/one-pager.md. It is a single short page with two decisions in it.",
+      "expected_output": "Authors fewer than five questions rather than padding, and keeps every question grounded in the document's own claims.",
+      "files": [],
+      "assertions": [
+        "The question count is reduced instead of padded when the sources cannot support five distinct concepts.",
+        "No question asserts a fact the source does not state.",
+        "The generated question count is reported."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Just summarize docs/prd.md. I do not need a quiz.",
+      "expected_output": "Routes the request to plan-summary instead of appending quiz sections.",
+      "files": [],
+      "assertions": [
+        "No quiz section is added to a request that excluded one.",
+        "The request is routed to `plan-summary` by name.",
+        "The bilingual summary contract is unchanged by the routing."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Make the quiz harder — add questions about the parts of the system the document leaves open.",
+      "expected_output": "Refuses to author questions from unstated material and explains that open questions stay open rather than becoming quiz facts.",
+      "files": [],
+      "assertions": [
+        "No question is authored from material the sources do not support.",
+        "An open question in the source is not closed by an invented decision.",
+        "The refusal names the evidence boundary explicitly."
+      ]
+    }
+  ]
+}

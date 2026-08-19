@@ -1,0 +1,49 @@
+{
+  "skill_name": "gcpr",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/gcpr — implement the cursor-pagination endpoint and keep pushing verified checkpoints.",
+      "expected_output": "Locates the installed git-commit-push-realtime skill, reads it completely, and follows it exactly, including its shared git-commit and git-commit-push workflows.",
+      "files": [],
+      "assertions": [
+        "The canonical `git-commit-push-realtime` skill is located and read before any Git command runs.",
+        "Its required shared workflows are followed rather than summarized.",
+        "No checkpoint rule is restated in a weakened form inside the alias."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$gcpr on this refactor. The `git-commit-push-realtime` skill is not installed in this environment.",
+      "expected_output": "Stops before any Git command and reports that the canonical skill must also be installed.",
+      "files": [],
+      "assertions": [
+        "No Git repository is inspected or mutated once the canonical skill is found to be missing.",
+        "The report names `git-commit-push-realtime` as the missing dependency.",
+        "The workflow is not reconstructed from memory to work around the missing skill."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "작업 중간중간 커밋하고 푸시해줘.",
+      "expected_output": "Recognizes a natural-language request rather than the alias selector and uses git-commit-push-realtime directly.",
+      "files": [],
+      "assertions": [
+        "A request that does not invoke the alias selector is handled by `git-commit-push-realtime`.",
+        "The alias is not selected from phrasing alone.",
+        "The canonical workflow's checkpoint planning is applied to the request."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/gcpr but skip the upstream parity check after each push, it slows things down.",
+      "expected_output": "Refuses to drop the parity proof, because the alias may not weaken the canonical workflow it delegates to.",
+      "files": [],
+      "assertions": [
+        "The upstream parity proof is still performed after each push.",
+        "The refusal states that the alias cannot weaken the canonical workflow.",
+        "The next checkpoint does not begin before the previous push is confirmed."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "skill_name": "plan-summary-md",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "PRD 요약을 마크다운 파일로만 저장해줘. docs/prd.md 야.",
+      "expected_output": "Reads the named file through the packaged collector and writes only the aligned Korean and English Markdown reports.",
+      "files": [],
+      "assertions": [
+        "Both Markdown files are written and verified after a zero collector exit.",
+        "No HTML file is created through any mechanism and no browser open is attempted.",
+        "Only the explicitly named path is read."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Markdown-only summary of docs/plan.md and docs/plan-appendix.txt.",
+      "expected_output": "Preserves the given source order, produces the aligned pair, and reports both absolute output paths.",
+      "files": [],
+      "assertions": [
+        "Source order and per-source digests match between the two languages.",
+        "Both absolute Markdown paths are reported.",
+        "No card count is promised before generation completes."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Summarize docs/design.md as Markdown, and give me the bilingual HTML page too.",
+      "expected_output": "Reports that HTML belongs to the sibling workflow and routes it to plan-summary.",
+      "files": [],
+      "assertions": [
+        "No HTML output is produced by this skill.",
+        "The request is routed to `plan-summary` by name.",
+        "The Markdown-only boundary is stated rather than quietly extended."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Summarize docs/prd.md in Korean only. The collector exited non-zero on the first try — just read the file directly.",
+      "expected_output": "Fails closed on the non-zero collector exit instead of reading the file another way, and uses the single-language flags only because the user asked for one language.",
+      "files": [],
+      "assertions": [
+        "A non-zero collector exit is fail-closed; no substitute reader is used.",
+        "No partial report is written after the failure.",
+        "The single-language mode is used only because the user explicitly requested one language."
+      ]
+    }
+  ]
+}

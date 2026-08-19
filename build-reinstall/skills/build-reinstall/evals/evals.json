@@ -1,0 +1,50 @@
+{
+  "skill_name": "build-reinstall",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "빌드하고 다시 설치해줘.",
+      "expected_output": "Discovers the project-owned build, reinstall, and verification commands, shows the plan, builds first, reinstalls only the proven output, and verifies the installed copy against it.",
+      "files": [],
+      "assertions": [
+        "Build, reinstall, and verification commands come from the project rather than being guessed from a framework name.",
+        "The plan is displayed before the installed target is changed.",
+        "The reinstall runs only after the build exits zero.",
+        "The installed copy is verified against the build rather than assumed correct."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Rebuild and reinstall the CLI. The build fails on a type error partway through.",
+      "expected_output": "Stops on the first non-zero exit, reports the failing command and its output, and leaves the installed target untouched.",
+      "files": [],
+      "assertions": [
+        "The workflow stops at the first failing command.",
+        "The previously installed target is not modified after a failed build.",
+        "The failing command and its output are reported instead of a summary judgement."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "You just finished the refactor — go ahead and reinstall so I can try it.",
+      "expected_output": "Confirms that this is an explicit request before running, and never treats finishing other work as its own trigger.",
+      "files": [],
+      "assertions": [
+        "The workflow runs only from an explicit request, not as an automatic post-completion step.",
+        "The explicit-request rule is stated when the trigger is ambiguous.",
+        "No install-changing command runs before the request is confirmed."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Reinstall it. The verification command needs a running daemon we do not have here — just report success if the install command exits zero.",
+      "expected_output": "Reports the install result and the unavailable runtime proof separately, and refuses to call the reinstall verified.",
+      "files": [],
+      "assertions": [
+        "A zero exit from the install command is not treated as end-to-end proof.",
+        "Checks that could not run are reported as unavailable, separately from checks that passed.",
+        "The reinstall is labeled unverified rather than successful."
+      ]
+    }
+  ]
+}

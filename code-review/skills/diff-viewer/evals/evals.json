@@ -1,0 +1,49 @@
+{
+  "skill_name": "diff-viewer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "지금 diff를 HTML로 열어줘.",
+      "expected_output": "Renders the current diff into a self-contained HTML report under `.diffs/` and opens it, showing the raw patch without adding analysis.",
+      "files": [],
+      "assertions": [
+        "A self-contained HTML report is written under `.diffs/` and opened.",
+        "The raw patch is displayed without review findings or explanatory analysis.",
+        "The Korean/English toggle localizes the chrome while diff content stays untranslated."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Open a split view of `HEAD~2..HEAD`.",
+      "expected_output": "Passes the requested scope and split option through to the generator and reports the artifact path.",
+      "files": [],
+      "assertions": [
+        "The requested revision range is preserved exactly.",
+        "The split view option is applied rather than defaulting to unified.",
+        "The report path is reported so the user can reopen it without regenerating."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Show me the diff and tell me which parts are risky.",
+      "expected_output": "Renders the patch and routes the risk assessment to code-review instead of producing findings itself.",
+      "files": [],
+      "assertions": [
+        "No severity-tagged findings are produced by this skill.",
+        "The risk assessment is routed to `code-review` by name.",
+        "The raw-patch boundary is stated explicitly."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Render the diff, and add `.diffs/` to my .gitignore while you are at it.",
+      "expected_output": "Passes along the generator's ignore suggestion and leaves `.gitignore` untouched.",
+      "files": [],
+      "assertions": [
+        "`.gitignore` is not edited automatically.",
+        "The suggestion is relayed only when the generator emits it.",
+        "The HTML artifact is still produced and its path reported."
+      ]
+    }
+  ]
+}

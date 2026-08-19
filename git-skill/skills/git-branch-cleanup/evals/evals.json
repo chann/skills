@@ -1,0 +1,49 @@
+{
+  "skill_name": "git-branch-cleanup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이미 머지된 로컬 브랜치 정리해줘.",
+      "expected_output": "Inventories local branches, finds which protected anchors exist, lists the candidates whose tips are reachable from one of them, shows the plan, and deletes with `git branch -d`.",
+      "files": [],
+      "assertions": [
+        "Candidates are limited to branches reachable from an existing protected anchor.",
+        "The deletion plan is shown before any branch is deleted.",
+        "Deletion uses `-d` only, never `-D`."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Clean up merged branches. I am currently standing on `feature/old-import`, which is already merged.",
+      "expected_output": "Excludes the current branch from the candidates and explains why it was left alone.",
+      "files": [],
+      "assertions": [
+        "The current branch is never a deletion candidate.",
+        "Protected branches are excluded from the candidate list.",
+        "The exclusion is reported rather than silently applied."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Merge my current branch into main and then clean it up.",
+      "expected_output": "Reports that merging is a different workflow, routes the merge to git-merge-to-main, and offers cleanup afterwards.",
+      "files": [],
+      "assertions": [
+        "No merge is performed by this skill.",
+        "The merge is routed to `git-merge-to-main` by name.",
+        "Cleanup is offered only for branches that are already merged."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "`-d` refused on two of the candidates. Force them with -D, they are definitely merged.",
+      "expected_output": "Refuses `-D`, leaves both branches intact, and reports the refusal as evidence the branches are not actually reachable from the anchor.",
+      "files": [],
+      "assertions": [
+        "`-D` is not used for a candidate that `-d` refused.",
+        "Both refused branches are left intact and listed in the summary.",
+        "The refusal is explained as a reachability problem, not a tooling annoyance."
+      ]
+    }
+  ]
+}
