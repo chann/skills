@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Resolve Conflicts"
+  short_description: "Finish a conflicted merge or rebase without aborting it"
+  default_prompt: "Use $git-resolve-conflicts to finish this conflicted merge, keeping both intents where they are compatible."

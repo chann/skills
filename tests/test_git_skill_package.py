@@ -333,13 +333,13 @@ class GitSkillPackageTests(unittest.TestCase):
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
         packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(30, len(packaged_skills))
+        self.assertEqual(31, len(packaged_skills))
 
         expected_counts = {
-            ROOT / "README.md": "29 practical agent workflows and 30 installable Codex selectors",
-            ROOT / "README.ko.md": "29개의 실용적인 에이전트 워크플로와 30개의 설치 가능한 Codex selector",
-            ROOT / "USAGE.md": "29 canonical workflows and 30 installable Codex selectors",
-            ROOT / "ARCHITECTURE.md": "expose 29 canonical workflows through 30 installable Codex selectors",
+            ROOT / "README.md": "30 practical agent workflows and 31 installable Codex selectors",
+            ROOT / "README.ko.md": "30개의 실용적인 에이전트 워크플로와 31개의 설치 가능한 Codex selector",
+            ROOT / "USAGE.md": "30 canonical workflows and 31 installable Codex selectors",
+            ROOT / "ARCHITECTURE.md": "expose 30 canonical workflows through 31 installable Codex selectors",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path):
@@ -353,8 +353,9 @@ class GitSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.8.0", metadata["version"])
+        self.assertEqual("0.9.0", metadata["version"])
         self.assertIn("realtime checkpoint commits and pushes", metadata["description"])
+        self.assertIn("conflict resolution", metadata["description"])
 
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
         expected_contracts = {
@@ -403,3 +404,100 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(path=path):
                 text = path.read_text(encoding="utf-8")
                 self.assertIn(PROTECTED_BRANCH_LIST, text)
+
+
+CONFLICT_SKILL_NAME = "git-resolve-conflicts"
+CONFLICT_SKILL = GIT_SKILL / "skills" / CONFLICT_SKILL_NAME
+
+
+class GitResolveConflictsTests(unittest.TestCase):
+    def test_package_shape_is_complete(self) -> None:
+        expected = (
+            CONFLICT_SKILL / "SKILL.md",
+            CONFLICT_SKILL / "agents" / "openai.yaml",
+            CONFLICT_SKILL / "evals" / "evals.json",
+            GIT_SKILL / "commands" / f"{CONFLICT_SKILL_NAME}.md",
+        )
+
+        for path in expected:
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertTrue(path.is_file())
+
+    def test_interfaces_publish_both_selectors(self) -> None:
+        block = frontmatter(CONFLICT_SKILL / "SKILL.md")
+        openai = (CONFLICT_SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        command = (
+            GIT_SKILL / "commands" / f"{CONFLICT_SKILL_NAME}.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(f"name: {CONFLICT_SKILL_NAME}", block)
+        self.assertIn(f"/{CONFLICT_SKILL_NAME}", block)
+        self.assertIn(f"${CONFLICT_SKILL_NAME}", block)
+        self.assertIn(f"${CONFLICT_SKILL_NAME}", openai)
+        self.assertIn(f"Use the **{CONFLICT_SKILL_NAME}** skill", command)
+        self.assertIn("$ARGUMENTS", command)
+
+    def test_skill_orders_the_resolution_workflow(self) -> None:
+        text = (CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8")
+        ordered = [
+            "## 1. See where the operation stopped",
+            "## 2. Classify every conflicted path",
+            "## 3. Recover both intents before touching a hunk",
+            "## 4. Resolve each hunk, keeping both intents where possible",
+            "## 5. Prove the tree still works",
+            "## 6. Complete the operation",
+            "## Refusals",
+        ]
+
+        positions = [text.find(heading) for heading in ordered]
+        for heading, position in zip(ordered, positions):
+            with self.subTest(heading=heading):
+                self.assertNotEqual(-1, position)
+        self.assertEqual(sorted(positions), positions)
+
+    def test_skill_assigns_a_policy_to_every_conflict_class(self) -> None:
+        text = " ".join((CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        for conflict_class in (
+            "**Source**",
+            "**Lockfile**",
+            "**Generated**",
+            "**Binary**",
+            "**Submodule**",
+            "**Delete/modify**",
+            "**Rename**",
+        ):
+            with self.subTest(conflict_class=conflict_class):
+                self.assertIn(conflict_class, text)
+        self.assertIn("Never hand-merge", text)
+        self.assertIn("Never pick blind", text)
+
+    def test_skill_never_abandons_or_publishes_the_operation(self) -> None:
+        text = " ".join((CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        for refusal in (
+            "Never run `--abort` or `--skip`",
+            "Never hand-merge a lockfile or a generated file",
+            "Never invent behavior neither side wrote",
+            "Never force-push, rewrite history, or push at all from this workflow",
+            "Never claim the tree is green",
+        ):
+            with self.subTest(refusal=refusal):
+                self.assertIn(refusal, text)
+
+    def test_skill_warns_that_rebase_swaps_the_side_labels(self) -> None:
+        text = " ".join((CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        self.assertIn("During a rebase, \"ours\" and \"theirs\" are swapped", text)
+        self.assertIn("--diff-filter=U", text)
+        self.assertIn("--conflict=zdiff3", text)
+
+    def test_catalog_and_every_locale_publish_the_skill(self) -> None:
+        sources = [
+            ROOT / "website" / "src" / "data" / "skills.ts",
+            *(
+                ROOT / "website" / "src" / "i18n" / "content" / f"{locale}.json"
+                for locale in ("ko", "en", "jp", "cn")
+            ),
+        ]
+
+        for path in sources:
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertIn(f'"{CONFLICT_SKILL_NAME}"', path.read_text(encoding="utf-8"))

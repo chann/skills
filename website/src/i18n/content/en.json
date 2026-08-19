@@ -352,6 +352,11 @@
       "whenToUse": "When integrating a feature branch into the development branch",
       "result": "A verified dev merge and safe branch deletion"
     },
+    "git-resolve-conflicts": {
+      "summary": "Finish a stopped merge or rebase while keeping both intents, and record what was dropped.",
+      "whenToUse": "When a merge, rebase, or cherry-pick has stopped on conflicts and must be completed rather than aborted",
+      "result": "A classified conflict inventory, a resolution ledger, the project's check results, and a completed operation"
+    },
     "git-branch-cleanup": {
       "summary": "Safely delete only local branches already merged into a protected branch.",
       "whenToUse": "When accumulated local branches need risk-free cleanup",

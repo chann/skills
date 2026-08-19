@@ -1,5 +1,5 @@
 {
   "name": "git-skill",
-  "description": "Git workflow skills — Conventional Commits, one-shot or realtime checkpoint commits and pushes, history rewrite, guarded merges, and merged-branch cleanup.",
-  "version": "0.8.0"
+  "description": "Git workflow skills — Conventional Commits, one-shot or realtime checkpoint commits and pushes, history rewrite, guarded merges, conflict resolution, and merged-branch cleanup.",
+  "version": "0.9.0"
 }

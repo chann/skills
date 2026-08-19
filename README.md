@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-29 practical agent workflows and 30 installable Codex selectors, packaged across 13 plugins.
+30 practical agent workflows and 31 installable Codex selectors, packaged across 13 plugins.
 
 ## Website
 
@@ -28,7 +28,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[bug-hunt](bug-hunt/README.md)**       | Diagnose a broken behavior by reproducing it, falsifying hypotheses in a ledger, and pinning the fix with a failing check |
 | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose      |
-| **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, and local branch cleanup |
+| **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, conflict resolution, and local branch cleanup |
 | **[handoff](handoff/README.md)**         | Generate frontend/client and backend/server handoff docs from git diffs, ranges, and session context           |
 | **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
 | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the new result with project-owned commands, and verify the installed copy |
@@ -147,6 +147,7 @@ recorded and confirmed.
 | `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |
 | `/git-merge-to-dev`              | `$git-merge-to-dev`         | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
 | `/git-branch-cleanup`            | `$git-branch-cleanup`       | Delete every local branch already merged into a protected branch                      |
+| `/git-resolve-conflicts`         | `$git-resolve-conflicts`    | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it          |
 
 
 ### long-task → [details](long-task/README.md)

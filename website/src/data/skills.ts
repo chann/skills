@@ -33,6 +33,7 @@ export type SkillId =
   | "git-commit-rewrite"
   | "git-merge-to-main"
   | "git-merge-to-dev"
+  | "git-resolve-conflicts"
   | "git-branch-cleanup"
   | "gen-frontend-handoff"
   | "gen-backend-handoff"
@@ -244,6 +245,15 @@ export const skillDefinitions = [
     claudeSelector: "/git-merge-to-dev",
     codexSelector: "$git-merge-to-dev",
     tags: ["git", "merge", "dev", "branch"],
+  },
+  {
+    id: "git-resolve-conflicts",
+    title: "Git Resolve Conflicts",
+    category: "git",
+    example: "$git-resolve-conflicts finish this merge",
+    claudeSelector: "/git-resolve-conflicts",
+    codexSelector: "$git-resolve-conflicts",
+    tags: ["git", "conflict", "merge", "rebase", "submodule"],
   },
   {
     id: "git-branch-cleanup",

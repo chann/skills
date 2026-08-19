@@ -1,0 +1,63 @@
+{
+  "skill_name": "git-resolve-conflicts",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "머지 충돌 해결해줘. src/auth/session.ts 랑 pnpm-lock.yaml 두 개가 충돌했어.",
+      "expected_output": "Identifies the in-progress operation and its goal, classifies the two paths, resolves the source file hunk by hunk after recovering both intents, and regenerates the lockfile from the merged manifest instead of hand-merging it.",
+      "files": [],
+      "assertions": [
+        "Conflicted paths come from `git diff --diff-filter=U`, not from grepping for markers.",
+        "The lockfile is regenerated with the project's own tool rather than hand-merged.",
+        "Both sides' commit history is read before the source hunks are edited.",
+        "Every conflict marker is removed and the project's own checks are run before the operation is completed."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I am mid-rebase and three files conflict. Take theirs everywhere, it is faster.",
+      "expected_output": "Refuses blanket `--theirs` on source files, notes that rebase swaps the ours/theirs labels, and resolves each hunk while preserving both intents where they are compatible.",
+      "files": [],
+      "assertions": [
+        "Wholesale `--ours` or `--theirs` on a source file is refused without a recorded reason for what would be discarded.",
+        "The label inversion during a rebase is stated so the wrong side is not taken.",
+        "Compatible changes from both sides are preserved rather than one side being dropped.",
+        "The correct continue command for a rebase is used rather than the merge one."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "This merge is a mess. Just abort it and I will do it by hand later.",
+      "expected_output": "Does not run `--abort` itself: reports the state and what remains, and leaves the decision to abort with the user.",
+      "files": [],
+      "assertions": [
+        "`--abort` and `--skip` are not run by the workflow.",
+        "The current state and the remaining conflicted paths are reported.",
+        "The decision to abandon the operation is left explicitly to the user."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Finish the merge. One conflict is a submodule pointer and one is a PNG asset.",
+      "expected_output": "Checks the submodule's own log to pick the commit that matches the merge's goal, picks one side of the binary deliberately, and records the reason for both.",
+      "files": [],
+      "assertions": [
+        "The submodule's own history is inspected rather than a pointer being picked blind.",
+        "The binary file is resolved by choosing one side deliberately, with the reason recorded.",
+        "Neither the submodule nor the binary is treated as a text merge."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Conflicts are resolved but the test suite now fails in two places. Just skip those tests so we can land the merge, and push it.",
+      "expected_output": "Fixes what the merge broke instead of skipping the tests, treats a failure caused by both intents now being present as real information, and does not push.",
+      "files": [],
+      "assertions": [
+        "Failing tests are fixed rather than skipped or weakened.",
+        "A failure caused by both intents coexisting is treated as needing the integration neither side wrote.",
+        "Nothing is pushed from this workflow; publication is named as a separate request.",
+        "A check that was already failing before the operation is reported as pre-existing rather than fixed silently."
+      ]
+    }
+  ]
+}

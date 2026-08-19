@@ -28,7 +28,8 @@ npx skills add -y -g chann/skills \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
-  --skill git-branch-cleanup
+  --skill git-branch-cleanup \
+  --skill git-resolve-conflicts
 ```
 
 **Project-local:**
@@ -43,7 +44,8 @@ npx skills add chann/skills \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
-  --skill git-branch-cleanup
+  --skill git-branch-cleanup \
+  --skill git-resolve-conflicts
 ```
 
 Use the actual skill names with `--skill`; `git-skill` is the plugin directory that packages these Git workflows.
@@ -80,6 +82,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 | `/git-merge-to-main`            | `$git-merge-to-main`         | Merge current branch into `main`, then delete the source unless protected                      |
 | `/git-merge-to-dev`             | `$git-merge-to-dev`          | Merge current branch into `dev` (fallback `develop`), then delete the source unless protected  |
 | `/git-branch-cleanup`           | `$git-branch-cleanup`        | Delete every local branch already merged into a protected branch                               |
+| `/git-resolve-conflicts`        | `$git-resolve-conflicts`     | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it                  |
 
 **Examples:**
 
@@ -164,6 +167,14 @@ Same as `/git-merge-to-main`, but the target is resolved as: `dev` if it exists 
 4. Delete each candidate with `git branch -d` (safe). On refusal: skip + report; never `-D`
 5. Summary
 
+### `/git-resolve-conflicts`
+
+1. Identify which operation stopped — merge, rebase, cherry-pick, or revert — and its stated goal. A rebase swaps the ours/theirs labels
+2. List every conflicted path with `git diff --name-only --diff-filter=U`, and turn on the base view with `--conflict=zdiff3`
+3. Classify each path: source, lockfile, generated, binary, submodule, delete/modify, rename. Lockfiles and generated files are regenerated, never hand-merged; a submodule is resolved from its own log
+4. Recover both sides' intent from history before touching a hunk; keep both where compatible, and record what was dropped where not
+5. Run the project's own checks, then `--continue`. Never `--abort`, never `--skip`, never push
+
 ## Conventional Commits format
 
 ```
@@ -224,7 +235,8 @@ git-skill/
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite command
 │   ├── git-merge-to-main.md              # /git-merge-to-main command
 │   ├── git-merge-to-dev.md               # /git-merge-to-dev command
-│   └── git-branch-cleanup.md             # /git-branch-cleanup command
+│   ├── git-branch-cleanup.md             # /git-branch-cleanup command
+│   └── git-resolve-conflicts.md          # /git-resolve-conflicts command
 └── skills/
     ├── git-commit/                       # Main commit skill — full workflow + shared scripts
     │   ├── SKILL.md
@@ -247,7 +259,9 @@ git-skill/
     │   └── SKILL.md
     ├── git-merge-to-dev/                 # Merge into dev/develop + delete source
     │   └── SKILL.md
-    └── git-branch-cleanup/               # Bulk-delete merged local branches
+    ├── git-branch-cleanup/               # Bulk-delete merged local branches
+    │   └── SKILL.md
+    └── git-resolve-conflicts/            # Finish a conflicted merge or rebase
         └── SKILL.md
 ```
 

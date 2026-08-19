@@ -352,6 +352,11 @@
       "whenToUse": "把功能分支集成到开发分支时",
       "result": "经过验证的dev合并和安全的分支删除"
     },
+    "git-resolve-conflicts": {
+      "summary": "在保留双方意图的前提下完成中断的合并或变基，并记录被舍弃的一侧。",
+      "whenToUse": "合并、变基或 cherry-pick 因冲突中断，且需要完成而非放弃时",
+      "result": "按类型划分的冲突清单、解决记录、项目检查结果，以及已完成的操作"
+    },
     "git-branch-cleanup": {
       "summary": "只删除已经合并到受保护分支的本地分支。",
       "whenToUse": "需要安全清理积累的本地分支时",

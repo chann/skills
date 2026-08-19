@@ -28,7 +28,8 @@ npx skills add -y -g chann/skills \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
-  --skill git-branch-cleanup
+  --skill git-branch-cleanup \
+  --skill git-resolve-conflicts
 ```
 
 **현재 프로젝트에 설치:**
@@ -43,7 +44,8 @@ npx skills add chann/skills \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
   --skill git-merge-to-dev \
-  --skill git-branch-cleanup
+  --skill git-branch-cleanup \
+  --skill git-resolve-conflicts
 ```
 
 설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. `git-skill`은 이 Git 워크플로우들을 패키징하는 플러그인 디렉터리 이름입니다.
@@ -80,6 +82,7 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 | `/git-merge-to-main`            | `$git-merge-to-main`         | 현재 브랜치를 `main`으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제         |
 | `/git-merge-to-dev`             | `$git-merge-to-dev`          | 현재 브랜치를 `dev`(없으면 `develop`)로 머지 후 보호 브랜치가 아니면 삭제      |
 | `/git-branch-cleanup`           | `$git-branch-cleanup`        | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                |
+| `/git-resolve-conflicts`        | `$git-resolve-conflicts`     | 멈춘 머지·리베이스·cherry-pick 충돌을 중단하지 않고 마무리                     |
 
 **예시:**
 
@@ -164,6 +167,14 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 4. 각 후보를 `git branch -d`로 안전하게 삭제. Git이 거부하면 건너뛰고 보고하며 `-D`로 강제하지 않음
 5. 요약
 
+### `/git-resolve-conflicts`
+
+1. 어떤 작업이 멈췄는지(merge, rebase, cherry-pick, revert)와 그 목표를 먼저 확인합니다. rebase에서는 ours/theirs가 뒤바뀝니다
+2. `git diff --name-only --diff-filter=U`로 충돌 경로를 모두 뽑고, `--conflict=zdiff3`로 공통 조상까지 보이게 합니다
+3. 경로를 종류별로 나눕니다. 소스, 락파일, 생성 파일, 바이너리, 서브모듈, 삭제/수정, 이름 변경입니다. 락파일과 생성 파일은 손으로 합치지 않고 다시 만들고, 서브모듈은 그 저장소의 로그를 보고 정합니다
+4. hunk를 건드리기 전에 양쪽이 왜 그렇게 썼는지 히스토리에서 확인합니다. 양립하면 둘 다 살리고, 아니면 무엇을 버렸는지 남깁니다
+5. 프로젝트 검사를 돌린 뒤 `--continue`로 마칩니다. `--abort`, `--skip`, 푸시는 하지 않습니다
+
 ## Conventional Commits 형식
 
 ```
@@ -224,7 +235,8 @@ git-skill/
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite 커맨드
 │   ├── git-merge-to-main.md              # /git-merge-to-main 커맨드
 │   ├── git-merge-to-dev.md               # /git-merge-to-dev 커맨드
-│   └── git-branch-cleanup.md             # /git-branch-cleanup 커맨드
+│   ├── git-branch-cleanup.md             # /git-branch-cleanup 커맨드
+│   └── git-resolve-conflicts.md          # /git-resolve-conflicts 커맨드
 └── skills/
     ├── git-commit/                       # 메인 커밋 스킬 — 전체 워크플로우 + 공유 스크립트
     │   ├── SKILL.md
@@ -247,7 +259,9 @@ git-skill/
     │   └── SKILL.md
     ├── git-merge-to-dev/                 # dev/develop 로 머지 후 소스 삭제
     │   └── SKILL.md
-    └── git-branch-cleanup/               # 머지된 로컬 브랜치 일괄 삭제
+    ├── git-branch-cleanup/               # 머지된 로컬 브랜치 일괄 삭제
+    │   └── SKILL.md
+    └── git-resolve-conflicts/            # 멈춘 머지·리베이스 충돌 마무리
         └── SKILL.md
 ```
 
