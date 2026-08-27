@@ -15,14 +15,21 @@
   },
   "hero": {
     "brand": "chann/skills",
-    "headline": ["어제의 반복이,", "오늘의 스킬로."],
+    "headline": [
+      "어제의 반복이,",
+      "오늘의 스킬로."
+    ],
     "lede": "Claude Code와 Codex에서 되풀이하던 소프트웨어 작업을 검증 가능한 워크플로 {count}개로 정리했습니다. 반복 지침은 프롬프트 캐시에 맞게 재사용하고, 결과가 정해진 단계는 스크립트에 맡겨 LLM이 판단이 필요한 일에 집중하게 합니다.",
     "primaryAction": "{count}개 스킬 살펴보기",
     "proof": "{count}개 정식 워크플로 · {categories}개 카테고리 · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "Why skills",
-    "title": ["반복할수록,", "덜 설명하고", "더 선명하게."],
+    "title": [
+      "반복할수록,",
+      "덜 설명하고",
+      "더 선명하게."
+    ],
     "description": "스킬은 반복 지침을 재사용하고, 정해진 절차를 스크립트에 맡겨 모델이 꼭 필요한 판단에 집중하게 합니다.",
     "items": [
       {
@@ -56,7 +63,10 @@
   },
   "workflow": {
     "label": "How it works",
-    "title": ["반복 작업이 스킬이 되는,", "세 단계."],
+    "title": [
+      "반복 작업이 스킬이 되는,",
+      "세 단계."
+    ],
     "description": "반복을 포착하고 기준을 고정한 뒤, LLM과 스크립트의 역할을 나눕니다.",
     "steps": [
       {
@@ -83,7 +93,10 @@
   },
   "catalog": {
     "label": "Skill catalog",
-    "title": ["필요한 워크플로를", "한 자리에서."],
+    "title": [
+      "필요한 워크플로를",
+      "한 자리에서."
+    ],
     "description": "작업이나 산출물로 검색하고, 플랫폼에 맞는 호출 명령을 바로 복사하세요.",
     "categoryNavigation": "분류별 바로가기",
     "searchLabel": "스킬 검색",
@@ -104,7 +117,10 @@
   },
   "platforms": {
     "label": "One skill, two commands",
-    "title": ["같은 스킬,", "호출 방법만 다르게."],
+    "title": [
+      "같은 스킬,",
+      "호출 방법만 다르게."
+    ],
     "descriptionBeforeCodex": "하나의 SKILL.md를 두 도구가 같은 방식으로 읽습니다. Codex는 ",
     "descriptionBetweenSelectors": "를, Claude Code는 ",
     "descriptionAfterClaude": "를 이름 앞에 붙입니다.",
@@ -160,7 +176,10 @@
   },
   "install": {
     "label": "Get skills",
-    "title": ["{count}개 스킬을,", "한 명령으로."],
+    "title": [
+      "{count}개 스킬을,",
+      "한 명령으로."
+    ],
     "description": "공식 설치 도구가 Claude Code와 Codex에서 바로 쓸 수 있게 연결합니다.",
     "cardTitle": "두 플랫폼에 함께 설치",
     "cardDescription": "원본 저장소를 유지한 채 각 에이전트의 스킬 폴더에 연결합니다.",
@@ -185,9 +204,16 @@
     "ready": "준비됨",
     "tab": "SKILL.md",
     "kicker": "결정 검토",
-    "title": ["계획의 모든 선택을", "끝까지 검토합니다."],
+    "title": [
+      "계획의 모든 선택을",
+      "끝까지 검토합니다."
+    ],
     "lede": "전제부터 마지막 선택지까지 추적하고, 확인된 근거와 남은 위험을 분리해 보여줍니다.",
-    "proof": ["결정 12개 검토", "위험 3개 발견", "보고서 준비 완료"]
+    "proof": [
+      "결정 12개 검토",
+      "위험 3개 발견",
+      "보고서 준비 완료"
+    ]
   },
   "copy": {
     "idle": "복사",
@@ -401,6 +427,11 @@
       "summary": "로컬 코딩 에이전트 기록에서 날짜 범위 작업 보고서를 만듭니다.",
       "whenToUse": "오늘, 이번 주, 이번 달 등 기간별 작업 내역과 요청을 정리할 때",
       "result": "요약 또는 상세 Markdown 작업 보고서(요청 시 .work-summaries/에 저장)"
+    },
+    "hol-guard": {
+      "summary": "위험한 도구 실행 전에 지원되는 로컬 코딩 에이전트를 HOL Guard로 보호합니다.",
+      "whenToUse": "에이전트가 파일 수정, 셸 명령, 패키지 설치, 자격 증명 사용 등 위험한 로컬 작업을 수행하기 전에 Guard 경계를 적용할 때",
+      "result": "감지·초기화·검증을 거친 보호 하네스 또는 보호를 입증할 수 없을 때의 fail-closed 중단"
     }
   },
   "notFound": {

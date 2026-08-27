@@ -15,14 +15,20 @@
   },
   "hero": {
     "brand": "chann/skills",
-    "headline": ["Yesterday’s repetition becomes", "today’s skill."],
+    "headline": [
+      "Yesterday’s repetition becomes",
+      "today’s skill."
+    ],
     "lede": "We turned recurring Claude Code and Codex software work into {count} workflows you can verify. Reuse the same instructions with prompt caching, and let scripts handle predictable steps so the LLM can focus on judgment.",
     "primaryAction": "Explore {count} skills",
     "proof": "{count} ready-to-use workflows · {categories} categories · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "Why skills",
-    "title": ["Repeat the work,", "not the explanation."],
+    "title": [
+      "Repeat the work,",
+      "not the explanation."
+    ],
     "description": "Skills reuse stable instructions and hand predictable procedures to scripts, so the model can focus on decisions that need context.",
     "items": [
       {
@@ -56,7 +62,10 @@
   },
   "workflow": {
     "label": "How it works",
-    "title": ["Turn recurring work into a skill", "in three steps."],
+    "title": [
+      "Turn recurring work into a skill",
+      "in three steps."
+    ],
     "description": "Capture the repetition, define the standard, then divide the work between the LLM and scripts.",
     "steps": [
       {
@@ -83,7 +92,10 @@
   },
   "catalog": {
     "label": "Skill catalog",
-    "title": ["Every workflow you need,", "all in one place."],
+    "title": [
+      "Every workflow you need,",
+      "all in one place."
+    ],
     "description": "Search by task or deliverable, then copy the command for your platform.",
     "categoryNavigation": "Browse by category",
     "searchLabel": "Search skills",
@@ -104,7 +116,10 @@
   },
   "platforms": {
     "label": "One skill, two commands",
-    "title": ["The same skill,", "a different way to call it."],
+    "title": [
+      "The same skill,",
+      "a different way to call it."
+    ],
     "descriptionBeforeCodex": "Both tools read the same SKILL.md. Prefix the name with ",
     "descriptionBetweenSelectors": " in Codex and ",
     "descriptionAfterClaude": " in Claude Code.",
@@ -160,7 +175,10 @@
   },
   "install": {
     "label": "Get skills",
-    "title": ["Install {count} skills", "with one command."],
+    "title": [
+      "Install {count} skills",
+      "with one command."
+    ],
     "description": "The official installer connects the skills so they are ready in Claude Code and Codex.",
     "cardTitle": "Install for both platforms",
     "cardDescription": "Keep one source repository and link it into each agent’s skill directory.",
@@ -185,9 +203,16 @@
     "ready": "ready",
     "tab": "SKILL.md",
     "kicker": "DECISION REVIEW",
-    "title": ["Review every decision", "all the way to the final choice."],
+    "title": [
+      "Review every decision",
+      "all the way to the final choice."
+    ],
     "lede": "Trace assumptions through the final choice, then separate confirmed evidence from the risks that remain.",
-    "proof": ["12 decisions traced", "3 risks surfaced", "report ready"]
+    "proof": [
+      "12 decisions traced",
+      "3 risks surfaced",
+      "report ready"
+    ]
   },
   "copy": {
     "idle": "Copy",
@@ -401,6 +426,11 @@
       "summary": "Create a date-range work report from local coding-agent history.",
       "whenToUse": "When summarizing requests and work completed today, this week, this month, or another period",
       "result": "A concise or detailed Markdown work report, optionally under .work-summaries/"
+    },
+    "hol-guard": {
+      "summary": "Protect supported local coding-agent tool execution with HOL Guard.",
+      "whenToUse": "When an agent will edit files, run shell commands, install packages, use credentials, or perform other risky local tool actions and you want a Guard boundary first",
+      "result": "A detected, bootstrap-validated protected harness, or a fail-closed stop when Guard cannot prove protection"
     }
   },
   "notFound": {

@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url";
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = path.resolve(websiteRoot, "..");
 const catalogPath = path.join(websiteRoot, "src", "data", "skills.ts");
-const expectedWorkflowCount = 31;
-const expectedSelectorCount = 32;
+const expectedWorkflowCount = 32;
+const expectedSelectorCount = 33;
 const requiredPlanSummaryIds = [
   "plan-summary",
   "plan-summary-md",

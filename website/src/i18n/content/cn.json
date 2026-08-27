@@ -15,14 +15,20 @@
   },
   "hero": {
     "brand": "chann/skills",
-    "headline": ["把昨天的重复，", "变成今天的技能。"],
+    "headline": [
+      "把昨天的重复，",
+      "变成今天的技能。"
+    ],
     "lede": "我们把Claude Code和Codex中反复进行的软件工作，整理成{count}个可验证的工作流。稳定的指令以更适合提示词缓存的形式复用，结果明确的步骤交给脚本执行，让LLM专注于真正需要判断的部分。",
     "primaryAction": "查看{count}个技能",
     "proof": "{count}个正式工作流 · {categories}个分类 · Claude Code + Codex · MIT"
   },
   "benefits": {
     "label": "为什么用技能",
-    "title": ["重复得越多，", "解释得越少，判断得越清楚。"],
+    "title": [
+      "重复得越多，",
+      "解释得越少，判断得越清楚。"
+    ],
     "description": "技能复用稳定的指令，把确定性的流程交给脚本，让模型专注于需要上下文的判断。",
     "items": [
       {
@@ -56,7 +62,10 @@
   },
   "workflow": {
     "label": "工作方式",
-    "title": ["只需三步，", "把重复工作变成技能。"],
+    "title": [
+      "只需三步，",
+      "把重复工作变成技能。"
+    ],
     "description": "发现重复，固定标准，再划分LLM与脚本的职责。",
     "steps": [
       {
@@ -83,7 +92,10 @@
   },
   "catalog": {
     "label": "技能目录",
-    "title": ["所需的工作流，", "都在这里。"],
+    "title": [
+      "所需的工作流，",
+      "都在这里。"
+    ],
     "description": "按任务或成果搜索，然后直接复制适合当前平台的调用命令。",
     "categoryNavigation": "按分类浏览",
     "searchLabel": "搜索技能",
@@ -104,7 +116,10 @@
   },
   "platforms": {
     "label": "一个技能，两种命令",
-    "title": ["同一个技能，", "只需换一种调用方式。"],
+    "title": [
+      "同一个技能，",
+      "只需换一种调用方式。"
+    ],
     "descriptionBeforeCodex": "两个工具读取同一份SKILL.md。在Codex中，名称前加",
     "descriptionBetweenSelectors": "；在Claude Code中，名称前加",
     "descriptionAfterClaude": "。",
@@ -160,7 +175,10 @@
   },
   "install": {
     "label": "获取技能",
-    "title": ["一个命令，", "安装{count}个技能。"],
+    "title": [
+      "一个命令，",
+      "安装{count}个技能。"
+    ],
     "description": "官方安装工具会完成连接，让这些技能可直接用于Claude Code和Codex。",
     "cardTitle": "同时安装到两个平台",
     "cardDescription": "保留一份源仓库，并将它链接到每个智能体的技能目录。",
@@ -185,9 +203,16 @@
     "ready": "就绪",
     "tab": "SKILL.md",
     "kicker": "决策审查",
-    "title": ["把计划中的每个选择", "一直审查到最后。"],
+    "title": [
+      "把计划中的每个选择",
+      "一直审查到最后。"
+    ],
     "lede": "从前提追踪到最后一个选项，并把已确认的证据与剩余风险分开呈现。",
-    "proof": ["已追踪12项决策", "已发现3项风险", "报告已就绪"]
+    "proof": [
+      "已追踪12项决策",
+      "已发现3项风险",
+      "报告已就绪"
+    ]
   },
   "copy": {
     "idle": "复制",
@@ -401,6 +426,11 @@
       "summary": "从本地编程智能体记录中生成指定日期范围的工作报告。",
       "whenToUse": "汇总今天、本周、本月或其他时间段的工作与请求时",
       "result": "简要或详细的Markdown工作报告，可按需保存到.work-summaries/"
+    },
+    "hol-guard": {
+      "summary": "在高风险工具执行前，用 HOL Guard 保护受支持的本地编码智能体。",
+      "whenToUse": "智能体将修改文件、运行 shell 命令、安装软件包、使用凭据或执行其他高风险本地操作，并需要先建立 Guard 边界时",
+      "result": "已检测、初始化并验证的受保护运行环境，或在无法证明保护有效时 fail-closed 停止"
     }
   },
   "notFound": {

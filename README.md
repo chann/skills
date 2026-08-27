@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-31 practical agent workflows and 32 installable Codex selectors, packaged across 13 plugins.
+32 practical agent workflows and 33 installable Codex selectors, packaged across 14 plugins.
 
 ## Website
 
@@ -36,6 +36,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
 | **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean into natural prose by removing awkward jargon and smoothing the style without changing meaning |
 | **[skill-forge](skill-forge/README.md)** | Author skill packages against one contract and audit every packaged skill against it |
+| **[hol-guard](hol-guard/README.md)** | Protect supported local coding-agent tool execution with HOL Guard and fail closed when protection cannot be proven |
 
 
 ## Installation
@@ -80,6 +81,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [plan-summary installation](plan-summary/README.md#installation)
 - [human-friendly-writing installation](human-friendly-writing/README.md#installation)
 - [skill-forge installation](skill-forge/README.md#installation)
+- [hol-guard installation](hol-guard/README.md#installation)
 
 - Handoff only: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`
 - Backend handoff only: `npx skills add chann/skills --skill gen-backend-handoff`

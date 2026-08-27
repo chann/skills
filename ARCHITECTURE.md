@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 13 independent plugins — `code-review`, `review-me`, `bug-hunt`, `research-brief`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, `human-friendly-writing`, and `skill-forge` — that together expose 31 canonical workflows through 32 installable Codex selectors.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 14 independent plugins — `code-review`, `review-me`, `bug-hunt`, `research-brief`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, `human-friendly-writing`, `skill-forge`, and `hol-guard` — that together expose 32 canonical workflows through 33 installable Codex selectors.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,

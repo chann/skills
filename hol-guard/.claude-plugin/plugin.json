@@ -1,0 +1,5 @@
+{
+  "name": "hol-guard",
+  "description": "Protect supported local coding-agent sessions with HOL Guard before risky tool execution, and fail closed when protection cannot be proven.",
+  "version": "0.1.0"
+}

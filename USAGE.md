@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 31 canonical workflows and 32 installable Codex selectors across 13 workflow plugins.
+This repository exposes 32 canonical workflows and 33 installable Codex selectors across 14 workflow plugins.
 
 ## Installation
 
