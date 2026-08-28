@@ -78,10 +78,12 @@ through Guard instead:
 
 ```bash
 hol-guard approvals
-hol-guard approvals open
+hol-guard approvals open <request-id>
 hol-guard receipts
 hol-guard diff <harness>
 ```
+
+Use the exact pending request ID returned by `hol-guard approvals` when opening its approval page.
 
 A deny, review-required state, Guard error, timeout, or unavailable runtime is a
 stop condition until the Guard-owned path resolves it.
