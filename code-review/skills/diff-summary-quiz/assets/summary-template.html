@@ -772,10 +772,13 @@
       min-width: 0;
       min-height: 0;
       padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
       background: var(--muted);
       cursor: pointer;
       list-style: none;
+    }
+
+    .summary-card[open] .card-summary {
+      border-bottom: 1px solid var(--border);
     }
 
     .card-summary::-webkit-details-marker {
