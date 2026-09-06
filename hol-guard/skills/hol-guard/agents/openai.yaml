@@ -1,0 +1,4 @@
+interface:
+  display_name: "HOL Guard"
+  short_description: "Protect local coding-agent tool execution with HOL Guard"
+  default_prompt: "Use $hol-guard to protect this local coding-agent session before risky tool execution."

@@ -42,7 +42,8 @@ export type SkillId =
   | "build-reinstall"
   | "skill-forge"
   | "skill-audit"
-  | "work-summary";
+  | "work-summary"
+  | "hol-guard";
 
 export interface SkillDefinition {
   id: SkillId;
@@ -336,5 +337,14 @@ export const skillDefinitions = [
     claudeSelector: "/work-summary",
     codexSelector: "$work-summary",
     tags: ["report", "summary", "history", "claude-code", "codex"],
+  },
+  {
+    id: "hol-guard",
+    title: "HOL Guard",
+    category: "engineering",
+    example: "$hol-guard protect this agent before it changes the project",
+    claudeSelector: "/hol-guard",
+    codexSelector: "$hol-guard",
+    tags: ["security", "agent", "runtime", "guard", "approval"],
   },
 ] as const satisfies readonly SkillDefinition[];
