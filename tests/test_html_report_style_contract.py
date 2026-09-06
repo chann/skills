@@ -122,11 +122,12 @@ TOKENS = (
     "ring",
     "radius",
     "radius-control",
+    "radius-pill",
     "font-sans",
     "font-mono",
 )
-THEME_COLOR_TOKENS = TOKENS[:-4]
-ROOT_TOKENS = TOKENS[-4:]
+ROOT_TOKENS = ("radius", "radius-control", "radius-pill", "font-sans", "font-mono")
+THEME_COLOR_TOKENS = tuple(token for token in TOKENS if token not in ROOT_TOKENS)
 # One row per token, (light, dark). Templates declare the pair once through
 # CSS light-dark(), so these are the only two values that can ever apply.
 EXPECTED_THEME = {
@@ -282,16 +283,17 @@ LEGACY_ZINC_VALUES = (
     "#7f1d1d",
 )
 EXPECTED_ROOT_TOKENS = {
-    # Two radii and no third: containers are sharp, interactive elements are 4px.
-    "radius": "0px",
-    "radius-control": "4px",
-    # One monospaced face carries every text role. The Latin mono faces have no
-    # Hangul, so per-glyph fallback reaches the Korean mono faces for prose
-    # while Latin keeps its mono metrics.
+    # GitHub's rounded-box vocabulary: 6px containers and controls, fully
+    # rounded label pills, and nothing in between.
+    "radius": "6px",
+    "radius-control": "6px",
+    "radius-pill": "999px",
+    # Two faces with fixed roles: prose, headings, labels, and controls read in
+    # the system sans stack (GitHub style); code, paths, and ids keep the mono
+    # stack. Each stack reaches its own Korean faces before generic fallbacks.
     "font-sans": (
-        '"Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, '
-        "SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", "
-        'D2Coding, "Nanum Gothic Coding", "Courier New", monospace'
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", '
+        '"Apple SD Gothic Neo", "Malgun Gothic", Helvetica, Arial, sans-serif'
     ),
     "font-mono": (
         '"Berkeley Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, '
@@ -299,7 +301,8 @@ EXPECTED_ROOT_TOKENS = {
         'D2Coding, "Nanum Gothic Coding", "Courier New", monospace'
     ),
 }
-KOREAN_FACES = ("D2Coding", '"Nanum Gothic Coding"')
+KOREAN_SANS_FACES = ('"Apple SD Gothic Neo"', '"Malgun Gothic"')
+KOREAN_MONO_FACES = ("D2Coding", '"Nanum Gothic Coding"')
 PROSE_KEEP_ALL_SELECTORS = {
     "diff-summary": (
         "#report-main > h2",
@@ -765,19 +768,31 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     selected_properties(declarations, ROOT_TOKENS),
                     EXPECTED_ROOT_TOKENS,
                 )
-            for face in KOREAN_FACES:
-                with self.subTest(template=name, face=face):
+            for face in KOREAN_SANS_FACES:
+                with self.subTest(template=name, face=face, stack="sans"):
                     self.assertIn(face, declarations["font-sans"])
-            with self.subTest(template=name, contract="latin-first"):
+            for face in KOREAN_MONO_FACES:
+                with self.subTest(template=name, face=face, stack="mono"):
+                    self.assertIn(face, declarations["font-mono"])
+            with self.subTest(template=name, contract="sans-system-first"):
                 stack = declarations["font-sans"]
+                self.assertLess(
+                    stack.index("-apple-system"),
+                    stack.index('"Apple SD Gothic Neo"'),
+                )
+            with self.subTest(template=name, contract="mono-latin-first"):
+                stack = declarations["font-mono"]
                 self.assertLess(
                     stack.index("ui-monospace"),
                     stack.index("D2Coding"),
                 )
-            with self.subTest(template=name, contract="one-face"):
-                self.assertEqual(
+            with self.subTest(template=name, contract="two-faces"):
+                self.assertNotEqual(
                     declarations["font-sans"],
                     declarations["font-mono"],
+                )
+                self.assertTrue(
+                    declarations["font-mono"].startswith('"Berkeley Mono"')
                 )
 
     def test_every_html_report_breaks_korean_prose_on_word_boundaries(self) -> None:
@@ -826,13 +841,18 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         r"font-variant-numeric:\s*tabular-nums\s*;",
                     )
 
-    def test_radius_vocabulary_is_exactly_two_tokens(self) -> None:
-        """Sharp containers, 4px interactive elements, and nothing in between.
+    def test_radius_vocabulary_is_exactly_three_tokens(self) -> None:
+        """6px boxes and controls, fully rounded pills, and nothing in between.
 
-        A literal radius is how a third shape sneaks in, so every rule has to
-        name one of the two tokens.
+        A literal radius is how a fourth shape sneaks in, so every rule has to
+        name one of the three tokens.
         """
-        allowed = {"var(--radius)", "var(--radius-control)", "0"}
+        allowed = {
+            "var(--radius)",
+            "var(--radius-control)",
+            "var(--radius-pill)",
+            "0",
+        }
         for name, source in self.templates.items():
             for value in re.findall(r"border-radius:\s*([^;]+);", source):
                 with self.subTest(template=name, value=value.strip()):
@@ -1154,6 +1174,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         single_declaration_tokens = {
             "radius",
             "radius-control",
+            "radius-pill",
             "font-sans",
             "font-mono",
         }
@@ -1713,7 +1734,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertNotIn("border-radius", card)
 
         summary = css_rule(self.template, ".card-summary")
-        self.assertRegex(summary, r"padding:\s*12px\s+16px\s*;")
+        self.assertRegex(summary, r"padding:\s*8px\s+12px\s*;")
         self.assertRegex(summary, r"min-width:\s*0\s*;")
         self.assertRegex(summary, r"min-height:\s*0\s*;")
         marker = css_rule(self.template, ".card-summary::before")
@@ -1749,7 +1770,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
     def test_diff_summary_card_body_uses_compact_finding_padding(self) -> None:
         panel = css_rule(self.template, ".card-panel")
-        self.assertRegex(panel, r"padding:\s*2px\s+16px\s+16px\s*;")
+        self.assertRegex(panel, r"padding:\s*10px\s+16px\s+14px\s*;")
         self.assertRegex(panel, r"border-top:\s*0\s*;")
         self.assertRegex(panel, r"animation:\s*none\s*;")
         self.assertRegex(
@@ -1773,12 +1794,12 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         self.assertRegex(header, r"background:\s*transparent\s*;")
 
         title = css_rule(self.template, "#report-title")
-        self.assertRegex(title, r"margin:\s*0\s+0\s+16px\s*;")
-        self.assertRegex(title, r"font-size:\s*27px\s*;")
-        self.assertRegex(title, r"line-height:\s*1\.2\s*;")
+        self.assertRegex(title, r"margin:\s*0\s+0\s+12px\s*;")
+        self.assertRegex(title, r"font-size:\s*24px\s*;")
+        self.assertRegex(title, r"line-height:\s*1\.25\s*;")
 
         section_heading = css_rule(self.template, "#report-main > h2")
-        self.assertRegex(section_heading, r"font-size:\s*21px\s*;")
+        self.assertRegex(section_heading, r"font-size:\s*20px\s*;")
         self.assertNotRegex(
             self.template,
             r"font-size:\s*clamp\([^;]*3(?:\.\d+)?rem",
@@ -1793,9 +1814,9 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
         cell = css_rule(self.template, ".metadata-cell")
         self.assertRegex(cell, r"min-width:\s*0\s*;")
-        self.assertRegex(cell, r"padding:\s*8px\s+10px\s*;")
+        self.assertRegex(cell, r"padding:\s*4px\s+8px\s*;")
         self.assertRegex(cell, r"border:\s*1px\s+solid\s+var\(--border\)\s*;")
-        self.assertRegex(cell, r"border-radius:\s*var\(--radius\)\s*;")
+        self.assertRegex(cell, r"border-radius:\s*var\(--radius-control\)\s*;")
         self.assertRegex(cell, r"background:\s*var\(--card\)\s*;")
         self.assertRegex(cell, r"box-shadow:\s*var\(--shadow\)\s*;")
         self.assertRegex(
