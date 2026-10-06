@@ -7,6 +7,7 @@ Git 작업을 위한 스킬 모음입니다. 작업 디렉터리의 변경 사�
 ## 주요 기능
 
 - **커밋 / 푸시 / 작업 중 커밋 / 재작성** — 스테이징 여부와 관계없이 변경을 의미 단위(`feat`, `fix`, `docs` 등)로 묶어 Conventional Commit을 하나씩 생성. 필요하면 푸시하고, 구현 중 검증된 결과마다 커밋해 즉시 푸시하거나 모두 로컬에 유지하며, 형식에 맞지 않는 제목도 재작성
+- **작업 단위별 배포** — `AGENTS.md` 등 저장소에 명시된 배포 설정으로 의미 단위마다 커밋·푸시·배포하고, 배포와 필수 실행 검사가 끝난 뒤 다음 작업으로 진행
 - `git add .`은 사용하지 않고 항상 경로를 직접 지정해 스테이징
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 정보가 의심되는 파일은 기본으로 제외하고 경고. 정확한 파일명 `.env.example`은 예외
 - `git filter-branch`로 형식에 맞지 않는 커밋 제목만 다시 쓰고 기존 본문은 보존
@@ -24,6 +25,8 @@ npx skills add -y -g chann/skills \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
   --skill gcpr \
+  --skill git-commit-push-deploy \
+  --skill gcpd \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -40,6 +43,8 @@ npx skills add chann/skills \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
   --skill gcpr \
+  --skill git-commit-push-deploy \
+  --skill gcpd \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -55,6 +60,17 @@ Codex `$gcpr` selector와 실행에 필요한 워크플로만 추가하려면:
 ```bash
 npx skills add -y -g chann/skills \
   --skill gcpr \
+  --skill git-commit-push-realtime \
+  --skill git-commit \
+  --skill git-commit-push
+```
+
+Codex `$gcpd` selector와 실행에 필요한 공유 워크플로를 모두 추가하려면:
+
+```bash
+npx skills add -y -g chann/skills \
+  --skill gcpd \
+  --skill git-commit-push-deploy \
   --skill git-commit-push-realtime \
   --skill git-commit \
   --skill git-commit-push
@@ -77,6 +93,7 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 | `/git-commit`                   | `$git-commit`                | 스테이징 여부와 관계없이 변경을 의미 단위로 나눠 Conventional Commit 생성       |
 | `/git-commit-push`              | `$git-commit-push`           | 위 작업 후 `git push`까지 진행하며 강제 푸시는 사용하지 않음                    |
 | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
+| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | 의미 단위마다 커밋·푸시하고 저장소에 명시된 설정으로 배포·확인까지 진행 |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 — 푸시하지 않음           |
 | `/git-commit-rewrite`           | `$git-commit-rewrite`        | 최근 커밋 중 Conventional 형식에 맞지 않는 제목을 재작성                       |
 | `/git-merge-to-main`            | `$git-merge-to-main`         | 현재 브랜치를 `main`으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제         |
@@ -92,6 +109,8 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 > /git-commit-push
 > 작업 중간중간 의미 있는 단위마다 커밋하고 푸시해줘
 > $gcpr
+> AGENTS.md에 적힌 설정으로 작업 단위마다 커밋하고 푸시하고 배포해줘
+> $gcpd
 > 푸시 없이 의미 단위마다 커밋만 해줘
 > /gcr
 > /git-commit-rewrite
@@ -122,6 +141,23 @@ Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
 5. 바로 푸시하고 다음 작업을 시작하기 전에 `HEAD...@{u}`가 `0 0`인지 확인
 6. upstream이 바뀌거나 푸시가 거부되면 중단. pull, merge, rebase나 강제 푸시로 자동 해결하지 않음
 7. 전체 범위 검증, 커밋 기록, 로컬과 원격의 일치 상태를 확인하고 종료
+
+### `/git-commit-push-deploy` (별칭 `/gcpd`, `$gcpd`)
+
+1. realtime·commit·push 공유 스킬을 읽고 `AGENTS.md` 및 연결된 문서의 기존 배포 설정 확인
+2. 수정·푸시 전에 배포 대상, 명령 또는 자동 실행 조건, 실행 디렉터리, 허용 브랜치, 배포할 커밋의 선택 방법과 확인 절차 확정. 없거나 모호한 설정만 사용자에게 확인
+3. 독립적으로 배포할 수 있는 의미 단위를 계획하고 realtime 흐름에 따라 검증·커밋·푸시 및 원격 일치 확인
+4. 푸시한 커밋 또는 그 커밋에서 빌드한 결과물만 배포. 푸시로 CI가 자동 배포하면 별도 배포를 중복 실행하지 않고 해당 실행 추적
+5. 배포 성공과 필수 상태·실행 검사까지 확인한 뒤 다음 단위의 로컬 구현 시작
+6. 배포 실패·시간 초과·취소·커밋 불일치가 발생하면 다음 작업 단위로 넘어가지 않고 상태를 구분해 보고. 요청 범위 내 코드 수정은 새 복구 단위로 커밋·푸시·배포·확인
+7. 전체 범위 검증, 단위별 커밋 해시, 원격 일치, 배포 대상과 확인 근거를 보고하고 종료
+
+호출 자체로 명시된 대상에 반복 배포할 권한이 주어지므로 매번 다시 묻지
+않으며, 저장소나 배포 서비스의 필수 승인 절차는 따릅니다. 배포 설정은 이미
+있어야 합니다. 제공자나 대상을 임의로 고르거나 브랜치를 머지하고 릴리스
+태그를 만들지 않으며, 복구 명령도 추측하지 않습니다. 직접 배포할 때는
+관련 없는 수정과 추적되지 않은 파일을 배포 결과물에 포함하지 않습니다.
+`/gcpr`는 계속 커밋·푸시 워크플로를 사용합니다.
 
 ### `/git-commit-realtime` (별칭 `/gcr`)
 
@@ -230,6 +266,8 @@ git-skill/
 │   ├── git-commit-push.md                # /git-commit-push 커맨드
 │   ├── git-commit-push-realtime.md       # /git-commit-push-realtime 커맨드
 │   ├── gcpr.md                           # /gcpr — 본문이 같은 짧은 별칭
+│   ├── git-commit-push-deploy.md          # 설정에 따른 작업 단위별 배포
+│   ├── gcpd.md                           # /gcpd — 본문이 같은 짧은 별칭
 │   ├── git-commit-realtime.md            # /git-commit-realtime 커맨드
 │   ├── gcr.md                            # /gcr — 본문이 같은 짧은 별칭
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite 커맨드
@@ -250,6 +288,14 @@ git-skill/
     ├── gcpr/                             # 얇은 Codex selector 별칭
     │   ├── SKILL.md
     │   └── agents/openai.yaml
+    ├── git-commit-push-deploy/            # 의미 단위마다 커밋·푸시·배포·확인
+    │   ├── SKILL.md
+    │   ├── agents/openai.yaml
+    │   └── evals/evals.json
+    ├── gcpd/                             # 얇은 Codex 배포 selector 별칭
+    │   ├── SKILL.md
+    │   ├── agents/openai.yaml
+    │   └── evals/evals.json
     ├── git-commit-realtime/              # 검증한 작업 단위마다 로컬에만 커밋
     │   ├── SKILL.md
     │   └── evals/evals.json

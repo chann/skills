@@ -1,0 +1,4 @@
+interface:
+  display_name: "GCPD"
+  short_description: "Alias for verified checkpoint commits, pushes, and configured deployments"
+  default_prompt: "Use $gcpd to commit, push, and deploy each verified outcome using the repository's documented deployment settings."

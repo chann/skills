@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-31 practical agent workflows and 32 installable Codex selectors, packaged across 13 plugins.
+32 practical agent workflows and 34 installable Codex selectors, packaged across 13 plugins.
 
 ## Website
 
@@ -28,7 +28,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[bug-hunt](bug-hunt/README.md)**       | Diagnose a broken behavior by reproducing it, falsifying hypotheses in a ledger, and pinning the fix with a failing check |
 | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
 | **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose      |
-| **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits or pushes, history rewrite, main/dev merges, conflict resolution, and local branch cleanup |
+| **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits, pushes and deployments, history rewrite, main/dev merges, conflict resolution, and local branch cleanup |
 | **[handoff](handoff/README.md)**         | Generate frontend/client, backend/server, and session-to-session handoff docs from git diffs, ranges, and session context |
 | **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
 | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the new result with project-owned commands, and verify the installed copy |
@@ -90,6 +90,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - Plan-summary family: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 - Human-friendly-writing only: `npx skills add chann/skills --skill human-friendly-writing`
 - Codex `$gcpr`: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
+- Codex `$gcpd`: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## Quick reference
 
@@ -142,6 +143,7 @@ recorded and confirmed.
 | `/git-commit`                    | `$git-commit`               | Group working-tree changes into Conventional Commits                                  |
 | `/git-commit-push`               | `$git-commit-push`          | Same, then `git push` (no `--force`)                                                   |
 | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | Commit and push each verified, meaningful outcome while implementation continues |
+| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | Commit each verified, meaningful outcome locally while implementation continues — no push |
 | `/git-commit-rewrite`            | `$git-commit-rewrite`       | Rewrite recent non-Conventional commit subjects                                       |
 | `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |

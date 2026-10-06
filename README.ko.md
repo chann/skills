@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 31개의 실용적인 에이전트 워크플로와 32개의 설치 가능한 Codex selector를 13개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 32개의 실용적인 에이전트 워크플로와 34개의 설치 가능한 Codex selector를 13개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -26,7 +26,7 @@ npm --prefix website run dev
 | **[bug-hunt](bug-hunt/README.ko.md)**               | 버그를 재현하고 가설을 반증하며 원인을 좁힌 뒤, 먼저 실패한 검사로 수정을 고정                  |
 | **[research-brief](research-brief/README.ko.md)**   | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김                   |
 | **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신             |
-| **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시, 히스토리 재작성, main/dev 머지, 충돌 해결, 로컬 브랜치 정리 |
+| **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시·배포, 히스토리 재작성, main/dev 머지, 충돌 해결, 로컬 브랜치 정리 |
 | **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락으로 프론트엔드·백엔드·세션 인수인계 문서 생성                  |
 | **[long-task](long-task/README.ko.md)**             | 여러 마일스톤에 걸친 프로젝트를 자율적으로 진행 — 병렬 worktree 서브에이전트 실행과 마일스톤별 리뷰 |
 | **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인                     |
@@ -84,6 +84,7 @@ npx skills add chann/skills \
 - plan-summary 제품군 설치: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 - human-friendly-writing만 설치: `npx skills add chann/skills --skill human-friendly-writing`
 - Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
+- Codex `$gcpd` 설치: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
 
 ## 빠른 참조
 
@@ -128,6 +129,7 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직
 | `/git-commit`                  | `$git-commit`               | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
 | `/git-commit-push`             | `$git-commit-push`          | 위 작업 후 `git push`까지 진행 (`--force` 안 함)                                |
 | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
+| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | 의미 단위마다 커밋·푸시하고 저장소에 명시된 설정으로 배포·확인까지 진행 |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 (푸시 안 함)               |
 | `/git-commit-rewrite`          | `$git-commit-rewrite`       | 최근 커밋 중 Conventional 형식에 맞지 않는 제목을 재작성                        |
 | `/git-merge-to-main`           | `$git-merge-to-main`        | 현재 브랜치를 `main`으로 머지 후 소스 브랜치를 `git branch -d`로 삭제           |

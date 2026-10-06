@@ -185,7 +185,7 @@ class GitSkillPackageTests(unittest.TestCase):
         for path in package_readmes:
             with self.subTest(path=path):
                 text = path.read_text(encoding="utf-8")
-                self.assertEqual(3, text.count(f"--skill {REALTIME_SKILL_NAME}"))
+                self.assertEqual(4, text.count(f"--skill {REALTIME_SKILL_NAME}"))
                 self.assertEqual(3, text.count(f"--skill {REALTIME_ALIAS}"))
                 self.assertIn(f"/{REALTIME_SKILL_NAME}", text)
                 self.assertIn(f"${REALTIME_SKILL_NAME}", text)
@@ -333,13 +333,13 @@ class GitSkillPackageTests(unittest.TestCase):
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
         packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(32, len(packaged_skills))
+        self.assertEqual(34, len(packaged_skills))
 
         expected_counts = {
-            ROOT / "README.md": "31 practical agent workflows and 32 installable Codex selectors",
-            ROOT / "README.ko.md": "31개의 실용적인 에이전트 워크플로와 32개의 설치 가능한 Codex selector",
-            ROOT / "USAGE.md": "31 canonical workflows and 32 installable Codex selectors",
-            ROOT / "ARCHITECTURE.md": "expose 31 canonical workflows through 32 installable Codex selectors",
+            ROOT / "README.md": "32 practical agent workflows and 34 installable Codex selectors",
+            ROOT / "README.ko.md": "32개의 실용적인 에이전트 워크플로와 34개의 설치 가능한 Codex selector",
+            ROOT / "USAGE.md": "32 canonical workflows and 34 installable Codex selectors",
+            ROOT / "ARCHITECTURE.md": "expose 32 canonical workflows through 34 installable Codex selectors",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path):
@@ -353,9 +353,10 @@ class GitSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.9.0", metadata["version"])
+        self.assertEqual("0.10.0", metadata["version"])
         self.assertIn("realtime checkpoint commits and pushes", metadata["description"])
         self.assertIn("conflict resolution", metadata["description"])
+        self.assertIn("deployment", metadata["description"])
 
     def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
         expected_contracts = {
@@ -404,6 +405,72 @@ class GitSkillPackageTests(unittest.TestCase):
             with self.subTest(path=path):
                 text = path.read_text(encoding="utf-8")
                 self.assertIn(PROTECTED_BRANCH_LIST, text)
+
+
+DEPLOY_SKILL_NAME = "git-commit-push-deploy"
+DEPLOY_ALIAS = "gcpd"
+
+
+class GitCommitPushDeployTests(unittest.TestCase):
+    def test_deploy_selectors_ship_complete_packages(self) -> None:
+        for name in (DEPLOY_SKILL_NAME, DEPLOY_ALIAS):
+            skill = GIT_SKILL / "skills" / name
+            for path in (
+                skill / "SKILL.md",
+                skill / "agents" / "openai.yaml",
+                skill / "evals" / "evals.json",
+                GIT_SKILL / "commands" / f"{name}.md",
+            ):
+                with self.subTest(path=path.relative_to(ROOT)):
+                    self.assertTrue(path.is_file(), f"Missing {path.relative_to(ROOT)}")
+
+    def test_alias_command_preserves_the_canonical_deployment_gates(self) -> None:
+        canonical = GIT_SKILL / "commands" / f"{DEPLOY_SKILL_NAME}.md"
+        alias = GIT_SKILL / "commands" / f"{DEPLOY_ALIAS}.md"
+        self.assertTrue(canonical.is_file())
+        self.assertTrue(alias.is_file())
+        self.assertEqual(body(canonical), body(alias))
+        self.assertIn(f"**{DEPLOY_SKILL_NAME}** skill", body(alias))
+
+    def test_deploy_alias_is_explicit_only_and_uses_its_own_display_name(self) -> None:
+        skill = GIT_SKILL / "skills" / DEPLOY_ALIAS / "SKILL.md"
+        interface = skill.parent / "agents" / "openai.yaml"
+        self.assertTrue(skill.is_file())
+        self.assertTrue(interface.is_file())
+        self.assertIn("description: Use only when", frontmatter(skill))
+        self.assertIn("disable-model-invocation: true", frontmatter(skill))
+        self.assertEqual("GCPD", quoted_yaml_field(interface, "display_name"))
+        self.assertIn(DEPLOY_SKILL_NAME, body(skill))
+        self.assertNotIn("git push", body(skill))
+
+    def test_deploy_install_examples_include_all_required_shared_skills(self) -> None:
+        required = (
+            DEPLOY_ALIAS, DEPLOY_SKILL_NAME, REALTIME_SKILL_NAME,
+            "git-commit", "git-commit-push",
+        )
+        for filename in ("README.md", "README.ko.md"):
+            text = (GIT_SKILL / filename).read_text(encoding="utf-8")
+            blocks = re.findall(r"```bash\n(.*?)```", text, re.DOTALL)
+            alias_installs = [block for block in blocks if "--skill gcpd" in block]
+            with self.subTest(filename=filename):
+                self.assertEqual(3, len(alias_installs))
+                for block in alias_installs:
+                    for name in required:
+                        self.assertIn(f"--skill {name}", block)
+
+    def test_deploy_evals_cover_manual_ci_and_failed_deployment(self) -> None:
+        path = GIT_SKILL / "skills" / DEPLOY_SKILL_NAME / "evals" / "evals.json"
+        self.assertTrue(path.is_file())
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(DEPLOY_SKILL_NAME, payload["skill_name"])
+        cases = {item["id"]: item for item in payload["evals"]}
+        self.assertGreaterEqual(len(cases), 7)
+        for item in cases.values():
+            self.assertGreaterEqual(len(item["assertions"]), 2)
+        prompts = " ".join(item["prompt"] for item in cases.values())
+        for scenario in ("CI", "503", "AGENTS.md", "untracked", "$gcpr"):
+            with self.subTest(scenario=scenario):
+                self.assertIn(scenario, prompts)
 
 
 CONFLICT_SKILL_NAME = "git-resolve-conflicts"

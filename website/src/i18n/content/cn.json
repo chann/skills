@@ -329,8 +329,13 @@
     },
     "git-commit-push-realtime": {
       "summary": "每完成一个经过验证的结果，就立即提交并推送。",
-      "whenToUse": "希望在远程仓库为较长的实现保留可审查的检查点时",
+      "whenToUse": "需要为较长的实现保留可审查的提交和推送检查点时；如需确认每次部署，请使用git-commit-push-deploy",
       "result": "已验证的检查点，以及每次都确认过的远程发布状态"
+    },
+    "git-commit-push-deploy": {
+      "summary": "每完成一个经过验证的工作单元，就提交、推送，并按AGENTS.md等仓库说明中的配置部署。",
+      "whenToUse": "需要按现有部署配置完成并确认每个工作单元的部署后，再开始下一个实现时",
+      "result": "每个工作单元的提交、远程同步状态、部署目标及部署与运行检查结果"
     },
     "git-commit-realtime": {
       "summary": "为每个经过验证的结果创建本地提交，把推送留到之后。",

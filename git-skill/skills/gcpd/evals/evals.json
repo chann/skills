@@ -1,0 +1,45 @@
+{
+  "skill_name": "gcpd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/gcpd implement cursor pagination and deploy each verified outcome using AGENTS.md's staging configuration.",
+      "expected_output": "Locates and fully reads git-commit-push-deploy before any Git command or deployment and applies its shared workflows and deployment gates.",
+      "files": [],
+      "assertions": [
+        "The canonical skill is read before any Git inspection, mutation, or deployment.",
+        "The alias preserves documented target selection, per-checkpoint confirmation, and all shared workflow requirements."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$gcpd on this refactor. git-commit-push-deploy is not installed, but git-commit-push-realtime is available.",
+      "expected_output": "Stops before any Git command or deployment and reports that git-commit-push-deploy must also be installed.",
+      "files": [],
+      "assertions": [
+        "No Git command or deployment runs when the canonical skill is missing.",
+        "The alias neither reconstructs deployment from memory nor falls back to gcpr."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "작업 중간중간 의미 있는 단위마다 커밋하고 푸시하고 배포해줘.",
+      "expected_output": "Uses git-commit-push-deploy directly for the natural-language request, leaving the selector-only alias inactive.",
+      "files": [],
+      "assertions": [
+        "The selector-only gcpd alias is not selected from natural language alone.",
+        "The canonical workflow applies its documented deployment settings and verification gates."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "$gcpd the first push succeeded and the deployment is still queued. Can this checkpoint be reported complete now?",
+      "expected_output": "Keeps the canonical deployment confirmation gate before the next checkpoint instead of weakening it inside the alias.",
+      "files": [],
+      "assertions": [
+        "Push success alone does not complete the checkpoint.",
+        "The next checkpoint waits for deployment success and required checks."
+      ]
+    }
+  ]
+}

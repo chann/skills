@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 31 canonical workflows and 32 installable Codex selectors across 13 workflow plugins.
+This repository exposes 32 canonical workflows and 34 installable Codex selectors across 13 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff`, `bug-hunt`, `research-brief`, `git-resolve-conflicts`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Bug-hunt-only install: `npx skills add chann/skills --skill bug-hunt`. Research-brief-only install: `npx skills add chann/skills --skill research-brief`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-push-deploy`, `gcpd`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff`, `bug-hunt`, `research-brief`, `git-resolve-conflicts`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Codex `$gcpd` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Bug-hunt-only install: `npx skills add chann/skills --skill bug-hunt`. Research-brief-only install: `npx skills add chann/skills --skill research-brief`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -52,6 +52,8 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /git-commit                               # group changes into Conventional Commits
 > /git-commit-push-realtime                 # push each verified outcome while working
 > /gcpr                                      # same workflow, short alias
+> /git-commit-push-deploy                    # commit, push, deploy, and confirm each outcome
+> /gcpd                                     # same deployment workflow, short alias
 > /git-commit-realtime                      # commit each verified outcome locally, no push
 > /gcr                                       # same local workflow, short alias
 > /git-resolve-conflicts                     # finish a conflicted merge or rebase
@@ -90,6 +92,7 @@ These are the exact names published by every package:
 | Git commit | `/git-commit` | `$git-commit` |
 | Git commit and push | `/git-commit-push` | `$git-commit-push` |
 | Realtime commit and push | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` |
+| Checkpoint commit, push, and deploy | `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` |
 | Realtime local commit | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` |
 | Commit-message rewrite | `/git-commit-rewrite` | `$git-commit-rewrite` |
 | Merge to main | `/git-merge-to-main` | `$git-merge-to-main` |
@@ -316,6 +319,7 @@ the templates, so the reports cannot drift apart.
 | `/git-commit` | Group working-tree changes into Conventional Commits, one per logical unit |
 | `/git-commit-push` | Same, then `git push` (never `--force`) |
 | `/git-commit-push-realtime` · `/gcpr` | During implementation, verify, commit, and immediately push each meaningful outcome |
+| `/git-commit-push-deploy` · `/gcpd` | Verify, commit, push, deploy, and confirm each outcome using documented repository settings |
 | `/git-commit-realtime` · `/gcr` | During implementation, verify and commit each meaningful outcome locally — never push |
 | `/git-commit-rewrite` | Rewrite recent non-Conventional commit subjects |
 | `/git-merge-to-main` | Merge the current branch into `main`, then `git branch -d` the source |
@@ -324,6 +328,20 @@ the templates, so the reports cannot drift apart.
 | `/git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert; classify every path, keep both intents where compatible, run the project's checks, and never abort |
 
 Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the realtime invocation pre-authorizes its displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`. `/git-commit-push-realtime` commits only green, outcome-based checkpoints, pushes each one before starting the next, and stops rather than auto-reconciling upstream drift. `/git-commit-realtime` holds the same green-checkpoint bar but keeps every checkpoint local; publication stays a separate, explicit request. A bare `--force` push is used only by `/git-commit-rewrite` in its explicit force path, which prefers `--force-with-lease`.
+
+`/git-commit-push-deploy` (Codex `$git-commit-push-deploy`, aliases `/gcpd` and
+`$gcpd`) adds deployment confirmation to every realtime checkpoint. It reads the
+existing target, command or CI trigger, eligible branch, working directory,
+source selection, and checks from `AGENTS.md` or referenced deployment documents
+before editing or pushing. Its invocation authorizes repeated deployments to that
+target without repeated confirmation, subject to mandatory approval gates. It
+observes push-triggered CI once, verifies the exact checkpoint SHA or artifact,
+and waits for successful deployment and required smoke checks before starting the
+next outcome. Missing or ambiguous settings, failed deployment, timeout, or a
+revision mismatch stop the next planned outcome. Source corrections within the
+authorized task use a new recovery checkpoint with the same verification and
+deployment gates. It preserves pushed history and follows only authorized
+provider recovery rules. Deployment inputs exclude unrelated worktree files.
 
 ### doc-skill
 
@@ -406,6 +424,9 @@ commands.
 
 # Build a longer change and publish each verified outcome as it completes
 > /git-commit-push-realtime
+
+# Deploy each completed outcome using the repository's documented settings
+> $gcpd
 
 # Rebuild a finished local project, reinstall it, and verify the installed copy
 > /build-reinstall

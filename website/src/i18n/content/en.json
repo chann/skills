@@ -329,8 +329,13 @@
     },
     "git-commit-push-realtime": {
       "summary": "Commit and push each verified result as soon as it is complete.",
-      "whenToUse": "When a long implementation should leave reviewable checkpoints on the remote",
+      "whenToUse": "When a long implementation needs reviewable commit-and-push checkpoints; use git-commit-push-deploy to confirm each deployment too",
       "result": "Verified checkpoints with remote publication confirmed every time"
+    },
+    "git-commit-push-deploy": {
+      "summary": "Commit, push, and deploy each verified outcome using settings documented in AGENTS.md or repository instructions.",
+      "whenToUse": "When each implementation checkpoint must be deployed and confirmed before the next begins",
+      "result": "Checkpoint commits, remote parity, deployment targets, and deployment plus runtime-check evidence"
     },
     "git-commit-realtime": {
       "summary": "Create a local commit for each verified result and leave pushing for later.",

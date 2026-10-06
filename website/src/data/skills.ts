@@ -29,6 +29,7 @@ export type SkillId =
   | "git-commit"
   | "git-commit-push"
   | "git-commit-push-realtime"
+  | "git-commit-push-deploy"
   | "git-commit-realtime"
   | "git-commit-rewrite"
   | "git-merge-to-main"
@@ -209,6 +210,16 @@ export const skillDefinitions = [
     codexSelector: "$git-commit-push-realtime",
     aliases: ["/gcpr", "$gcpr"],
     tags: ["git", "commit", "push", "realtime", "checkpoint"],
+  },
+  {
+    id: "git-commit-push-deploy",
+    title: "Git Commit and Push Deploy",
+    category: "git",
+    example: "$gcpd implement the feature and deploy each verified outcome using AGENTS.md",
+    claudeSelector: "/git-commit-push-deploy",
+    codexSelector: "$git-commit-push-deploy",
+    aliases: ["/gcpd", "$gcpd"],
+    tags: ["git", "commit", "push", "deploy", "deployment", "realtime", "checkpoint", "agents.md"],
   },
   {
     id: "git-commit-realtime",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Commit and Push Deploy"
+  short_description: "Commit, push, and verify configured deployments at meaningful checkpoints"
+  default_prompt: "Use $git-commit-push-deploy to commit, push, and deploy each verified outcome using the repository's documented deployment settings."

@@ -329,8 +329,13 @@
     },
     "git-commit-push-realtime": {
       "summary": "작업 중 검증된 결과가 끝날 때마다 커밋하고 즉시 푸시합니다.",
-      "whenToUse": "긴 구현을 원격에 검토 가능한 작업 단위로 남길 때",
+      "whenToUse": "긴 구현을 검토 가능한 작업 단위로 커밋·푸시할 때. 단위마다 배포까지 확인하려면 git-commit-push-deploy 사용",
       "result": "검증된 작업 단위와 매번 확인한 원격 반영 상태"
+    },
+    "git-commit-push-deploy": {
+      "summary": "작업 중 검증된 의미 단위마다 커밋·푸시하고, AGENTS.md 등에 지정된 방식으로 배포합니다.",
+      "whenToUse": "기존 배포 설정을 따라 각 작업 단위의 배포와 확인까지 마친 뒤 다음 구현으로 넘어갈 때",
+      "result": "작업 단위별 커밋, 원격 반영 상태, 배포 대상과 배포·실행 확인 결과"
     },
     "git-commit-realtime": {
       "summary": "검증된 결과마다 로컬 커밋을 만들고 푸시는 나중에 따로 합니다.",

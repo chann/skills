@@ -7,6 +7,7 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 ## What it does
 
 - **Commit / Push / Realtime / Rewrite** — group staged + unstaged changes into logical Conventional Commits, optionally push, keep committing verified outcomes during implementation (pushing each one immediately, or leaving them all local), or rewrite non-conformant subjects in place
+- **Checkpoint deployment** — commit, push, and deploy each verified outcome using settings already documented in `AGENTS.md` or repository instructions; confirm deployment and required runtime checks before the next outcome
 - Creates each commit with explicit `git add <paths>` — never `git add .`
 - Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
 - Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
@@ -24,6 +25,8 @@ npx skills add -y -g chann/skills \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
   --skill gcpr \
+  --skill git-commit-push-deploy \
+  --skill gcpd \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -40,6 +43,8 @@ npx skills add chann/skills \
   --skill git-commit-push \
   --skill git-commit-push-realtime \
   --skill gcpr \
+  --skill git-commit-push-deploy \
+  --skill gcpd \
   --skill git-commit-realtime \
   --skill git-commit-rewrite \
   --skill git-merge-to-main \
@@ -55,6 +60,17 @@ To add only the Codex `$gcpr` selector and its required workflows:
 ```bash
 npx skills add -y -g chann/skills \
   --skill gcpr \
+  --skill git-commit-push-realtime \
+  --skill git-commit \
+  --skill git-commit-push
+```
+
+To add only the Codex `$gcpd` selector and all required workflows:
+
+```bash
+npx skills add -y -g chann/skills \
+  --skill gcpd \
+  --skill git-commit-push-deploy \
   --skill git-commit-push-realtime \
   --skill git-commit \
   --skill git-commit-push
@@ -77,6 +93,7 @@ uses `/name` in Claude Code and `$name` in Codex:
 | `/git-commit`                   | `$git-commit`                | Group staged + unstaged changes into logical units; create one Conventional Commit per unit    |
 | `/git-commit-push`              | `$git-commit-push`           | Same as above, then `git push` (no force)                                                      |
 | `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | During implementation, commit and immediately push each verified, meaningful outcome     |
+| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
 | `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | During implementation, commit each verified, meaningful outcome locally — never push           |
 | `/git-commit-rewrite`           | `$git-commit-rewrite`        | Rewrite recent non-conformant commit subjects to Conventional format                           |
 | `/git-merge-to-main`            | `$git-merge-to-main`         | Merge current branch into `main`, then delete the source unless protected                      |
@@ -92,6 +109,8 @@ uses `/name` in Claude Code and `$name` in Codex:
 > /git-commit-push
 > keep committing and pushing meaningful checkpoints as you work
 > $gcpr
+> commit push and deploy each meaningful outcome using AGENTS.md
+> $gcpd
 > keep committing as you work, I'll push later
 > /gcr
 > /git-commit-rewrite
@@ -122,6 +141,23 @@ Runs the default workflow, then `git push`. Never `--force` or `--force-with-lea
 5. Push immediately and prove `HEAD...@{u}` is `0 0` before starting the next unit
 6. Stop on a moved upstream or rejected push; never auto-pull, merge, rebase, or force
 7. Finish with full-scope verification, checkpoint history, and remote-parity evidence
+
+### `/git-commit-push-deploy` (aliases `/gcpd` and `$gcpd`)
+
+1. Read the realtime, commit, and push skills, then resolve the existing deployment settings from `AGENTS.md` or its referenced instructions
+2. Confirm the target, command/trigger, working directory, eligible branch, source selection, and deployment confirmation method before editing or pushing; request only settings that are missing or ambiguous
+3. Plan independently deployable outcomes and verify, commit, and push each one using the realtime workflow, including upstream parity
+4. Deploy the exact pushed revision or its traceable artifact; observe push-triggered CI rather than launching a duplicate deployment
+5. Confirm the deployment and required health/smoke checks before beginning the next outcome, including local implementation work
+6. Stop before the next planned outcome on a failed, timed-out, cancelled, or mismatched deployment; a source repair within the authorized task is a new recovery checkpoint with the same verification and deployment gates
+7. Finish with full-scope verification, checkpoint hashes, remote parity, target, and deployment evidence
+
+The invocation authorizes repeated deployments to the documented target without
+asking again each time, while honoring existing mandatory approval gates. Deployment
+setup must already exist; this workflow does not choose a provider or target,
+merge branches, create release tags, or invent rollback commands. Local deployment
+inputs exclude unrelated edits and untracked files. `/gcpr` continues to use the
+commit-and-push workflow.
 
 ### `/git-commit-realtime` (alias `/gcr`)
 
@@ -230,6 +266,8 @@ git-skill/
 │   ├── git-commit-push.md                # /git-commit-push command
 │   ├── git-commit-push-realtime.md       # /git-commit-push-realtime command
 │   ├── gcpr.md                           # /gcpr — short alias, same body
+│   ├── git-commit-push-deploy.md          # Configured checkpoint deployments
+│   ├── gcpd.md                           # /gcpd — short alias, same body
 │   ├── git-commit-realtime.md            # /git-commit-realtime command
 │   ├── gcr.md                            # /gcr — short alias, same body
 │   ├── git-commit-rewrite.md             # /git-commit-rewrite command
@@ -250,6 +288,14 @@ git-skill/
     ├── gcpr/                             # Thin Codex selector alias
     │   ├── SKILL.md
     │   └── agents/openai.yaml
+    ├── git-commit-push-deploy/            # Commit, push, deploy, and confirm each outcome
+    │   ├── SKILL.md
+    │   ├── agents/openai.yaml
+    │   └── evals/evals.json
+    ├── gcpd/                             # Thin Codex deployment selector alias
+    │   ├── SKILL.md
+    │   ├── agents/openai.yaml
+    │   └── evals/evals.json
     ├── git-commit-realtime/              # Local-only realtime-checkpoint variant
     │   ├── SKILL.md
     │   └── evals/evals.json

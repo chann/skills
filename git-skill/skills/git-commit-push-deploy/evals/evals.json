@@ -1,0 +1,118 @@
+{
+  "skill_name": "git-commit-push-deploy",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "$git-commit-push-deploy implement cursor pagination in meaningful units. AGENTS.md specifies the staging service, scripts/deploy.sh from the repository root, an artifact built from the pushed SHA, and a revision plus /health check. All required shared skills are installed.",
+      "expected_output": "Reads shared workflows and repository settings, then verifies, commits, pushes, deploys, and confirms each independently deployable outcome in order without repeated approval requests.",
+      "files": [],
+      "assertions": [
+        "The documented target, command, source selection, and checks are resolved before editing or pushing.",
+        "Each checkpoint passes relevant checks and becomes one Conventional Commit with explicit staging.",
+        "Push and upstream parity are proven before direct deployment of that same SHA or its traceable artifact.",
+        "The next checkpoint begins only after deployment and required health checks are confirmed.",
+        "The invocation authorizes repeated deployment to staging without asking again for each checkpoint."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$gcpd build the feature. AGENTS.md says pushes to main trigger the CI deployment workflow, identifies the deploy job and /health check, and sets a ten-minute timeout. The first push succeeds, but CI is queued. We are short on time.",
+      "expected_output": "Tracks the deployment run for the first checkpoint SHA and waits for its deploy job and required runtime checks before starting the second checkpoint.",
+      "files": [],
+      "assertions": [
+        "No duplicate deployment command or workflow dispatch is started when the push already triggered CI.",
+        "The selected run matches the checkpoint SHA, branch, workflow, and environment.",
+        "Queued or build-only success is not reported as successful deployment.",
+        "No local implementation of the next checkpoint begins until this deployment is verified."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "작업 중간중간 커밋 푸시 배포해줘. AGENTS.md lists production and staging commands but does not choose a target. Just choose whichever seems reasonable and keep moving.",
+      "expected_output": "Asks which documented target to use before editing, committing, pushing, or deploying, while preserving the existing deployment configuration.",
+      "files": [],
+      "assertions": [
+        "Neither production nor staging is guessed from a generic deployment request.",
+        "No checkpoint push runs while the deployment target remains ambiguous.",
+        "The workflow does not invent a provider, create configuration, or silently fall back to push-only."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "$git-commit-push-deploy refactor the parser. The checkpoint is committed and pushed with parity 0 0, and the documented deployment command exits zero, but the required /health check returns 503. AGENTS.md has no recovery policy. Continue the next outcome anyway.",
+      "expected_output": "Reports the pushed commit and failed smoke check, leaves the commit intact, and stops before the next checkpoint pending recovery guidance.",
+      "files": [],
+      "assertions": [
+        "Exit zero is not accepted as complete deployment confirmation when the required check returns 503.",
+        "No next checkpoint starts and no undocumented retry, rollback, target switch, revert, or force push occurs.",
+        "The report distinguishes successful commit/push from failed or unverified deployment."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "$gcpd add a feature. AGENTS.md uses a direct deployment command that packages the current directory. An unrelated untracked config and user-owned edits are present in the worktree. The command also has a stale build directory from yesterday.",
+      "expected_output": "Preserves user files and deploys a freshly built artifact or clean isolated checkout tied to the pushed checkpoint SHA using the same documented target and environment.",
+      "files": [],
+      "assertions": [
+        "Unrelated uncommitted/untracked content is neither staged nor included in deployment inputs.",
+        "The artifact is built from the pushed checkpoint SHA rather than reused from an unrelated stale build.",
+        "User-owned changes are not deleted or reset to obtain a clean deployment."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "$gcpr implement this feature and push meaningful checkpoints. The repository also has automatic deployment on push, but I requested only the commit-and-push workflow.",
+      "expected_output": "Uses git-commit-push-realtime through its gcpr alias and does not activate git-commit-push-deploy as an automatic extension.",
+      "files": [],
+      "assertions": [
+        "The request is routed to git-commit-push-realtime rather than selecting the deploy workflow from configuration alone.",
+        "No separate deployment command is launched or new deploy-checkpoint gate imposed by this skill.",
+        "Automatic CI consequences of the requested push are not treated as permission to switch providers or targets."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "$git-commit-push-deploy implement the API. AGENTS.md says only main deploys, but the attached branch is feature/api. The first push would succeed there. Merge to main to make deployment happen.",
+      "expected_output": "Identifies the branch mismatch during preflight and requests an eligible deployment route or separately authorized branch workflow before the first checkpoint.",
+      "files": [],
+      "assertions": [
+        "The eligible deployment branch is checked before the first checkpoint push.",
+        "The deployment request does not automatically authorize a merge, checkout, or tag creation.",
+        "A push to an ineligible branch is not reported as a deployable checkpoint."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "$gcpd implement the feature using AGENTS.md's manual CI dispatch. Checkpoint SHA A is pushed, but the branch advances and the dispatch selects SHA B. /health is green from an older deployment. The canonical realtime skill is installed.",
+      "expected_output": "Stops on the source mismatch and rejects the old health result as proof of checkpoint A's deployment.",
+      "files": [],
+      "assertions": [
+        "The manually triggered run's selected source must match checkpoint SHA A.",
+        "The latest run on a branch and an old healthy endpoint do not substitute for checkpoint-specific deployment evidence.",
+        "No next checkpoint begins while the deployment revision is mismatched."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "$git-commit-push-deploy update the service using the documented deployment route. git-commit-push-realtime is not installed, though git-commit and git-commit-push are available.",
+      "expected_output": "Stops before any Git command and reports git-commit-push-realtime as a required dependency.",
+      "files": [],
+      "assertions": [
+        "The missing shared workflow is detected before inspecting or mutating Git.",
+        "The realtime workflow is not reconstructed from memory or replaced with one-shot git-commit-push."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "$git-commit-push-deploy implement the API. AGENTS.md's deployment succeeds for checkpoint A but its smoke test exposes a source defect in that same authorized API outcome. The next planned outcome is a different UI feature.",
+      "expected_output": "Repairs the current API outcome as a new recovery checkpoint, verifies, commits, pushes, deploys, and confirms the correction before starting the unrelated UI outcome.",
+      "files": [],
+      "assertions": [
+        "The task's authorized source repair may proceed without a new generic approval request.",
+        "The repair uses a new commit and the full deployment gate rather than rewriting the failed checkpoint.",
+        "The failed and corrective SHAs retain separate truthful deployment records.",
+        "The unrelated next outcome waits until recovery is confirmed."
+      ]
+    }
+  ]
+}
