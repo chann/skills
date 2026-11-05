@@ -1,0 +1,56 @@
+{
+  "skill_name": "all-subagents",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이 작업 코덱스에 시켜줘. Ask Codex to review the auth diff and leave a record of which model ran.",
+      "expected_output": "Probes authenticated CLIs, writes a plan whose rationale names the Codex route and the quota evidence, runs from a prompt file with the diff passed as a context file, then reads meta.json, result.md, and report.md.",
+      "files": [],
+      "assertions": [
+        "Probe with --check-auth completes before a route is chosen.",
+        "The diff is passed with --context-file and is not pasted into the prompt.",
+        "The user is shown the route rationale and report.md after meta.json is read."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "다른 모델로 한 번 더 확인해줘. Only Claude Code is installed and authenticated, and I did not name a model.",
+      "expected_output": "Reports that the machine is not heterogeneous and does the check in the current session without spawning a CLI.",
+      "files": [],
+      "assertions": [
+        "Does not call run when probe reports heterogeneous false and the user named no agent or model.",
+        "Tells the user the work stayed in this session because only one usable route exists."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Build this whole project end to end and keep going until it is done. Use subagents in worktrees.",
+      "expected_output": "Refuses all-subagents and uses long-task, because the request is a multi-milestone autonomous project rather than a delegated route.",
+      "files": [],
+      "assertions": [
+        "Does not probe CLIs or write a all-subagents plan for this request.",
+        "Selects long-task instead of all-subagents."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Spread a read-only review across two model vendors, then poll every few seconds until result.md appears.",
+      "expected_output": "Plans two steps on different vendors and waits on the process timeout or the host completion notice. It does not sleep-poll for the result file.",
+      "files": [],
+      "assertions": [
+        "The plan is rejected if both steps use the same vendor.",
+        "The run does not use a sleep loop to wait for result.md."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "서브에이전트로 이 리뷰를 돌려줘. Use subagents and spawn subagents so two vendors review the auth diff.",
+      "expected_output": "Selects all-subagents, probes authenticated CLIs, and plans the review across two vendors. It does not select long-task.",
+      "files": [],
+      "assertions": [
+        "Selects all-subagents because the user asked to work through subagents.",
+        "Does not select long-task for a single review spread across subagents."
+      ]
+    }
+  ]
+}

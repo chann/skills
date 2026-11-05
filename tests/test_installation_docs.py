@@ -53,6 +53,8 @@ INSTALL_DOCS = [
     ROOT / "bug-hunt" / "README.ko.md",
     ROOT / "research-brief" / "README.md",
     ROOT / "research-brief" / "README.ko.md",
+    ROOT / "all-subagents" / "README.md",
+    ROOT / "all-subagents" / "README.ko.md",
 ]
 
 CODE_REVIEW_READMES = [

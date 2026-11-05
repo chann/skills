@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-32 practical agent workflows and 34 installable Codex selectors, packaged across 13 plugins.
+33 practical agent workflows and 35 installable Codex selectors, packaged across 14 plugins.
 
 ## Website
 
@@ -31,6 +31,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 | **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits, pushes and deployments, history rewrite, main/dev merges, conflict resolution, and local branch cleanup |
 | **[handoff](handoff/README.md)**         | Generate frontend/client, backend/server, and session-to-session handoff docs from git diffs, ranges, and session context |
 | **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
+| **[all-subagents](all-subagents/README.md)** | Route subagent work to another installed coding agent and keep the route rationale with a call-tree report |
 | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the new result with project-owned commands, and verify the installed copy |
 | **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
 | **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
@@ -75,6 +76,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - [git-skill installation](git-skill/README.md#installation)
 - [handoff installation](handoff/README.md#installation)
 - [long-task installation](long-task/README.md#installation)
+- [all-subagents installation](all-subagents/README.md#installation)
 - [build-reinstall installation](build-reinstall/README.md#installation)
 - [work-summary installation](work-summary/README.md#installation)
 - [plan-summary installation](plan-summary/README.md#installation)
@@ -87,6 +89,7 @@ Per-skill or non-global installs (and manual setup) are documented in each skill
 - Review-me only: `npx skills add chann/skills --skill review-me`
 - Work summary only: `npx skills add chann/skills --skill work-summary`
 - Build-reinstall only: `npx skills add chann/skills --skill build-reinstall`
+- All-subagents only: `npx skills add chann/skills --skill all-subagents`
 - Plan-summary family: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 - Human-friendly-writing only: `npx skills add chann/skills --skill human-friendly-writing`
 - Codex `$gcpr`: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
@@ -161,6 +164,14 @@ recorded and confirmed.
 
 
 Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
+
+### all-subagents → [details](all-subagents/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/all-subagents [task]` | `$all-subagents [task]` | Hand the task to another installed coding agent and write the call-tree report |
+
+`all-subagents` probes the local CLIs, records why that route was chosen, and leaves each task result with the call tree. Work asked for through subagents, a named agent, a second opinion from another model vendor, or a split across quota pools selects it. One usable route and no named agent keeps the work in this session. A multi-milestone build stays with `long-task`.
 
 ### build-reinstall → [details](build-reinstall/README.md)
 
@@ -290,7 +301,7 @@ What works across platforms and what is specific to Claude Code:
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, and `git-commit-rewrite`)
+- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite`, and `all-subagents`)
 
 ## License
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 13 independent plugins — `code-review`, `review-me`, `bug-hunt`, `research-brief`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, `human-friendly-writing`, and `skill-forge` — that together expose 32 canonical workflows through 34 installable Codex selectors.
+`skills` is a monorepo of [Claude Code](https://code.claude.com) skill plugins for everyday software-engineering workflows. It bundles 14 independent plugins — `code-review`, `review-me`, `bug-hunt`, `research-brief`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `all-subagents`, `build-reinstall`, `work-summary`, `plan-summary`, `human-friendly-writing`, and `skill-forge` — that together expose 33 canonical workflows through 35 installable Codex selectors.
 
 Each skill is authored as a portable `SKILL.md` document, a Codex interface
 descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
@@ -25,6 +25,7 @@ default prompt.
 | `git-skill` | 0.10.0 | `git-commit`, `git-commit-push`, `git-commit-push-realtime`, `gcpr` (selector alias), `git-commit-push-deploy`, `gcpd` (selector alias), `git-commit-realtime`, `git-commit-rewrite`, `git-merge-to-main`, `git-merge-to-dev`, `git-branch-cleanup`, `git-resolve-conflicts` | Conventional-Commit creation, one-shot or realtime checkpoint commits and pushes, configured checkpoint deployments, history rewrite, guarded merges, conflict resolution, and merged-branch cleanup |
 | `handoff` | 0.3.0 | `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff` | Generate evidence-based continuation handoffs for frontend/client and backend/server developers from diffs, ranges, branch comparisons, and session context, plus session-to-session handoffs that split proven state from unproven |
 | `long-task` | 0.3.0 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
+| `all-subagents` | 0.1.0 | `all-subagents` | Route subagent work to another installed coding agent, record the route rationale, and leave a call-tree report |
 | `build-reinstall` | 0.1.0 | `build-reinstall` | Build a project with project-owned commands, reinstall its local result, and verify the installed copy with smoke checks and artifact digests |
 | `work-summary` | 0.1.0 | `work-summary` | Daily, weekly, monthly, quarterly, yearly, or custom Markdown work reports mined read-only from local coding-agent history stores |
 | `plan-summary` | 1.0.0 | `plan-summary`, `plan-summary-md`, `plan-summary-quiz` | Summarize explicit plan, PRD, specification, and design files as aligned Korean/English Markdown with optional interactive HTML quizzes |
@@ -59,6 +60,7 @@ Every plugin shares the same layout:
 - **`doc-skill`** carries four output templates under `gen-docs/templates/` and keeps its natural-Korean fallback inside `gen-docs` rather than depending on another package.
 - **`bug-hunt`** is a stateful diagnosis loop rather than debugging advice. Its `SKILL.md` owns the defect statement, the reproduce-before-editing gate, the four-column hypothesis ledger (hypothesis, falsified-if, observed, verdict), the widening rule that forbids a fourth hypothesis in a layer that produced three falsified ones, the failing-first check gate, the `BUGHUNT` marker whose removal is proven by search, and the closing record with its kept falsified list. `references/instrumentation-playbook.md` carries the probe-selection ladder, per-ecosystem probe spellings, the intermittent-failure loop, bisection over commits, inputs, and configuration, and the measure-before-hypothesizing rule for performance work.
 - **`research-brief`** makes provenance a structural requirement rather than a habit. Its `SKILL.md` owns the question-sharpening step, optional background-agent delegation seeded with the format rather than a topic, the T1/T2/T3 source tiers with the rule that a T3 claim is a lead and never an answer, per-claim version or date pinning, the contradiction ledger that keeps both sides with the resolution and its reason, and the answer-first document shape whose open-questions section is mandatory even when empty.
+- **`all-subagents`** routes work asked for through subagents to another installed coding agent. `all_subagents.py` probes the local CLIs, validates the route plan, builds the invocation, and writes the run under `$XDG_CACHE_HOME/all-subagents/runs/<run-id>/` (or `~/.cache/all-subagents/runs/<run-id>/`). The plan records why the route was chosen. A missing quota transcript cannot invent a percentage. Independent checks use different vendors. A read-only Git guard fails the task when the tree changes. One usable route and no named agent keeps the work in the current session. A multi-milestone build stays with `long-task`.
 - **`skill-forge`** owns the repository's skill contract. `skills/skill-forge/references/skill-package-contract.md` states rules C1 through C9 — name parity, description grammar, invocation-mode declaration, Codex descriptor, slash command, evals, catalog and locale parity, plugin manifest, and published counts — and `references/description-grammar.md` explains how a description earns reliable invocation. `skill-audit` carries the executable form, `scripts/audit_skills.py`: a stdlib-only walker over `*/skills/*/SKILL.md` that reports each violation as rule, skill, detail, and file, emits text, JSON, or Markdown, and exits non-zero so it works as a merge gate. `tests/test_skill_contract.py` runs it over this repository, which is why a half-published skill fails the suite rather than shipping.
 - **`human-friendly-writing`** rewrites AI-written Korean prose without moving meaning. Its `SKILL.md` owns the hard preservation rules, the three-part judgment test for unlisted slop terms, and the ban on leaked method vocabulary; `references/slop-lexicon.md` carries the replaceable-term tables plus the keep list of established technical terms, and `references/style-rules.md` carries the translation-ese/rhythm/tone pass with the final self-check checklist.
 
@@ -82,7 +84,7 @@ Every plugin shares the same layout:
 1. The user types a slash command (e.g. `/code-review-md`) or triggers a skill by natural language.
 2. Claude Code loads the matching `commands/*.md`, which points at the skill.
 3. The skill runs its `SKILL.md` workflow, loading `references/` and invoking bundled scripts through a canonical absolute Python executable in `-I` isolated mode as needed.
-4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, plan summaries under `.plan-summaries/`, raw diff reports under `.diffs/`, work reports in the reply or under `.work-summaries/`, a verified local install from `build-reinstall`, git history changes, or `long-task` state under `.agent/`.
+4. Outputs land where the skill specifies — a conversational closure record for `review-me`, review reports under `.reviews/`, change summaries under `.diff-summaries/`, plan summaries under `.plan-summaries/`, raw diff reports under `.diffs/`, work reports in the reply or under `.work-summaries/`, a verified local install from `build-reinstall`, git history changes, `long-task` state under `.agent/`, or an `all-subagents` run directory with the route rationale, each task result, and a call-tree report.
 
 ### Invocation (Codex)
 
@@ -259,6 +261,17 @@ skills/
 │   │   ├── agents/openai.yaml
 │   │   └── references/               # slop-lexicon.md, style-rules.md
 │   └── README.md · README.ko.md
+├── all-subagents/                  # plugin (v0.1.0)
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/all-subagents.md   # /all-subagents
+│   ├── skills/all-subagents/
+│   │   ├── SKILL.md                  # route choice + call-tree report
+│   │   ├── agents/openai.yaml
+│   │   ├── evals/evals.json
+│   │   ├── assets/prompts/common.md
+│   │   ├── references/               # routes, selection, execution
+│   │   └── scripts/all_subagents.py
+│   └── README.md · README.ko.md
 ├── .agents/skills/                   # optional local flat skill mirror
 ├── samples/code-review/              # intentionally vulnerable demo fixtures (outside plugin artifacts)
 ├── tests/                            # pytest: package tests + diff_viewer/ unit tests + fixtures
@@ -274,7 +287,7 @@ skills/
 ## Design decisions
 
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
-- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `build-reinstall`, `work-summary`, `plan-summary`, and `human-friendly-writing` are versioned and installable independently, so users adopt only what they need.
+- **One plugin per workflow domain.** `code-review`, `review-me`, `doc-skill`, `git-skill`, `handoff`, `long-task`, `all-subagents`, `build-reinstall`, `work-summary`, `plan-summary`, and `human-friendly-writing` are versioned and installable independently, so users adopt only what they need.
 - **Local reinstall is explicit and evidence-based.** `build-reinstall` never runs as a completion hook. It chooses commands from optional versioned YAML or project-owned instructions, stops before installation when the build or target is unresolved, and reports success only after installed-result verification.
 - **Natural prose is an optional enhancement, not a dependency.** Document-generating selectors carry a compact built-in Korean writing contract. They may use `human-friendly-writing` when the runtime already exposes it, but never install, fetch, or require it; missing support cannot block or reduce output.
 - **Work reporting is read-only and local.** `work-summary` mines the machine's own agent history stores, never mutates them, keeps history content off the network, and leaves generated reports out of version control (`.work-summaries/` is ignored here).

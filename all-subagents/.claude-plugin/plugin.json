@@ -1,0 +1,5 @@
+{
+  "name": "all-subagents",
+  "description": "Route subagent work to another installed coding agent, record why that route was chosen, and leave the result with a call-tree report.",
+  "version": "0.1.0"
+}

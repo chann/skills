@@ -40,6 +40,7 @@ export type SkillId =
   | "gen-backend-handoff"
   | "gen-session-handoff"
   | "long-task"
+  | "all-subagents"
   | "build-reinstall"
   | "skill-forge"
   | "skill-audit"
@@ -311,6 +312,15 @@ export const skillDefinitions = [
     claudeSelector: "/long-task",
     codexSelector: "$long-task",
     tags: ["automation", "orchestration", "milestone", "agent"],
+  },
+  {
+    id: "all-subagents",
+    title: "All Subagents",
+    category: "automation",
+    example: "$all-subagents use subagents to review this diff",
+    claudeSelector: "/all-subagents",
+    codexSelector: "$all-subagents",
+    tags: ["subagent", "model", "quota", "codex", "claude"],
   },
   {
     id: "build-reinstall",

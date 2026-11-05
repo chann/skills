@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 32 canonical workflows and 34 installable Codex selectors across 13 workflow plugins.
+This repository exposes 33 canonical workflows and 35 installable Codex selectors across 14 workflow plugins.
 
 ## Installation
 
@@ -21,7 +21,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-push-deploy`, `gcpd`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff`, `bug-hunt`, `research-brief`, `git-resolve-conflicts`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Codex `$gcpd` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Bug-hunt-only install: `npx skills add chann/skills --skill bug-hunt`. Research-brief-only install: `npx skills add chann/skills --skill research-brief`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Use `--skill <name>` with the actual selector package name, such as `review-me`, `gen-docs`, `code-review`, `diff-summary`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `human-friendly-writing`, `build-reinstall`, `all-subagents`, `git-commit-push`, `git-commit-push-realtime`, `gcpr`, `git-commit-push-deploy`, `gcpd`, `git-commit-realtime`, `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff`, `bug-hunt`, `research-brief`, `git-resolve-conflicts`, `skill-forge`, or `skill-audit`. Build-reinstall-only install: `npx skills add chann/skills --skill build-reinstall`. Human-friendly-writing-only install: `npx skills add chann/skills --skill human-friendly-writing`. Each plan-summary selector is independently executable: `npx skills add chann/skills --skill plan-summary`, `npx skills add chann/skills --skill plan-summary-md`, or `npx skills add chann/skills --skill plan-summary-quiz`. Each diff-summary selector is independently executable in the same way. Review-me-only install: `npx skills add chann/skills --skill review-me`. Work-summary-only install: `npx skills add chann/skills --skill work-summary`. Realtime checkpoint install: `npx skills add chann/skills --skill git-commit-push-realtime`. Codex `$gcpr` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Codex `$gcpd` install, including its canonical and shared workflows: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`. Local realtime checkpoint install: `npx skills add chann/skills --skill git-commit-realtime`. Handoff-only install: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`. Backend-only handoff install: `npx skills add chann/skills --skill gen-backend-handoff`. Bug-hunt-only install: `npx skills add chann/skills --skill bug-hunt`. Research-brief-only install: `npx skills add chann/skills --skill research-brief`. Skill-authoring install: `npx skills add chann/skills --skill skill-forge --skill skill-audit`. To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
 
 ### Manual / other platforms
 
@@ -38,7 +38,7 @@ ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [build-reinstall](build-reinstall/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md), [bug-hunt](bug-hunt/README.md), [research-brief](research-brief/README.md), [skill-forge](skill-forge/README.md).
+Installing through `npx skills` records each skill in `skills-lock.json` with a content hash, so re-running the command detects upstream changes. For the deepest per-skill detail, see each plugin's own README: [code-review](code-review/README.md), [review-me](review-me/README.md), [doc-skill](doc-skill/README.md), [git-skill](git-skill/README.md), [handoff](handoff/README.md), [long-task](long-task/README.md), [build-reinstall](build-reinstall/README.md), [work-summary](work-summary/README.md), [plan-summary](plan-summary/README.md), [human-friendly-writing](human-friendly-writing/README.md), [bug-hunt](bug-hunt/README.md), [research-brief](research-brief/README.md), [skill-forge](skill-forge/README.md), [all-subagents](all-subagents/README.md).
 
 ## Quick start
 
@@ -62,6 +62,7 @@ Installing through `npx skills` records each skill in `skills-lock.json` with a 
 > /gen-backend-handoff HEAD~5..HEAD         # hand off recent backend/server work
 > /gen-session-handoff                      # hand this session to a fresh agent
 > /long-task build a CLI todo app end to end
+> /all-subagents use subagents to review the auth diff
 > /build-reinstall                            # build, reinstall, verify installed artifact
 > /work-summary this week                   # Markdown report of the week's agent work
 > /plan-summary docs/plan.md docs/design.md # Korean + English plan summary + HTML
@@ -103,6 +104,7 @@ These are the exact names published by every package:
 | Backend handoff | `/gen-backend-handoff` | `$gen-backend-handoff` |
 | Session handoff | `/gen-session-handoff` | `$gen-session-handoff` |
 | Autonomous long task | `/long-task` | `$long-task` |
+| Hand work through subagents | `/all-subagents` | `$all-subagents` |
 | Build and reinstall | `/build-reinstall` | `$build-reinstall` |
 | Work-history report | `/work-summary` | `$work-summary` |
 | Plan document summary | `/plan-summary` | `$plan-summary` |
@@ -374,6 +376,21 @@ Scopes can be the current working tree, staged changes, a commit range such as `
 `build-reinstall` is separate from `long-task`: completing an autonomous task
 does not trigger a reinstall automatically.
 
+### all-subagents
+
+| Command | Action |
+|---|---|
+| `/all-subagents [task]` | Hand the task to another installed coding agent and write the call-tree report |
+
+Codex invokes the same workflow as `$all-subagents [task]`. Requests to use
+subagents or spawn subagents select it, as do a named agent, a second opinion,
+and a split across quota pools. The skill probes Codex, Claude Code, OpenCode
+2.x, and Antigravity, keeps the route rationale with any quota transcript, and
+refuses a plan that invents a quota number or reuses one vendor for independent
+checks. A read-only Git guard fails the task if the tree changes. When only one
+usable route exists and the user did not name an agent or model, the work stays
+in the current session. A multi-milestone project stays with `/long-task`.
+
 ## Configuration
 
 ### Environment variables
@@ -394,6 +411,7 @@ does not trigger a reinstall automatically.
 | `.diffs/` | `diff-viewer` | HTML diff reports; gitignored |
 | `.handoffs/` | `gen-frontend-handoff`, `gen-backend-handoff` | Markdown handoff documents |
 | `.agent/` | `long-task` | Working-memory and lifecycle state for a run |
+| `$XDG_CACHE_HOME/all-subagents/runs/<run-id>/` | `all-subagents` | Route rationale, each task result, and the call-tree report. Falls back to `~/.cache/all-subagents/runs/<run-id>/` |
 | `.work-summaries/` | `work-summary` | Markdown work reports, written only on request; gitignored |
 | `~/.claude/settings.json` | `long-task` | Stop hook installed under `hooks.Stop` on first run |
 
@@ -478,4 +496,4 @@ commands.
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
 - A Git repository
 - Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, and `git-commit-rewrite` (standard library only — nothing to install)
+- Python 3.10+ for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite`, and `all-subagents` (standard library only — nothing to install)

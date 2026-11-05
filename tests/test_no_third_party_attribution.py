@@ -16,6 +16,7 @@ SHIPPED_ROOTS = (
     "build-reinstall",
     "bug-hunt",
     "code-review",
+    "all-subagents",
     "doc-skill",
     "git-skill",
     "handoff",

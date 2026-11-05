@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 32개의 실용적인 에이전트 워크플로와 34개의 설치 가능한 Codex selector를 13개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 33개의 실용적인 에이전트 워크플로와 35개의 설치 가능한 Codex selector를 14개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -29,6 +29,7 @@ npm --prefix website run dev
 | **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시·배포, 히스토리 재작성, main/dev 머지, 충돌 해결, 로컬 브랜치 정리 |
 | **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락으로 프론트엔드·백엔드·세션 인수인계 문서 생성                  |
 | **[long-task](long-task/README.ko.md)**             | 여러 마일스톤에 걸친 프로젝트를 자율적으로 진행 — 병렬 worktree 서브에이전트 실행과 마일스톤별 리뷰 |
+| **[all-subagents](all-subagents/README.ko.md)** | 서브에이전트 작업을 다른 코딩 에이전트에게 맡기고, 고른 이유와 호출 트리를 실행 기록으로 남김 |
 | **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인                     |
 | **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
 | **[plan-summary](plan-summary/README.ko.md)**       | 지정한 계획·PRD·명세·설계를 한국어와 영어로 요약하고 Markdown 전용판과 퀴즈판 제공             |
@@ -70,6 +71,7 @@ npx skills add chann/skills \
 - [git-skill 설치](git-skill/README.ko.md#설치-방법)
 - [handoff 설치](handoff/README.ko.md#설치-방법)
 - [long-task 설치](long-task/README.ko.md#설치-방법)
+- [all-subagents 설치](all-subagents/README.ko.md#설치-방법)
 - [build-reinstall 설치](build-reinstall/README.ko.md#설치)
 - [work-summary 설치](work-summary/README.ko.md#설치-방법)
 - [plan-summary 설치](plan-summary/README.ko.md#설치)
@@ -81,6 +83,7 @@ npx skills add chann/skills \
 - review-me만 설치: `npx skills add chann/skills --skill review-me`
 - work-summary만 설치: `npx skills add chann/skills --skill work-summary`
 - build-reinstall만 설치: `npx skills add chann/skills --skill build-reinstall`
+- all-subagents만 설치: `npx skills add chann/skills --skill all-subagents`
 - plan-summary 제품군 설치: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
 - human-friendly-writing만 설치: `npx skills add chann/skills --skill human-friendly-writing`
 - Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
@@ -144,6 +147,14 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직
 | `/long-task` | `$long-task` | 병렬 worktree 서브에이전트와 단계별 리뷰를 거쳐 프로젝트를 처음부터 끝까지 자율적으로 구현 |
 
 *"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 말로도 자동 실행됩니다.
+
+### all-subagents → [상세](all-subagents/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/all-subagents [작업]` | `$all-subagents [작업]` | 다른 코딩 에이전트에게 작업을 맡기고 호출 트리를 남김 |
+
+`all-subagents`는 이 기계에 설치된 CLI를 확인하고, 그 경로를 고른 이유와 작업별 결과를 호출 트리와 함께 남깁니다. 서브에이전트로 작업을 돌리거나, 특정 에이전트나 모델, 다른 모델의 재검토, 쿼터를 나눈 병렬 작업에 씁니다. 쓸 수 있는 경로가 하나뿐이고 에이전트를 지정하지 않았다면 현재 세션에서 합니다. 여러 날에 걸친 구현은 `long-task`입니다.
 
 ### build-reinstall → [상세](build-reinstall/README.ko.md)
 
@@ -265,7 +276,7 @@ SHA-256이 같은지 확인합니다.
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
 - `diff-summary`, `diff-summary-md`, `diff-summary-quiz` 사용 시 Git 2.45+
-- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite` 사용 시 필요)
+- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite`, `all-subagents` 사용 시 필요)
 
 ## 라이선스
 

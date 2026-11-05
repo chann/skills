@@ -387,6 +387,11 @@
       "whenToUse": "When delegating an autonomous implementation that will take several hours",
       "result": "An execution record covering planning, parallel work, review, and completion checks"
     },
+    "all-subagents": {
+      "summary": "Hand subagent work to another coding agent and keep the route rationale with the call tree.",
+      "whenToUse": "When work should run through subagents, on a named agent or model, as a second opinion from another vendor, or across quota pools",
+      "result": "A run record with the route rationale, each task result, and a call-tree report"
+    },
     "build-reinstall": {
       "summary": "Build the current project, reinstall it with project-owned commands, and verify that the installed result matches the new build.",
       "whenToUse": "After code work is complete and a local app or CLI must be replaced with the new build",
