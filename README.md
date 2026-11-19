@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-33 practical agent workflows and 35 installable Codex selectors, packaged across 14 plugins.
+27 practical agent workflows and 30 installable Codex selectors, packaged across 17 plugins.
 
 ## Website
 
@@ -18,26 +18,53 @@ npm --prefix website run dev
 
 Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 
+## Start here
+
+`chann-mode` is the one entry point. Give it a task, and it restates the goal
+and the smallest change that meets it, picks a playbook, hands each step to the
+skill that owns it when that skill is installed, and replies with labelled
+evidence. It runs only on its own selector. Every other skill is situational:
+the mode routes to it, and you can call it directly.
+
+```text
+/chann-mode 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
+$chann-mode this endpoint got slow, find out why and fix it
+/chann-mode 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+```
+
 ## Skills
 
+Eight stages, one row per workflow. Each name links to its plugin README.
 
-| Skill                                    | What it does                                                                                                   |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.md)** | Analyze Git changes with explanatory diff summaries, severity-based reviews, and a raw HTML diff viewer     |
-| **[review-me](review-me/README.md)**     | Review every important plan or design decision, one at a time, until nothing is left unresolved             |
-| **[bug-hunt](bug-hunt/README.md)**       | Diagnose a broken behavior by reproducing it, falsifying hypotheses in a ledger, and pinning the fix with a failing check |
-| **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
-| **[doc-skill](doc-skill/README.md)**     | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose      |
-| **[git-skill](git-skill/README.md)**     | Conventional Commits, validated work-unit commits, pushes and deployments, history rewrite, main/dev merges, conflict resolution, and local branch cleanup |
-| **[handoff](handoff/README.md)**         | Generate frontend/client, backend/server, and session-to-session handoff docs from git diffs, ranges, and session context |
-| **[long-task](long-task/README.md)**     | Run multi-milestone projects autonomously with parallel worktree subagents and milestone reviews             |
-| **[all-subagents](all-subagents/README.md)** | Route subagent work to another installed coding agent and keep the route rationale with a call-tree report |
-| **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the new result with project-owned commands, and verify the installed copy |
-| **[work-summary](work-summary/README.md)** | Date-ranged Markdown reports of coding-agent work mined from local Claude Code, Codex, opencode, and agy history |
-| **[plan-summary](plan-summary/README.md)** | Bilingual summaries of explicit plans, PRDs, specifications, and designs, with Markdown-only and quiz variants |
-| **[human-friendly-writing](human-friendly-writing/README.md)** | Rewrite AI-written Korean into natural prose by removing awkward jargon and smoothing the style without changing meaning |
-| **[skill-forge](skill-forge/README.md)** | Author skill packages against one contract and audit every packaged skill against it |
-
+| Stage | Skill | What it does |
+| --- | --- | --- |
+| mode | **[chann-mode](chann-mode/README.md)** | Explicit-only entry point: restate the goal, match one of fourteen playbooks, route each step to the skill that owns it, and reply with labelled evidence |
+| understand | **[how](understand/README.md)** | Explain how part of the codebase works from the code, with `file:line` citations and no edits |
+| understand | **[why](understand/README.md)** | Explain why code is built this way from commits, blame, pull-request and issue threads, and design notes, quoting the authors |
+| understand | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
+| understand | **[recall](recall/README.md)** | Report past coding-agent work from local Claude Code, Codex, opencode, and agy history, or brief the current state of a topic |
+| understand | **[ketchup](recall/README.md)** | Catch you up on this conversation: what waits on you, what happened, and each decision you must make |
+| understand | **[diff-summary](diff-summary/README.md)** | Explain a diff, branch, commit, or PR as aligned Korean and English Markdown plus interactive HTML; `--md` for Markdown only, `--quiz` to add a quiz |
+| understand | **[plan-summary](plan-summary/README.md)** | Summarize explicit plans, PRDs, specifications, and designs the same way, with `--md` and `--quiz` |
+| understand | **[diff-viewer](diff-summary/README.md)** | Render the raw working-tree diff as a browser-readable HTML report, without analysis |
+| design | **[review-me](review-me/README.md)** | Review a plan or design one decision at a time until nothing is left unresolved; explicit-only |
+| design | **[arena](swarm/README.md)** | Race several attempts at one artifact, have a judge from another vendor score them, and graft the best parts onto one base |
+| build | **[bug-hunt](bug-hunt/README.md)** | Diagnose a broken behavior by reproducing it, falsifying hypotheses in a ledger, and pinning the fix with a check that fails first |
+| build | **[gen-docs](doc-skill/README.md)** | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose |
+| build | **[unslop](unslop/README.md)** | Rewrite AI-written Korean or English text so it reads like a person wrote it, without changing its meaning |
+| build | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the result with project-owned commands, and verify the installed copy |
+| verify | **[interrogate](interrogate/README.md)** | Try to break a diff and report severity-tagged findings, each with its proof level, as Markdown plus bilingual HTML |
+| verify | **[blast-radius](interrogate/README.md)** | Show what a change could break outside its own diff, and prove the fact its safety rests on |
+| ship | **[git-commit](git-skill/README.md)** | Conventional Commits once, with a push, as verified checkpoints, with per-checkpoint deploys, or a subject rewrite; aliases `gcr`, `gcpr`, `gcpd` |
+| ship | **[git-merge](git-skill/README.md)** | Merge the current branch into `main`, `dev`, or another local branch, then delete the source with `git branch -d` unless it is protected |
+| ship | **[git-resolve-conflicts](git-skill/README.md)** | Finish a stopped merge, rebase, cherry-pick, or revert without aborting it |
+| ship | **[git-cleanup](git-skill/README.md)** | Remove finished worktrees and delete local branches already merged into a protected branch |
+| delegate | **[swarm](swarm/README.md)** | Fan a job out to subagents or other installed coding agents and return one report with the route rationale and a call tree |
+| delegate | **[long-task](long-task/README.md)** | Run a multi-milestone project autonomously with parallel worktree subagents and milestone reviews |
+| delegate | **[handoff](handoff/README.md)** | Write a frontend, backend, or session handoff that separates proven state from unproven |
+| meta | **[skill-forge](skill-forge/README.md)** | Author or repair a skill package against one contract and publish every surface it needs |
+| meta | **[skill-audit](skill-forge/README.md)** | Report every packaged skill that violates the contract, with a non-zero exit for merge gates |
+| meta | **[reflect](skill-forge/README.md)** | Turn what a session or repository taught into enforcement, after your approval |
 
 ## Installation
 
@@ -66,112 +93,114 @@ explicitly until
 [the upstream fix](https://github.com/vercel-labs/skills/pull/1561) lands. This
 prevents this CLI version from falling back to copy mode.
 
-Per-skill or non-global installs (and manual setup) are documented in each skill's README:
+Install only what you need with `--skill <name>`. Every skill works when
+installed alone; the thin aliases `gcr`, `gcpr`, and `gcpd` are the one
+exception and need `git-commit` beside them.
 
-- [code-review installation](code-review/README.md#installation)
-- [review-me installation](review-me/README.md#installation)
-- [bug-hunt installation](bug-hunt/README.md#installation)
-- [research-brief installation](research-brief/README.md#installation)
-- [doc-skill installation](doc-skill/README.md#installation)
-- [git-skill installation](git-skill/README.md#installation)
-- [handoff installation](handoff/README.md#installation)
-- [long-task installation](long-task/README.md#installation)
-- [all-subagents installation](all-subagents/README.md#installation)
-- [build-reinstall installation](build-reinstall/README.md#installation)
-- [work-summary installation](work-summary/README.md#installation)
-- [plan-summary installation](plan-summary/README.md#installation)
-- [human-friendly-writing installation](human-friendly-writing/README.md#installation)
-- [skill-forge installation](skill-forge/README.md#installation)
+- Entry point only: `npx skills add chann/skills --skill chann-mode`
+- Understand a codebase: `npx skills add chann/skills --skill how --skill why`
+- Review a change: `npx skills add chann/skills --skill interrogate --skill blast-radius`
+- Explain a change: `npx skills add chann/skills --skill diff-summary --skill diff-viewer`
+- Git workflow with the short aliases: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
+- Handoff only: `npx skills add chann/skills --skill handoff`
+- Subagents and competing attempts: `npx skills add chann/skills --skill swarm --skill arena`
+- Past work and catch-up: `npx skills add chann/skills --skill recall --skill ketchup`
+- Natural prose: `npx skills add chann/skills --skill unslop`
+- Skill authoring: `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect`
 
-- Handoff only: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`
-- Backend handoff only: `npx skills add chann/skills --skill gen-backend-handoff`
-- Diff summary only: `npx skills add chann/skills --skill diff-summary`
-- Review-me only: `npx skills add chann/skills --skill review-me`
-- Work summary only: `npx skills add chann/skills --skill work-summary`
-- Build-reinstall only: `npx skills add chann/skills --skill build-reinstall`
-- All-subagents only: `npx skills add chann/skills --skill all-subagents`
-- Plan-summary family: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
-- Human-friendly-writing only: `npx skills add chann/skills --skill human-friendly-writing`
-- Codex `$gcpr`: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
-- Codex `$gcpd`: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
+To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
+Each plugin README documents its own global and project-local install.
 
 ## Quick reference
 
 Use `/skill-name` in Claude Code and `$skill-name` in Codex. Every row below
-spells out both explicit selectors.
+spells out both explicit selectors with their arguments. Former variant
+commands are arguments now: `/diff-summary --md`, `/git-commit push realtime`,
+`/handoff session`.
 
-### code-review → [details](code-review/README.md)
-
-
-| Claude Code                      | Codex                       | Output                                                                                          |
-| -------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
-| `/code-review [scope]`           | `$code-review [scope]`      | Write markdown + bilingual HTML review reports to `.reviews/`                                    |
-| `/code-review-md [scope]`        | `$code-review-md [scope]`   | Write a markdown-only review to `.reviews/`                                                       |
-| `/diff-summary [scope]`          | `$diff-summary [scope]`     | Explain changes in Korean + English Markdown and one bilingual interactive HTML under `.diff-summaries/` |
-| `/diff-summary-md [scope]`       | `$diff-summary-md [scope]`  | Explain changes in Korean + English Markdown only under `.diff-summaries/` (no HTML, no browser) |
-| `/diff-summary-quiz [scope]`     | `$diff-summary-quiz [scope]` | Same as `/diff-summary`, plus matching interactive comprehension quizzes                         |
-| `/diff-viewer`                   | `$diff-viewer`              | Render the raw working-tree diff to `.diffs/`                                                    |
-
-`diff-summary` also activates from requests such as “summarize the code changes,” “summarize the last commit,” and “main..dev summary.” By default, it produces matching Korean and English reports with Korean shown first. Request one language explicitly for single-language mode. Ask for “Markdown only” to use `diff-summary-md`, or “quiz me on this diff” to use `diff-summary-quiz`. All three preserve explicit `..` and `...` ranges exactly. Use `code-review` to find defects and `diff-viewer` to inspect the raw patch.
-
-Every HTML report — review, summary, quiz, and raw diff — uses the same interface. It includes a Korean/English toggle, light/dark/system themes with a light print palette, status colors that meet WCAG AA in both themes, Korean-aware line breaks at 어절 boundaries, and keyboard support with a skip link and live region. Each report is a self-contained file that works without a server or network connection.
-
-
-### review-me → [details](review-me/README.md)
-
-
-| Claude Code | Codex | Action |
-| ----------- | ----- | ------ |
-| `/review-me [topic]` | `$review-me [topic]` | Follow every important plan or design decision and confirm that none remain unresolved |
-
-`review-me` asks about one decision at a time and recommends a concrete answer.
-When an answer creates more choices, it follows those too. It checks available
-evidence for facts and keeps the review read-only until every decision is
-recorded and confirmed.
-
-
-### doc-skill → [details](doc-skill/README.md)
-
-
-| Claude Code | Codex       | Action                                                                 |
-| ----------- | ----------- | ---------------------------------------------------------------------- |
-| `/gen-docs` | `$gen-docs` | Generate or update README, Korean README, architecture, and usage docs |
-
-
-### git-skill → [details](git-skill/README.md)
-
-
-| Claude Code                      | Codex                       | Action                                                                                |
-| -------------------------------- | --------------------------- | ------------------------------------------------------------------------------------- |
-| `/git-commit`                    | `$git-commit`               | Group working-tree changes into Conventional Commits                                  |
-| `/git-commit-push`               | `$git-commit-push`          | Same, then `git push` (no `--force`)                                                   |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | Commit and push each verified, meaningful outcome while implementation continues |
-| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
-| `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | Commit each verified, meaningful outcome locally while implementation continues — no push |
-| `/git-commit-rewrite`            | `$git-commit-rewrite`       | Rewrite recent non-Conventional commit subjects                                       |
-| `/git-merge-to-main`             | `$git-merge-to-main`        | Merge current branch into `main`, then `git branch -d` the source                     |
-| `/git-merge-to-dev`              | `$git-merge-to-dev`         | Merge current branch into `dev` (fallback `develop`), then `git branch -d` the source |
-| `/git-branch-cleanup`            | `$git-branch-cleanup`       | Delete every local branch already merged into a protected branch                      |
-| `/git-resolve-conflicts`         | `$git-resolve-conflicts`    | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it          |
-
-
-### long-task → [details](long-task/README.md)
-
-
-| Claude Code  | Codex        | Action                                                                                       |
-| ------------ | ------------ | -------------------------------------------------------------------------------------------- |
-| `/long-task` | `$long-task` | Autonomously build a project end-to-end with parallel worktree subagents + milestone reviews |
-
-
-Also triggers on phrases like *"build this whole project"*, *"do this autonomously"*, *"run a long task"*.
-
-### all-subagents → [details](all-subagents/README.md)
+### chann-mode → [details](chann-mode/README.md)
 
 | Claude Code | Codex | Action |
 | --- | --- | --- |
-| `/all-subagents [task]` | `$all-subagents [task]` | Hand the task to another installed coding agent and write the call-tree report |
+| `/chann-mode <task>` | `$chann-mode <task>` | Run the task through a playbook, routed skills, and an evidence-labelled reply |
 
-`all-subagents` probes the local CLIs, records why that route was chosen, and leaves each task result with the call tree. Work asked for through subagents, a named agent, a second opinion from another model vendor, or a split across quota pools selects it. One usable route and no named agent keeps the work in this session. A multi-milestone build stays with `long-task`.
+### understand → [details](understand/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/how <question>` | `$how <question>` | Explain how the code works, with `file:line` citations |
+| `/why <question>` | `$why <question>` | Explain why it is built this way, as a quoted decision timeline |
+
+### research-brief → [details](research-brief/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/research-brief [question]` | `$research-brief [question]` | Answer a technical question from primary sources and write a cited brief under `.research/` |
+
+### recall → [details](recall/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/recall [topic \| date-range]` | `$recall [topic \| date-range]` | A Markdown work report for a date range, or a brief on where a topic stands |
+| `/ketchup` | `$ketchup` | What changed in this conversation since your last message |
+
+### diff-summary → [details](diff-summary/README.md)
+
+| Claude Code | Codex | Output |
+| --- | --- | --- |
+| `/diff-summary [scope]` | `$diff-summary [scope]` | Korean + English Markdown and one bilingual interactive HTML under `.diff-summaries/` |
+| `/diff-summary [scope] --md` | `$diff-summary [scope] --md` | Korean + English Markdown only; no HTML, no browser |
+| `/diff-summary [scope] --quiz` | `$diff-summary [scope] --quiz` | The same artifacts plus aligned comprehension quizzes |
+| `/diff-viewer` | `$diff-viewer` | Render the raw working-tree diff to `.diffs/` |
+
+An explicit `..` or `...` range is preserved exactly. Use `interrogate` to find
+defects and `diff-viewer` to inspect the raw patch.
+
+### plan-summary → [details](plan-summary/README.md)
+
+| Claude Code | Codex | Output |
+| --- | --- | --- |
+| `/plan-summary <path ...>` | `$plan-summary <path ...>` | Matching Korean/English Markdown plus bilingual HTML under `.plan-summaries/` |
+| `/plan-summary <path ...> --md` | `$plan-summary <path ...> --md` | Matching Korean/English Markdown only |
+| `/plan-summary <path ...> --quiz` | `$plan-summary <path ...> --quiz` | The bilingual report plus corresponding `QZ-*` comprehension quizzes |
+
+Only explicit `.md`, `.markdown`, or `.txt` UTF-8 files are read. Nothing is
+auto-discovered.
+
+### review-me → [details](review-me/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/review-me [topic]` | `$review-me [topic]` | Follow every consequential plan or design decision until none remain unresolved |
+
+`review-me` runs only on its selector. It asks one question at a time with a
+recommended answer, and stays read-only until every decision is recorded and
+confirmed.
+
+### swarm → [details](swarm/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/swarm <task>` | `$swarm <task>` | Fan the task out to subagents or other coding agents and report with a call tree |
+| `/arena <task>` | `$arena <task>` | Run competing attempts at one artifact, cross-judge them, and graft the best parts |
+
+### bug-hunt → [details](bug-hunt/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/bug-hunt [symptom-or-failing-command]` | `$bug-hunt [symptom-or-failing-command]` | Reproduce, falsify hypotheses, pin the fix, and leave a record under `.bug-hunts/` |
+
+### doc-skill → [details](doc-skill/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/gen-docs [project-root]` | `$gen-docs [project-root]` | Generate or update README, Korean README, architecture, and usage docs |
+
+### unslop → [details](unslop/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/unslop [text-or-file]` | `$unslop [text-or-file]` | Rewrite AI-written Korean or English text into natural prose without changing meaning |
 
 ### build-reinstall → [details](build-reinstall/README.md)
 
@@ -179,99 +208,86 @@ Also triggers on phrases like *"build this whole project"*, *"do this autonomous
 | --- | --- | --- |
 | `/build-reinstall [project-root]` | `$build-reinstall [project-root]` | Build, reinstall, and verify the installed local result |
 
-`build-reinstall` runs only when explicitly requested. It reads project-owned
-instructions or optional `.build-reinstall.yaml`, shows the exact commands and
-targets, builds before changing the installed copy, then runs smoke checks and
-compares declared built/installed files with SHA-256.
+`build-reinstall` runs only when explicitly requested.
 
-### handoff → [details](handoff/README.md)
-
-
-| Claude Code               | Codex                    | Action                                                                            |
-| ------------------------- | ------------------------ | --------------------------------------------------------------------------------- |
-| `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | Write a frontend/client handoff from backend API diffs, ranges, or session context |
-| `/gen-backend-handoff`    | `$gen-backend-handoff`   | Write a backend/server handoff from code, API, DB, job, or rollout changes         |
-| `/gen-session-handoff`    | `$gen-session-handoff`   | Hand this session to a fresh agent: proven vs unproven state, decisions, traps, next actions, resume prompt |
-
-### work-summary → [details](work-summary/README.md)
-
-
-| Claude Code | Codex | Action |
-| ----------- | ----- | ------ |
-| `/work-summary [range]` | `$work-summary [range]` | Generate a Markdown work report for a day, week, month, quarter, year, or custom date span |
-
-`work-summary` reads the local session history of Claude Code, Codex, opencode,
-and agy without modifying it. It groups activity in your local timezone and
-reports what was requested and completed — a summary by default, or a detailed
-report with a timeline and request log. It also triggers on phrases like
-*"오늘 작업 요약해줘"* and *"what did I work on this week"*. Saved reports
-are grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`,
-`yearly`, or `custom` unless an explicit path is supplied.
-
-### plan-summary → [details](plan-summary/README.md)
+### interrogate → [details](interrogate/README.md)
 
 | Claude Code | Codex | Output |
 | --- | --- | --- |
-| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | Matching Korean/English Markdown plus bilingual HTML under `.plan-summaries/` |
-| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | Matching Korean/English Markdown only |
-| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | The bilingual report plus corresponding `QZ-*` comprehension quizzes |
+| `/interrogate [scope]` | `$interrogate [scope]` | Korean + English Markdown and one bilingual HTML under `.reviews/` |
+| `/interrogate [scope] --md` | `$interrogate [scope] --md` | One Markdown report under `.reviews/`; no HTML, no browser |
+| `/blast-radius [scope]` | `$blast-radius [scope]` | A reply: the safety fact with its proof, risks, what was cleared, and the cheapest pre-merge check |
 
-The three selectors read only explicit `.md`, `.markdown`, or `.txt` UTF-8 files. They never auto-discover documents. Reports share ordered source digests and `PS-*` evidence cards; the Markdown-only selector emits no HTML, while the quiz selector adds accessible offline interaction.
+Every finding carries its proof level, weakest first: `said`, `cited`,
+`traced`, `ran`, `reproduced`. Findings that never reach `cited` are dropped
+and counted. The review reports; it never applies fixes.
 
-### bug-hunt → [details](bug-hunt/README.md)
-
-| Claude Code | Codex | Action |
-| ----------- | ----- | ------ |
-| `/bug-hunt [symptom-or-failing-command]` | `$bug-hunt [symptom-or-failing-command]` | Reproduce, falsify hypotheses, pin the fix, and leave a diagnosis record |
-
-`bug-hunt` keeps the trail most debugging throws away. Every hypothesis is
-written with the observation that would falsify it, falsified hypotheses stay in
-the record so the next session does not retry them, and three failures inside one
-layer force the search to widen. The fix lands only after a check fails for the
-defect's own reason, and the record goes to `.bug-hunts/`. Reports a
-non-reproduction rather than guessing at a fix.
-
-### research-brief → [details](research-brief/README.md)
+### git-skill → [details](git-skill/README.md)
 
 | Claude Code | Codex | Action |
-| ----------- | ----- | ------ |
-| `/research-brief [question]` | `$research-brief [question]` | Answer a technical question from primary sources and write a cited brief |
+| --- | --- | --- |
+| `/git-commit` | `$git-commit` | Group working-tree changes into Conventional Commits, once |
+| `/git-commit push` | `$git-commit push` | The same, then an ordinary `git push` (never `--force`) |
+| `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | Commit each verified outcome while working; every checkpoint stays local |
+| `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | Commit and push each verified outcome, proving upstream parity |
+| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
+| `/git-commit rewrite [range] [force]` | `$git-commit rewrite [range] [force]` | Rewrite recent non-conformant commit subjects |
+| `/git-merge [main \| dev \| <branch>]` | `$git-merge [main \| dev \| <branch>]` | Merge the current branch into the target, then delete the source unless protected |
+| `/git-resolve-conflicts` | `$git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it |
+| `/git-cleanup` | `$git-cleanup` | Remove finished worktrees and delete local branches already merged into a protected branch |
 
-Every claim carries its source, that source's tier, and the version or date it
-was verified against. T1 is the spec or the first-party source code; T3 community
-material is a lead to T1, never an answer. Disagreeing sources both stay, with the
-resolution and its reason. The bottom line and its confidence sit at the top, and
-the open-questions section is mandatory even when empty.
+`/gcr`, `/gcpr`, `/gcpd` and their `$` forms are explicit-only aliases of the
+three checkpoint modes. They need `git-commit` installed and refuse without it.
+
+### long-task → [details](long-task/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/long-task [status\|pause\|resume\|clear\|complete] <objective>` | `$long-task [status\|pause\|resume\|clear\|complete] <objective>` | Autonomously build a project end to end with parallel worktree subagents and milestone reviews |
+
+### handoff → [details](handoff/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/handoff frontend [scope]` | `$handoff frontend [scope]` | Write a client handoff from backend API diffs, ranges, or session context |
+| `/handoff backend [scope]` | `$handoff backend [scope]` | Write a server handoff from code, API, database, job, or rollout changes |
+| `/handoff session [note]` | `$handoff session [note]` | Hand this session to a fresh agent: proven vs unproven state, decisions, next actions, resume prompt |
+| `/handoff [scope]` | `$handoff [scope]` | Resolve the audience from the wording or the diff |
 
 ### skill-forge → [details](skill-forge/README.md)
 
 | Claude Code | Codex | Action |
-| ----------- | ----- | ------ |
+| --- | --- | --- |
 | `/skill-forge [skill-name-or-request]` | `$skill-forge [skill-name-or-request]` | Author or repair a skill package and publish every surface it needs |
 | `/skill-audit [skill-or-path]` | `$skill-audit [skill-or-path]` | Report every packaged skill that violates the skill contract |
+| `/reflect [session \| repo]` | `$reflect [session \| repo]` | Turn lessons into a script, test, hook, or skill edit, after your approval |
 
-Every skill in this repository satisfies the same nine rules — name parity,
-description grammar, invocation mode, Codex descriptor, slash command, evals,
-catalog and locale parity, plugin manifest, and published counts. `skill-forge`
-writes a package that satisfies them; `skill-audit` proves an existing one still
-does, and exits non-zero so it works as a merge gate.
+Every skill here satisfies the same nine rules: name parity, description
+grammar, invocation mode, Codex descriptor, slash command, evals, catalog and
+locale parity, plugin manifest, and published counts. `skill-audit` exits
+non-zero on a violation, so it works as a merge gate.
 
-### human-friendly-writing → [details](human-friendly-writing/README.md)
+## Migrating from the previous lineup
 
-| Claude Code | Codex | Action |
-| ----------- | ----- | ------ |
-| `/human-friendly-writing [text-or-file]` | `$human-friendly-writing [text-or-file]` | Rewrite AI-written Korean text into natural prose without changing meaning |
+Variant selectors became arguments of one canonical skill. The same mapping
+applies to the `$name` selectors in Codex.
 
-`human-friendly-writing` replaces AI-flavored jargon — 계약(contract),
-엔벨로프(envelope), 패리티(parity), leaked framework vocabulary — and smooths
-translation-ese style while preserving facts, numbers, and established
-technical terms. Also triggers on phrases like *"AI 용어 없애줘"* and *"사람답게
-다듬어줘"*.
-
-`gen-docs`, the plan-summary family, both handoff generators, and `work-summary`
-include their own natural-Korean rules. When `human-friendly-writing` is already
-available they may use it as an optional final pass, but every selector remains
-fully functional when installed alone.
+| Old | New |
+| --- | --- |
+| `code-review`, `code-review-md` | `interrogate` (`--md` for Markdown only) |
+| `diff-summary-md`, `diff-summary-quiz` | `diff-summary --md`, `diff-summary --quiz` |
+| `plan-summary-md`, `plan-summary-quiz` | `plan-summary --md`, `plan-summary --quiz` |
+| `human-friendly-writing` | `unslop` |
+| `git-commit-push` | `git-commit push` |
+| `git-commit-realtime` (`gcr`) | `git-commit realtime` (`gcr`) |
+| `git-commit-push-realtime` (`gcpr`) | `git-commit push realtime` (`gcpr`) |
+| `git-commit-push-deploy` (`gcpd`) | `git-commit deploy` (`gcpd`) |
+| `git-commit-rewrite` | `git-commit rewrite` |
+| `git-merge-to-main`, `git-merge-to-dev` | `git-merge main`, `git-merge dev` |
+| `git-branch-cleanup` | `git-cleanup` |
+| `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff` | `handoff frontend`, `handoff backend`, `handoff session` |
+| `all-subagents` | `swarm` |
+| `work-summary` | `recall` |
 
 ## Documentation
 
@@ -285,7 +301,7 @@ All `SKILL.md` files in this repo follow the standard skill format and reference
 
 | Platform                                        | How to install                                                                                |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[Claude Code](https://code.claude.com)**      | `npx skills add chann/skills` — installs the full plugin (skill + slash commands)             |
+| **[Claude Code](https://code.claude.com)**      | `npx skills add chann/skills` — installs the skills and their slash commands                  |
 | **[Codex](https://github.com/openai/codex)**    | Symlink `<plugin>/skills/<name>/` into your Codex skills directory (e.g. `~/.agents/skills/`) |
 | **[opencode](https://github.com/sst/opencode)** | Drop the skill directory into your opencode skills path                                       |
 | **Copilot CLI / Gemini CLI / others**           | Point your platform's skill loader at `<plugin>/skills/<name>/SKILL.md` per its docs          |
@@ -294,14 +310,14 @@ All `SKILL.md` files in this repo follow the standard skill format and reference
 What works across platforms and what is specific to Claude Code:
 
 - **Portable** — every `SKILL.md` body and its `references/`. The skills trigger on natural-language phrases on any platform.
-- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/code-review`, `/git-commit`, `/long-task`, ...). Other platforms invoke the skill with natural language or their own calling convention.
+- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/interrogate`, `/git-commit`, `/long-task`, ...). Other platforms invoke the skill with natural language or their own calling convention.
 
 ## Requirements
 
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
-- Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz`
-- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite`, and `all-subagents`)
+- Git 2.45+ for `diff-summary`
+- Python 3.10+ (for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, and `skill-audit`; standard library only)
 
 ## License
 
