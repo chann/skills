@@ -1,0 +1,4 @@
+interface:
+  display_name: "Handoff"
+  short_description: "Hand a diff or session to frontend, backend, or a fresh agent"
+  default_prompt: "Use $handoff to write a handoff for the right audience from the current diff or session."
