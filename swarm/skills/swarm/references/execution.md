@@ -1,6 +1,6 @@
 # How a run is executed
 
-`scripts/all_subagents.py run` builds the CLI command. Do not hand-assemble
+`scripts/swarm.py run` builds the CLI command. Do not hand-assemble
 one. This note is the posture contract the command implements.
 
 ## Sandbox

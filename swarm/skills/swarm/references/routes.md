@@ -47,7 +47,7 @@ claude -p "/usage" --output-format json --no-session-persistence
 Pass the `.result` text through:
 
 ```bash
-python3 <skill-dir>/scripts/all_subagents.py parse-usage --agent claude-code --file <usage.txt>
+python3 <skill-dir>/scripts/swarm.py parse-usage --agent claude-code --file <usage.txt>
 ```
 
 `status: unknown` means no usable line was found. Do not treat that as 0%.

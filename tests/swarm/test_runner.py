@@ -7,12 +7,12 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "all-subagents" / "skills" / "all-subagents" / "scripts" / "all_subagents.py"
+SCRIPT = ROOT / "swarm" / "skills" / "swarm" / "scripts" / "swarm.py"
 
-SPEC = importlib.util.spec_from_file_location("all_subagents", SCRIPT)
+SPEC = importlib.util.spec_from_file_location("swarm_helper", SCRIPT)
 assert SPEC and SPEC.loader
-all_subagents = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(all_subagents)
+swarm = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(swarm)
 
 
 def write_executable(directory: Path, name: str, body: str) -> None:
@@ -79,7 +79,7 @@ class RunnerTests(unittest.TestCase):
             write_executable(bin_dir, "claude", CLAUDE)
             write_executable(bin_dir, "opencode", OPENCODE_OLD)
             os.environ["PATH"] = str(bin_dir)
-            payload = all_subagents.probe_agents(True)
+            payload = swarm.probe_agents(True)
         by_agent = {item["agent"]: item for item in payload["agents"]}
         self.assertTrue(by_agent["claude-code"]["usable"])
         self.assertTrue(by_agent["claude-code"]["auth_ok"])
@@ -100,7 +100,7 @@ class RunnerTests(unittest.TestCase):
                     step("two", "codex/openai/gpt", "anthropic"),
                 ],
             }
-            errors = all_subagents.validate_plan(plan, None)
+            errors = swarm.validate_plan(plan, None)
             self.assertTrue(any("different vendors" in error for error in errors))
 
             invented = {
@@ -115,7 +115,7 @@ class RunnerTests(unittest.TestCase):
                     )
                 ],
             }
-            errors = all_subagents.validate_plan(invented, None)
+            errors = swarm.validate_plan(invented, None)
             self.assertTrue(any("quota_note" in error for error in errors))
 
             copied = {
@@ -130,10 +130,10 @@ class RunnerTests(unittest.TestCase):
                     )
                 ],
             }
-            self.assertEqual([], all_subagents.validate_plan(copied, None))
+            self.assertEqual([], swarm.validate_plan(copied, None))
 
     def test_invocation_postures_match_the_cli_contract(self) -> None:
-        claude = all_subagents.build_invocation(
+        claude = swarm.build_invocation(
             {
                 "agent": "claude-code",
                 "binary": "claude",
@@ -148,7 +148,7 @@ class RunnerTests(unittest.TestCase):
         self.assertIn("--no-session-persistence", claude["argv"])
         self.assertTrue(claude["tools_enforced"])
 
-        codex = all_subagents.build_invocation(
+        codex = swarm.build_invocation(
             {
                 "agent": "codex",
                 "binary": "codex",
@@ -164,7 +164,7 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse(codex["tools_enforced"])
         self.assertEqual(codex["argv"][-1], "-")
 
-        opencode = all_subagents.build_invocation(
+        opencode = swarm.build_invocation(
             {
                 "agent": "opencode",
                 "binary": "opencode",
@@ -178,7 +178,7 @@ class RunnerTests(unittest.TestCase):
         self.assertNotIn("--auto", opencode["argv"])
         self.assertIn("OPENCODE_CONFIG_CONTENT", opencode["env"])
 
-        agy = all_subagents.build_invocation(
+        agy = swarm.build_invocation(
             {
                 "agent": "antigravity",
                 "binary": "agy",
@@ -195,23 +195,23 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(event["message"]["content"], "look")
 
     def test_parsers_do_not_treat_the_answer_as_a_quota_failure(self) -> None:
-        parsed = all_subagents.parse_claude(
+        parsed = swarm.parse_claude(
             'warning: brace {not json}\n{"result":"first","is_error":false}\n{"result":"final answer","is_error":false,"session_id":"s"}'
         )
         self.assertEqual("final answer", parsed["text"])
         self.assertIsNone(
-            all_subagents.classify_failure(0, "test output mentioned 429 inside the model answer", parsed)
+            swarm.classify_failure(0, "test output mentioned 429 inside the model answer", parsed)
         )
         self.assertEqual(
             "quota",
-            all_subagents.classify_failure(1, "HTTP 429 quota exceeded", {"text": ""}),
+            swarm.classify_failure(1, "HTTP 429 quota exceeded", {"text": ""}),
         )
-        agy = all_subagents.parse_agy(
+        agy = swarm.parse_agy(
             '{"event":"result","result":{"status":"SUCCESS","response":""}}',
             'jetski: no output produced — auto-denied',
         )
-        self.assertEqual("permission", all_subagents.classify_failure(0, "jetski: auto-denied", agy))
-        usage = all_subagents.parse_claude_usage("no table here")
+        self.assertEqual("permission", swarm.classify_failure(0, "jetski: auto-denied", agy))
+        usage = swarm.parse_claude_usage("no table here")
         self.assertEqual("unknown", usage["status"])
 
     def test_run_writes_the_result_and_redacts_secrets(self) -> None:
@@ -238,7 +238,7 @@ class RunnerTests(unittest.TestCase):
             (repo / "keep.txt").write_text("a\n", encoding="utf-8")
             subprocess.run(["git", "add", "keep.txt"], cwd=repo, check=True, env=env)
             subprocess.run(["git", "commit", "-m", "init"], cwd=repo, check=True, env=env, capture_output=True)
-            probe_code = all_subagents.main(["--cache-dir", str(cache), "probe", "--check-auth", "--json"])
+            probe_code = swarm.main(["--cache-dir", str(cache), "probe", "--check-auth", "--json"])
             self.assertEqual(0, probe_code)
             plan = {
                 "task": "code_review",
@@ -253,7 +253,7 @@ class RunnerTests(unittest.TestCase):
             }
             plan_path = root / "plan.json"
             plan_path.write_text(json.dumps(plan), encoding="utf-8")
-            plan_code = all_subagents.main(
+            plan_code = swarm.main(
                 ["--cache-dir", str(cache), "plan", "--run-id", "run1", "--file", str(plan_path)]
             )
             self.assertEqual(0, plan_code, "plan should accept an authenticated Claude route")
@@ -261,7 +261,7 @@ class RunnerTests(unittest.TestCase):
             self.assertNotIn("supersecretvalue", saved)
             prompt = root / "task.md"
             prompt.write_text("Review keep.txt.\n", encoding="utf-8")
-            dry = all_subagents.main(
+            dry = swarm.main(
                 [
                     "--cache-dir",
                     str(cache),
@@ -280,7 +280,7 @@ class RunnerTests(unittest.TestCase):
                 ]
             )
             self.assertEqual(0, dry)
-            code = all_subagents.main(
+            code = swarm.main(
                 [
                     "--cache-dir",
                     str(cache),
@@ -308,7 +308,7 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual("Claude Code", meta["official_agent"])
 
             os.environ["GUARD_TOUCH"] = str(repo / "sneak.txt")
-            guarded = all_subagents.main(
+            guarded = swarm.main(
                 [
                     "--cache-dir",
                     str(cache),
@@ -333,7 +333,7 @@ class RunnerTests(unittest.TestCase):
             )
             self.assertEqual("mutated", guarded_meta["error_class"])
 
-            mark = all_subagents.main(
+            mark = swarm.main(
                 [
                     "--cache-dir",
                     str(cache),
@@ -348,7 +348,7 @@ class RunnerTests(unittest.TestCase):
                 ]
             )
             self.assertEqual(0, mark)
-            report = all_subagents.main(
+            report = swarm.main(
                 ["--cache-dir", str(cache), "report", "--run-id", "run1", "--only-significant"]
             )
             self.assertEqual(0, report)
@@ -363,7 +363,7 @@ class RunnerTests(unittest.TestCase):
             write_executable(bin_dir, "opencode", OPENCODE_NEW)
             write_executable(bin_dir, "codex", CODEX)
             os.environ["PATH"] = str(bin_dir)
-            payload = all_subagents.probe_agents(True)
+            payload = swarm.probe_agents(True)
         self.assertTrue(payload["heterogeneous"])
         self.assertIn("opencode", payload["usable_agents"])
         self.assertIn("codex", payload["usable_agents"])

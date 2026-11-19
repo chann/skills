@@ -91,10 +91,10 @@ def cache_dir(explicit: str | None) -> Path:
         root = Path(explicit).expanduser().resolve()
     elif os.name == "nt":
         local = os.environ.get("LOCALAPPDATA") or str(Path.home() / "AppData" / "Local")
-        root = Path(local) / "all-subagents"
+        root = Path(local) / "swarm"
     else:
         base = os.environ.get("XDG_CACHE_HOME") or str(Path.home() / ".cache")
-        root = Path(base) / "all-subagents"
+        root = Path(base) / "swarm"
     root.mkdir(parents=True, exist_ok=True)
     return root
 
@@ -787,8 +787,8 @@ def run_attempt(spec: dict, attempt_dir: Path, timeout: int) -> dict:
     write_text(attempt_dir / "prompt.md", spec["prompt"])
     env = os.environ.copy()
     env.update(invocation["env"])
-    env["ALL_SUBAGENTS_RUN_ID"] = spec["run_id"]
-    env["ALL_SUBAGENTS_PARENT_TASK_ID"] = spec["task_id"]
+    env["SWARM_RUN_ID"] = spec["run_id"]
+    env["SWARM_PARENT_TASK_ID"] = spec["task_id"]
     started = time.monotonic()
     try:
         completed = subprocess.run(
@@ -1162,7 +1162,8 @@ def cmd_report(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Delegate one task to another coding-agent CLI")
+    parser = argparse.ArgumentParser(prog="swarm.py",
+        description="Swarm helper: probe coding-agent CLIs, check a route plan, run one delegated task, and report the call tree",)
     parser.add_argument("--cache-dir")
     sub = parser.add_subparsers(dest="command", required=True)
 
