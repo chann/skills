@@ -72,3 +72,19 @@ or `urgent`, the rationale has to say so.
 If probe says the machine is not heterogeneous and the user did not name an
 agent or model, do not write a plan. Do the work in this session and say that
 only one route was usable.
+
+## Races
+
+A race runs the identical brief on two to four routes. Each arm is an
+independent step, so each arm sits on a different vendor unless the user
+forced one. Declare the selection rule in the plan's rationale before any arm
+runs:
+
+- `first pass`: the first arm that answers `PASS` with its required evidence
+  wins; later arms still get read for issues.
+- `rank all`: every arm is ordered, best first, with the reason for each place.
+- `best of`: every arm is scored against the brief and one is kept.
+
+Do not change the rule after reading the arms. When the arms are attempts at
+one artifact that should be merged into one design, that is `arena`, not a
+race.

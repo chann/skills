@@ -1,5 +1,5 @@
 {
-  "name": "all-subagents",
-  "description": "Route subagent work to another installed coding agent, record why that route was chosen, and leave the result with a call-tree report.",
-  "version": "0.1.0"
+  "name": "swarm",
+  "description": "Fan work out to subagents or other installed coding agents with a recorded route rationale and a call-tree report, or run competing attempts at one artifact and graft the best parts onto one base.",
+  "version": "1.0.0"
 }

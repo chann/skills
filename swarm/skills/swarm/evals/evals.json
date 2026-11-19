@@ -1,15 +1,16 @@
 {
-  "skill_name": "all-subagents",
+  "skill_name": "swarm",
   "evals": [
     {
       "id": 1,
       "prompt": "이 작업 코덱스에 시켜줘. Ask Codex to review the auth diff and leave a record of which model ran.",
-      "expected_output": "Probes authenticated CLIs, writes a plan whose rationale names the Codex route and the quota evidence, runs from a prompt file with the diff passed as a context file, then reads meta.json, result.md, and report.md.",
+      "expected_output": "States the done predicate and the return, probes authenticated CLIs, writes a plan whose rationale names the Codex route and the quota evidence, runs from a prompt file with the diff passed as a context file, then reads meta.json and result.md itself and shows the report with the call tree.",
       "files": [],
       "assertions": [
+        "The done predicate and the single return are stated before probe runs.",
         "Probe with --check-auth completes before a route is chosen.",
         "The diff is passed with --context-file and is not pasted into the prompt.",
-        "The user is shown the route rationale and report.md after meta.json is read."
+        "The final report shows the worker's PASS, ISSUES, or BLOCKED verdict and the call tree from report.md."
       ]
     },
     {
@@ -25,31 +26,43 @@
     {
       "id": 3,
       "prompt": "Build this whole project end to end and keep going until it is done. Use subagents in worktrees.",
-      "expected_output": "Refuses all-subagents and uses long-task, because the request is a multi-milestone autonomous project rather than a delegated route.",
+      "expected_output": "Does not run swarm and uses long-task, because the request is a multi-milestone autonomous project rather than one fan-out.",
       "files": [],
       "assertions": [
-        "Does not probe CLIs or write a all-subagents plan for this request.",
-        "Selects long-task instead of all-subagents."
+        "Does not probe CLIs or write a swarm plan for this request.",
+        "Selects long-task instead of swarm."
       ]
     },
     {
       "id": 4,
-      "prompt": "Spread a read-only review across two model vendors, then poll every few seconds until result.md appears.",
-      "expected_output": "Plans two steps on different vendors and waits on the process timeout or the host completion notice. It does not sleep-poll for the result file.",
+      "prompt": "Race the same read-only review of the auth diff on two model vendors, then poll every few seconds until result.md appears.",
+      "expected_output": "Frames a race, declares its selection rule before spawning, plans two arms on different vendors, and waits on the process timeout or the host completion notice. It does not sleep-poll for the result file.",
       "files": [],
       "assertions": [
-        "The plan is rejected if both steps use the same vendor.",
+        "The race selection rule (first pass, rank all, or best of) is declared before any arm runs.",
+        "The plan is rejected if both arms use the same vendor.",
         "The run does not use a sleep loop to wait for result.md."
       ]
     },
     {
       "id": 5,
-      "prompt": "서브에이전트로 이 리뷰를 돌려줘. Use subagents and spawn subagents so two vendors review the auth diff.",
-      "expected_output": "Selects all-subagents, probes authenticated CLIs, and plans the review across two vendors. It does not select long-task.",
+      "prompt": "병렬로 나눠서 돌려줘. Split the lint fixes across the api/ and web/ packages with subagents. The web worker came back without saying whether the build passed.",
+      "expected_output": "Partitions the work into two disjoint write sets, reruns the web worker once because its result omitted the required verification, and records a gap if it misses again instead of counting it as a pass.",
       "files": [],
       "assertions": [
-        "Selects all-subagents because the user asked to work through subagents.",
-        "Does not select long-task for a single review spread across subagents."
+        "The two slices have disjoint write sets.",
+        "The incomplete web result is rerun once before it is recorded as a gap.",
+        "The report does not count the gap as PASS and the done predicate is not VERIFIED."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "후보 여러 개 경쟁시켜줘. Give me three attempts at the config loader API and keep the best design.",
+      "expected_output": "Selects arena, because the user wants competing attempts at one artifact with one winner grafted together, not slices of one job.",
+      "files": [],
+      "assertions": [
+        "Selects arena instead of swarm.",
+        "Does not write a partition plan for the three attempts."
       ]
     }
   ]

@@ -1,4 +1,4 @@
 interface:
-  display_name: "All Subagents"
-  short_description: "Route subagent work to another coding agent and record the call tree"
-  default_prompt: "Use $all-subagents to route this task through subagents and record the call tree."
+  display_name: "Swarm"
+  short_description: "Fan work out to subagents or other coding agents and report with a call tree"
+  default_prompt: "Use $swarm to fan this task out to subagents and return one report with the call tree."
