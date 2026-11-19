@@ -11,6 +11,7 @@ __pycache__/
 .work-summaries/
 .bug-hunts/
 .research/
+.decisions/
 workspace/
 .gstack/
 .superpowers/
