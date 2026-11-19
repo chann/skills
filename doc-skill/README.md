@@ -11,7 +11,7 @@ Generate or update a clean four-file documentation set for any software project:
 - Moves detailed commands, options, configuration, examples, and troubleshooting to `USAGE.md`
 - Moves components, data flow, directory structure, and design decisions to `ARCHITECTURE.md`
 - Preserves hand-written sections with heading-aware update-in-place rules and `<!-- doc-skill:keep -->`
-- Writes new Korean sections in plain prose; uses `human-friendly-writing` as an optional final pass when available
+- Writes new Korean sections in plain prose; uses `unslop` as an optional final pass when available
 - Requires per-file diffs and confirmation before writing
 
 ## Installation
@@ -56,7 +56,7 @@ For another project:
 ```
 
 The skill analyzes the project, renders candidate docs, shows the diffs, and writes only after confirmation.
-It remains complete when installed alone. `human-friendly-writing` is never
+It remains complete when installed alone. `unslop` is never
 installed or required; when the runtime already provides it, only newly
 authored Korean prose receives the optional pass before the diff is shown.
 

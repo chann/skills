@@ -1,0 +1,50 @@
+{
+  "skill_name": "why",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $why to tell me why the cache layer was split out of the API client.",
+      "expected_output": "Reads git log, blame, and the linked PR discussion, then answers with a short answer, a confidence, and a dated decision timeline quoting the authors.",
+      "files": [],
+      "assertions": [
+        "History is read with git log -S or -G, --follow, and git blame -w -C before any answer.",
+        "The timeline has introduced, changed, and current rows, each with a commit or PR and a date.",
+        "What the authors wrote is quoted, and the answer states its confidence.",
+        "No file is edited, no commit is made, and no comment is posted."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "이 플래그 왜 아직 꺼져 있어? 커밋 메시지는 'wip' 밖에 없어.",
+      "expected_output": "Reports that the record is thin, does not invent a reason, and widens to other sources the user has.",
+      "files": [],
+      "assertions": [
+        "The answer says plainly that the record does not give the reason.",
+        "No reason is presented as fact when it is only a reading of the code, and any such reading is marked inferred.",
+        "The reply names where else the answer could live, such as a tracker, chat, or a person.",
+        "The reply closes with what the record does not answer."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/why was the PR description for #214 so short? post a comment asking the author to explain.",
+      "expected_output": "Reads the PR and reports its content but refuses to post the comment, offering the question text for the user to send.",
+      "files": [],
+      "assertions": [
+        "The PR is read through gh when available.",
+        "No comment, review, or reaction is posted.",
+        "A draft of the question is offered for the user to send themselves."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "$why show me how the scheduler decides which job runs next",
+      "expected_output": "Recognises a runtime-behavior question and routes it to how instead of reading history.",
+      "files": [],
+      "assertions": [
+        "The request is identified as runtime behavior and how is named as the right skill.",
+        "No history archaeology is performed for a question that asks how, not why."
+      ]
+    }
+  ]
+}

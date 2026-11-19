@@ -31,7 +31,7 @@ class BugHuntSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("bug-hunt", metadata["name"])
-        self.assertEqual("0.1.0", metadata["version"])
+        self.assertEqual("0.1.1", metadata["version"])
         self.assertIn("hypothesis ledger", metadata["description"])
 
     def test_interfaces_publish_both_selectors(self) -> None:

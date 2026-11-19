@@ -62,7 +62,7 @@ consequential choices to the user.
 - Keep the review read-only until the final decision record is confirmed
 
 This is for reviewing plans, designs, product behavior, architecture, and other
-decisions. Use `/code-review` or `$code-review` to inspect a Git diff for defects.
+decisions. Use `/interrogate` or `$interrogate` to inspect a Git diff for defects.
 
 ## Package layout
 

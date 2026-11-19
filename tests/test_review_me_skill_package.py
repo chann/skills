@@ -40,7 +40,7 @@ class ReviewMeSkillPackageTests(unittest.TestCase):
         openai = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
 
         self.assertEqual("review-me", metadata["name"])
-        self.assertEqual("0.1.0", metadata["version"])
+        self.assertEqual("0.1.1", metadata["version"])
         self.assertIn("leaf", metadata["description"].lower())
         self.assertIn('argument-hint: "[topic]"', command)
         self.assertIn("Use the **review-me** skill", command)

@@ -82,7 +82,7 @@ python3 -m pytest tests -q
 
 ## Integration
 
-**Pairs with:** `skill-forge` for authoring and repair, and `code-review` when
+**Pairs with:** `skill-forge` for authoring and repair, and `interrogate` when
 the audit surfaces a package whose workflow itself looks wrong.
 
 **Use instead of:** reading `SKILL.md` files one by one to check consistency.

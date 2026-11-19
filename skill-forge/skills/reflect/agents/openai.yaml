@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reflect"
+  short_description: "Turn lessons from a session or repo into enforcement after your approval"
+  default_prompt: "Use $reflect to turn what this session taught into enforcement, and stop at the three lists."

@@ -138,7 +138,7 @@ plugin's test when a skill joins an existing plugin.
 ## Integration
 
 **Pairs with:** `skill-audit` for the proof step, `gen-docs` for the plugin
-README pair, and `git-commit-push` to publish the finished package.
+README pair, and `git-commit push` to publish the finished package.
 
 **Use instead of:** editing `SKILL.md` alone, which leaves the catalog, locales,
 and counts behind.

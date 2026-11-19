@@ -41,6 +41,10 @@ class SkillForgePackageTests(unittest.TestCase):
             AUDIT / "agents" / "openai.yaml",
             AUDIT / "evals" / "evals.json",
             AUDITOR,
+            PACKAGE / "commands" / "reflect.md",
+            PACKAGE / "skills" / "reflect" / "SKILL.md",
+            PACKAGE / "skills" / "reflect" / "agents" / "openai.yaml",
+            PACKAGE / "skills" / "reflect" / "evals" / "evals.json",
         )
 
         for path in expected:
@@ -53,11 +57,15 @@ class SkillForgePackageTests(unittest.TestCase):
         )
 
         self.assertEqual("skill-forge", metadata["name"])
-        self.assertEqual("0.1.0", metadata["version"])
+        self.assertEqual("0.2.0", metadata["version"])
         self.assertIn("contract", metadata["description"])
 
     def test_interfaces_publish_both_explicit_selectors(self) -> None:
-        for skill, name in ((FORGE, "skill-forge"), (AUDIT, "skill-audit")):
+        for skill, name in (
+            (FORGE, "skill-forge"),
+            (AUDIT, "skill-audit"),
+            (PACKAGE / "skills" / "reflect", "reflect"),
+        ):
             with self.subTest(skill=name):
                 frontmatter = (skill / "SKILL.md").read_text(encoding="utf-8").split(
                     "---\n", 2

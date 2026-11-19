@@ -1,0 +1,50 @@
+{
+  "skill_name": "how",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $how to walk me through how requests get authenticated in this repo.",
+      "expected_output": "States the scope, reads the entry points and the call path, and answers in the five fixed sections with file:line citations.",
+      "files": [],
+      "assertions": [
+        "The answer has Overview, Key concepts, How it works, Where things live, and Gotchas, in that order.",
+        "Every claim about the code carries a file:line citation taken from a file that was actually read.",
+        "The reply ends by naming what was not read, and unread parts are labelled inferred.",
+        "No file is edited and nothing is committed."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "새 재시도 헬퍼는 어디에 둬야 해? 이 모듈들 중에서 어디가 맞아?",
+      "expected_output": "Reads the neighbouring modules, then ends with a placement recommendation and the reason, citing the code that sets the convention.",
+      "files": [],
+      "assertions": [
+        "The answer ends with a concrete recommendation of where the code should live.",
+        "The reason cites file:line of neighbouring code that sets the convention.",
+        "The scope interpretation is stated and the work proceeds without a clarifying question.",
+        "No file is created or edited."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/how why does the billing module retry three times instead of five?",
+      "expected_output": "Explains the retry behavior the code shows, refuses to invent a rationale from code shape, and routes the motivation question to why.",
+      "files": [],
+      "assertions": [
+        "The retry behavior is described with file:line citations.",
+        "The motivation question is routed to why by name rather than answered from guesswork.",
+        "Any reason offered without a record is labelled inferred."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "$how the checkout page throws a 500 when the cart is empty, why is that?",
+      "expected_output": "Recognises a broken behavior and points at bug-hunt instead of explaining the design.",
+      "files": [],
+      "assertions": [
+        "The request is identified as a defect and bug-hunt is named as the right skill.",
+        "No fix is attempted and no file is edited."
+      ]
+    }
+  ]
+}

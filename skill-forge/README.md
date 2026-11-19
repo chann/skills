@@ -3,7 +3,8 @@
 [한국어](README.ko.md) · [← back to main](../README.md)
 
 Author skill packages against one contract, and prove every packaged skill still
-satisfies it. `skill-forge` writes the package; `skill-audit` checks it.
+satisfies it. `skill-forge` writes the package; `skill-audit` checks it;
+`reflect` turns what a session taught into a lasting change.
 
 ## Why it is different
 
@@ -24,13 +25,13 @@ their executable form and exits non-zero, so it works as a merge gate.
 Global:
 
 ```bash
-npx skills add -y -g chann/skills --skill skill-forge --skill skill-audit
+npx skills add -y -g chann/skills --skill skill-forge --skill skill-audit --skill reflect
 ```
 
 Project-local:
 
 ```bash
-npx skills add chann/skills --skill skill-forge --skill skill-audit
+npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect
 ```
 
 ## Usage
@@ -39,6 +40,7 @@ npx skills add chann/skills --skill skill-forge --skill skill-audit
 |---|---|---|
 | `/skill-forge [request]` | `$skill-forge [request]` | Create or repair a skill package, then publish and prove it |
 | `/skill-audit [skill or path]` | `$skill-audit [skill or path]` | Report every packaged skill that violates the contract |
+| `/reflect [session \| repo]` | `$reflect [session \| repo]` | Turn lessons from the session or repository history into enforcement, after your approval |
 
 Examples:
 
@@ -47,6 +49,8 @@ Examples:
 $skill-forge rename gen-docs to project-docs
 /skill-audit
 $skill-audit diff-summary
+/reflect
+$reflect repo
 ```
 
 Run the auditor directly when you want it in CI:
@@ -70,6 +74,16 @@ python3 skill-forge/skills/skill-audit/scripts/audit_skills.py --format markdown
 | C8 | The plugin manifest has a name, description, and version |
 | C9 | Root documentation publishes the same counts as the tree |
 
+## Reflect
+
+`reflect` collects what a session, or a repository's recent history, taught:
+corrections, quirks the agent had to discover, checks that were skipped, skills
+that should have fired. It keeps only lessons that will still hold in six months
+and routes each to the strongest place that works — a script, lint, test, or
+hook first; then an edit to the skill that owns the behavior; the agent
+instruction file last. It presents Accepted, Rejected, and Backlog and edits
+nothing until you approve.
+
 ## Package layout
 
 ```text
@@ -77,6 +91,7 @@ skill-forge/
 ├── .claude-plugin/plugin.json
 ├── commands/skill-forge.md
 ├── commands/skill-audit.md
+├── commands/reflect.md
 ├── skills/skill-forge/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
@@ -89,6 +104,10 @@ skill-forge/
 │   ├── agents/openai.yaml
 │   ├── evals/evals.json
 │   └── scripts/audit_skills.py
+├── skills/reflect/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── evals/evals.json
 ├── README.md
 └── README.ko.md
 ```

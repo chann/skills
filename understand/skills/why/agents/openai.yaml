@@ -1,0 +1,4 @@
+interface:
+  display_name: "Why"
+  short_description: "Explain why code is built this way from the commit and PR record"
+  default_prompt: "Use $why to explain why this is built this way from the commit, PR, and issue record."
