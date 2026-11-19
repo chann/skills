@@ -1,0 +1,77 @@
+{
+  "skill_name": "interrogate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "코드 리뷰해줘. main..dev 범위로 봐줘.",
+      "expected_output": "Reviews exactly the `main..dev` scope, loads only the reference guides for the detected languages, grades every finding on the proof ladder, and writes a Korean report, its English sibling, and one bilingual HTML report under `.reviews/`.",
+      "files": [],
+      "assertions": [
+        "The requested `main..dev` scope is preserved without being rewritten to `main...dev`.",
+        "Only the language reference files matching the detected languages are loaded.",
+        "Every reported finding carries an `**Evidence:**` line that opens with `cited`, `traced`, `ran`, or `reproduced` followed by the proof itself.",
+        "Every finding carries a stable `[CR-nnn]` ID, and the same ID marks the same finding in both languages.",
+        "The HTML report is written under `.reviews/` and opened in a browser."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "이 변경 깨뜨려봐. 마크다운만 남겨줘. 고칠 수 있으면 바로 고쳐도 돼.",
+      "expected_output": "Tries to break the default scope, writes one Markdown report with no HTML and no browser, pushes CRITICAL and HIGH findings to traced or ran with read-only proof, and reports the fixes instead of applying them.",
+      "files": [],
+      "assertions": [
+        "No HTML file is generated and no browser is opened.",
+        "No change is applied to the reviewed tree; corrections appear only as report text.",
+        "A CRITICAL or HIGH finding is shown at `traced` or `ran`, or is labelled `cited, not traced`.",
+        "Any repro script lives in a temporary directory outside the repository, and `git status --porcelain` is unchanged after proof runs.",
+        "Findings that never reached `cited` appear only in the `**Dropped:**` count, not as findings."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review the staged changes. There is nothing obviously wrong with them.",
+      "expected_output": "Reports only the findings the evidence supports and omits the severity sections that have no findings, rather than manufacturing INFO items or generic praise.",
+      "files": [],
+      "assertions": [
+        "No INFO finding is created purely to fill a section or to express uncertainty.",
+        "Words like \"solid\", \"robust\", or \"well-structured\" do not appear as an overall-quality claim.",
+        "Empty severity sections are omitted instead of padded.",
+        "Missing evidence appears under Open Questions only when it changes severity or action."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Give me an adversarial multi-model review of the last commit.",
+      "expected_output": "Uses the swarm skill when installed to hand one brief to adversaries on different vendors, reruns each returned command before keeping the finding, merges shared root causes, and counts unverified findings per adversary; without swarm it reviews in-session and says the panel was not run.",
+      "files": [],
+      "assertions": [
+        "Each kept panel finding was verified by rerunning its command in this session.",
+        "Findings that share a root cause are merged and name every adversary that found them.",
+        "Unverified panel findings are counted under `**Dropped:**` per adversary.",
+        "When `swarm` is not installed, the reply states that the panel was not run."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Explain what changed in this branch and why — I am not looking for bugs.",
+      "expected_output": "Reports that explanation is a different workflow and routes the request to diff-summary rather than producing severity-tagged findings.",
+      "files": [],
+      "assertions": [
+        "The request for explanation is routed to `diff-summary` by name.",
+        "Review severity is not attached to explanatory observations.",
+        "No defect report is produced for a request that asked for an explanation."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Review my changes and add `.reviews/` to .gitignore while you are in there. Also check the legacy auth module, it is not in the diff — what else could my change break over there?",
+      "expected_output": "Suggests the `.gitignore` line without editing the file, keeps the review inside the diff, and points the question about impact outside the diff to blast-radius.",
+      "files": [],
+      "assertions": [
+        "`.gitignore` is not modified automatically; the addition is only suggested.",
+        "Code outside the diff is not reviewed, and the out-of-scope request is named and declined.",
+        "The question about breakage outside the diff is routed to `blast-radius` by name."
+      ]
+    }
+  ]
+}

@@ -480,6 +480,26 @@
     .badge-low { color: var(--status-info); background: var(--status-info-soft); }
     .badge-info { color: var(--muted-foreground); background: var(--muted); }
 
+    /* Proof level — outlined pill so it never reads as a severity badge.
+       Weak levels stay neutral; traced is informational; ran and reproduced
+       are confirmed; "cited, not traced" on a top finding is a warning. */
+    .proof {
+      display: inline-block;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      background: var(--card);
+      vertical-align: middle;
+    }
+    .proof-traced { color: var(--status-info); border-color: var(--status-info); }
+    .proof-ran, .proof-reproduced { color: var(--status-success); border-color: var(--status-success); }
+    .finding-evidence[data-proof-caveat] .proof { color: var(--status-warning); border-color: var(--status-warning); }
+    .finding-summary-text .proof { margin-left: auto; flex-shrink: 0; }
+
     hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
     /* Report tables (NOT diff tables) */

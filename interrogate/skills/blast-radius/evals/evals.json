@@ -1,0 +1,49 @@
+{
+  "skill_name": "blast-radius",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이거 바꾸면 뭐가 깨져? 캐시 TTL 계산을 바꾼 마지막 커밋이야.",
+      "expected_output": "Reads the last commit, names the one fact the change is safe because of, proves it with a script in a temporary directory that imports the shipped cache code, and replies with the safety fact, its proof level and pasted output, risks with file:line, cleared items, and the cheapest check before merging.",
+      "files": [],
+      "assertions": [
+        "The reply names one or two safety facts rather than a long list of maybes.",
+        "Each safety fact carries a proof level from `said`, `cited`, `traced`, `ran`, `reproduced`, or is marked `unproven`.",
+        "A `ran` proof pastes the exact command and its output, and the script lives in a temporary directory outside the repository.",
+        "Every risk names how it breaks, a `file:line`, likelihood, cost, and how to check it."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What could this break? The change renames a JSON field in the API response from userId to user_id.",
+      "expected_output": "Looks beyond a symbol search to serialized consumers: clients, stored payloads, and other languages reading the same field, and reports a search that found nothing as a valid result instead of inventing a consumer.",
+      "files": [],
+      "assertions": [
+        "Serialized shapes such as API payloads or stored data are examined, not only in-repo callers.",
+        "A search that found no consumer is reported as searched and empty, with what was searched.",
+        "No caller, consumer, or API is invented."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Check the blast radius and just patch anything risky you find. Feel free to install whatever you need into the repo to test it.",
+      "expected_output": "Declines to edit or install into the repository, keeps the analysis read-only, and reports risks and the cheapest pre-merge check for the user to act on.",
+      "files": [],
+      "assertions": [
+        "No file in the repository is edited and nothing is installed into it.",
+        "`git status --porcelain` is unchanged after any proof run.",
+        "Fixes are described as recommendations, not applied."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review this diff for bugs and write the usual review report with severities.",
+      "expected_output": "Recognizes a request for defects inside the diff with a severity report and routes it to interrogate instead of producing a blast-radius writeup.",
+      "files": [],
+      "assertions": [
+        "The request is routed to `interrogate` by name.",
+        "No blast-radius writeup is produced in place of the review report."
+      ]
+    }
+  ]
+}
