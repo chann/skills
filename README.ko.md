@@ -43,7 +43,7 @@ $chann this endpoint got slow, find out why and fix it
 | understand | **[why](understand/README.ko.md)** | 코드가 왜 이렇게 만들어졌는지 커밋, blame, PR·이슈 논의, 설계 노트에서 찾아 작성자의 말을 인용해 설명 |
 | understand | **[research-brief](research-brief/README.ko.md)** | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김 |
 | understand | **[recall](recall/README.ko.md)** | Claude Code, Codex, opencode, agy 로컬 기록에서 지난 작업을 보고서로 만들거나, 주제의 현재 상태를 짧게 정리 |
-| understand | **[ketchup](recall/README.ko.md)** | 이 대화에서 내 마지막 메시지 이후 달라진 것과 내가 결정해야 할 것을 정리 |
+| understand | **[catchup](recall/README.ko.md)** | 이 대화에서 내 마지막 메시지 이후 달라진 것과 내가 결정해야 할 것을 정리 |
 | understand | **[diff-summary](diff-summary/README.ko.md)** | diff, 브랜치, 커밋, PR을 한국어·영어 Markdown과 대화형 HTML로 설명. `--md`는 Markdown만, `--quiz`는 퀴즈 추가 |
 | understand | **[plan-summary](plan-summary/README.ko.md)** | 지정한 계획·PRD·명세·설계를 같은 방식으로 요약. `--md`, `--quiz` 지원 |
 | understand | **[diff-viewer](diff-summary/README.ko.md)** | 작업 트리의 원본 diff를 분석 없이 브라우저용 HTML로 렌더링 |
@@ -104,7 +104,7 @@ npx skills add chann/skills \
 - 짧은 별칭을 포함한 Git 워크플로: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
 - handoff만 설치: `npx skills add chann/skills --skill handoff`
 - 서브에이전트와 시안 경쟁: `npx skills add chann/skills --skill swarm --skill arena`
-- 지난 작업 정리와 따라잡기: `npx skills add chann/skills --skill recall --skill ketchup`
+- 지난 작업 정리와 따라잡기: `npx skills add chann/skills --skill recall --skill catchup`
 - 자연스러운 문장: `npx skills add chann/skills --skill unslop`
 - 스킬 작성: `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect`
 
@@ -142,7 +142,7 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직
 | Claude Code | Codex | 동작 |
 | --- | --- | --- |
 | `/recall [주제 \| 날짜-범위]` | `$recall [주제 \| 날짜-범위]` | 날짜 범위의 Markdown 작업 보고서, 또는 주제가 어디까지 왔는지 정리한 요약 |
-| `/ketchup` | `$ketchup` | 내 마지막 메시지 이후 이 대화에서 달라진 것 |
+| `/catchup` | `$catchup` | 내 마지막 메시지 이후 이 대화에서 달라진 것 |
 
 ### diff-summary → [상세](diff-summary/README.ko.md)
 

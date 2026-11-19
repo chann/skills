@@ -5,7 +5,7 @@
 따라잡기를 돕는 스킬 두 개입니다. `recall`은 Claude Code, Codex, opencode,
 agy가 로컬에 남긴 세션 기록에서 두 가지 형태로 답합니다. 날짜 범위의 Markdown
 작업 보고서, 또는 어떤 주제가 지금 어디까지 와 있는지 정리한 짧은 브리프입니다.
-`ketchup`은 지금 이 대화만 다룹니다. 마지막으로 쓴 메시지 이후 무엇이 바뀌었고
+`catchup`은 지금 이 대화만 다룹니다. 마지막으로 쓴 메시지 이후 무엇이 바뀌었고
 내가 해야 할 일이 무엇인지 알려 줍니다.
 
 > **`work-summary`에서 이름이 바뀌었습니다.** 보고서 동작은 그대로이고,
@@ -18,7 +18,7 @@ agy가 로컬에 남긴 세션 기록에서 두 가지 형태로 답합니다. �
 각 도구의 실제 기록에서 나오며, 원본을 바꾸지 않고 로컬에서만 읽습니다. 기록
 속 문장은 데이터로만 보고 지시로 따르지 않습니다. 브리프는 언급하는 브랜치,
 PR, 파일을 쓰기 전에 실제 `git` 상태와 대조하므로 `[PR open #12]`라고 적힌
-작업은 지금 정말 열려 있습니다. `ketchup`은 쉬운 말로 답하고, 답하기 전에 현재
+작업은 지금 정말 열려 있습니다. `catchup`은 쉬운 말로 답하고, 답하기 전에 현재
 상태를 확인하며, 아무것도 바꾸지 않습니다.
 
 ## 설치 방법
@@ -27,14 +27,14 @@ PR, 파일을 쓰기 전에 실제 `git` 상태와 대조하므로 `[PR open #12
 
 ```bash
 npx skills add -y -g chann/skills --skill recall
-npx skills add -y -g chann/skills --skill ketchup
+npx skills add -y -g chann/skills --skill catchup
 ```
 
 현재 프로젝트에 설치:
 
 ```bash
 npx skills add chann/skills --skill recall
-npx skills add chann/skills --skill ketchup
+npx skills add chann/skills --skill catchup
 ```
 
 ## 사용법
@@ -43,7 +43,7 @@ npx skills add chann/skills --skill ketchup
 |---|---|---|
 | `/recall [날짜-범위]` | `$recall [날짜-범위]` | **보고서:** 오늘·어제 또는 주간·월간·분기·연간·직접 지정한 범위의 Markdown 작업 보고서 |
 | `/recall [주제]` | `$recall [주제]` | **브리프:** 작업을 시작하거나 이어 가기 위한 주제의 현재 상태 |
-| `/ketchup` | `$ketchup` | 마지막 메시지 이후 이 대화에서 바뀐 것 |
+| `/catchup` | `$catchup` | 마지막 메시지 이후 이 대화에서 바뀐 것 |
 
 예시:
 
@@ -53,7 +53,7 @@ $recall last quarter detailed
 $recall billing migration
 오늘 뭐 했는지 요약해줘
 인증 리팩터링 어디까지 했지?
-/ketchup
+/catchup
 ```
 
 인자가 없으면 `recall`은 오늘 작업을 요약합니다. "상세"를 요청하면 타임라인과
@@ -71,15 +71,15 @@ $recall billing migration
 문제 최대 다섯 개, 그리고 구체적인 다음 한 걸음입니다. 대화로만 답하고, 요청할
 때만 저장합니다.
 
-### ketchup
+### catchup
 
-`ketchup`은 내가 해야 할 일을 한 문장으로 먼저 말하고, 무슨 일이 있었는지
+`catchup`은 내가 해야 할 일을 한 문장으로 먼저 말하고, 무슨 일이 있었는지
 100단어 안팎으로 정리한 뒤, 내 결정이 필요한 항목을 하나씩 답변만 보고도 정할
 수 있게 적습니다. 마지막 한 줄은 에이전트가 혼자 계속할 수 있는 일입니다.
 
 ## 동작 원칙
 
-- 모든 에이전트 기록 저장소를 읽기 전용으로 사용하며, `ketchup`은 무엇도 바꾸지 않음
+- 모든 에이전트 기록 저장소를 읽기 전용으로 사용하며, `catchup`은 무엇도 바꾸지 않음
 - 로컬 전용: 기록 내용은 머신 밖으로 나가지 않음
 - 사용자의 로컬 시간대를 기준으로 묶고 한 주는 월요일부터 계산
 - 기록된 사실만 보고 — 활동 없는 기간은 없다고 표시
@@ -97,14 +97,14 @@ recall/
 ├── .claude-plugin/plugin.json
 ├── commands/
 │   ├── recall.md
-│   └── ketchup.md
+│   └── catchup.md
 ├── skills/
 │   ├── recall/
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
 │   │   ├── evals/evals.json
 │   │   └── references/agent-history-stores.md
-│   └── ketchup/
+│   └── catchup/
 │       ├── SKILL.md
 │       ├── agents/openai.yaml
 │       └── evals/evals.json

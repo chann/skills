@@ -1,9 +1,9 @@
 ---
-name: ketchup
-description: Use when the user asks what happened in this conversation while they were away, including "지금까지 뭐 바뀌었어?", "자리 비운 동안 뭐 했는지 알려줘", "나 없는 동안 어떻게 됐어", "catch me up on this chat", "what changed since my last message", "what did I miss", "/ketchup", or "$ketchup". Produces a plain-language reply that opens with what waits on the user, then what happened, then each decision they must make, with live branch, PR, CI, and agent state checked first. Read-only. For other sessions or history use recall, and for a document another agent will read use handoff session.
+name: catchup
+description: Use when the user asks what happened in this conversation while they were away, including "지금까지 뭐 바뀌었어?", "자리 비운 동안 뭐 했는지 알려줘", "나 없는 동안 어떻게 됐어", "catch me up on this chat", "what changed since my last message", "what did I miss", "/catchup", or "$catchup". Produces a plain-language reply that opens with what waits on the user, then what happened, then each decision they must make, with live branch, PR, CI, and agent state checked first. Read-only. For other sessions or history use recall, and for a document another agent will read use handoff session.
 ---
 
-# Ketchup
+# Catchup
 
 Bring the user up to date on this conversation. They stepped away, work kept moving, and
 they need to know what changed and what is waiting on them, in words they can
@@ -63,7 +63,7 @@ act on without scrolling back.
 ## Boundaries
 
 - Other sessions, earlier days, or a topic across projects: use `recall` when it
-  is installed; ketchup reads only this conversation.
+  is installed; catchup reads only this conversation.
 - A document for another agent or teammate to pick the work up: use
   `handoff session` when it is installed.
 

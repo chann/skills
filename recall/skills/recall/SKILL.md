@@ -1,6 +1,6 @@
 ---
 name: recall
-description: Use when the user wants coding-agent history from local Claude Code, Codex, opencode, and agy sessions, either as a date-ranged report ("오늘 작업 요약해줘", "이번 분기 작업 정리해줘", "what did I work on this quarter", "summarize my coding sessions") or as a current-state brief on a topic for starting or resuming work ("X 작업 어디까지 했지", "이어서 하려는데 지금 상태 정리해줘", "where did I leave off", "catch me up on X"), including "/recall" or "$recall". Produces a Markdown report, or a short brief whose branch, PR, and file claims are checked against live git. For this conversation only use ketchup, for a document the next agent reads use handoff session, and for one Git change use diff-summary.
+description: Use when the user wants coding-agent history from local Claude Code, Codex, opencode, and agy sessions, either as a date-ranged report ("오늘 작업 요약해줘", "이번 분기 작업 정리해줘", "what did I work on this quarter", "summarize my coding sessions") or as a current-state brief on a topic for starting or resuming work ("X 작업 어디까지 했지", "이어서 하려는데 지금 상태 정리해줘", "where did I leave off", "catch me up on X"), including "/recall" or "$recall". Produces a Markdown report, or a short brief whose branch, PR, and file claims are checked against live git. For this conversation only use catchup, for a document the next agent reads use handoff session, and for one Git change use diff-summary.
 ---
 
 # Recall
@@ -266,7 +266,7 @@ Use exactly this shape:
 
 ## Boundaries
 
-- This conversation only: use `ketchup`, which needs no history stores.
+- This conversation only: use `catchup`, which needs no history stores.
 - A document the next agent reads, with the full state written out: use
   `handoff session` when it is installed.
 - One Git change: use `diff-summary` when it is installed.

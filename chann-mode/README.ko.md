@@ -101,7 +101,7 @@ $chann this endpoint got slow, find out why and fix it
 | 병렬로 돌릴 독립 조각 | `swarm` | fan-out |
 | 여러 마일스톤이나 무인 작업 | `long-task` | autonomous-run |
 | 커밋, 푸시, 배포, 병합, 충돌, 정리, 재설치 | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
-| 멈추기, 이어 하기, 따라잡기 | `handoff`, `recall`, `ketchup` | pause-and-pickup |
+| 멈추기, 이어 하기, 따라잡기 | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | 문서와 글 | `gen-docs`, `unslop` | docs |
 | 스킬 작성, 수정, 교훈 정리 | `skill-forge`, `skill-audit`, `reflect` | authoring-a-skill |
 

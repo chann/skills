@@ -43,7 +43,7 @@ Eight stages, one row per workflow. Each name links to its plugin README.
 | understand | **[why](understand/README.md)** | Explain why code is built this way from commits, blame, pull-request and issue threads, and design notes, quoting the authors |
 | understand | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
 | understand | **[recall](recall/README.md)** | Report past coding-agent work from local Claude Code, Codex, opencode, and agy history, or brief the current state of a topic |
-| understand | **[ketchup](recall/README.md)** | Catch you up on this conversation: what waits on you, what happened, and each decision you must make |
+| understand | **[catchup](recall/README.md)** | Catch you up on this conversation: what waits on you, what happened, and each decision you must make |
 | understand | **[diff-summary](diff-summary/README.md)** | Explain a diff, branch, commit, or PR as aligned Korean and English Markdown plus interactive HTML; `--md` for Markdown only, `--quiz` to add a quiz |
 | understand | **[plan-summary](plan-summary/README.md)** | Summarize explicit plans, PRDs, specifications, and designs the same way, with `--md` and `--quiz` |
 | understand | **[diff-viewer](diff-summary/README.md)** | Render the raw working-tree diff as a browser-readable HTML report, without analysis |
@@ -104,7 +104,7 @@ exception and need `git-commit` beside them.
 - Git workflow with the short aliases: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
 - Handoff only: `npx skills add chann/skills --skill handoff`
 - Subagents and competing attempts: `npx skills add chann/skills --skill swarm --skill arena`
-- Past work and catch-up: `npx skills add chann/skills --skill recall --skill ketchup`
+- Past work and catch-up: `npx skills add chann/skills --skill recall --skill catchup`
 - Natural prose: `npx skills add chann/skills --skill unslop`
 - Skill authoring: `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect`
 
@@ -142,7 +142,7 @@ commands are arguments now: `/diff-summary --md`, `/git-commit push realtime`,
 | Claude Code | Codex | Action |
 | --- | --- | --- |
 | `/recall [topic \| date-range]` | `$recall [topic \| date-range]` | A Markdown work report for a date range, or a brief on where a topic stands |
-| `/ketchup` | `$ketchup` | What changed in this conversation since your last message |
+| `/catchup` | `$catchup` | What changed in this conversation since your last message |
 
 ### diff-summary → [details](diff-summary/README.md)
 

@@ -17,7 +17,7 @@ export type SkillId =
   | "why"
   | "research-brief"
   | "recall"
-  | "ketchup"
+  | "catchup"
   | "diff-summary"
   | "plan-summary"
   | "diff-viewer"
@@ -98,12 +98,12 @@ export const skillDefinitions = [
     tags: ["report", "history", "claude-code", "codex", "brief"],
   },
   {
-    id: "ketchup",
-    title: "Ketchup",
+    id: "catchup",
+    title: "Catchup",
     category: "understand",
-    example: "$ketchup",
-    claudeSelector: "/ketchup",
-    codexSelector: "$ketchup",
+    example: "$catchup",
+    claudeSelector: "/catchup",
+    codexSelector: "$catchup",
     tags: ["catch-up", "chat", "decision", "status"],
   },
   {

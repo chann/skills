@@ -272,7 +272,7 @@
       "whenToUse": "When you want a summary of what you did this week, or need to know where you left off before resuming earlier work",
       "result": "A Markdown report, or a short brief whose branch, PR, and file claims are checked against live git"
     },
-    "ketchup": {
+    "catchup": {
       "summary": "Tells you what changed in this conversation while you were away and which decisions are waiting on you.",
       "whenToUse": "When you come back to an agent that kept working and need to catch up fast",
       "result": "What waits on you first, then what happened, then each decision you must make. Live branch, PR, CI, and agent state are checked first, read-only"

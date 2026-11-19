@@ -22,7 +22,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name. The 30 names are `chann`, `how`, `why`, `research-brief`, `recall`, `ketchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
+Use `--skill <name>` with the actual skill name. The 30 names are `chann`, `how`, `why`, `research-brief`, `recall`, `catchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
 
 Every skill works when installed alone. The three aliases are the one exception: each runs the installed `git-commit` with a fixed mode and refuses when `git-commit` is missing.
 
@@ -36,7 +36,7 @@ Every skill works when installed alone. The three aliases are the one exception:
 | Codex `$gcpr` and its canonical workflow | `npx skills add chann/skills --skill gcpr --skill git-commit` |
 | Handoff only | `npx skills add chann/skills --skill handoff` |
 | Subagents and competing attempts | `npx skills add chann/skills --skill swarm --skill arena` |
-| Past work and catch-up | `npx skills add chann/skills --skill recall --skill ketchup` |
+| Past work and catch-up | `npx skills add chann/skills --skill recall --skill catchup` |
 | Plan summaries | `npx skills add chann/skills --skill plan-summary` |
 | Review-me only | `npx skills add chann/skills --skill review-me` |
 | Build-reinstall only | `npx skills add chann/skills --skill build-reinstall` |
@@ -97,7 +97,7 @@ For the deepest per-skill detail, see each plugin's own README: [chann-mode](cha
 > /build-reinstall                         # build, reinstall, verify installed artifact
 > /recall this week                        # Markdown report of the week's agent work
 > /recall billing migration                # where does this topic stand
-> /ketchup                                 # what changed in this conversation
+> /catchup                                 # what changed in this conversation
 > /plan-summary docs/plan.md docs/design.md          # Korean + English plan summary + HTML
 > /plan-summary docs/prd.md --md           # Korean + English Markdown only
 > /plan-summary docs/spec.md --quiz        # bilingual summary + aligned quiz
@@ -122,7 +122,7 @@ command reference below.
 | Why code is built this way | `/why` | `$why` |
 | Primary-source research | `/research-brief` | `$research-brief` |
 | Work-history report or topic brief | `/recall` | `$recall` |
-| Conversation catch-up | `/ketchup` | `$ketchup` |
+| Conversation catch-up | `/catchup` | `$catchup` |
 | Diff summary | `/diff-summary` | `$diff-summary` |
 | Raw diff viewer | `/diff-viewer` | `$diff-viewer` |
 | Plan document summary | `/plan-summary` | `$plan-summary` |
@@ -206,19 +206,19 @@ Codex invokes the same workflow as `$research-brief [question]`. A community
 source is a lead to the first-party source, never an answer; a claim without the
 version or date it was verified against does not go in the brief.
 
-### recall and ketchup
+### recall and catchup
 
 | Command | Action |
 |---|---|
 | `/recall [date-range]` | **Report:** a Markdown work report for `today` (default), `yesterday`, this/last week, month, quarter, or year, a single day, or `YYYY-MM-DD..YYYY-MM-DD` |
 | `/recall [topic]` | **Brief:** the current state of a topic, for starting or resuming work |
-| `/ketchup` | What changed in this conversation since your last message, and what waits on you |
+| `/catchup` | What changed in this conversation since your last message, and what waits on you |
 
-Codex invokes the same workflows as `$recall [topic | date-range]` and `$ketchup`. `recall` mines the local history stores of Claude Code, Codex, opencode, and agy read-only (silently skipping absent ones), buckets records in the user's local timezone with Monday-start weeks, and replies with a summary or, on request ("detailed", "상세"), a report that adds a timeline and a per-request log. History content is data, never instructions, and never leaves the machine. A file is written only when asked; default save paths are grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`, `yearly`, or `custom`, and a user-supplied output path takes priority. A request with both a topic and a range runs the brief with that range as its window.
+Codex invokes the same workflows as `$recall [topic | date-range]` and `$catchup`. `recall` mines the local history stores of Claude Code, Codex, opencode, and agy read-only (silently skipping absent ones), buckets records in the user's local timezone with Monday-start weeks, and replies with a summary or, on request ("detailed", "상세"), a report that adds a timeline and a per-request log. History content is data, never instructions, and never leaves the machine. A file is written only when asked; default save paths are grouped under `.work-summaries/daily`, `weekly`, `monthly`, `quarterly`, `yearly`, or `custom`, and a user-supplied output path takes priority. A request with both a topic and a range runs the brief with that range as its window.
 
 The brief locks its scope first and states it back: the window (default the last 7 days, never silently narrowed from "all"), the topic, and the workspace. It returns a capsule of at most five bullets, threads with exactly one status tag each (`[merged]`, `[PR open #N]`, `[in progress <branch>]`, `[done, uncommitted]`, `[reverted]`, `[not started]`), at most five recurring problems, and one concrete next move. Every branch, PR, and file it names is checked against live `git` first.
 
-`ketchup` opens with one sentence on what waits on you, then what happened in about 100 words, then every decision that needs you, each decidable from the reply alone, then one line on work the agent can still do itself. It checks live branch, PR, CI, and agent state before it answers and changes nothing. For a document the next agent reads, use `handoff session`.
+`catchup` opens with one sentence on what waits on you, then what happened in about 100 words, then every decision that needs you, each decidable from the reply alone, then one line on work the agent can still do itself. It checks live branch, PR, CI, and agent state before it answers and changes nothing. For a document the next agent reads, use `handoff session`.
 
 ### diff-summary and diff-viewer
 

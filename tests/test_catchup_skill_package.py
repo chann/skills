@@ -5,13 +5,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "recall"
-SKILL = PACKAGE / "skills" / "ketchup"
+SKILL = PACKAGE / "skills" / "catchup"
 
 
-class KetchupSkillPackageTests(unittest.TestCase):
+class CatchupSkillPackageTests(unittest.TestCase):
     def test_package_shape_is_complete(self) -> None:
         expected = [
-            PACKAGE / "commands" / "ketchup.md",
+            PACKAGE / "commands" / "catchup.md",
             SKILL / "SKILL.md",
             SKILL / "agents" / "openai.yaml",
             SKILL / "evals" / "evals.json",
@@ -25,7 +25,7 @@ class KetchupSkillPackageTests(unittest.TestCase):
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         description = text.split("---\n", 2)[1].split("description: ", 1)[1].strip()
 
-        self.assertIn("name: ketchup", text.split("---\n", 2)[1])
+        self.assertIn("name: catchup", text.split("---\n", 2)[1])
         self.assertTrue(description.startswith("Use when"))
         self.assertLessEqual(len(description), 1024)
         for trigger in (
@@ -33,8 +33,8 @@ class KetchupSkillPackageTests(unittest.TestCase):
             "자리 비운 동안 뭐 했는지 알려줘",
             "catch me up on this chat",
             "what changed since my last message",
-            "/ketchup",
-            "$ketchup",
+            "/catchup",
+            "$catchup",
             "recall",
             "handoff session",
         ):
@@ -71,14 +71,14 @@ class KetchupSkillPackageTests(unittest.TestCase):
         self.assertFalse((SKILL / "scripts").exists())
 
     def test_interfaces_and_evals(self) -> None:
-        command = (PACKAGE / "commands" / "ketchup.md").read_text(encoding="utf-8")
+        command = (PACKAGE / "commands" / "catchup.md").read_text(encoding="utf-8")
         openai = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
         payload = json.loads((SKILL / "evals" / "evals.json").read_text(encoding="utf-8"))
 
-        self.assertIn("Use the **ketchup** skill", command)
+        self.assertIn("Use the **catchup** skill", command)
         self.assertNotIn("argument-hint", command)
-        self.assertIn("$ketchup", openai)
-        self.assertEqual("ketchup", payload["skill_name"])
+        self.assertIn("$catchup", openai)
+        self.assertEqual("catchup", payload["skill_name"])
         self.assertGreaterEqual(len(payload["evals"]), 3)
         for item in payload["evals"]:
             with self.subTest(eval=item["id"]):
@@ -86,13 +86,13 @@ class KetchupSkillPackageTests(unittest.TestCase):
         assertions = " ".join(a for i in payload["evals"] for a in i["assertions"])
         self.assertIn("recall", assertions)
 
-    def test_readmes_document_ketchup(self) -> None:
+    def test_readmes_document_catchup(self) -> None:
         for path in (PACKAGE / "README.md", PACKAGE / "README.ko.md"):
             with self.subTest(path=path.relative_to(ROOT)):
                 text = path.read_text(encoding="utf-8")
-                self.assertEqual(2, text.count("chann/skills --skill ketchup"))
-                self.assertIn("/ketchup", text)
-                self.assertIn("$ketchup", text)
+                self.assertEqual(2, text.count("chann/skills --skill catchup"))
+                self.assertIn("/catchup", text)
+                self.assertIn("$catchup", text)
 
 
 if __name__ == "__main__":

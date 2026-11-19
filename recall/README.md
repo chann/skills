@@ -5,7 +5,7 @@
 Two skills for getting caught up. `recall` mines the local session history kept
 by Claude Code, Codex, opencode, and agy, and answers in one of two shapes: a
 Markdown work report for a date range, or a short brief on where a topic stands
-right now. `ketchup` catches you up on this conversation only: what changed
+right now. `catchup` catches you up on this conversation only: what changed
 since your last message and what waits on you.
 
 > **Renamed from `work-summary`.** The report behavior is unchanged, and the
@@ -18,7 +18,7 @@ since your last message and what waits on you.
 request comes from the stores' own records, mined read-only and kept local, and
 history content is treated as data, never as instructions. A brief also checks
 every branch, PR, and file it names against live `git` before writing it, so a
-thread marked `[PR open #12]` is open right now. `ketchup` speaks plain words,
+thread marked `[PR open #12]` is open right now. `catchup` speaks plain words,
 checks live state before it answers, and never changes anything.
 
 ## Installation
@@ -27,14 +27,14 @@ Global:
 
 ```bash
 npx skills add -y -g chann/skills --skill recall
-npx skills add -y -g chann/skills --skill ketchup
+npx skills add -y -g chann/skills --skill catchup
 ```
 
 Project-local:
 
 ```bash
 npx skills add chann/skills --skill recall
-npx skills add chann/skills --skill ketchup
+npx skills add chann/skills --skill catchup
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ npx skills add chann/skills --skill ketchup
 |---|---|---|
 | `/recall [date-range]` | `$recall [date-range]` | **Report:** Markdown work report for today, yesterday, this/last week, month, quarter, or year, or `YYYY-MM-DD..YYYY-MM-DD` |
 | `/recall [topic]` | `$recall [topic]` | **Brief:** current state of a topic for starting or resuming work |
-| `/ketchup` | `$ketchup` | What changed in this conversation since your last message |
+| `/catchup` | `$catchup` | What changed in this conversation since your last message |
 
 Examples:
 
@@ -53,7 +53,7 @@ $recall last quarter detailed
 $recall billing migration
 오늘 뭐 했는지 요약해줘
 인증 리팩터링 어디까지 했지?
-/ketchup
+/catchup
 ```
 
 With no argument `recall` reports today at summary depth. Ask for "detailed"
@@ -71,15 +71,15 @@ most five bullets, threads with exactly one status tag each (`[merged]`,
 `[reverted]`, `[not started]`), at most five recurring problems, and
 one concrete next move. It is a reply and is saved only on request.
 
-### ketchup
+### catchup
 
-`ketchup` opens with one sentence on what waits on you, then what happened in
+`catchup` opens with one sentence on what waits on you, then what happened in
 about 100 words, then every decision that needs you, each decidable from the
 reply alone, then one line on work the agent can still do itself.
 
 ## Behavior
 
-- Read-only toward every agent history store; `ketchup` is read-only toward
+- Read-only toward every agent history store; `catchup` is read-only toward
   everything
 - Local-only: history content never leaves the machine
 - Buckets in the user's local timezone; weeks start Monday
@@ -98,14 +98,14 @@ recall/
 ├── .claude-plugin/plugin.json
 ├── commands/
 │   ├── recall.md
-│   └── ketchup.md
+│   └── catchup.md
 ├── skills/
 │   ├── recall/
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
 │   │   ├── evals/evals.json
 │   │   └── references/agent-history-stores.md
-│   └── ketchup/
+│   └── catchup/
 │       ├── SKILL.md
 │       ├── agents/openai.yaml
 │       └── evals/evals.json

@@ -53,7 +53,7 @@ next, when to pause, and the final reply.
 | Independent slices to run in parallel | `swarm` | fan-out |
 | Multi-milestone or unattended work | `long-task` | autonomous-run |
 | Commit, push, deploy, merge, conflicts, cleanup, reinstall | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
-| Stopping, resuming, catching up | `handoff`, `recall`, `ketchup` | pause-and-pickup |
+| Stopping, resuming, catching up | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | Docs and prose | `gen-docs`, `unslop` | docs |
 | Writing or fixing a skill, capturing lessons | `skill-forge`, `skill-audit`, `reflect` | authoring-a-skill |
 

@@ -93,10 +93,10 @@
     {
       "id": 9,
       "prompt": "Use $recall to tell me what changed in this conversation while I was away.",
-      "expected_output": "Redirects to ketchup instead of mining history stores, because the request is about this conversation only.",
+      "expected_output": "Redirects to catchup instead of mining history stores, because the request is about this conversation only.",
       "files": [],
       "assertions": [
-        "Names ketchup as the right skill for this conversation only and does not mine the history stores",
+        "Names catchup as the right skill for this conversation only and does not mine the history stores",
         "Does not produce a date-ranged report or a topic brief for a request about the current chat"
       ]
     }

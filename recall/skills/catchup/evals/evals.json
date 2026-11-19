@@ -1,9 +1,9 @@
 {
-  "skill_name": "ketchup",
+  "skill_name": "catchup",
   "evals": [
     {
       "id": 1,
-      "prompt": "Use $ketchup. I stepped away for an hour; what changed in this conversation?",
+      "prompt": "Use $catchup. I stepped away for an hour; what changed in this conversation?",
       "expected_output": "A plain reply that opens with one sentence on what waits on the user, then one line per requested thing with its state, then each decision waiting on the user, then one line on work the agent can still do itself.",
       "files": [],
       "assertions": [
@@ -27,7 +27,7 @@
     },
     {
       "id": 3,
-      "prompt": "Use $ketchup. Nothing has happened since my last message, right?",
+      "prompt": "Use $catchup. Nothing has happened since my last message, right?",
       "expected_output": "A short reply stating that there was no change and no pending decision, then nothing more.",
       "files": [],
       "assertions": [
@@ -37,7 +37,7 @@
     },
     {
       "id": 4,
-      "prompt": "Use $ketchup to tell me what I worked on across all my projects last week.",
+      "prompt": "Use $catchup to tell me what I worked on across all my projects last week.",
       "expected_output": "Redirects to recall because the request is about history across sessions, not this conversation.",
       "files": [],
       "assertions": [

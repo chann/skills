@@ -16,7 +16,7 @@ class RecallSkillPackageTests(unittest.TestCase):
         expected = [
             PACKAGE / ".claude-plugin" / "plugin.json",
             PACKAGE / "commands" / "recall.md",
-            PACKAGE / "commands" / "ketchup.md",
+            PACKAGE / "commands" / "catchup.md",
             SKILL / "SKILL.md",
             SKILL / "agents" / "openai.yaml",
             SKILL / "evals" / "evals.json",
@@ -41,7 +41,7 @@ class RecallSkillPackageTests(unittest.TestCase):
         openai = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
 
         self.assertEqual("recall", metadata["name"])
-        self.assertEqual("1.0.0", metadata["version"])
+        self.assertEqual("2.0.0", metadata["version"])
         self.assertIn("date", metadata["description"].lower())
         self.assertIn('argument-hint: "[topic | date-range]"', command)
         self.assertIn("Use the **recall** skill", command)
@@ -164,7 +164,7 @@ class RecallSkillPackageTests(unittest.TestCase):
         self.assertIn("quarterly", assertions)
         self.assertIn("does not install", assertions)
         self.assertIn("live git", assertions)
-        self.assertIn("ketchup", assertions)
+        self.assertIn("catchup", assertions)
 
     def test_readmes_document_installation_and_selectors(self) -> None:
         for path in (PACKAGE / "README.md", PACKAGE / "README.ko.md"):

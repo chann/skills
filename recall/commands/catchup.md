@@ -2,7 +2,7 @@
 description: Catch me up on what changed in this conversation since my last message.
 ---
 
-Use the **ketchup** skill to catch the user up on this conversation.
+Use the **catchup** skill to catch the user up on this conversation.
 
 - The window is everything since the user's last own message; notifications and
   subagent results do not count as theirs.
