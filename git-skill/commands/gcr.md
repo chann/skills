@@ -1,14 +1,11 @@
 ---
-description: Alias for `/git-commit-realtime` — commit verified outcome checkpoints continuously while working, without pushing
+description: Alias for `/git-commit realtime` — commit verified outcome checkpoints locally while working, never pushing
+argument-hint: "[task]"
 ---
 
-Use the **git-commit-realtime** skill for the requested implementation.
+Use the **git-commit** skill in mode `realtime` for the requested work; `$ARGUMENTS` is the task.
 
-Plan meaningful, outcome-based checkpoints before the first commit. Complete and
-verify one coherent unit, stage only its explicit paths, create a Conventional
-Commit, record its hash, and continue to the next unit while keeping every
-checkpoint local.
-
-Do not create time-based or knowingly broken checkpoint commits. Never use
-`git add .`, bypass hooks, or push from this workflow; publication stays a
-separate, explicit request such as `/git-commit-push` or `/gcpr`.
+Read the installed `git-commit` skill and every reference its `realtime` mode loads
+before any Git command. If `git-commit` is not installed, stop and report it.
+The fixed mode never moves to a farther-reaching one, and this alias never
+relaxes a `git-commit` rule.

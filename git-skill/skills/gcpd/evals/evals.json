@@ -4,41 +4,42 @@
     {
       "id": 1,
       "prompt": "/gcpd implement cursor pagination and deploy each verified outcome using AGENTS.md's staging configuration.",
-      "expected_output": "Locates and fully reads git-commit-push-deploy before any Git command or deployment and applies its shared workflows and deployment gates.",
+      "expected_output": "Reads the installed git-commit skill completely and runs it in mode deploy with the rest of the request as the task.",
       "files": [],
       "assertions": [
-        "The canonical skill is read before any Git inspection, mutation, or deployment.",
-        "The alias preserves documented target selection, per-checkpoint confirmation, and all shared workflow requirements."
+        "The installed git-commit skill is read completely, including references/checkpoints.md and references/deploy.md, before any Git command or deployment.",
+        "The documented target and route are resolved before the first checkpoint is pushed."
       ]
     },
     {
       "id": 2,
-      "prompt": "$gcpd on this refactor. git-commit-push-deploy is not installed, but git-commit-push-realtime is available.",
-      "expected_output": "Stops before any Git command or deployment and reports that git-commit-push-deploy must also be installed.",
+      "prompt": "$gcpd on this refactor. The git-commit skill is not installed in this environment.",
+      "expected_output": "Stops before any Git command and reports that git-commit must also be installed.",
       "files": [],
       "assertions": [
-        "No Git command or deployment runs when the canonical skill is missing.",
-        "The alias neither reconstructs deployment from memory nor falls back to gcpr."
+        "No Git repository is inspected or changed once git-commit is found to be missing.",
+        "The report names git-commit as the missing dependency.",
+        "The workflow is not rebuilt from memory and no other alias is used instead."
       ]
     },
     {
       "id": 3,
-      "prompt": "작업 중간중간 의미 있는 단위마다 커밋하고 푸시하고 배포해줘.",
-      "expected_output": "Uses git-commit-push-deploy directly for the natural-language request, leaving the selector-only alias inactive.",
+      "prompt": "의미 있는 단위마다 커밋 푸시 배포해줘.",
+      "expected_output": "Recognizes a natural-language request rather than the alias selector and uses git-commit directly in the mode the words select.",
       "files": [],
       "assertions": [
-        "The selector-only gcpd alias is not selected from natural language alone.",
-        "The canonical workflow applies its documented deployment settings and verification gates."
+        "The selector-only gcpd alias is not chosen from phrasing alone.",
+        "git-commit states the resolved mode before its first Git command."
       ]
     },
     {
       "id": 4,
       "prompt": "$gcpd the first push succeeded and the deployment is still queued. Can this checkpoint be reported complete now?",
-      "expected_output": "Keeps the canonical deployment confirmation gate before the next checkpoint instead of weakening it inside the alias.",
+      "expected_output": "Keeps the deploy confirmation gate: a queued deployment is INCONCLUSIVE, so the checkpoint is not complete and the next one waits.",
       "files": [],
       "assertions": [
         "Push success alone does not complete the checkpoint.",
-        "The next checkpoint waits for deployment success and required checks."
+        "The next checkpoint waits for deployment success and the required checks."
       ]
     }
   ]

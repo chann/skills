@@ -1,0 +1,4 @@
+interface:
+  display_name: "GCR"
+  short_description: "Alias for git-commit realtime: local verified checkpoint commits"
+  default_prompt: "Use $gcr to commit each verified outcome locally while working, without pushing."
