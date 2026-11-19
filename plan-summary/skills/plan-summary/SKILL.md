@@ -1,6 +1,6 @@
 ---
 name: plan-summary
-description: Use when the user wants to summarize one or more explicit plans, PRDs, requirements, specifications, architecture proposals, implementation plans, or design documents, including "plan 요약", "PRD 요약", "설계문서 요약", "기획서 요약", "요구사항 문서 요약", "summarize this plan", "summarize this PRD", "design document summary", "architecture proposal summary", "/plan-summary", or "$plan-summary". Produces aligned Korean and English Markdown plus self-contained bilingual HTML. Use plan-summary-md for Markdown only and plan-summary-quiz for a comprehension quiz.
+description: Use when the user wants to summarize one or more explicit plans, PRDs, requirements, specifications, architecture proposals, implementation plans, or design documents, including "plan 요약", "PRD 요약", "설계문서 요약", "기획서 요약", "요구사항 문서 요약", "summarize this plan", "summarize this PRD", "design document summary", "architecture proposal summary", "/plan-summary", or "$plan-summary". Produces aligned Korean and English Markdown plus self-contained bilingual HTML. Add --md ("plan 요약을 마크다운으로", "markdown-only plan summary") for Markdown only, or --quiz ("PRD 이해도 퀴즈", "quiz me on this plan") for an aligned comprehension quiz. To find weaknesses in a plan, use a review workflow instead.
 ---
 
 # Plan Summary
@@ -10,6 +10,17 @@ description: Use when the user wants to summarize one or more explicit plans, PR
 Turn one or more user-selected plan, PRD, specification, or design files into aligned Korean and English evidence-based summaries. Write two Markdown sources and one self-contained bilingual HTML report. Korean is the default HTML view.
 
 This is a summarization workflow. Do not critique, approve, rewrite, edit, or execute the source document. Route a request to find defects or challenge a plan to a review workflow instead.
+
+## Options
+
+| Invocation | Result |
+|---|---|
+| `/plan-summary <path ...>` | Korean Markdown, English Markdown, and one bilingual HTML report, opened in a browser (default) |
+| `/plan-summary <path ...> --md`, "markdown only", "마크다운만" | The two Markdown files only: no HTML, no browser |
+| `/plan-summary <path ...> --quiz`, "퀴즈", "quiz me" | The default artifacts plus an aligned `## Quiz` in both languages and an interactive quiz in the HTML |
+| `/plan-summary <path ...> --md --quiz` | The two Markdown files with their aligned `## Quiz` and nothing else: the generator validates the quiz in Markdown-only mode, and `--md` decides that no HTML or browser is produced |
+
+Strip only the exact tokens `--md` and `--quiz` (or their natural-language equivalents) from the request; everything else is a source path. The option changes only the authoring and generation steps. Every source-file, collector, untrusted-document, and alignment rule below applies to all modes unchanged.
 
 ## Require Explicit Source Files
 
@@ -68,7 +79,7 @@ Preserve every source-backed fact, number, date, proper noun, code identifier,
 command, quote, link, digest, `PS-*` / `QZ-*` ID, and parser-significant key.
 
 This selector is self-contained. If the runtime already exposes
-`human-friendly-writing`, it is an optional final pass over only the newly
+`unslop`, it is an optional final pass over only the newly
 authored Korean draft before generation. Do not install, fetch, or require it.
 If it is absent or unreadable, continue silently with the rules above and
 complete the report. After an optional pass, run the normal validation and
@@ -124,6 +135,19 @@ Supported categories are `Overview`, `Goal`, `Scope`, `Requirement`, `Decision`,
 
 Omit unsupported level-two sections. `Plan Map` and `Risks, Contradictions, and Open Questions` are optional, but when present must remain source-backed. Explicit single-language mode is allowed only when the user asks for one language.
 
+## Quiz Contract (`--quiz`)
+
+Add an aligned `## Quiz` as the final level-two section in both reports before generation. The heading `Quiz` and the `**Explanation:**` key are parser-significant English keys.
+
+- Author five questions by default. Use fewer only when the sources cannot support five distinct concepts without padding.
+- Use unique sequential `QZ-*` headings beginning at `QZ-001`.
+- Give every question 2 to 6 single-line task-list options with exactly one `- [x]` answer.
+- End every question with exactly one non-empty `**Explanation:**` tied to a `PS-*` card or source evidence.
+- Keep the same IDs, order, option counts, and same correct-option index in Korean and English.
+- Test goals, scope, decisions, flows, dependencies, risks, or acceptance criteria. Avoid line-count trivia and trick questions.
+
+The generated HTML makes every option an accessible button. One choice reveals the correct answer and explanation, disables that question, and exposes the answer key when printed. It performs no network request and stores no quiz answer state. In Markdown the `- [x]` mark is the answer key.
+
 ## Generate And Verify Artifacts
 
 Use the same trusted Python interpreter and fixed generator argv. Send the complete Markdown strings as JSON standard input; do not compute filenames or write the artifacts yourself:
@@ -153,8 +177,23 @@ Require a zero exit. Verify every returned absolute path is a regular file, the 
 
 For an explicitly requested single language, use `--markdown-stdin`; do not silently synthesize the other language. If the target repository does not ignore `.plan-summaries/`, suggest an ignore rule but do not edit its `.gitignore` automatically.
 
+### Markdown only (`--md`)
+
+Author the same aligned pair, then add `--markdown-only` to the same fixed argv and omit `--theme`:
+
+```text
+/absolute/trusted/python3 -I <skill-path>/scripts/generate_plan_summary.py \
+  --bilingual-json-stdin \
+  --output-directory ".plan-summaries" \
+  --markdown-only
+```
+
+Require a zero exit and verify both returned Markdown files. Do not create an HTML file through another mechanism and do not attempt a browser open. Use `--markdown-stdin --markdown-only` only when the user explicitly requests one language.
+
 ## Completion Handoff
 
-Report only the selected source paths and digests, card count, generated languages, absolute artifact paths, fresh validation, browser-open result or warning, and material unknowns. Do not repeat the Executive Summary or card prose in the conversation.
+Report only the selected source paths and digests, card count, generated languages, absolute artifact paths, fresh validation, browser-open result or warning, and material unknowns. Do not repeat the Executive Summary or card prose in the conversation. With `--quiz`, add the question count and never repeat quiz prose. With `--md`, list only the two Markdown paths and omit the browser-open fact.
 
 Invalid input, a collector failure, malformed Markdown, bilingual drift, or output collision means the workflow is incomplete. State the concise reason and leave source files untouched.
+
+**Reply:** the selected source paths and digests, card count (plus question count with `--quiz`), languages, absolute artifact paths (Markdown only with `--md`), fresh validation, the browser-open result or warning (none with `--md`), and material unknowns, with no summary, card, or quiz prose.
