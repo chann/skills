@@ -19,7 +19,7 @@ class LongTaskSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual(metadata["name"], "long-task")
-        self.assertEqual(metadata["version"], "0.3.1")
+        self.assertEqual(metadata["version"], "0.3.0")
 
     def test_skills_cli_discovers_long_task(self) -> None:
         env = os.environ.copy()

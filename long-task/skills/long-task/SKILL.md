@@ -34,7 +34,7 @@ These skills handle subroutines this orchestrator coordinates. Read them before 
 - `superpowers:using-git-worktrees` — worktree isolation for parallel implementers
 - `superpowers:subagent-driven-development` — subagent dispatch patterns
 - `superpowers:test-driven-development` — quality bar enforced inside `.agent/standards.md`
-- the superpowers review-request skill — milestone review cycles
+- `superpowers:requesting-code-review` — milestone review cycles
 - `superpowers:verification-before-completion` — pre-merge verification gates
 - `superpowers:systematic-debugging` — handling subagent failures
 
@@ -213,7 +213,7 @@ Agent tool (general-purpose, isolation: "worktree"):
 ### Architectural Reviewer Dispatch
 
 ```
-Agent tool (superpowers reviewer agent or general-purpose):
+Agent tool (superpowers:code-reviewer or general-purpose):
   description: "Review milestone: [milestone name]"
   prompt: |
     You are reviewing milestone: [milestone name]
