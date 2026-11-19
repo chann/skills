@@ -337,8 +337,6 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
     def test_skill_ends_with_a_reply_contract_and_routes_to_new_names(self) -> None:
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
         last_line = skill_text.rstrip("\n").splitlines()[-1]
-        # The description may say "formerly code-review" so old triggers still route.
-        skill_text = skill_text.split("---\n", 2)[2]
 
         self.assertTrue(last_line.startswith("**Reply:**"), last_line)
         for stale in (
