@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 33개의 실용적인 에이전트 워크플로와 35개의 설치 가능한 Codex selector를 14개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 27개의 실용적인 에이전트 워크플로와 30개의 설치 가능한 Codex selector를 17개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -17,24 +17,54 @@ npm --prefix website run dev
 
 `main` 브랜치에 푸시하면 `website/dist/` 번들을 GitHub Pages에 배포합니다.
 
+## 시작하기
+
+입구는 `chann-mode` 하나입니다. 작업을 주면 목표와 그 목표를 채우는 가장 작은
+변경을 먼저 정리하고, 플레이북을 고른 뒤, 단계마다 그 일을 맡은 스킬이
+설치되어 있으면 그 스킬에 넘깁니다. 마지막 답변에는 근거를 표시합니다.
+`chann-mode`는 자기 selector로만 실행됩니다. 나머지 스킬은 필요한 상황에서
+쓰는 도구입니다. 모드가 알아서 연결해 주고, 직접 호출해도 됩니다.
+
+```text
+/chann-mode 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
+$chann-mode this endpoint got slow, find out why and fix it
+/chann-mode 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+```
+
 ## 스킬 목록
 
-| 스킬                                                | 설명                                                                                          |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[code-review](code-review/README.ko.md)**         | Git 변경 사항 분석 — 변경 내용을 설명하는 diff 요약, 심각도별 리뷰, 원본 HTML diff 뷰어        |
-| **[review-me](review-me/README.ko.md)**             | 계획과 설계의 중요한 세부 결정을 한 번에 하나씩 모두 검토                                      |
-| **[bug-hunt](bug-hunt/README.ko.md)**               | 버그를 재현하고 가설을 반증하며 원인을 좁힌 뒤, 먼저 실패한 검사로 수정을 고정                  |
-| **[research-brief](research-brief/README.ko.md)**   | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김                   |
-| **[doc-skill](doc-skill/README.ko.md)**             | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신             |
-| **[git-skill](git-skill/README.ko.md)**             | Conventional Commits, 검증한 작업 단위별 커밋·푸시·배포, 히스토리 재작성, main/dev 머지, 충돌 해결, 로컬 브랜치 정리 |
-| **[handoff](handoff/README.ko.md)**                 | `git diff`, 작업 범위, 세션 맥락으로 프론트엔드·백엔드·세션 인수인계 문서 생성                  |
-| **[long-task](long-task/README.ko.md)**             | 여러 마일스톤에 걸친 프로젝트를 자율적으로 진행 — 병렬 worktree 서브에이전트 실행과 마일스톤별 리뷰 |
-| **[all-subagents](all-subagents/README.ko.md)** | 서브에이전트 작업을 다른 코딩 에이전트에게 맡기고, 고른 이유와 호출 트리를 실행 기록으로 남김 |
-| **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인                     |
-| **[work-summary](work-summary/README.ko.md)**       | Claude Code, Codex, opencode, agy 로컬 기록에서 날짜 범위 작업 보고서를 Markdown으로 생성       |
-| **[plan-summary](plan-summary/README.ko.md)**       | 지정한 계획·PRD·명세·설계를 한국어와 영어로 요약하고 Markdown 전용판과 퀴즈판 제공             |
-| **[human-friendly-writing](human-friendly-writing/README.ko.md)** | AI가 쓴 한국어를 뜻은 그대로 두고 사람이 쓴 것 같은 자연스러운 문장으로 재작성                 |
-| **[skill-forge](skill-forge/README.ko.md)**         | 스킬 패키지를 하나의 규칙에 맞춰 만들고, 이미 있는 스킬이 그 규칙을 지키는지 검사               |
+8개 단계로 나누고, 워크플로마다 한 줄씩 적었습니다. 이름을 누르면 해당
+플러그인 README로 이동합니다.
+
+| 단계 | 스킬 | 설명 |
+| --- | --- | --- |
+| mode | **[chann-mode](chann-mode/README.ko.md)** | 직접 호출할 때만 실행되는 입구. 목표를 정리하고 14개 플레이북 중 하나를 고른 뒤, 단계마다 맡은 스킬로 넘기고 근거를 표시해 답함 |
+| understand | **[how](understand/README.ko.md)** | 코드가 어떻게 동작하는지 코드를 읽고 설명. 모든 주장에 `file:line`을 달고 파일은 고치지 않음 |
+| understand | **[why](understand/README.ko.md)** | 코드가 왜 이렇게 만들어졌는지 커밋, blame, PR·이슈 논의, 설계 노트에서 찾아 작성자의 말을 인용해 설명 |
+| understand | **[research-brief](research-brief/README.ko.md)** | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김 |
+| understand | **[recall](recall/README.ko.md)** | Claude Code, Codex, opencode, agy 로컬 기록에서 지난 작업을 보고서로 만들거나, 주제의 현재 상태를 짧게 정리 |
+| understand | **[ketchup](recall/README.ko.md)** | 이 대화에서 내 마지막 메시지 이후 달라진 것과 내가 결정해야 할 것을 정리 |
+| understand | **[diff-summary](diff-summary/README.ko.md)** | diff, 브랜치, 커밋, PR을 한국어·영어 Markdown과 대화형 HTML로 설명. `--md`는 Markdown만, `--quiz`는 퀴즈 추가 |
+| understand | **[plan-summary](plan-summary/README.ko.md)** | 지정한 계획·PRD·명세·설계를 같은 방식으로 요약. `--md`, `--quiz` 지원 |
+| understand | **[diff-viewer](diff-summary/README.ko.md)** | 작업 트리의 원본 diff를 분석 없이 브라우저용 HTML로 렌더링 |
+| design | **[review-me](review-me/README.ko.md)** | 계획과 설계의 결정을 한 번에 하나씩 끝까지 검토. 직접 호출할 때만 실행 |
+| design | **[arena](swarm/README.ko.md)** | 하나의 산출물에 여러 시안을 경쟁시키고, 다른 벤더의 심사자가 점수를 매기면 가장 좋은 시안에 나머지의 장점을 옮겨 붙임 |
+| build | **[bug-hunt](bug-hunt/README.ko.md)** | 버그를 재현하고 가설을 반증하며 원인을 좁힌 뒤, 먼저 실패한 검사로 수정을 고정 |
+| build | **[gen-docs](doc-skill/README.ko.md)** | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신 |
+| build | **[unslop](unslop/README.ko.md)** | AI가 쓴 한국어·영어 글을 뜻은 그대로 두고 사람이 쓴 것처럼 고쳐 씀 |
+| build | **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인 |
+| verify | **[interrogate](interrogate/README.ko.md)** | diff를 깨뜨려 보고, 입증 수준을 붙인 심각도별 결과를 Markdown과 이중언어 HTML로 보고 |
+| verify | **[blast-radius](interrogate/README.ko.md)** | 변경이 diff 밖에서 무엇을 깨뜨릴 수 있는지 확인하고, 안전하다는 근거를 직접 실행해 입증 |
+| ship | **[git-commit](git-skill/README.ko.md)** | Conventional Commits를 한 번에, 푸시까지, 검증한 단위마다, 단위마다 배포까지, 또는 제목 재작성. 별칭은 `gcr`, `gcpr`, `gcpd` |
+| ship | **[git-merge](git-skill/README.ko.md)** | 현재 브랜치를 `main`, `dev`, 다른 로컬 브랜치에 머지하고, 보호 브랜치가 아니면 `git branch -d`로 원본을 삭제 |
+| ship | **[git-resolve-conflicts](git-skill/README.ko.md)** | 충돌로 멈춘 머지, 리베이스, 체리픽, 되돌리기를 중단하지 않고 끝냄 |
+| ship | **[git-cleanup](git-skill/README.ko.md)** | 끝난 워크트리를 지우고, 보호 브랜치에 이미 머지된 로컬 브랜치를 삭제 |
+| delegate | **[swarm](swarm/README.ko.md)** | 작업을 서브에이전트나 설치된 다른 코딩 에이전트에게 나눠 맡기고, 고른 이유와 호출 트리를 하나의 보고서로 정리 |
+| delegate | **[long-task](long-task/README.ko.md)** | 여러 마일스톤에 걸친 프로젝트를 병렬 worktree 서브에이전트와 마일스톤별 리뷰로 자율 진행 |
+| delegate | **[handoff](handoff/README.ko.md)** | 프론트엔드·백엔드·세션 인수인계 문서를 작성하고, 확인한 상태와 확인하지 못한 상태를 나눠 적음 |
+| meta | **[skill-forge](skill-forge/README.ko.md)** | 스킬 패키지를 하나의 규칙에 맞춰 만들거나 고치고, 필요한 공개 문서까지 함께 갱신 |
+| meta | **[skill-audit](skill-forge/README.ko.md)** | 규칙을 어긴 스킬 패키지를 모두 보고. 위반이 있으면 0이 아닌 종료 코드를 돌려줌 |
+| meta | **[reflect](skill-forge/README.ko.md)** | 세션이나 저장소에서 배운 것을 승인을 받은 뒤 실제 장치로 바꿈 |
 
 ## 설치 방법
 
@@ -63,192 +93,201 @@ npx skills add chann/skills \
 [업스트림 수정](https://github.com/vercel-labs/skills/pull/1561)이 반영되기
 전까지 이 목록이 필요합니다.
 
-스킬별 설치, 전역이 아닌 설치, 수동 설치 방법은 각 스킬 README를 참고하세요:
+필요한 것만 설치하려면 `--skill <이름>`을 씁니다. 모든 스킬은 혼자 설치해도
+작동합니다. 별칭 `gcr`, `gcpr`, `gcpd`만 예외로, 옆에 `git-commit`이 있어야
+합니다.
 
-- [code-review 설치](code-review/README.ko.md#설치-방법)
-- [review-me 설치](review-me/README.ko.md#설치-방법)
-- [doc-skill 설치](doc-skill/README.ko.md#설치)
-- [git-skill 설치](git-skill/README.ko.md#설치-방법)
-- [handoff 설치](handoff/README.ko.md#설치-방법)
-- [long-task 설치](long-task/README.ko.md#설치-방법)
-- [all-subagents 설치](all-subagents/README.ko.md#설치-방법)
-- [build-reinstall 설치](build-reinstall/README.ko.md#설치)
-- [work-summary 설치](work-summary/README.ko.md#설치-방법)
-- [plan-summary 설치](plan-summary/README.ko.md#설치)
-- [human-friendly-writing 설치](human-friendly-writing/README.ko.md#설치)
+- 입구만 설치: `npx skills add chann/skills --skill chann-mode`
+- 코드베이스 이해: `npx skills add chann/skills --skill how --skill why`
+- 변경 검토: `npx skills add chann/skills --skill interrogate --skill blast-radius`
+- 변경 설명: `npx skills add chann/skills --skill diff-summary --skill diff-viewer`
+- 짧은 별칭을 포함한 Git 워크플로: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
+- handoff만 설치: `npx skills add chann/skills --skill handoff`
+- 서브에이전트와 시안 경쟁: `npx skills add chann/skills --skill swarm --skill arena`
+- 지난 작업 정리와 따라잡기: `npx skills add chann/skills --skill recall --skill ketchup`
+- 자연스러운 문장: `npx skills add chann/skills --skill unslop`
+- 스킬 작성: `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect`
 
-- handoff만 설치: `npx skills add chann/skills --skill gen-frontend-handoff --skill gen-backend-handoff --skill gen-session-handoff`
-- 백엔드 handoff만 설치: `npx skills add chann/skills --skill gen-backend-handoff`
-- diff-summary만 설치: `npx skills add chann/skills --skill diff-summary`
-- review-me만 설치: `npx skills add chann/skills --skill review-me`
-- work-summary만 설치: `npx skills add chann/skills --skill work-summary`
-- build-reinstall만 설치: `npx skills add chann/skills --skill build-reinstall`
-- all-subagents만 설치: `npx skills add chann/skills --skill all-subagents`
-- plan-summary 제품군 설치: `npx skills add chann/skills --skill plan-summary --skill plan-summary-md --skill plan-summary-quiz`
-- human-friendly-writing만 설치: `npx skills add chann/skills --skill human-friendly-writing`
-- Codex `$gcpr` 설치: `npx skills add chann/skills --skill gcpr --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
-- Codex `$gcpd` 설치: `npx skills add chann/skills --skill gcpd --skill git-commit-push-deploy --skill git-commit-push-realtime --skill git-commit --skill git-commit-push`
+설치 가능한 이름을 먼저 보려면 `npx skills add chann/skills -l --full-depth`를 실행하세요.
+플러그인마다 전역 설치와 프로젝트 설치 방법이 각 README에 있습니다.
 
 ## 빠른 참조
 
 Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직접 호출합니다.
-아래 표에 두 플랫폼의 selector를 모두 정리했습니다.
+아래 표에 두 플랫폼의 selector를 인자와 함께 모두 정리했습니다. 예전의 변형
+명령은 이제 인자입니다. `/diff-summary --md`, `/git-commit push realtime`,
+`/handoff session`처럼 씁니다.
 
-### code-review → [상세](code-review/README.ko.md)
-
-| Claude Code                      | Codex                        | 출력                                                                        |
-| -------------------------------- | ---------------------------- | --------------------------------------------------------------------------- |
-| `/code-review [scope]`           | `$code-review [scope]`       | `.reviews/`에 마크다운 + 이중언어 HTML 리뷰 생성                            |
-| `/code-review-md [scope]`        | `$code-review-md [scope]`    | `.reviews/`에 마크다운 리뷰만 생성                                          |
-| `/diff-summary [scope]`          | `$diff-summary [scope]`      | `.diff-summaries/`에 내용과 근거를 맞춘 한국어·영어 Markdown과 이중언어 HTML 요약 생성 |
-| `/diff-summary-md [scope]`       | `$diff-summary-md [scope]`   | `.diff-summaries/`에 내용과 근거를 맞춘 한국어·영어 Markdown만 생성         |
-| `/diff-summary-quiz [scope]`     | `$diff-summary-quiz [scope]` | `/diff-summary`에 한국어·영어 문항이 서로 대응하는 이해도 퀴즈 추가         |
-| `/diff-viewer`                   | `$diff-viewer`               | 작업 트리 원본 diff를 `.diffs/` HTML로 렌더링                               |
-
-`diff-summary`는 “코드를 요약해줘”, “마지막 커밋 코드를 요약해줘”, “main..dev 변경 요약” 같은 요청에도 자동으로 실행됩니다. 기본 출력은 한국어를 먼저 보여주며, 한국어와 영어의 내용과 근거가 서로 맞는 보고서입니다. 한 언어만 요청하면 그 언어로만 작성합니다. “마크다운 요약만 저장”은 `diff-summary-md`, “이 변경 이해했는지 퀴즈로 확인”은 `diff-summary-quiz`로 연결됩니다. 세 스킬 모두 지정한 `..`/`...` 범위를 정확히 보존합니다. 결함을 찾으려면 `code-review`, 원본 패치를 보려면 `diff-viewer`를 사용하세요.
-
-리뷰·요약·퀴즈·원본 diff HTML 보고서는 같은 인터페이스를 사용합니다. 한국어/영어 전환, 밝게·어둡게·시스템 테마, 인쇄용 밝은 색상, 두 테마에서 WCAG AA를 충족하는 상태 색상, 어절 단위 줄바꿈, 건너뛰기 링크와 라이브 리전을 갖춘 키보드 조작을 지원합니다. 각 보고서는 서버나 네트워크 없이 열 수 있는 단일 파일입니다.
-
-### review-me → [상세](review-me/README.ko.md)
-
-| Claude Code | Codex | 동작 |
-| ----------- | ----- | ---- |
-| `/review-me [주제]` | `$review-me [주제]` | 계획이나 설계의 중요한 하위 결정을 끝까지 따라가 빠짐없이 정리됐는지 확인 |
-
-`review-me`는 한 번에 하나만 묻고 구체적인 권장안을 제시합니다. 답변에서 새
-선택지가 생기면 그 선택지도 이어서 확인합니다. 확인 가능한 사실은 직접
-조사하며, 최종 결정이 모두 기록될 때까지 내용을 바꾸지 않고 검토만 합니다.
-
-### doc-skill → [상세](doc-skill/README.ko.md)
-
-| Claude Code | Codex       | 동작                                                              |
-| ----------- | ----------- | ----------------------------------------------------------------- |
-| `/gen-docs` | `$gen-docs` | README, 한국어 README, 아키텍처, 사용법 문서를 생성 또는 갱신      |
-
-### git-skill → [상세](git-skill/README.ko.md)
-
-| Claude Code                    | Codex                       | 동작                                                                            |
-| ------------------------------ | --------------------------- | ------------------------------------------------------------------------------- |
-| `/git-commit`                  | `$git-commit`               | 작업 트리 변경을 Conventional Commits 단위로 분리해 커밋                        |
-| `/git-commit-push`             | `$git-commit-push`          | 위 작업 후 `git push`까지 진행 (`--force` 안 함)                                |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
-| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | 의미 단위마다 커밋·푸시하고 저장소에 명시된 설정으로 배포·확인까지 진행 |
-| `/git-commit-realtime` · `/gcr` | `$git-commit-realtime` | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 (푸시 안 함)               |
-| `/git-commit-rewrite`          | `$git-commit-rewrite`       | 최근 커밋 중 Conventional 형식에 맞지 않는 제목을 재작성                        |
-| `/git-merge-to-main`           | `$git-merge-to-main`        | 현재 브랜치를 `main`으로 머지 후 소스 브랜치를 `git branch -d`로 삭제           |
-| `/git-merge-to-dev`            | `$git-merge-to-dev`         | 현재 브랜치를 `dev`(없으면 `develop`)로 머지 후 소스 브랜치 삭제                |
-| `/git-branch-cleanup`          | `$git-branch-cleanup`       | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                 |
-| `/git-resolve-conflicts`       | `$git-resolve-conflicts`    | 멈춘 머지·리베이스·cherry-pick 충돌을 중단하지 않고 마무리                      |
-
-### long-task → [상세](long-task/README.ko.md)
-
-| Claude Code  | Codex        | 동작                                                                                          |
-| ------------ | ------------ | --------------------------------------------------------------------------------------------- |
-| `/long-task` | `$long-task` | 병렬 worktree 서브에이전트와 단계별 리뷰를 거쳐 프로젝트를 처음부터 끝까지 자율적으로 구현 |
-
-*"이 프로젝트 처음부터 끝까지 만들어줘"*, *"자율적으로 진행해"*, *"long task 돌려줘"* 같은 말로도 자동 실행됩니다.
-
-### all-subagents → [상세](all-subagents/README.ko.md)
+### chann-mode → [상세](chann-mode/README.ko.md)
 
 | Claude Code | Codex | 동작 |
 | --- | --- | --- |
-| `/all-subagents [작업]` | `$all-subagents [작업]` | 다른 코딩 에이전트에게 작업을 맡기고 호출 트리를 남김 |
+| `/chann-mode <작업>` | `$chann-mode <작업>` | 플레이북, 연결된 스킬, 근거를 표시한 답변으로 작업을 진행 |
 
-`all-subagents`는 이 기계에 설치된 CLI를 확인하고, 그 경로를 고른 이유와 작업별 결과를 호출 트리와 함께 남깁니다. 서브에이전트로 작업을 돌리거나, 특정 에이전트나 모델, 다른 모델의 재검토, 쿼터를 나눈 병렬 작업에 씁니다. 쓸 수 있는 경로가 하나뿐이고 에이전트를 지정하지 않았다면 현재 세션에서 합니다. 여러 날에 걸친 구현은 `long-task`입니다.
-
-### build-reinstall → [상세](build-reinstall/README.ko.md)
+### understand → [상세](understand/README.ko.md)
 
 | Claude Code | Codex | 동작 |
 | --- | --- | --- |
-| `/build-reinstall [프로젝트-루트]` | `$build-reinstall [프로젝트-루트]` | 빌드하고 다시 설치한 뒤 설치 결과 확인 |
+| `/how <질문>` | `$how <질문>` | 코드가 어떻게 동작하는지 `file:line` 인용과 함께 설명 |
+| `/why <질문>` | `$why <질문>` | 왜 이렇게 만들어졌는지 작성자의 말을 인용한 결정 타임라인으로 설명 |
 
-`build-reinstall`은 사용자가 직접 요청할 때만 실행됩니다. 프로젝트 문서나 선택형
-`.build-reinstall.yaml`에서 명령과 대상을 확인하고, 설치된 결과를 바꾸기 전에
-먼저 빌드합니다. 재설치 뒤에는 스모크 검사를 실행하고 지정된 빌드·설치 파일의
-SHA-256이 같은지 확인합니다.
-
-### handoff → [상세](handoff/README.ko.md)
-
-| Claude Code               | Codex                    | 동작                                                                                 |
-| ------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
-| `/gen-frontend-handoff`   | `$gen-frontend-handoff`  | 백엔드 API diff, 작업 범위, 세션 맥락을 바탕으로 프론트엔드/클라이언트 핸드오프 작성 |
-| `/gen-backend-handoff`    | `$gen-backend-handoff`   | 코드, API, DB, 백그라운드 작업, 배포 변경 사항을 바탕으로 백엔드/서버 핸드오프 작성 |
-| `/gen-session-handoff`    | `$gen-session-handoff`   | 지금 세션을 새 에이전트에게 넘김 — 확인된 상태, 미검증 항목, 결정, 함정, 다음 작업, 재시작 프롬프트 |
-
-### work-summary → [상세](work-summary/README.ko.md)
+### research-brief → [상세](research-brief/README.ko.md)
 
 | Claude Code | Codex | 동작 |
-| ----------- | ----- | ---- |
-| `/work-summary [범위]` | `$work-summary [범위]` | 일간·주간·월간·분기·연간 또는 사용자 지정 기간의 작업 내역을 Markdown 보고서로 생성 |
+| --- | --- | --- |
+| `/research-brief [질문]` | `$research-brief [질문]` | 기술 질문을 1차 출처로 확인해 `.research/`에 출처가 붙은 조사 문서를 작성 |
 
-`work-summary`는 Claude Code, Codex, opencode, agy가 로컬에 남긴 세션 기록을
-읽기 전용으로 수집해 로컬 타임존 기준으로 정리합니다. 기본은 요약이고, 요청
-시 타임라인과 요청 로그가 있는 상세 보고서를 만듭니다. *"오늘 작업 요약해줘"*,
-*"이번주에 뭐 했는지 정리해줘"* 같은 말로도 자동 실행됩니다. 저장을 요청하면
-`.work-summaries/` 아래의 기간별 폴더로 나누며, 직접 지정한 경로가 있으면 그
-경로를 우선합니다.
+### recall → [상세](recall/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/recall [주제 \| 날짜-범위]` | `$recall [주제 \| 날짜-범위]` | 날짜 범위의 Markdown 작업 보고서, 또는 주제가 어디까지 왔는지 정리한 요약 |
+| `/ketchup` | `$ketchup` | 내 마지막 메시지 이후 이 대화에서 달라진 것 |
+
+### diff-summary → [상세](diff-summary/README.ko.md)
+
+| Claude Code | Codex | 출력 |
+| --- | --- | --- |
+| `/diff-summary [범위]` | `$diff-summary [범위]` | `.diff-summaries/`에 한국어·영어 Markdown과 이중언어 대화형 HTML 한 개 |
+| `/diff-summary [범위] --md` | `$diff-summary [범위] --md` | 한국어·영어 Markdown만. HTML도 브라우저도 없음 |
+| `/diff-summary [범위] --quiz` | `$diff-summary [범위] --quiz` | 같은 산출물에 서로 대응하는 이해도 퀴즈 추가 |
+| `/diff-viewer` | `$diff-viewer` | 작업 트리 원본 diff를 `.diffs/` HTML로 렌더링 |
+
+지정한 `..`와 `...` 범위는 그대로 보존합니다. 결함을 찾으려면 `interrogate`,
+원본 패치를 보려면 `diff-viewer`를 사용하세요.
 
 ### plan-summary → [상세](plan-summary/README.ko.md)
 
 | Claude Code | Codex | 출력 |
 | --- | --- | --- |
-| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | `.plan-summaries/`에 내용과 근거를 맞춘 한국어·영어 Markdown과 이중언어 HTML 생성 |
-| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | 내용과 근거를 맞춘 한국어·영어 Markdown만 생성 |
-| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | 이중언어 보고서와 서로 대응하는 `QZ-*` 이해도 퀴즈 생성 |
+| `/plan-summary <경로 ...>` | `$plan-summary <경로 ...>` | `.plan-summaries/`에 한국어·영어 Markdown과 이중언어 HTML |
+| `/plan-summary <경로 ...> --md` | `$plan-summary <경로 ...> --md` | 한국어·영어 Markdown만 |
+| `/plan-summary <경로 ...> --quiz` | `$plan-summary <경로 ...> --quiz` | 이중언어 보고서에 `QZ-*` 이해도 퀴즈 추가 |
 
-세 selector는 사용자가 지정한 `.md`, `.markdown`, `.txt` UTF-8 파일만 읽으며 문서를 자동으로 찾지 않습니다. 한국어와 영어 보고서는 소스 순서, 해시값, `PS-*` 근거 카드를 똑같이 사용합니다. Markdown 전용 selector는 HTML을 만들지 않고, 퀴즈 selector는 접근성을 갖춘 오프라인 상호작용을 추가합니다.
+지정한 `.md`, `.markdown`, `.txt` UTF-8 파일만 읽습니다. 문서를 자동으로 찾지
+않습니다.
+
+### review-me → [상세](review-me/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/review-me [주제]` | `$review-me [주제]` | 중요한 계획·설계 결정이 모두 정리될 때까지 따라가며 검토 |
+
+`review-me`는 자기 selector로만 실행됩니다. 질문을 한 번에 하나씩, 추천 답과
+함께 던지고, 모든 결정을 기록하고 확인받을 때까지 읽기 전용으로 둡니다.
+
+### swarm → [상세](swarm/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/swarm <작업>` | `$swarm <작업>` | 작업을 서브에이전트나 다른 코딩 에이전트에게 나눠 맡기고 호출 트리와 함께 보고 |
+| `/arena <작업>` | `$arena <작업>` | 하나의 산출물에 여러 시안을 경쟁시키고 교차 심사한 뒤 장점을 옮겨 붙임 |
 
 ### bug-hunt → [상세](bug-hunt/README.ko.md)
 
 | Claude Code | Codex | 동작 |
-| ----------- | ----- | ---- |
-| `/bug-hunt [증상-또는-실패-명령]` | `$bug-hunt [증상-또는-실패-명령]` | 재현하고 가설을 반증하며 원인을 좁힌 뒤 진단 기록을 남김 |
+| --- | --- | --- |
+| `/bug-hunt [증상-또는-실패하는-명령]` | `$bug-hunt [증상-또는-실패하는-명령]` | 재현하고 가설을 반증하며 수정을 고정한 뒤 `.bug-hunts/`에 기록을 남김 |
 
-`bug-hunt`는 보통의 디버깅이 버리는 흔적을 남깁니다. 가설마다 그 가설이 틀렸음을
-보여줄 관찰을 먼저 적고, 반증된 가설도 지우지 않아서 다음 세션이 같은 시도를
-반복하지 않습니다. 같은 계층에서 세 번 실패하면 범위를 넓힙니다. 수정은 버그 자체
-때문에 실패하는 검사가 생긴 뒤에만 들어가고, 기록은 `.bug-hunts/`에 남습니다.
-재현하지 못했다면 추측으로 고치지 않고 재현되지 않았다고 보고합니다.
-
-### research-brief → [상세](research-brief/README.ko.md)
+### doc-skill → [상세](doc-skill/README.ko.md)
 
 | Claude Code | Codex | 동작 |
-| ----------- | ----- | ---- |
-| `/research-brief [질문]` | `$research-brief [질문]` | 기술 질문을 1차 출처로 확인하고 근거를 붙인 문서를 남김 |
+| --- | --- | --- |
+| `/gen-docs [프로젝트-루트]` | `$gen-docs [프로젝트-루트]` | README, 한국어 README, 아키텍처, 사용법 문서를 생성하거나 갱신 |
 
-주장마다 출처, 그 출처의 등급, 어느 버전이나 날짜를 기준으로 확인했는지를 함께
-적습니다. T1은 명세나 1차 소스 코드이고, T3 커뮤니티 자료는 답이 아니라 T1으로
-가는 단서입니다. 어긋나는 출처는 둘 다 남기고 어느 쪽을 택했는지와 이유를
-적습니다. 결론과 확신 수준은 맨 위에 두고, 남은 의문 항목은 비어 있어도 반드시
-남깁니다.
+### unslop → [상세](unslop/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/unslop [텍스트-또는-파일]` | `$unslop [텍스트-또는-파일]` | AI가 쓴 한국어·영어 글을 뜻은 그대로 두고 자연스러운 문장으로 고쳐 씀 |
+
+### build-reinstall → [상세](build-reinstall/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/build-reinstall [프로젝트-루트]` | `$build-reinstall [프로젝트-루트]` | 빌드하고 다시 설치한 뒤 설치된 결과를 확인 |
+
+`build-reinstall`은 직접 요청했을 때만 실행됩니다.
+
+### interrogate → [상세](interrogate/README.ko.md)
+
+| Claude Code | Codex | 출력 |
+| --- | --- | --- |
+| `/interrogate [범위]` | `$interrogate [범위]` | `.reviews/`에 한국어·영어 Markdown과 이중언어 HTML 한 개 |
+| `/interrogate [범위] --md` | `$interrogate [범위] --md` | `.reviews/`에 Markdown 한 개. HTML도 브라우저도 없음 |
+| `/blast-radius [범위]` | `$blast-radius [범위]` | 답변으로 제공: 안전하다는 근거와 입증, 위험, 확인을 마친 항목, 머지 전 가장 싼 확인 |
+
+모든 결과에는 입증 수준이 붙습니다. 약한 것부터 `said`, `cited`, `traced`,
+`ran`, `reproduced` 순서입니다. `cited`에도 이르지 못한 결과는 버리고 개수만
+셉니다. 리뷰는 보고만 하고 수정은 적용하지 않습니다.
+
+### git-skill → [상세](git-skill/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/git-commit` | `$git-commit` | 작업 트리 변경을 Conventional Commits로 한 번에 묶어 커밋 |
+| `/git-commit push` | `$git-commit push` | 같은 작업 뒤 일반 `git push`까지 실행 (`--force` 없음) |
+| `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | 검증한 단위마다 커밋. 모든 체크포인트는 로컬에만 남음 |
+| `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | 검증한 단위마다 커밋하고 바로 푸시해 업스트림과 같은지 확인 |
+| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | 단위마다 커밋, 푸시, 배포하고 저장소에 문서화된 설정으로 확인 |
+| `/git-commit rewrite [범위] [force]` | `$git-commit rewrite [범위] [force]` | Conventional Commits 형식이 아닌 최근 커밋 제목을 다시 씀 |
+| `/git-merge [main \| dev \| <브랜치>]` | `$git-merge [main \| dev \| <브랜치>]` | 현재 브랜치를 대상에 머지하고, 보호 브랜치가 아니면 원본을 삭제 |
+| `/git-resolve-conflicts` | `$git-resolve-conflicts` | 충돌로 멈춘 머지, 리베이스, 체리픽, 되돌리기를 중단하지 않고 끝냄 |
+| `/git-cleanup` | `$git-cleanup` | 끝난 워크트리를 지우고, 보호 브랜치에 이미 머지된 로컬 브랜치를 삭제 |
+
+`/gcr`, `/gcpr`, `/gcpd`와 각각의 `$` 형태는 세 체크포인트 모드의 별칭이며
+직접 호출할 때만 실행됩니다. `git-commit`이 설치되어 있어야 하고, 없으면
+실행을 거부합니다.
+
+### long-task → [상세](long-task/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/long-task [status\|pause\|resume\|clear\|complete] <목표>` | `$long-task [status\|pause\|resume\|clear\|complete] <목표>` | 병렬 worktree 서브에이전트와 마일스톤별 리뷰로 프로젝트를 처음부터 끝까지 자율 진행 |
+
+### handoff → [상세](handoff/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/handoff frontend [범위]` | `$handoff frontend [범위]` | 백엔드 API diff, 범위, 세션 맥락에서 클라이언트용 인수인계 문서 작성 |
+| `/handoff backend [범위]` | `$handoff backend [범위]` | 코드, API, DB, 잡, 롤아웃 변경에서 서버용 인수인계 문서 작성 |
+| `/handoff session [메모]` | `$handoff session [메모]` | 이 세션을 새 에이전트에게 넘김: 확인한 상태와 못 한 상태, 결정, 다음 작업, 이어받기 프롬프트 |
+| `/handoff [범위]` | `$handoff [범위]` | 표현이나 diff를 보고 누구를 위한 문서인지 판단 |
 
 ### skill-forge → [상세](skill-forge/README.ko.md)
 
 | Claude Code | Codex | 동작 |
-| ----------- | ----- | ---- |
+| --- | --- | --- |
 | `/skill-forge [스킬-이름-또는-요청]` | `$skill-forge [스킬-이름-또는-요청]` | 스킬 패키지를 만들거나 고치고 공개 문서까지 함께 갱신 |
 | `/skill-audit [스킬-또는-경로]` | `$skill-audit [스킬-또는-경로]` | 규칙을 어긴 스킬 패키지를 모두 보고 |
+| `/reflect [session \| repo]` | `$reflect [session \| repo]` | 배운 것을 스크립트, 테스트, 훅, 스킬 수정으로 바꿈. 승인을 받은 뒤 적용 |
 
 이 저장소의 모든 스킬은 같은 규칙 9개를 지킵니다. 이름 일치, 설명 문법, 호출
 방식 선언, Codex 설명 파일, 슬래시 명령, eval, 카탈로그와 4개 언어 동기화,
-플러그인 매니페스트, 문서에 적힌 개수입니다. `skill-forge`는 그 규칙을 지키는
-패키지를 쓰고, `skill-audit`은 기존 패키지가 여전히 지키는지 확인합니다. 위반이
-있으면 0이 아닌 종료 코드를 돌려주므로 머지 전 검사로 바로 쓸 수 있습니다.
+플러그인 매니페스트, 문서에 적힌 개수입니다. `skill-audit`은 위반이 있으면 0이
+아닌 종료 코드를 돌려주므로 머지 전 검사로 바로 쓸 수 있습니다.
 
-### human-friendly-writing → [상세](human-friendly-writing/README.ko.md)
+## 이전 구성에서 옮겨 오기
 
-| Claude Code | Codex | 동작 |
-| ----------- | ----- | ---- |
-| `/human-friendly-writing [텍스트-또는-파일]` | `$human-friendly-writing [텍스트-또는-파일]` | AI가 쓴 한국어를 뜻은 그대로 두고 자연스러운 문장으로 재작성 |
+변형 selector는 하나의 대표 스킬에 붙는 인자가 되었습니다. Codex의 `$이름`
+selector에도 같은 대응이 적용됩니다.
 
-`human-friendly-writing`은 계약(contract)·엔벨로프(envelope)·패리티(parity)
-같은 AI 특유의 직역 용어와 새어 나온 내부 방법론 용어를 걷어내고 번역투를
-매만집니다. 사실·수치·표준 기술 용어는 그대로 둡니다. *"AI 용어 없애줘"*,
-*"사람답게 다듬어줘"* 같은 말로도 자동 실행됩니다.
-
-`gen-docs`, plan-summary 제품군, 두 handoff 생성기와 `work-summary`에는 자연스러운
-한국어를 쓰는 기본 규칙이 들어 있습니다. `human-friendly-writing`을 이미 쓸 수
-있다면 마지막에 한 번 더 다듬지만, 각 스킬만 설치해도 모든 기능이 작동합니다.
+| 이전 | 지금 |
+| --- | --- |
+| `code-review`, `code-review-md` | `interrogate` (Markdown만 필요하면 `--md`) |
+| `diff-summary-md`, `diff-summary-quiz` | `diff-summary --md`, `diff-summary --quiz` |
+| `plan-summary-md`, `plan-summary-quiz` | `plan-summary --md`, `plan-summary --quiz` |
+| `human-friendly-writing` | `unslop` |
+| `git-commit-push` | `git-commit push` |
+| `git-commit-realtime` (`gcr`) | `git-commit realtime` (`gcr`) |
+| `git-commit-push-realtime` (`gcpr`) | `git-commit push realtime` (`gcpr`) |
+| `git-commit-push-deploy` (`gcpd`) | `git-commit deploy` (`gcpd`) |
+| `git-commit-rewrite` | `git-commit rewrite` |
+| `git-merge-to-main`, `git-merge-to-dev` | `git-merge main`, `git-merge dev` |
+| `git-branch-cleanup` | `git-cleanup` |
+| `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff` | `handoff frontend`, `handoff backend`, `handoff session` |
+| `all-subagents` | `swarm` |
+| `work-summary` | `recall` |
 
 ## 문서
 
@@ -261,7 +300,7 @@ SHA-256이 같은지 확인합니다.
 
 | 플랫폼                                                  | 설치 방법                                                                                       |
 | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **[Claude Code](https://code.claude.com)**              | `npx skills add chann/skills` — 전체 플러그인 설치 (스킬 + 슬래시 커맨드)                       |
+| **[Claude Code](https://code.claude.com)**              | `npx skills add chann/skills` — 스킬과 슬래시 커맨드 설치                                       |
 | **[Codex](https://github.com/openai/codex)**            | `<plugin>/skills/<name>/` 를 Codex 스킬 디렉토리(`~/.agents/skills/` 등)에 심볼릭 링크          |
 | **[opencode](https://github.com/sst/opencode)**         | 스킬 디렉토리를 opencode 의 스킬 경로에 배치                                                    |
 | **Copilot CLI / Gemini CLI / 기타**                     | 플랫폼별 스킬 로더가 `<plugin>/skills/<name>/SKILL.md` 를 가리키도록 설정 (각 플랫폼 문서 참조) |
@@ -269,14 +308,14 @@ SHA-256이 같은지 확인합니다.
 플랫폼 공통 요소와 Claude Code 전용 요소:
 
 - **플랫폼 공통** — 모든 `SKILL.md` 본문과 `references/`입니다. 자연어 문구만으로 어떤 플랫폼에서도 실행할 수 있습니다.
-- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼, `npx skills` 설치 도구, 슬래시 커맨드(`/code-review`, `/git-commit`, `/long-task` 등)입니다. 다른 플랫폼에서는 자연어나 플랫폼 자체의 호출 방식으로 실행합니다.
+- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼, `npx skills` 설치 도구, 슬래시 커맨드(`/interrogate`, `/git-commit`, `/long-task` 등)입니다. 다른 플랫폼에서는 자연어나 플랫폼 자체의 호출 방식으로 실행합니다.
 
 ## 요구 사항
 
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
 - Git 저장소
-- `diff-summary`, `diff-summary-md`, `diff-summary-quiz` 사용 시 Git 2.45+
-- Python 3.10+ (`code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, `diff-viewer`, `plan-summary`, `plan-summary-md`, `plan-summary-quiz`, `git-commit-rewrite`, `all-subagents` 사용 시 필요)
+- `diff-summary` 사용 시 Git 2.45+
+- Python 3.10+ (`interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, `skill-audit` 사용 시 필요. 표준 라이브러리만 사용)
 
 ## 라이선스
 

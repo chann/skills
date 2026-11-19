@@ -24,42 +24,46 @@ def documented_selector_count() -> int:
     assert match, "USAGE.md must publish an installable Codex selector count"
     return int(match.group(1))
 
-INSTALL_DOCS = [
-    ROOT / "USAGE.md",
-    ROOT / "code-review" / "README.md",
-    ROOT / "code-review" / "README.ko.md",
-    ROOT / "review-me" / "README.md",
-    ROOT / "review-me" / "README.ko.md",
-    ROOT / "doc-skill" / "README.md",
-    ROOT / "doc-skill" / "README.ko.md",
-    ROOT / "doc-skill" / "USAGE.md",
-    ROOT / "git-skill" / "README.md",
-    ROOT / "git-skill" / "README.ko.md",
-    ROOT / "handoff" / "README.md",
-    ROOT / "handoff" / "README.ko.md",
-    ROOT / "long-task" / "README.md",
-    ROOT / "long-task" / "README.ko.md",
-    ROOT / "work-summary" / "README.md",
-    ROOT / "work-summary" / "README.ko.md",
-    ROOT / "plan-summary" / "README.md",
-    ROOT / "plan-summary" / "README.ko.md",
-    ROOT / "human-friendly-writing" / "README.md",
-    ROOT / "human-friendly-writing" / "README.ko.md",
-    ROOT / "build-reinstall" / "README.md",
-    ROOT / "build-reinstall" / "README.ko.md",
-    ROOT / "skill-forge" / "README.md",
-    ROOT / "skill-forge" / "README.ko.md",
-    ROOT / "bug-hunt" / "README.md",
-    ROOT / "bug-hunt" / "README.ko.md",
-    ROOT / "research-brief" / "README.md",
-    ROOT / "research-brief" / "README.ko.md",
-    ROOT / "all-subagents" / "README.md",
-    ROOT / "all-subagents" / "README.ko.md",
+PLUGIN_READMES = [
+    ROOT / plugin / name
+    for plugin in (
+        "chann-mode",
+        "understand",
+        "research-brief",
+        "recall",
+        "diff-summary",
+        "plan-summary",
+        "review-me",
+        "swarm",
+        "bug-hunt",
+        "doc-skill",
+        "unslop",
+        "build-reinstall",
+        "interrogate",
+        "git-skill",
+        "long-task",
+        "handoff",
+        "skill-forge",
+    )
+    for name in ("README.md", "README.ko.md")
 ]
 
-CODE_REVIEW_READMES = [
-    ROOT / "code-review" / "README.md",
-    ROOT / "code-review" / "README.ko.md",
+INSTALL_DOCS = [
+    ROOT / "README.md",
+    ROOT / "README.ko.md",
+    ROOT / "USAGE.md",
+    *PLUGIN_READMES,
+    ROOT / "doc-skill" / "USAGE.md",
+]
+
+INTERROGATE_READMES = [
+    ROOT / "interrogate" / "README.md",
+    ROOT / "interrogate" / "README.ko.md",
+]
+
+DIFF_SUMMARY_READMES = [
+    ROOT / "diff-summary" / "README.md",
+    ROOT / "diff-summary" / "README.ko.md",
 ]
 
 ROOT_DIFF_SUMMARY_DOCS = [
@@ -87,6 +91,17 @@ ROOT_PLAN_SUMMARY_DOCS = [
     ROOT / "ARCHITECTURE.md",
 ]
 
+ROOT_COUNT_DOCS = ROOT_PLAN_SUMMARY_DOCS
+
+# Names that no longer exist as selectors. Root docs may spell them only inside
+# a migration table row; `samples/code-review/` is a real directory.
+RETIRED_NAMES = re.compile(
+    r"code-review|diff-summary-(?:md|quiz)|plan-summary-(?:md|quiz)"
+    r"|human-friendly-writing|git-commit-(?:push|realtime|rewrite)"
+    r"|git-merge-to-|git-branch-cleanup|gen-(?:frontend|backend|session)-handoff"
+    r"|all-subagents|work-summary"
+)
+
 
 def frontmatter_value(skill_path: Path, key: str) -> str:
     text = skill_path.read_text(encoding="utf-8")
@@ -106,14 +121,26 @@ class InstallationDocsTests(unittest.TestCase):
             with self.subTest(doc=path.relative_to(ROOT)):
                 self.assertIsNone(invalid_selector.search(path.read_text(encoding="utf-8")))
 
-    def test_code_review_readmes_install_every_packaged_skill_by_exact_selector(self) -> None:
-        skills_root = ROOT / "code-review" / "skills"
-        expected_selectors = tuple(
-            sorted(path.name for path in skills_root.iterdir() if (path / "SKILL.md").is_file())
-        )
-        self.assertIn("diff-summary", expected_selectors)
+    def test_plugin_readmes_install_every_packaged_skill_by_exact_selector(self) -> None:
+        for plugin_readmes, plugin in (
+            (INTERROGATE_READMES, "interrogate"),
+            (DIFF_SUMMARY_READMES, "diff-summary"),
+        ):
+            skills_root = ROOT / plugin / "skills"
+            expected_selectors = tuple(
+                sorted(
+                    path.name
+                    for path in skills_root.iterdir()
+                    if (path / "SKILL.md").is_file()
+                )
+            )
+            self.assertIn(plugin, expected_selectors)
+            self._assert_exact_selector_installs(plugin_readmes, expected_selectors)
 
-        for path in CODE_REVIEW_READMES:
+    def _assert_exact_selector_installs(
+        self, readmes: list[Path], expected_selectors: tuple[str, ...]
+    ) -> None:
+        for path in readmes:
             text = path.read_text(encoding="utf-8")
             with self.subTest(doc=path.relative_to(ROOT)):
                 for selector in expected_selectors:
@@ -192,33 +219,46 @@ class InstallationDocsTests(unittest.TestCase):
                 self.assertIn("/diff-summary", text)
                 self.assertIn(".diff-summaries/", text)
 
-    def test_root_docs_publish_plan_summary_family_and_counts(self) -> None:
+    def test_root_docs_publish_plan_summary_options_and_counts(self) -> None:
         for path in ROOT_PLAN_SUMMARY_DOCS:
             text = path.read_text(encoding="utf-8")
             with self.subTest(doc=path.relative_to(ROOT)):
-                for selector in (
-                    "plan-summary",
-                    "plan-summary-md",
-                    "plan-summary-quiz",
-                ):
-                    self.assertIn(f"/{selector}", text)
-                    self.assertIn(f"${selector}", text)
+                self.assertIn("/plan-summary", text)
+                self.assertIn("$plan-summary", text)
+                self.assertIn("--md", text)
+                self.assertIn("--quiz", text)
                 self.assertIn(".plan-summaries/", text)
                 for count in published_counts():
                     self.assertIn(str(count), text)
+
+    def test_root_docs_publish_diff_summary_options(self) -> None:
+        for path in ROOT_DIFF_SUMMARY_DOCS:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(doc=path.relative_to(ROOT)):
+                self.assertIn("--md", text)
+                self.assertIn("--quiz", text)
+
+    def test_root_docs_name_retired_selectors_only_in_migration_tables(self) -> None:
+        for path in ROOT_COUNT_DOCS:
+            lines = path.read_text(encoding="utf-8").splitlines()
+            with self.subTest(doc=path.relative_to(ROOT)):
+                for number, line in enumerate(lines, start=1):
+                    checked = line.replace("samples/code-review", "")
+                    if RETIRED_NAMES.search(checked):
+                        self.assertTrue(
+                            line.lstrip().startswith("|"),
+                            f"{path.name}:{number} names a retired selector outside a table: {line}",
+                        )
 
     def test_plan_summary_readmes_publish_exact_installs_and_boundaries(self) -> None:
         for path in PLAN_SUMMARY_READMES:
             text = path.read_text(encoding="utf-8")
             with self.subTest(doc=path.relative_to(ROOT)):
-                for selector in (
-                    "plan-summary",
-                    "plan-summary-md",
-                    "plan-summary-quiz",
-                ):
-                    self.assertGreaterEqual(text.count(f"--skill {selector}"), 2)
-                    self.assertIn(f"/{selector}", text)
-                    self.assertIn(f"${selector}", text)
+                self.assertGreaterEqual(text.count("--skill plan-summary"), 2)
+                self.assertIn("/plan-summary", text)
+                self.assertIn("$plan-summary", text)
+                self.assertIn("--md", text)
+                self.assertIn("--quiz", text)
                 self.assertIn(".plan-summaries/", text)
                 self.assertIn("Python 3.10+", text)
                 self.assertIn("UTF-8", text)
@@ -243,9 +283,9 @@ class InstallationDocsTests(unittest.TestCase):
         self.assertIn("argv", architecture)
         self.assertIn("JSON", architecture)
 
-    def test_code_review_readmes_show_natural_summary_prompts_and_scope_examples(self) -> None:
-        english = CODE_REVIEW_READMES[0].read_text(encoding="utf-8")
-        korean = CODE_REVIEW_READMES[1].read_text(encoding="utf-8")
+    def test_diff_summary_readmes_show_natural_summary_prompts_and_scope_examples(self) -> None:
+        english = DIFF_SUMMARY_READMES[0].read_text(encoding="utf-8")
+        korean = DIFF_SUMMARY_READMES[1].read_text(encoding="utf-8")
 
         for phrase in ("summarize the code changes", "main..dev", "last commit", "PR"):
             with self.subTest(language="en", phrase=phrase):
@@ -254,27 +294,35 @@ class InstallationDocsTests(unittest.TestCase):
             with self.subTest(language="ko", phrase=phrase):
                 self.assertIn(phrase, korean)
 
-    def test_code_review_readmes_document_evidence_first_conditional_reports(self) -> None:
-        english = CODE_REVIEW_READMES[0].read_text(encoding="utf-8")
-        korean = CODE_REVIEW_READMES[1].read_text(encoding="utf-8")
+    def test_interrogate_readmes_document_proof_graded_conditional_reports(self) -> None:
+        # Collapse line wraps and bold markers so a phrase may span lines.
+        def flat(path: Path) -> str:
+            return " ".join(path.read_text(encoding="utf-8").replace("**", "").split())
+
+        english = flat(INTERROGATE_READMES[0])
+        korean = flat(INTERROGATE_READMES[1])
 
         for phrase in (
-            "Evidence-first writing",
-            "Conditional sections",
-            "observation → consequence → correction",
+            "observed behavior → practical consequence → smallest justified correction",
+            "appear only when they add distinct, decision-relevant",
             "Verified context that affects a decision; no code change required",
+            "`Dropped:`",
         ):
             with self.subTest(language="en", phrase=phrase):
                 self.assertIn(phrase, english)
 
         for phrase in (
-            "근거 우선 문체",
-            "조건부 섹션",
-            "관찰 → 영향 → 수정",
-            "의사결정에 영향을 주지만 코드 변경은 필요하지 않은 확인된 맥락",
+            "관찰한 동작 → 실제 결과 → 근거가 허락하는 가장 작은 수정",
+            "판단에 꼭 필요할 때만 넣습니다",
+            "판단에 영향을 주는 확인된 사실. 코드 수정은 필요 없습니다",
+            "`Dropped:`",
         ):
             with self.subTest(language="ko", phrase=phrase):
                 self.assertIn(phrase, korean)
+
+        for text in (english, korean):
+            for level in ("said", "cited", "traced", "ran", "reproduced"):
+                self.assertIn(f"`{level}`", text)
 
         self.assertNotIn("Each `/code-review*` report includes:", english)
         self.assertNotIn("각 `/code-review*` 리포트에는 다음이 포함됩니다:", korean)
