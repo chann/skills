@@ -7,15 +7,16 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = ROOT / "work-summary"
-SKILL = PACKAGE / "skills" / "work-summary"
+PACKAGE = ROOT / "recall"
+SKILL = PACKAGE / "skills" / "recall"
 
 
-class WorkSummarySkillPackageTests(unittest.TestCase):
+class RecallSkillPackageTests(unittest.TestCase):
     def test_plugin_shape_is_complete(self) -> None:
         expected = [
             PACKAGE / ".claude-plugin" / "plugin.json",
-            PACKAGE / "commands" / "work-summary.md",
+            PACKAGE / "commands" / "recall.md",
+            PACKAGE / "commands" / "ketchup.md",
             SKILL / "SKILL.md",
             SKILL / "agents" / "openai.yaml",
             SKILL / "evals" / "evals.json",
@@ -34,26 +35,26 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        command = (PACKAGE / "commands" / "work-summary.md").read_text(
+        command = (PACKAGE / "commands" / "recall.md").read_text(
             encoding="utf-8"
         )
         openai = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
 
-        self.assertEqual("work-summary", metadata["name"])
-        self.assertEqual("0.1.0", metadata["version"])
+        self.assertEqual("recall", metadata["name"])
+        self.assertEqual("1.0.0", metadata["version"])
         self.assertIn("date", metadata["description"].lower())
-        self.assertIn('argument-hint: "[range]"', command)
-        self.assertIn("Use the **work-summary** skill", command)
+        self.assertIn('argument-hint: "[topic | date-range]"', command)
+        self.assertIn("Use the **recall** skill", command)
         self.assertIn("$ARGUMENTS", command)
-        self.assertIn("$work-summary", openai)
+        self.assertIn("$recall", openai)
 
     def test_skill_publishes_both_selectors_and_reference(self) -> None:
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
         frontmatter = text.split("---\n", 2)[1]
 
-        self.assertIn("name: work-summary", frontmatter)
-        self.assertIn("/work-summary", frontmatter)
-        self.assertIn("$work-summary", frontmatter)
+        self.assertIn("name: recall", frontmatter)
+        self.assertIn("/recall", frontmatter)
+        self.assertIn("$recall", frontmatter)
         self.assertIn("references/agent-history-stores.md", text)
 
     def test_skill_defines_the_date_range_grammar(self) -> None:
@@ -142,9 +143,10 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
             (SKILL / "evals" / "evals.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual("work-summary", payload["skill_name"])
+        self.assertEqual("recall", payload["skill_name"])
         self.assertEqual(
-            [1, 2, 3, 4, 5, 6], [item["id"] for item in payload["evals"]]
+            [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            [item["id"] for item in payload["evals"]],
         )
         prompts = " ".join(item["prompt"] for item in payload["evals"])
         assertions = " ".join(
@@ -155,22 +157,24 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
         self.assertIn("today", prompts)
         self.assertIn("this week", prompts)
         self.assertIn("last quarter", prompts)
-        self.assertIn("human-friendly-writing is unavailable", prompts)
+        self.assertIn("unslop is unavailable", prompts)
         self.assertIn("no recorded activity", assertions)
         self.assertIn("local timezone", assertions)
         self.assertIn("read-only", assertions)
         self.assertIn("quarterly", assertions)
         self.assertIn("does not install", assertions)
+        self.assertIn("live git", assertions)
+        self.assertIn("ketchup", assertions)
 
     def test_readmes_document_installation_and_selectors(self) -> None:
         for path in (PACKAGE / "README.md", PACKAGE / "README.ko.md"):
             with self.subTest(path=path.relative_to(ROOT)):
                 text = path.read_text(encoding="utf-8")
                 self.assertEqual(
-                    2, text.count("chann/skills --skill work-summary")
+                    2, text.count("chann/skills --skill recall")
                 )
-                self.assertIn("/work-summary", text)
-                self.assertIn("$work-summary", text)
+                self.assertIn("/recall", text)
+                self.assertIn("$recall", text)
 
     def test_skills_cli_discovers_work_summary(self) -> None:
         env = os.environ.copy()
@@ -188,7 +192,7 @@ class WorkSummarySkillPackageTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertRegex(
-            result.stdout, re.compile(r"(?m)^[^A-Za-z0-9]*work-summary\s*$")
+            result.stdout, re.compile(r"(?m)^[^A-Za-z0-9]*recall\s*$")
         )
 
 
