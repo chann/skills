@@ -6,506 +6,510 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GIT_SKILL = ROOT / "git-skill"
-REALTIME_SKILL_NAME = "git-commit-push-realtime"
-REALTIME_SKILL = GIT_SKILL / "skills" / REALTIME_SKILL_NAME
-REALTIME_ALIAS = "gcpr"
-CODEX_REALTIME_ALIAS_SKILL = GIT_SKILL / "skills" / REALTIME_ALIAS
-LOCAL_REALTIME_SKILL_NAME = "git-commit-realtime"
-LOCAL_REALTIME_SKILL = GIT_SKILL / "skills" / LOCAL_REALTIME_SKILL_NAME
-LOCAL_REALTIME_ALIAS = "gcr"
+SKILLS = GIT_SKILL / "skills"
+COMMANDS = GIT_SKILL / "commands"
+
+COMMIT = SKILLS / "git-commit"
+COMMIT_SKILL = COMMIT / "SKILL.md"
+CHECKPOINTS = COMMIT / "references" / "checkpoints.md"
+DEPLOY = COMMIT / "references" / "deploy.md"
+REWRITE = COMMIT / "references" / "rewrite.md"
+MERGE = SKILLS / "git-merge" / "SKILL.md"
+CLEANUP = SKILLS / "git-cleanup" / "SKILL.md"
+CONFLICT_SKILL_NAME = "git-resolve-conflicts"
+CONFLICT_SKILL = SKILLS / CONFLICT_SKILL_NAME
+
+SELECTORS = (
+    "git-commit",
+    "gcr",
+    "gcpr",
+    "gcpd",
+    "git-merge",
+    "git-resolve-conflicts",
+    "git-cleanup",
+)
+ALIASES = {"gcr": "realtime", "gcpr": "push realtime", "gcpd": "deploy"}
+REMOVED = (
+    "git-commit-push",
+    "git-commit-realtime",
+    "git-commit-push-realtime",
+    "git-commit-push-deploy",
+    "git-commit-rewrite",
+    "git-merge-to-main",
+    "git-merge-to-dev",
+    "git-branch-cleanup",
+)
 
 PROTECTED_BRANCH_LIST = (
     "`main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`"
 )
+ROOT_DOCS = (
+    ROOT / "README.md",
+    ROOT / "README.ko.md",
+    ROOT / "USAGE.md",
+    ROOT / "ARCHITECTURE.md",
+)
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def flat(path: Path) -> str:
+    """File text with all whitespace runs collapsed, for wrapped prose."""
+    return " ".join(read(path).split())
 
 
 def frontmatter(path: Path) -> str:
-    """Return the YAML frontmatter block of a Markdown file."""
-    text = path.read_text(encoding="utf-8")
+    text = read(path)
     return text.split("---\n", 2)[1] if text.startswith("---\n") else ""
 
 
 def body(path: Path) -> str:
-    """Return a Markdown file's content with its YAML frontmatter removed."""
-    text = path.read_text(encoding="utf-8")
+    text = read(path)
     return text.split("---\n", 2)[2] if text.startswith("---\n") else text
 
 
 def quoted_yaml_field(path: Path, key: str) -> str:
-    """Return one quoted field from an agents/openai.yaml interface."""
-    match = re.search(
-        rf'^\s+{re.escape(key)}:\s+"([^"]+)"$',
-        path.read_text(encoding="utf-8"),
-        re.MULTILINE,
-    )
+    match = re.search(rf'^\s+{re.escape(key)}:\s+"([^"]+)"$', read(path), re.MULTILINE)
     if match is None:
         raise AssertionError(f"{path.relative_to(ROOT)} is missing {key}")
     return match.group(1)
 
 
-class GitSkillPackageTests(unittest.TestCase):
-    def test_realtime_commit_push_skill_is_packaged_with_command(self) -> None:
-        skill = REALTIME_SKILL / "SKILL.md"
-        command = GIT_SKILL / "commands" / f"{REALTIME_SKILL_NAME}.md"
+def evals(name: str) -> list[dict]:
+    payload = json.loads(read(SKILLS / name / "evals" / "evals.json"))
+    assert payload["skill_name"] == name
+    return payload["evals"]
 
-        self.assertTrue(skill.is_file())
-        self.assertTrue(command.is_file())
 
-        skill_text = skill.read_text(encoding="utf-8")
-        command_text = command.read_text(encoding="utf-8")
-        self.assertIn(f"name: {REALTIME_SKILL_NAME}", skill_text)
-        self.assertIn("<plugin-root>/skills/git-commit/SKILL.md", skill_text)
-        self.assertIn("<plugin-root>/skills/git-commit-push/SKILL.md", skill_text)
-        self.assertIn(f"**{REALTIME_SKILL_NAME}** skill", command_text)
+class PackageShapeTests(unittest.TestCase):
+    def test_plugin_ships_exactly_the_new_lineup(self) -> None:
+        packaged = sorted(p.parent.name for p in SKILLS.glob("*/SKILL.md"))
+        commands = sorted(p.stem for p in COMMANDS.glob("*.md"))
+        self.assertEqual(sorted(SELECTORS), packaged)
+        self.assertEqual(sorted(SELECTORS), commands)
 
-    def test_realtime_commit_push_publishes_a_short_alias_command(self) -> None:
-        alias = GIT_SKILL / "commands" / f"{REALTIME_ALIAS}.md"
+    def test_every_selector_ships_a_complete_package(self) -> None:
+        for name in SELECTORS:
+            for path in (
+                SKILLS / name / "SKILL.md",
+                SKILLS / name / "agents" / "openai.yaml",
+                SKILLS / name / "evals" / "evals.json",
+                COMMANDS / f"{name}.md",
+            ):
+                with self.subTest(path=path.relative_to(ROOT)):
+                    self.assertTrue(path.is_file())
+            with self.subTest(name=name):
+                self.assertIn(f"name: {name}", frontmatter(SKILLS / name / "SKILL.md"))
+                self.assertIn(f"${name}", quoted_yaml_field(
+                    SKILLS / name / "agents" / "openai.yaml", "default_prompt"))
+                self.assertGreaterEqual(len(evals(name)), 3)
 
-        self.assertTrue(alias.is_file())
+    def test_removed_selectors_are_gone(self) -> None:
+        for name in REMOVED:
+            with self.subTest(name=name):
+                self.assertFalse((SKILLS / name).exists())
+                self.assertFalse((COMMANDS / f"{name}.md").exists())
 
-        alias_text = alias.read_text(encoding="utf-8")
-        self.assertIn(f"**{REALTIME_SKILL_NAME}** skill", alias_text)
-        self.assertIn(f"Alias for `/{REALTIME_SKILL_NAME}`", frontmatter(alias))
+    def test_old_names_survive_only_in_the_readme_migration_tables(self) -> None:
+        pattern = re.compile("|".join(re.escape(n) for n in REMOVED))
+        for path in GIT_SKILL.rglob("*"):
+            if not path.is_file() or path.suffix not in {".md", ".json", ".yaml", ".py"}:
+                continue
+            relative = path.relative_to(ROOT)
+            in_table = False
+            for line in read(path).splitlines():
+                if line.startswith("#"):
+                    in_table = bool(re.search(r"Migrating|옮겨 오기", line))
+                if pattern.search(line):
+                    with self.subTest(path=relative, line=line):
+                        self.assertIn(path.name, {"README.md", "README.ko.md"})
+                        self.assertTrue(in_table and line.startswith("|"))
 
-    def test_short_alias_command_body_matches_the_canonical_command(self) -> None:
-        canonical = GIT_SKILL / "commands" / f"{REALTIME_SKILL_NAME}.md"
-        alias = GIT_SKILL / "commands" / f"{REALTIME_ALIAS}.md"
+    def test_plugin_manifest_is_the_next_major_version(self) -> None:
+        metadata = json.loads(read(GIT_SKILL / ".claude-plugin" / "plugin.json"))
+        self.assertEqual("git-skill", metadata["name"])
+        self.assertEqual("1.0.0", metadata["version"])
+        for phrase in ("git-commit", "deployment", "conflict resolution", "worktrees"):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, metadata["description"])
 
-        self.assertEqual(body(canonical), body(alias))
+    def test_package_readmes_install_every_selector_and_map_old_names(self) -> None:
+        for filename in ("README.md", "README.ko.md"):
+            text = read(GIT_SKILL / filename)
+            for name in SELECTORS:
+                with self.subTest(filename=filename, name=name):
+                    self.assertGreaterEqual(text.count(f"--skill {name}"), 2)
+                    self.assertIn(f"/{name}", text)
+                    self.assertIn(f"${name}", text)
+            for old in REMOVED:
+                with self.subTest(filename=filename, old=old):
+                    self.assertIn(f"`/{old}`", text)
 
-    def test_short_alias_is_discoverable_from_the_skill_description(self) -> None:
-        description = frontmatter(REALTIME_SKILL / "SKILL.md")
 
-        for token in (f'"/{REALTIME_ALIAS}"', f'"${REALTIME_ALIAS}"'):
-            with self.subTest(token=token):
-                self.assertIn(token, description)
-
-    def test_codex_realtime_alias_is_a_thin_skill_package(self) -> None:
-        skill = CODEX_REALTIME_ALIAS_SKILL / "SKILL.md"
-        interface = CODEX_REALTIME_ALIAS_SKILL / "agents" / "openai.yaml"
-
-        self.assertTrue(skill.is_file())
-        self.assertTrue(interface.is_file())
-        self.assertIn(f"name: {REALTIME_ALIAS}", frontmatter(skill))
-        self.assertIn(f"${REALTIME_ALIAS}", frontmatter(skill))
-
-        skill_text = skill.read_text(encoding="utf-8")
-        self.assertIn(REALTIME_SKILL_NAME, skill_text)
-        self.assertNotIn("git push", body(skill))
-        self.assertIn(
-            f"${REALTIME_ALIAS}",
-            interface.read_text(encoding="utf-8"),
-        )
-
-    def test_codex_realtime_alias_keeps_its_short_display_name(self) -> None:
-        alias_interface = CODEX_REALTIME_ALIAS_SKILL / "agents" / "openai.yaml"
-        canonical_interface = REALTIME_SKILL / "agents" / "openai.yaml"
-        website_source = (
-            ROOT / "website" / "src" / "data" / "skills.ts"
-        ).read_text(encoding="utf-8")
-        title_match = re.search(
-            rf'id: "{REALTIME_SKILL_NAME}",\s+title: "([^"]+)"',
-            website_source,
-        )
-
-        self.assertIsNotNone(title_match)
-        canonical_name = quoted_yaml_field(canonical_interface, "display_name")
-        alias_name = quoted_yaml_field(alias_interface, "display_name")
-        self.assertEqual("GCPR", alias_name)
-        self.assertEqual("Git Commit and Push Realtime", canonical_name)
-        self.assertNotEqual(alias_name, canonical_name)
+class GitCommitModeTests(unittest.TestCase):
+    def test_skill_publishes_the_six_row_mode_table(self) -> None:
+        text = read(COMMIT_SKILL)
+        rows = re.findall(r"^\| `/git-commit[^`]*` \|", text, re.MULTILINE)
         self.assertEqual(
-            canonical_name,
-            title_match.group(1) if title_match else "",
+            [
+                "| `/git-commit` |",
+                "| `/git-commit push` |",
+                "| `/git-commit realtime` |",
+                "| `/git-commit push realtime` |",
+                "| `/git-commit deploy` |",
+                "| `/git-commit rewrite [range] [force]` |",
+            ],
+            rows,
         )
+        for reference in ("references/checkpoints.md", "references/deploy.md", "references/rewrite.md"):
+            with self.subTest(reference=reference):
+                self.assertIn(reference, text)
+                self.assertTrue((COMMIT / reference).is_file())
+        self.assertTrue((COMMIT / "scripts" / "rewrite_msg.py").is_file())
 
-    def test_short_alias_is_documented_across_package_surfaces(self) -> None:
-        documented = [
-            ROOT / "README.md",
-            ROOT / "README.ko.md",
-            ROOT / "USAGE.md",
-            ROOT / "ARCHITECTURE.md",
-            GIT_SKILL / "README.md",
-            GIT_SKILL / "README.ko.md",
-        ]
-
-        for path in documented:
-            for selector in (f"`/{REALTIME_ALIAS}`", f"`${REALTIME_ALIAS}`"):
-                with self.subTest(path=path, selector=selector):
-                    self.assertIn(selector, path.read_text(encoding="utf-8"))
-
-    def test_realtime_commit_push_uses_green_outcome_checkpoints(self) -> None:
-        skill = (REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
-
-        for contract in (
-            "Do not split work by file count, elapsed time, token pressure",
-            "leaves the repository in a usable state",
-            "Do not create `WIP`, `tmp`, or generic checkpoint commits",
-            "Run the narrowest relevant tests and repository-required checks",
-            "git diff --check",
+    def test_mode_is_stated_first_and_never_escalated_from_silence(self) -> None:
+        text = flat(COMMIT_SKILL)
+        for rule in (
+            "Resolve the mode before any Git command",
+            "take the less far-reaching mode",
+            "(commit < push < deploy; once < realtime)",
+            "`push` and `deploy` are never inferred from silence",
+            "`gcpr` is never a deployment request",
+            "Never run it as a step of another skill",
         ):
-            with self.subTest(contract=contract):
-                self.assertIn(contract, skill)
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
 
-    def test_realtime_commit_push_pushes_each_checkpoint_and_stops_on_drift(self) -> None:
-        skill = (REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
-
-        for contract in (
-            "After each checkpoint commit succeeds, push it before starting the next unit",
-            'git push -u origin "$(git branch --show-current)"',
-            "git rev-list --left-right --count HEAD...@{u}",
-            "do not retry through `pull`, merge, rebase, `--force`, or",
-            "Never begin the next checkpoint until the previous push and upstream parity",
+    def test_description_carries_every_mode_trigger_and_alias(self) -> None:
+        description = frontmatter(COMMIT_SKILL)
+        self.assertTrue(description.split("description: ", 1)[1].startswith("Use when"))
+        for token in (
+            '"commit my changes"', '"커밋해줘"', '"커밋하고 푸시해줘"',
+            '"commit and push as you work"', '"작업 중간중간 커밋 푸시"',
+            '"의미 있는 단위마다 배포"', '"커밋 메시지 다시 써줘"',
+            '"/git-commit"', '"$git-commit"', "gcr", "gcpr", "gcpd",
+            "git-merge", "git-resolve-conflicts",
         ):
-            with self.subTest(contract=contract):
-                self.assertIn(contract, skill)
-
-    def test_realtime_commit_push_evals_cover_checkpoint_safety(self) -> None:
-        eval_path = REALTIME_SKILL / "evals" / "evals.json"
-        payload = json.loads(eval_path.read_text(encoding="utf-8"))
-
-        self.assertEqual(REALTIME_SKILL_NAME, payload["skill_name"])
-        self.assertEqual([1, 2, 3], [item["id"] for item in payload["evals"]])
-        prompts = " ".join(item["prompt"] for item in payload["evals"])
-        self.assertIn("will not compile", prompts)
-        self.assertIn("remote advances", prompts)
-
-    def test_realtime_commit_push_is_documented_across_package_surfaces(self) -> None:
-        package_readmes = [
-            GIT_SKILL / "README.md",
-            GIT_SKILL / "README.ko.md",
-        ]
-        command_docs = [
-            ROOT / "README.md",
-            ROOT / "README.ko.md",
-            ROOT / "USAGE.md",
-            ROOT / "ARCHITECTURE.md",
-        ]
-
-        for path in package_readmes:
-            with self.subTest(path=path):
-                text = path.read_text(encoding="utf-8")
-                self.assertEqual(4, text.count(f"--skill {REALTIME_SKILL_NAME}"))
-                self.assertEqual(3, text.count(f"--skill {REALTIME_ALIAS}"))
-                self.assertIn(f"/{REALTIME_SKILL_NAME}", text)
-                self.assertIn(f"${REALTIME_SKILL_NAME}", text)
-
-        for path in command_docs:
-            with self.subTest(path=path):
-                self.assertIn(
-                    REALTIME_SKILL_NAME,
-                    path.read_text(encoding="utf-8"),
-                )
-
-    def test_local_realtime_commit_skill_is_packaged_with_command(self) -> None:
-        skill = LOCAL_REALTIME_SKILL / "SKILL.md"
-        command = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_SKILL_NAME}.md"
-
-        self.assertTrue(skill.is_file())
-        self.assertTrue(command.is_file())
-
-        skill_text = skill.read_text(encoding="utf-8")
-        command_text = command.read_text(encoding="utf-8")
-        self.assertIn(f"name: {LOCAL_REALTIME_SKILL_NAME}", skill_text)
-        self.assertIn("<plugin-root>/skills/git-commit/SKILL.md", skill_text)
-        self.assertNotIn("<plugin-root>/skills/git-commit-push/SKILL.md", skill_text)
-        self.assertIn(f"**{LOCAL_REALTIME_SKILL_NAME}** skill", command_text)
-
-    def test_local_realtime_commit_publishes_a_short_alias_command(self) -> None:
-        alias = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_ALIAS}.md"
-
-        self.assertTrue(alias.is_file())
-
-        alias_text = alias.read_text(encoding="utf-8")
-        self.assertIn(f"**{LOCAL_REALTIME_SKILL_NAME}** skill", alias_text)
-        self.assertIn(f"Alias for `/{LOCAL_REALTIME_SKILL_NAME}`", frontmatter(alias))
-
-    def test_local_alias_command_body_matches_the_canonical_command(self) -> None:
-        canonical = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_SKILL_NAME}.md"
-        alias = GIT_SKILL / "commands" / f"{LOCAL_REALTIME_ALIAS}.md"
-
-        self.assertEqual(body(canonical), body(alias))
-
-    def test_local_alias_is_discoverable_from_the_skill_description(self) -> None:
-        description = frontmatter(LOCAL_REALTIME_SKILL / "SKILL.md")
-
-        for token in (f'"/{LOCAL_REALTIME_ALIAS}"', f'"${LOCAL_REALTIME_ALIAS}"'):
             with self.subTest(token=token):
                 self.assertIn(token, description)
+        line = next(l for l in description.splitlines() if l.startswith("description: "))
+        self.assertLessEqual(len(line.removeprefix("description: ")), 1024)
 
-    def test_local_alias_is_documented_across_package_surfaces(self) -> None:
-        documented = [
-            ROOT / "README.md",
-            ROOT / "README.ko.md",
-            ROOT / "USAGE.md",
-            ROOT / "ARCHITECTURE.md",
-            GIT_SKILL / "README.md",
-            GIT_SKILL / "README.ko.md",
-        ]
+    def test_skill_ends_with_a_reply_contract(self) -> None:
+        for path in (COMMIT_SKILL, MERGE, CLEANUP, *(SKILLS / a / "SKILL.md" for a in ALIASES)):
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertTrue(read(path).rstrip().splitlines()[-1].startswith("**Reply:**"))
 
-        for path in documented:
-            with self.subTest(path=path):
-                self.assertIn(
-                    f"`/{LOCAL_REALTIME_ALIAS}`",
-                    path.read_text(encoding="utf-8"),
-                )
+    def test_command_takes_the_mode_as_an_argument(self) -> None:
+        command = read(COMMANDS / "git-commit.md")
+        self.assertIn('argument-hint: "[push | deploy] [realtime] | rewrite [range] [force]"', command)
+        self.assertIn("**git-commit** skill", command)
+        self.assertIn("$ARGUMENTS", command)
 
-    def test_local_realtime_commit_uses_green_outcome_checkpoints(self) -> None:
-        skill = (LOCAL_REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
 
-        for contract in (
+class GitCommitSafetyTests(unittest.TestCase):
+    """Every rule the six former commit skills stated, at its new home."""
+
+    def test_shared_commit_rules(self) -> None:
+        text = flat(COMMIT_SKILL)
+        for rule in (
+            "`git add .` or `git add -A`; stage explicit paths only.",
+            "`--no-verify` or `--no-gpg-sign`.",
+            "`--amend` unless the user asks for it.",
+            "Combine `feat` and `fix` in one commit.",
+            "Print the commit plan",
+            "`git status --short` to confirm only the intended paths moved",
+            "Refuse rather than bypass",
+            "state its risk in one line first",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
+
+    def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
+        expected = {
+            COMMIT_SKILL: "Do not flag the exact basename `.env.example` solely because it matches `.env*`",
+            CHECKPOINTS: "including the `.env.example` exception",
+            GIT_SKILL / "README.md": "except the exact basename `.env.example`",
+            GIT_SKILL / "README.ko.md": "정확한 파일명 `.env.example`은 예외",
+        }
+        for path, contract in expected.items():
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertIn(contract, flat(path))
+
+    def test_push_step_never_forces_and_stops_on_rejection(self) -> None:
+        text = flat(COMMIT_SKILL)
+        for rule in (
+            'git push -u origin "$(git branch --show-current)"',
+            "Do not retry through `pull`, merge, rebase, `--force`, or `--force-with-lease`",
+            "Bare `--force` exists only in rewrite force mode",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
+
+    def test_checkpoints_are_green_outcomes(self) -> None:
+        text = flat(CHECKPOINTS)
+        for rule in (
             "Do not split work by file count, elapsed time, token pressure",
             "leaves the repository in a usable state",
             "Do not create `WIP`, `tmp`, or generic checkpoint commits",
             "Run the narrowest relevant tests and repository-required checks",
             "git diff --check",
+            "Stop if `HEAD` is detached.",
+            "If the branch is behind or diverged, surface the exact state and stop",
+            "Preserve changes outside the requested task",
+            "Never create time-based, token-based, or file-count-based commits.",
+            "Never commit or push a knowingly broken intermediate state.",
+            "Never include unrelated user changes to make a checkpoint look complete.",
         ):
-            with self.subTest(contract=contract):
-                self.assertIn(contract, skill)
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
 
-    def test_local_realtime_commit_keeps_checkpoints_local(self) -> None:
-        skill = (LOCAL_REALTIME_SKILL / "SKILL.md").read_text(encoding="utf-8")
-
-        for contract in (
+    def test_realtime_keeps_checkpoints_local(self) -> None:
+        text = flat(CHECKPOINTS)
+        for rule in (
             "After each checkpoint commit succeeds, record its hash and leave it local",
             "Do not run `git push`",
             "Publication stays a separate, explicit user request",
-            "Never push, pull, merge, rebase, or rewrite history from this workflow",
+            "In `realtime`, never push, pull, merge, rebase, or rewrite history from this workflow.",
         ):
-            with self.subTest(contract=contract):
-                self.assertIn(contract, skill)
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
 
-    def test_local_realtime_commit_evals_cover_checkpoint_safety(self) -> None:
-        eval_path = LOCAL_REALTIME_SKILL / "evals" / "evals.json"
-        payload = json.loads(eval_path.read_text(encoding="utf-8"))
+    def test_push_modes_push_each_checkpoint_and_prove_parity(self) -> None:
+        text = flat(CHECKPOINTS)
+        for rule in (
+            "After each checkpoint commit succeeds, push it before starting the next unit",
+            "git rev-list --left-right --count HEAD...@{u}",
+            "The expected result is `0 0`.",
+            "never begin the next checkpoint until the previous push and upstream parity are confirmed",
+            "never rewrite published history",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
 
-        self.assertEqual(LOCAL_REALTIME_SKILL_NAME, payload["skill_name"])
-        self.assertEqual([1, 2, 3], [item["id"] for item in payload["evals"]])
-        prompts = " ".join(item["prompt"] for item in payload["evals"])
-        self.assertIn("will not compile", prompts)
-        self.assertIn("without pushing", prompts)
+    def test_deploy_uses_only_documented_settings_and_confirms_each_checkpoint(self) -> None:
+        text = flat(DEPLOY)
+        for rule in (
+            "AGENTS.md",
+            "Never guess production versus staging",
+            "silently fall back to push-only",
+            "Confirm the current branch is eligible for the route before the first checkpoint",
+            "Never deploy a checkpoint whose push and parity are unconfirmed.",
+            "observe that run instead of launching a duplicate command or dispatch",
+            "Never include uncommitted or untracked content",
+            "Never substitute the latest run on a branch for this checkpoint's evidence.",
+            "inconclusive is never a pass",
+            "Push success alone never completes a deploy checkpoint.",
+            "Do not begin the next outcome, including local implementation work",
+            "Keep the pushed commit when a deployment fails.",
+            "never relabel the failed deployment as successful",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
 
-    def test_local_realtime_commit_is_documented_across_package_surfaces(self) -> None:
-        package_readmes = [
-            GIT_SKILL / "README.md",
-            GIT_SKILL / "README.ko.md",
-        ]
-        command_docs = [
-            ROOT / "README.md",
-            ROOT / "README.ko.md",
-            ROOT / "USAGE.md",
-            ROOT / "ARCHITECTURE.md",
-        ]
+    def test_rewrite_keeps_its_safety_checks_and_force_semantics(self) -> None:
+        text = flat(REWRITE)
+        for rule in (
+            "standalone token `force` or `--force` (case-insensitive)",
+            "The Korean word `강제로` alone does not trigger it.",
+            "This is the only place bare `--force` is allowed.",
+            "Never use `--root`.",
+            "do not silently refuse",
+            "defaulting to Cancel",
+            "push with `git push --force-with-lease`, never bare `--force`",
+            "git rev-list --no-merges",
+            "preserve the original body verbatim",
+            "`Refs:` footer instead of dropping it",
+            "never delete it automatically",
+            "Wait for explicit confirmation",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
 
-        for path in package_readmes:
-            with self.subTest(path=path):
-                text = path.read_text(encoding="utf-8")
-                self.assertEqual(2, text.count(f"--skill {LOCAL_REALTIME_SKILL_NAME}"))
-                self.assertIn(f"/{LOCAL_REALTIME_SKILL_NAME}", text)
-                self.assertIn(f"${LOCAL_REALTIME_SKILL_NAME}", text)
+    def test_each_safety_rule_has_one_home(self) -> None:
+        files = (COMMIT_SKILL, CHECKPOINTS, DEPLOY, REWRITE)
+        for rule in (
+            "`git add .` or `git add -A`",
+            "Do not split work by file count",
+            "Never guess production versus staging",
+            "This is the only place bare `--force` is allowed.",
+        ):
+            with self.subTest(rule=rule):
+                self.assertEqual(1, sum(flat(p).count(rule) for p in files))
 
-        for path in command_docs:
-            with self.subTest(path=path):
-                self.assertIn(
-                    LOCAL_REALTIME_SKILL_NAME,
-                    path.read_text(encoding="utf-8"),
-                )
-
-    def test_legacy_live_selector_is_removed_from_published_sources(self) -> None:
-        legacy_selector = "git-commit-push-" + "live"
-        checked_suffixes = {".json", ".md", ".py", ".yaml"}
-
-        for path in ROOT.rglob("*"):
-            relative_path = path.relative_to(ROOT)
-            if (
-                not path.is_file()
-                or path.suffix not in checked_suffixes
-                or ".git" in path.parts
-                or "__pycache__" in path.parts
-                or any(part.startswith(".") for part in relative_path.parts)
-            ):
-                continue
-            with self.subTest(path=relative_path):
-                self.assertNotIn(
-                    legacy_selector,
-                    path.read_text(encoding="utf-8"),
-                )
-
-    def test_published_skill_count_matches_packaged_skills(self) -> None:
-        packaged_skills = list(ROOT.glob("*/skills/*/SKILL.md"))
-        self.assertEqual(35, len(packaged_skills))
-
-        expected_counts = {
-            ROOT / "README.md": "33 practical agent workflows and 35 installable Codex selectors",
-            ROOT / "README.ko.md": "33개의 실용적인 에이전트 워크플로와 35개의 설치 가능한 Codex selector",
-            ROOT / "USAGE.md": "33 canonical workflows and 35 installable Codex selectors",
-            ROOT / "ARCHITECTURE.md": "expose 33 canonical workflows through 35 installable Codex selectors",
-        }
-        for path, phrase in expected_counts.items():
-            with self.subTest(path=path):
-                self.assertIn(phrase, path.read_text(encoding="utf-8"))
-
-    def test_plugin_metadata_publishes_realtime_checkpoint_support(self) -> None:
-        metadata = json.loads(
-            (GIT_SKILL / ".claude-plugin" / "plugin.json").read_text(
-                encoding="utf-8"
-            )
-        )
-
-        self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("0.10.0", metadata["version"])
-        self.assertIn("realtime checkpoint commits and pushes", metadata["description"])
-        self.assertIn("conflict resolution", metadata["description"])
-        self.assertIn("deployment", metadata["description"])
-
-    def test_env_example_is_explicitly_exempt_from_secret_file_blocking(self) -> None:
-        expected_contracts = {
-            GIT_SKILL
-            / "skills"
-            / "git-commit"
-            / "SKILL.md": "Do not flag the exact basename `.env.example` solely because it matches `.env*`",
-            GIT_SKILL
-            / "skills"
-            / "git-commit-push"
-            / "SKILL.md": "The exact basename `.env.example` is a public template",
-            GIT_SKILL
-            / "README.md": "except the exact basename `.env.example`",
-            GIT_SKILL
-            / "README.ko.md": "정확한 파일명 `.env.example`은 예외",
-        }
-
-        for path, contract in expected_contracts.items():
-            with self.subTest(path=path):
-                self.assertIn(contract, path.read_text(encoding="utf-8"))
-
-    def test_merge_skills_keep_protected_source_branches_after_merge(self) -> None:
-        checked_paths = [
-            GIT_SKILL / "skills" / "git-merge-to-main" / "SKILL.md",
-            GIT_SKILL / "skills" / "git-merge-to-dev" / "SKILL.md",
-            GIT_SKILL / "commands" / "git-merge-to-main.md",
-            GIT_SKILL / "commands" / "git-merge-to-dev.md",
-        ]
-
-        for path in checked_paths:
-            with self.subTest(path=path):
-                text = path.read_text(encoding="utf-8")
-                self.assertIn(PROTECTED_BRANCH_LIST, text)
-                self.assertIn("protected source branch", text.lower())
-                self.assertIn("skip the local delete", text.lower())
-
-    def test_branch_cleanup_uses_same_protected_branch_list(self) -> None:
-        checked_paths = [
-            GIT_SKILL / "skills" / "git-branch-cleanup" / "SKILL.md",
-            GIT_SKILL / "commands" / "git-branch-cleanup.md",
-            GIT_SKILL / "README.md",
-            GIT_SKILL / "README.ko.md",
-        ]
-
-        for path in checked_paths:
-            with self.subTest(path=path):
-                text = path.read_text(encoding="utf-8")
-                self.assertIn(PROTECTED_BRANCH_LIST, text)
-
-
-DEPLOY_SKILL_NAME = "git-commit-push-deploy"
-DEPLOY_ALIAS = "gcpd"
-
-
-class GitCommitPushDeployTests(unittest.TestCase):
-    def test_deploy_selectors_ship_complete_packages(self) -> None:
-        for name in (DEPLOY_SKILL_NAME, DEPLOY_ALIAS):
-            skill = GIT_SKILL / "skills" / name
-            for path in (
-                skill / "SKILL.md",
-                skill / "agents" / "openai.yaml",
-                skill / "evals" / "evals.json",
-                GIT_SKILL / "commands" / f"{name}.md",
-            ):
-                with self.subTest(path=path.relative_to(ROOT)):
-                    self.assertTrue(path.is_file(), f"Missing {path.relative_to(ROOT)}")
-
-    def test_alias_command_preserves_the_canonical_deployment_gates(self) -> None:
-        canonical = GIT_SKILL / "commands" / f"{DEPLOY_SKILL_NAME}.md"
-        alias = GIT_SKILL / "commands" / f"{DEPLOY_ALIAS}.md"
-        self.assertTrue(canonical.is_file())
-        self.assertTrue(alias.is_file())
-        self.assertEqual(body(canonical), body(alias))
-        self.assertIn(f"**{DEPLOY_SKILL_NAME}** skill", body(alias))
-
-    def test_deploy_alias_is_explicit_only_and_uses_its_own_display_name(self) -> None:
-        skill = GIT_SKILL / "skills" / DEPLOY_ALIAS / "SKILL.md"
-        interface = skill.parent / "agents" / "openai.yaml"
-        self.assertTrue(skill.is_file())
-        self.assertTrue(interface.is_file())
-        self.assertIn("description: Use only when", frontmatter(skill))
-        self.assertIn("disable-model-invocation: true", frontmatter(skill))
-        self.assertEqual("GCPD", quoted_yaml_field(interface, "display_name"))
-        self.assertIn(DEPLOY_SKILL_NAME, body(skill))
-        self.assertNotIn("git push", body(skill))
-
-    def test_deploy_install_examples_include_all_required_shared_skills(self) -> None:
-        required = (
-            DEPLOY_ALIAS, DEPLOY_SKILL_NAME, REALTIME_SKILL_NAME,
-            "git-commit", "git-commit-push",
-        )
-        for filename in ("README.md", "README.ko.md"):
-            text = (GIT_SKILL / filename).read_text(encoding="utf-8")
-            blocks = re.findall(r"```bash\n(.*?)```", text, re.DOTALL)
-            alias_installs = [block for block in blocks if "--skill gcpd" in block]
-            with self.subTest(filename=filename):
-                self.assertEqual(3, len(alias_installs))
-                for block in alias_installs:
-                    for name in required:
-                        self.assertIn(f"--skill {name}", block)
-
-    def test_deploy_evals_cover_manual_ci_and_failed_deployment(self) -> None:
-        path = GIT_SKILL / "skills" / DEPLOY_SKILL_NAME / "evals" / "evals.json"
-        self.assertTrue(path.is_file())
-        payload = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(DEPLOY_SKILL_NAME, payload["skill_name"])
-        cases = {item["id"]: item for item in payload["evals"]}
-        self.assertGreaterEqual(len(cases), 7)
-        for item in cases.values():
-            self.assertGreaterEqual(len(item["assertions"]), 2)
-        prompts = " ".join(item["prompt"] for item in cases.values())
-        for scenario in ("CI", "503", "AGENTS.md", "untracked", "$gcpr"):
+    def test_commit_evals_cover_every_mode_and_its_refusals(self) -> None:
+        prompts = " ".join(item["prompt"] for item in evals("git-commit"))
+        for scenario in (
+            ".env.example", "--no-verify", "upstream", "force-push",
+            "without pushing", "will not compile", "remote advances",
+            "$gcpr", "AGENTS.md", "CI", "503", "untracked",
+            "커밋 메시지 다시 써줘", "already pushed", "rewrite force", "Merge",
+        ):
             with self.subTest(scenario=scenario):
                 self.assertIn(scenario, prompts)
 
 
-CONFLICT_SKILL_NAME = "git-resolve-conflicts"
-CONFLICT_SKILL = GIT_SKILL / "skills" / CONFLICT_SKILL_NAME
+class AliasTests(unittest.TestCase):
+    def test_aliases_are_explicit_only_and_name_the_canonical_skill(self) -> None:
+        for name, mode in ALIASES.items():
+            skill = SKILLS / name / "SKILL.md"
+            block = frontmatter(skill)
+            with self.subTest(name=name):
+                self.assertIn("description: Use only when", block)
+                self.assertIn("disable-model-invocation: true", block)
+                self.assertIn(f'"/{name}"', block)
+                self.assertIn(f'"${name}"', block)
+                self.assertIn(f"git-commit {mode}", block)
+                self.assertIn(f"mode `{mode}`", body(skill))
+                self.assertNotIn("git push", body(skill))
+                self.assertEqual(name.upper(), quoted_yaml_field(
+                    SKILLS / name / "agents" / "openai.yaml", "display_name"))
+
+    def test_aliases_refuse_when_git_commit_is_missing(self) -> None:
+        for name in ALIASES:
+            text = flat(SKILLS / name / "SKILL.md")
+            with self.subTest(name=name):
+                self.assertIn("If `git-commit` is not installed, stop before any Git command", text)
+                self.assertIn("Do not rebuild its workflow from memory", text)
+                prompts = " ".join(item["prompt"] for item in evals(name))
+                self.assertIn("not installed", prompts)
+
+    def test_alias_commands_name_the_canonical_skill_first(self) -> None:
+        for name, mode in ALIASES.items():
+            command = COMMANDS / f"{name}.md"
+            with self.subTest(name=name):
+                self.assertIn(f"Alias for `/git-commit {mode}`", frontmatter(command))
+                first_line = body(command).strip().splitlines()[0]
+                self.assertIn("**git-commit** skill", first_line)
+                self.assertIn(f"mode `{mode}`", first_line)
+
+    def test_aliases_keep_short_display_names_distinct_from_the_canonical(self) -> None:
+        canonical = quoted_yaml_field(COMMIT / "agents" / "openai.yaml", "display_name")
+        self.assertEqual("Git Commit", canonical)
+        for name in ALIASES:
+            with self.subTest(name=name):
+                self.assertNotEqual(canonical, quoted_yaml_field(
+                    SKILLS / name / "agents" / "openai.yaml", "display_name"))
+        catalog = read(ROOT / "website" / "src" / "data" / "skills.ts")
+        title = re.search(r'id: "git-commit",\s+title: "([^"]+)"', catalog)
+        self.assertIsNotNone(title)
+        self.assertEqual(canonical, title.group(1) if title else "")
+
+
+class GitMergeTests(unittest.TestCase):
+    def test_target_resolution(self) -> None:
+        text = flat(MERGE)
+        for rule in (
+            "The argument wins",
+            "| `dev` | `dev` if it exists locally, otherwise `develop` |",
+            "| none | the repository default branch from `origin/HEAD`, otherwise `main` |",
+            "git symbolic-ref --quiet --short refs/remotes/origin/HEAD",
+            "Never create a branch to satisfy the request",
+            "Say which target was resolved, and from what, in the plan.",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
+        self.assertIn('argument-hint: "[main | dev | <branch>]"', read(COMMANDS / "git-merge.md"))
+
+    def test_merge_keeps_every_guard(self) -> None:
+        text = flat(MERGE)
+        for rule in (
+            '[ -z "$(git status --porcelain)" ]',
+            "Wait for explicit confirmation; the default is no.",
+            "Never escalate to `git branch -D`.",
+            "Auto-resolve conflicts, auto-push",
+            "never suggest deleting its remote branch",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
+
+    def test_merge_keeps_protected_source_branches_after_merge(self) -> None:
+        for path in (MERGE, COMMANDS / "git-merge.md"):
+            with self.subTest(path=path.relative_to(ROOT)):
+                text = read(path)
+                self.assertIn(PROTECTED_BRANCH_LIST, text)
+                self.assertIn("protected source branch", text.lower())
+                self.assertIn("skip", text.lower())
+                self.assertIn("local delete", text.lower())
+
+    def test_merge_evals_cover_targets_and_refusals(self) -> None:
+        prompts = " ".join(item["prompt"] for item in evals("git-merge"))
+        for scenario in ("main에 머지", "develop", "origin/HEAD", "neither", "unstaged", "-D", "worktree"):
+            with self.subTest(scenario=scenario):
+                self.assertIn(scenario, prompts)
+
+
+class GitCleanupTests(unittest.TestCase):
+    def test_cleanup_uses_the_protected_branch_list(self) -> None:
+        for path in (CLEANUP, COMMANDS / "git-cleanup.md", GIT_SKILL / "README.md", GIT_SKILL / "README.ko.md"):
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertIn(PROTECTED_BRANCH_LIST, read(path))
+
+    def test_worktree_guards(self) -> None:
+        text = flat(CLEANUP)
+        for rule in (
+            "git worktree list --porcelain",
+            "it is not the main worktree;",
+            "it is not the current worktree;",
+            "it is not locked",
+            "`git -C <path> status --short` prints nothing",
+            "the branch tip is reachable from an anchor",
+            'git worktree remove "$path" # never --force',
+            "git worktree prune",
+            'git branch -d "$branch"',
+            "leave that worktree and its branch in place and report the refusal",
+            "Every other worktree is kept with its reason",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
+
+    def test_force_flags_are_forbidden(self) -> None:
+        text = flat(CLEANUP)
+        self.assertIn("`git branch -D` or `git worktree remove --force`.", text)
+        for path in (CLEANUP, COMMANDS / "git-cleanup.md"):
+            section = ""
+            for line in read(path).splitlines():
+                if line.startswith("#"):
+                    section = line
+                if re.search(r"git worktree remove .*--force|git branch -D|`-D`", line):
+                    with self.subTest(path=path.relative_to(ROOT), line=line):
+                        self.assertRegex(f"{section} {line}", r"[Nn]ever")
+
+    def test_branch_pass_is_unchanged(self) -> None:
+        text = flat(CLEANUP)
+        for rule in (
+            "git merge-base --is-ancestor",
+            "rather than `git branch --merged`",
+            "Record which anchor proved each candidate.",
+            "Wait for explicit confirmation; the default is no.",
+            "Never escalate.",
+            "Delete remote branches",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, text)
+
+    def test_cleanup_evals_cover_worktrees(self) -> None:
+        prompts = " ".join(item["prompt"] for item in evals("git-cleanup"))
+        for scenario in ("워크트리", "locked", "--force", "-D", "Merge"):
+            with self.subTest(scenario=scenario):
+                self.assertIn(scenario, prompts)
 
 
 class GitResolveConflictsTests(unittest.TestCase):
-    def test_package_shape_is_complete(self) -> None:
-        expected = (
-            CONFLICT_SKILL / "SKILL.md",
-            CONFLICT_SKILL / "agents" / "openai.yaml",
-            CONFLICT_SKILL / "evals" / "evals.json",
-            GIT_SKILL / "commands" / f"{CONFLICT_SKILL_NAME}.md",
-        )
-
-        for path in expected:
-            with self.subTest(path=path.relative_to(ROOT)):
-                self.assertTrue(path.is_file())
-
     def test_interfaces_publish_both_selectors(self) -> None:
         block = frontmatter(CONFLICT_SKILL / "SKILL.md")
-        openai = (CONFLICT_SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
-        command = (
-            GIT_SKILL / "commands" / f"{CONFLICT_SKILL_NAME}.md"
-        ).read_text(encoding="utf-8")
-
+        command = read(COMMANDS / f"{CONFLICT_SKILL_NAME}.md")
         self.assertIn(f"name: {CONFLICT_SKILL_NAME}", block)
         self.assertIn(f"/{CONFLICT_SKILL_NAME}", block)
         self.assertIn(f"${CONFLICT_SKILL_NAME}", block)
-        self.assertIn(f"${CONFLICT_SKILL_NAME}", openai)
+        self.assertIn("use git-merge.", block)
         self.assertIn(f"Use the **{CONFLICT_SKILL_NAME}** skill", command)
         self.assertIn("$ARGUMENTS", command)
 
     def test_skill_orders_the_resolution_workflow(self) -> None:
-        text = (CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8")
+        text = read(CONFLICT_SKILL / "SKILL.md")
         ordered = [
             "## 1. See where the operation stopped",
             "## 2. Classify every conflicted path",
@@ -515,7 +519,6 @@ class GitResolveConflictsTests(unittest.TestCase):
             "## 6. Complete the operation",
             "## Refusals",
         ]
-
         positions = [text.find(heading) for heading in ordered]
         for heading, position in zip(ordered, positions):
             with self.subTest(heading=heading):
@@ -523,15 +526,10 @@ class GitResolveConflictsTests(unittest.TestCase):
         self.assertEqual(sorted(positions), positions)
 
     def test_skill_assigns_a_policy_to_every_conflict_class(self) -> None:
-        text = " ".join((CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        text = flat(CONFLICT_SKILL / "SKILL.md")
         for conflict_class in (
-            "**Source**",
-            "**Lockfile**",
-            "**Generated**",
-            "**Binary**",
-            "**Submodule**",
-            "**Delete/modify**",
-            "**Rename**",
+            "**Source**", "**Lockfile**", "**Generated**", "**Binary**",
+            "**Submodule**", "**Delete/modify**", "**Rename**",
         ):
             with self.subTest(conflict_class=conflict_class):
                 self.assertIn(conflict_class, text)
@@ -539,7 +537,7 @@ class GitResolveConflictsTests(unittest.TestCase):
         self.assertIn("Never pick blind", text)
 
     def test_skill_never_abandons_or_publishes_the_operation(self) -> None:
-        text = " ".join((CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        text = flat(CONFLICT_SKILL / "SKILL.md")
         for refusal in (
             "Never run `--abort` or `--skip`",
             "Never hand-merge a lockfile or a generated file",
@@ -551,7 +549,7 @@ class GitResolveConflictsTests(unittest.TestCase):
                 self.assertIn(refusal, text)
 
     def test_skill_warns_that_rebase_swaps_the_side_labels(self) -> None:
-        text = " ".join((CONFLICT_SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        text = flat(CONFLICT_SKILL / "SKILL.md")
         self.assertIn("During a rebase, \"ours\" and \"theirs\" are swapped", text)
         self.assertIn("--diff-filter=U", text)
         self.assertIn("--conflict=zdiff3", text)
@@ -564,7 +562,56 @@ class GitResolveConflictsTests(unittest.TestCase):
                 for locale in ("ko", "en", "jp", "cn")
             ),
         ]
-
         for path in sources:
             with self.subTest(path=path.relative_to(ROOT)):
-                self.assertIn(f'"{CONFLICT_SKILL_NAME}"', path.read_text(encoding="utf-8"))
+                self.assertIn(f'"{CONFLICT_SKILL_NAME}"', read(path))
+
+
+class RootDocsTests(unittest.TestCase):
+    """Strings the orchestrator-owned root docs must publish for this plugin."""
+
+    def test_aliases_are_documented_across_package_surfaces(self) -> None:
+        for path in (*ROOT_DOCS, GIT_SKILL / "README.md", GIT_SKILL / "README.ko.md"):
+            text = read(path)
+            for alias in ALIASES:
+                for selector in (f"`/{alias}`", f"`${alias}`"):
+                    with self.subTest(path=path.relative_to(ROOT), selector=selector):
+                        self.assertIn(selector, text)
+
+    def test_realtime_modes_are_documented_in_root_docs(self) -> None:
+        for path in ROOT_DOCS:
+            text = read(path)
+            for mode in ("git-commit realtime", "git-commit push realtime"):
+                with self.subTest(path=path.relative_to(ROOT), mode=mode):
+                    self.assertIn(mode, text)
+
+    def test_published_skill_count_matches_packaged_skills(self) -> None:
+        self.assertEqual(30, len(list(ROOT.glob("*/skills/*/SKILL.md"))))
+        expected_counts = {
+            ROOT / "README.md": "27 practical agent workflows and 30 installable Codex selectors",
+            ROOT / "README.ko.md": "27개의 실용적인 에이전트 워크플로와 30개의 설치 가능한 Codex selector",
+            ROOT / "USAGE.md": "27 canonical workflows and 30 installable Codex selectors",
+            ROOT / "ARCHITECTURE.md": "expose 27 canonical workflows through 30 installable Codex selectors",
+        }
+        for path, phrase in expected_counts.items():
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertIn(phrase, read(path))
+
+    def test_legacy_live_selector_is_removed_from_published_sources(self) -> None:
+        legacy_selector = "git-commit-push-" + "live"
+        for path in ROOT.rglob("*"):
+            relative = path.relative_to(ROOT)
+            if (
+                not path.is_file()
+                or path.suffix not in {".json", ".md", ".py", ".yaml"}
+                or "__pycache__" in path.parts
+                or "node_modules" in path.parts
+                or any(part.startswith(".") for part in relative.parts)
+            ):
+                continue
+            with self.subTest(path=relative):
+                self.assertNotIn(legacy_selector, read(path))
+
+
+if __name__ == "__main__":
+    unittest.main()
