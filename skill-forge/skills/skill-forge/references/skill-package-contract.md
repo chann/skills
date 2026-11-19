@@ -14,6 +14,9 @@ A skill lives at `<plugin>/skills/<name>/SKILL.md`, and its frontmatter `name`
 equals the directory name. The name is the selector: `/<name>` in Claude Code,
 `$<name>` in Codex. Use lowercase kebab-case.
 
+Pick a plain name that says what the skill does, not wordplay. A reader should
+guess the job from the name alone: `catchup`, `diff-summary`, `git-merge`.
+
 ## C2 — Description grammar
 
 `description` is one paragraph, at most 1024 characters, that:
