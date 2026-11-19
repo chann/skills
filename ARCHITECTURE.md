@@ -110,7 +110,7 @@ Every plugin shares the same layout:
 
 ```text
 /chann-mode <task>  (or $chann-mode <task>)
-  → restate the goal and the smallest change that meets it
+  → restate the goal and the least change that satisfies it
   → match one playbook; copy its numbered steps into the host's task list
   → for each step: load the owning skill when installed, else follow the playbook's inline steps
   → split separable work across delegates (one worktree and branch per writer), then merge and run the project's checks on the merged tree

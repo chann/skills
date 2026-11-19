@@ -21,7 +21,7 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 ## Start here
 
 `chann-mode` is the one entry point. Give it a task, and it restates the goal
-and the smallest change that meets it, picks a playbook, hands each step to the
+and the least change that satisfies it, picks a playbook, hands each step to the
 skill that owns it when that skill is installed, and replies with labelled
 evidence. It runs only on its own selector. Every other skill is situational:
 the mode routes to it, and you can call it directly.
