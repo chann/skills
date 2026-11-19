@@ -2,18 +2,17 @@
 
 [English](README.md) · [← 메인으로](../README.ko.md)
 
-Git 작업을 위한 스킬 모음입니다. 작업 디렉터리의 변경 사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 나눠 커밋합니다. 한 번만 푸시하거나, 구현 중 검증한 작업 단위마다 계속 푸시하거나, 푸시하지 않고 로컬 커밋만 남길 수 있습니다. 형식에 맞지 않는 커밋 기록을 다시 쓰고, `main` 또는 `dev`에 머지한 뒤 보호 대상이 아닌 소스 브랜치를 삭제하거나 이미 머지된 로컬 브랜치를 한꺼번에 정리하는 기능도 제공합니다.
+보수적인 안전 규칙을 지키는 Git 작업 스킬 모음입니다. `git-commit` 하나로 변경 사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 한 번에 커밋하거나, 커밋 후 푸시하거나, 작업하는 동안 검증한 단위마다 커밋(로컬 유지, 푸시, 배포까지)하거나, 형식에 맞지 않는 커밋 제목을 다시 씁니다. `git-merge`는 `main`, `dev` 또는 원하는 로컬 브랜치로 머지하고, `git-resolve-conflicts`는 멈춘 머지나 rebase를 마무리하며, `git-cleanup`은 끝난 워크트리와 머지된 브랜치를 정리합니다.
 
 ## 주요 기능
 
-- **커밋 / 푸시 / 작업 중 커밋 / 재작성** — 스테이징 여부와 관계없이 변경을 의미 단위(`feat`, `fix`, `docs` 등)로 묶어 Conventional Commit을 하나씩 생성. 필요하면 푸시하고, 구현 중 검증된 결과마다 커밋해 즉시 푸시하거나 모두 로컬에 유지하며, 형식에 맞지 않는 제목도 재작성
-- **작업 단위별 배포** — `AGENTS.md` 등 저장소에 명시된 배포 설정으로 의미 단위마다 커밋·푸시·배포하고, 배포와 필수 실행 검사가 끝난 뒤 다음 작업으로 진행
-- `git add .`은 사용하지 않고 항상 경로를 직접 지정해 스테이징
-- `.env*`, `*_rsa`, `*.pem` 등 비밀 정보가 의심되는 파일은 기본으로 제외하고 경고. 정확한 파일명 `.env.example`은 예외
-- `git filter-branch`로 형식에 맞지 않는 커밋 제목만 다시 쓰고 기존 본문은 보존
-- 이미 원격에 푸시된 커밋은 기본적으로 재작성하지 않고 선택지 3개를 제시. 단, `force` 키워드로 명시적으로 동의하면 강제로 진행
-- **머지 / 정리** — `main` 또는 `dev`/`develop`에 머지한 뒤 보호 브랜치가 아닌 소스 브랜치를 `git branch -d`로 삭제하고, 보호 브랜치에 이미 머지된 로컬 브랜치를 한꺼번에 정리
-- 강제 푸시, hook 우회(`--no-verify`), `git branch -D`는 자동으로 실행하지 않음. 단, `/git-commit-rewrite`에 `force` 키워드를 함께 주면 강제 푸시 허용
+- **커밋 모드** — `git-commit`은 스테이징 여부와 관계없이 변경을 의미 단위로 묶어 단위마다 Conventional Commit을 하나씩 만듭니다. `push`는 일반 푸시를 더하고, `realtime`은 작업하는 동안 검증된 결과마다 커밋하며, `push realtime`은 그때마다 푸시하고 upstream과 같은 상태인지 확인합니다. `deploy`는 `AGENTS.md`에 이미 적힌 배포 설정으로 체크포인트마다 배포하고, 배포가 확인된 뒤에 다음 단위로 넘어갑니다. `rewrite`는 형식에 맞지 않는 제목을 고칩니다
+- 스테이징은 항상 경로를 직접 지정합니다. `git add .`은 쓰지 않습니다
+- `.env*`, `*_rsa`, `*.pem` 등 비밀 정보로 보이는 파일은 기본으로 제외하고 경고합니다. 정확한 파일명 `.env.example`은 예외입니다
+- `git filter-branch`로 커밋 제목만 다시 쓰고 본문은 그대로 둡니다. 이미 푸시된 커밋이 있으면 선택지 3개를 보여 주고, `force` 키워드로 직접 동의한 경우에만 바로 진행합니다
+- **머지** — 현재 브랜치를 정해진 대상 브랜치에 머지한 뒤, 보호 브랜치가 아니면 소스 브랜치를 `git branch -d`로 삭제합니다
+- **정리** — 깨끗하고 잠기지 않았으며 머지가 끝난 연결 워크트리를 제거하고, 보호 브랜치에 이미 머지된 로컬 브랜치를 삭제합니다
+- 강제 푸시(`rewrite force`를 직접 지정한 경우 제외), hook 우회, `git branch -D`, `git worktree remove --force`는 쓰지 않습니다
 
 ## 설치 방법
 
@@ -22,58 +21,31 @@ Git 작업을 위한 스킬 모음입니다. 작업 디렉터리의 변경 사�
 ```bash
 npx skills add -y -g chann/skills \
   --skill git-commit \
-  --skill git-commit-push \
-  --skill git-commit-push-realtime \
+  --skill gcr \
   --skill gcpr \
-  --skill git-commit-push-deploy \
   --skill gcpd \
-  --skill git-commit-realtime \
-  --skill git-commit-rewrite \
-  --skill git-merge-to-main \
-  --skill git-merge-to-dev \
-  --skill git-branch-cleanup \
-  --skill git-resolve-conflicts
+  --skill git-merge \
+  --skill git-resolve-conflicts \
+  --skill git-cleanup
 ```
 
-**현재 프로젝트에 설치:**
+**프로젝트 로컬 설치:**
 
 ```bash
 npx skills add chann/skills \
   --skill git-commit \
-  --skill git-commit-push \
-  --skill git-commit-push-realtime \
+  --skill gcr \
   --skill gcpr \
-  --skill git-commit-push-deploy \
   --skill gcpd \
-  --skill git-commit-realtime \
-  --skill git-commit-rewrite \
-  --skill git-merge-to-main \
-  --skill git-merge-to-dev \
-  --skill git-branch-cleanup \
-  --skill git-resolve-conflicts
+  --skill git-merge \
+  --skill git-resolve-conflicts \
+  --skill git-cleanup
 ```
 
-설치할 때는 실제 스킬 이름을 `--skill`로 지정합니다. `git-skill`은 이 Git 워크플로우들을 패키징하는 플러그인 디렉터리 이름입니다.
-
-Codex `$gcpr` selector와 실행에 필요한 워크플로만 추가하려면:
+`--skill`에는 스킬 이름을 씁니다. `git-skill`은 플러그인 디렉터리 이름입니다. 별칭은 `git-commit`이 함께 설치되어 있어야 하며, 없으면 실행하지 않고 멈춥니다.
 
 ```bash
-npx skills add -y -g chann/skills \
-  --skill gcpr \
-  --skill git-commit-push-realtime \
-  --skill git-commit \
-  --skill git-commit-push
-```
-
-Codex `$gcpd` selector와 실행에 필요한 공유 워크플로를 모두 추가하려면:
-
-```bash
-npx skills add -y -g chann/skills \
-  --skill gcpd \
-  --skill git-commit-push-deploy \
-  --skill git-commit-push-realtime \
-  --skill git-commit \
-  --skill git-commit-push
+npx skills add -y -g chann/skills --skill git-commit --skill gcpr
 ```
 
 **수동 설치:**
@@ -83,239 +55,134 @@ git clone https://github.com/chann/skills.git
 ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 ```
 
-## 사용 방법
+## 사용법
 
-자연어로 요청하면 알맞은 워크플로가 자동으로 실행됩니다. 직접 호출할 때는
-Claude Code에서 `/name`, Codex에서 `$name`을 사용합니다:
+자연어로 요청하면 맞는 스킬과 모드가 선택됩니다. 직접 호출할 때는 Claude Code에서 `/name`, Codex에서 `$name`을 씁니다.
 
-| Claude Code                     | Codex                        | 동작                                                                           |
-| ------------------------------- | ---------------------------- | ------------------------------------------------------------------------------ |
-| `/git-commit`                   | `$git-commit`                | 스테이징 여부와 관계없이 변경을 의미 단위로 나눠 Conventional Commit 생성       |
-| `/git-commit-push`              | `$git-commit-push`           | 위 작업 후 `git push`까지 진행하며 강제 푸시는 사용하지 않음                    |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | 구현 중 검증된 의미 단위가 끝날 때마다 커밋하고 즉시 푸시                |
-| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | 의미 단위마다 커밋·푸시하고 저장소에 명시된 설정으로 배포·확인까지 진행 |
-| `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | 구현 중 검증된 의미 단위가 끝날 때마다 로컬에만 커밋 — 푸시하지 않음           |
-| `/git-commit-rewrite`           | `$git-commit-rewrite`        | 최근 커밋 중 Conventional 형식에 맞지 않는 제목을 재작성                       |
-| `/git-merge-to-main`            | `$git-merge-to-main`         | 현재 브랜치를 `main`으로 머지 후 보호 브랜치가 아니면 소스 브랜치 삭제         |
-| `/git-merge-to-dev`             | `$git-merge-to-dev`          | 현재 브랜치를 `dev`(없으면 `develop`)로 머지 후 보호 브랜치가 아니면 삭제      |
-| `/git-branch-cleanup`           | `$git-branch-cleanup`        | 보호 브랜치에 이미 머지된 모든 로컬 브랜치 삭제                                |
-| `/git-resolve-conflicts`        | `$git-resolve-conflicts`     | 멈춘 머지·리베이스·cherry-pick 충돌을 중단하지 않고 마무리                     |
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/git-commit` | `$git-commit` | 현재 변경을 Conventional Commit 단위로 한 번 커밋 |
+| `/git-commit push` | `$git-commit push` | 위와 같이 커밋한 뒤 일반 `git push` (강제 푸시 없음) |
+| `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | 작업하는 동안 검증된 결과마다 커밋하고 모두 로컬에 유지 |
+| `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | 검증된 결과마다 커밋하고 바로 푸시한 뒤 upstream과 같은지 확인 |
+| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | 저장소에 적힌 설정으로 결과마다 커밋·푸시·배포하고 배포를 확인 |
+| `/git-commit rewrite [range] [force]` | `$git-commit rewrite [range] [force]` | 최근 커밋 중 형식에 맞지 않는 제목을 다시 작성 |
+| `/git-merge [main \| dev \| <branch>]` | `$git-merge` | 현재 브랜치를 대상에 머지하고, 보호 브랜치가 아니면 소스 삭제 |
+| `/git-resolve-conflicts` | `$git-resolve-conflicts` | 충돌로 멈춘 merge, rebase, cherry-pick, revert를 중단하지 않고 마무리 |
+| `/git-cleanup` | `$git-cleanup` | 끝난 워크트리를 제거하고 보호 브랜치에 머지된 로컬 브랜치를 삭제 |
+
+`gcr`, `gcpr`, `gcpd`는 직접 호출할 때만 동작하는 별칭입니다. 자연어 요청으로는 시작되지 않고, 설치된 `git-commit`을 정해진 모드로 실행합니다.
 
 **예시:**
 
 ```
-> 변경사항 의미 단위로 커밋해줘
 > commit my changes
-> /git-commit-push
-> 작업 중간중간 의미 있는 단위마다 커밋하고 푸시해줘
+> 변경사항 의미 단위로 커밋해줘
+> 커밋하고 푸시해줘
+> 작업 중간중간 커밋 푸시해줘
 > $gcpr
-> AGENTS.md에 적힌 설정으로 작업 단위마다 커밋하고 푸시하고 배포해줘
-> $gcpd
-> 푸시 없이 의미 단위마다 커밋만 해줘
-> /gcr
-> /git-commit-rewrite
+> 의미 있는 단위마다 배포해줘
+> /git-commit rewrite HEAD~5
 > dev에 머지해줘
-> 머지된 브랜치 다 정리해줘
+> 머지된 브랜치랑 끝난 워크트리 정리해줘
 ```
 
-## 동작 순서
+### 0.x에서 옮겨 오기
 
-### `/git-commit` (기본)
+| 이전 selector | 새 호출 방법 |
+| --- | --- |
+| `/git-commit-push` | `/git-commit push` |
+| `/git-commit-realtime` | `/git-commit realtime` 또는 `/gcr` |
+| `/git-commit-push-realtime` | `/git-commit push realtime` 또는 `/gcpr` |
+| `/git-commit-push-deploy` | `/git-commit deploy` 또는 `/gcpd` |
+| `/git-commit-rewrite` | `/git-commit rewrite` |
+| `/git-merge-to-main` | `/git-merge main` |
+| `/git-merge-to-dev` | `/git-merge dev` |
+| `/git-branch-cleanup` | `/git-cleanup` |
 
-1. 작업 트리 점검 (`git status --short`, `git diff`, `git diff --cached`)
-2. 스테이징 여부와 관계없이 변경을 의미 단위로 묶기(단위마다 Conventional Commit 1개)
-3. 커밋 계획을 보여주고 사용자 확인 대기
-4. 경로를 직접 지정한 `git add <paths>`로 한 단위씩 커밋
-5. `git log --oneline`으로 최종 결과 표시
+Codex의 `$name` selector도 같은 방식으로 바뀝니다.
 
-### `/git-commit-push`
+## 동작 방식
 
-기본 워크플로를 실행한 뒤 `git push`합니다. `--force`와 `--force-with-lease`는 사용하지 않습니다. 푸시가 거부되면(non-fast-forward) 자동으로 해결하려 하지 않고 오류를 사용자에게 알린 뒤 중단합니다.
+### `git-commit`
 
-### `/git-commit-push-realtime` (별칭 `/gcpr`, `$gcpr`)
+1. 인자나 요청 문장에서 모드를 정하고, Git 명령을 실행하기 전에 그 모드를 밝힙니다. 요청이 모호하면 영향 범위가 작은 모드를 고르며, `push`나 `deploy`는 요청에 없으면 추측하지 않습니다
+2. 작업 트리를 살펴 변경을 의도별로 묶고, 비밀 정보로 보이는 파일을 제외한 뒤 커밋 계획을 보여 줍니다
+3. 경로를 직접 지정해 스테이징하고 단위마다 Conventional Commit을 만듭니다. hook이 실패하면 우회하지 않고 원인을 고칩니다
+4. `push`: `git push`를 실행합니다(upstream이 없으면 `-u`). 거부되면 멈추고 어떻게 맞출지 묻습니다
 
-1. 수정하기 전에 브랜치, upstream, 기존 커밋, 작업 트리와 비밀 정보 경로의 위험 확인
-2. 결과를 기준으로 커밋 단위 계획. 경과 시간, 파일 수나 남은 토큰을 기준으로 나누지 않음
-3. 서로 밀접한 작업을 하나의 결과로 완성하고 관련 테스트와 저장소 필수 검사 실행
-4. 커밋할 경로와 검증 결과를 보여준 뒤 해당 경로만 스테이징하고 정확한 Conventional Commit 생성
-5. 바로 푸시하고 다음 작업을 시작하기 전에 `HEAD...@{u}`가 `0 0`인지 확인
-6. upstream이 바뀌거나 푸시가 거부되면 중단. pull, merge, rebase나 강제 푸시로 자동 해결하지 않음
-7. 전체 범위 검증, 커밋 기록, 로컬과 원격의 일치 상태를 확인하고 종료
+**체크포인트 모드**(`realtime`, `push realtime`, `deploy`)는 시간이나 파일 수가 아니라 완성된 결과를 기준으로 체크포인트를 나누고, 관련된 가장 좁은 검사와 `git diff --check`로 확인한 뒤 커밋합니다. `realtime`은 모든 체크포인트를 로컬에 둡니다. `push realtime`은 체크포인트마다 푸시하고 다음 단위로 가기 전에 `HEAD...@{u}`가 `0 0`인지 확인합니다. `deploy`는 첫 체크포인트 전에 저장소 문서에서 배포 대상, 경로, 소스, 확인 방법을 정하고, 푸시한 바로 그 리비전을 배포하며, 배포와 필수 health check가 확인될 때까지 다음 작업을 시작하지 않습니다. 끝나면 전체 범위를 다시 검증합니다.
 
-### `/git-commit-push-deploy` (별칭 `/gcpd`, `$gcpd`)
+**rewrite**는 범위를 정하고 작업 트리가 깨끗한지, HEAD가 브랜치에 붙어 있는지, 이미 푸시된 커밋이 있는지 확인합니다(취소 / force-with-lease / 새 브랜치 선택지, 기본값은 취소). 본문은 그대로 두고 티켓 접두어는 `Refs:` footer로 옮긴 새 제목을 제안하며, 확인을 받은 뒤 적용합니다. `force` 키워드를 주면 확인 단계와 선택지를 건너뛰고, 푸시된 커밋을 다시 썼다면 마지막에 `git push --force`를 실행합니다.
 
-1. realtime·commit·push 공유 스킬을 읽고 `AGENTS.md` 및 연결된 문서의 기존 배포 설정 확인
-2. 수정·푸시 전에 배포 대상, 명령 또는 자동 실행 조건, 실행 디렉터리, 허용 브랜치, 배포할 커밋의 선택 방법과 확인 절차 확정. 없거나 모호한 설정만 사용자에게 확인
-3. 독립적으로 배포할 수 있는 의미 단위를 계획하고 realtime 흐름에 따라 검증·커밋·푸시 및 원격 일치 확인
-4. 푸시한 커밋 또는 그 커밋에서 빌드한 결과물만 배포. 푸시로 CI가 자동 배포하면 별도 배포를 중복 실행하지 않고 해당 실행 추적
-5. 배포 성공과 필수 상태·실행 검사까지 확인한 뒤 다음 단위의 로컬 구현 시작
-6. 배포 실패·시간 초과·취소·커밋 불일치가 발생하면 다음 작업 단위로 넘어가지 않고 상태를 구분해 보고. 요청 범위 내 코드 수정은 새 복구 단위로 커밋·푸시·배포·확인
-7. 전체 범위 검증, 단위별 커밋 해시, 원격 일치, 배포 대상과 확인 근거를 보고하고 종료
+### `git-merge`
 
-호출 자체로 명시된 대상에 반복 배포할 권한이 주어지므로 매번 다시 묻지
-않으며, 저장소나 배포 서비스의 필수 승인 절차는 따릅니다. 배포 설정은 이미
-있어야 합니다. 제공자나 대상을 임의로 고르거나 브랜치를 머지하고 릴리스
-태그를 만들지 않으며, 복구 명령도 추측하지 않습니다. 직접 배포할 때는
-관련 없는 수정과 추적되지 않은 파일을 배포 결과물에 포함하지 않습니다.
-`/gcpr`는 계속 커밋·푸시 워크플로를 사용합니다.
+1. 대상을 정합니다. 인자가 있으면 그대로 따르고, `dev`는 없으면 `develop`을 씁니다. 인자가 없으면 `origin/HEAD`의 기본 브랜치, 그것도 없으면 `main`입니다. 대상은 로컬에 있어야 합니다
+2. detached HEAD, 정리되지 않은 작업 트리, 대상과 같은 소스 브랜치에서는 실행하지 않습니다
+3. 정한 대상을 포함한 계획을 보여 주고 확인을 기다립니다(기본값은 아니오)
+4. 일반 `git merge`를 실행하고, 충돌이 나면 멈추고 알립니다
+5. 보호 브랜치가 아니면 소스를 `git branch -d`로 삭제합니다. `-D`와 푸시는 하지 않습니다
 
-### `/git-commit-realtime` (별칭 `/gcr`)
+보호 브랜치: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`.
 
-`/git-commit-push-realtime`과 같은 기준을 따르되 원격에는 접근하지 않는 워크플로입니다:
+### `git-cleanup`
 
-1. 수정하기 전에 브랜치, 기존 커밋, 작업 트리와 비밀 정보 경로의 위험 확인
-2. 결과를 기준으로 커밋 단위를 계획하고 서로 밀접한 작업을 하나의 결과로 완성·검증
-3. 지정한 경로만 스테이징하고 단위마다 정확한 Conventional Commit 생성
-4. 커밋 해시를 기록하고 로컬에만 유지. `git push`, pull, merge, rebase는 실행하지 않음
-5. 전체 범위 검증, 커밋 기록, 푸시하지 않은 커밋을 보고하고 종료. 푸시는 별도 요청(`/git-commit-push`, `/gcpr`)으로만 진행
+1. 로컬에 있는 보호 브랜치(기준 브랜치)를 찾습니다
+2. 워크트리: `git worktree list --porcelain`에서 메인 워크트리나 현재 워크트리가 아니고, 잠겨 있지 않으며, `git status --short`가 비어 있고, 보호 대상이 아닌 브랜치의 끝 커밋이 기준 브랜치에 포함된 연결 워크트리만 제거 대상입니다
+3. 브랜치: 보호 브랜치도 현재 브랜치도 아니면서 끝 커밋이 기준 브랜치에 포함된 브랜치가 삭제 대상입니다
+4. 둘을 한 계획으로 보여 줍니다. 항목마다 근거가 된 기준 브랜치와 남겨 두는 이유를 적고 확인을 기다립니다
+5. `git worktree remove`(`--force` 없음), `git worktree prune`, `git branch -d`(`-D` 없음) 순서로 실행합니다. Git이 거부하면 그대로 두고 알립니다
 
-### `/git-commit-rewrite`
+### `git-resolve-conflicts`
 
-1. 재작성 범위 결정(기본: upstream, `main` 또는 `master`와의 merge-base부터 HEAD까지)
-2. 안전 검사(작업 트리가 깨끗한지, HEAD가 브랜치에 연결되어 있는지, 범위 안의 커밋이 원격에 없는지)
-3. 푸시된 커밋이 있으면 취소, 강제 푸시, 새 브랜치 방식의 선택지 3개를 표시하며 기본값은 취소
-4. Conventional Commits 정규식으로 형식에 맞지 않는 커밋을 찾고 머지 커밋은 제외
-5. 매핑 표를 바탕으로 새 제목을 만들고 기존 본문은 그대로 보존
-6. 기존 제목과 새 제목을 보여준 뒤 명시적인 확인 대기
-7. `git filter-branch --msg-filter`로 현재 브랜치에서 재작성하거나 새 브랜치에 cherry-pick
-8. 사후 정리
+1. 어떤 작업이 왜 멈췄는지 확인합니다. rebase에서는 ours와 theirs가 뒤바뀝니다
+2. `--diff-filter=U`로 충돌 경로를 모으고 `--conflict=zdiff3`로 기준 버전을 함께 봅니다
+3. 경로마다 종류를 나눕니다. lockfile과 생성된 파일은 손으로 합치지 않고 다시 생성합니다
+4. 양쪽이 왜 그렇게 고쳤는지 먼저 확인하고, 함께 살릴 수 있으면 둘 다 살리며, 버린 쪽은 기록합니다
+5. 프로젝트의 검사를 실행한 뒤 `--continue`로 마무리합니다. `--abort`, `--skip`, 푸시는 하지 않습니다
 
-### `/git-merge-to-main`
+## 안전 장치
 
-1. 사전 조건 검사 — Git 저장소인지, HEAD가 브랜치에 연결되어 있는지, 현재 브랜치가 `main`이 아닌지, 작업 트리가 깨끗한지, 로컬에 `main`이 있는지 확인
-2. `main..$src` 로그와 삭제 단계를 포함한 계획을 보여주고 명시적인 확인 대기
-3. 필요하면 `origin/main`을 fetch하고 로컬 `main`이 뒤처져 있으면 경고하되 자동 pull은 하지 않음
-4. `git checkout main` 후 `git merge "$src"` 실행. 가능하면 fast-forward하며, 충돌이 나면 자동으로 해결하지 않고 즉시 중단
-5. 소스가 보호 브랜치가 아니면 `git branch -d "$src"`로 삭제하고, 보호 브랜치이면 로컬 삭제를 건너뜀
-6. `git log --oneline -5` 출력. 푸시는 사용자가 직접 실행
+이 스킬들은 다음을 **하지 않습니다**.
 
-보호 소스 브랜치: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`.
-
-### `/git-merge-to-dev`
-
-`/git-merge-to-main`과 같지만 대상 브랜치는 로컬에 `dev`가 있으면 `dev`, 없으면 `develop`을 사용합니다. 둘 다 없으면 중단합니다.
-
-### `/git-branch-cleanup`
-
-1. 로컬에 있는 보호 브랜치 확인: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
-2. 보호 브랜치와 현재 브랜치를 제외하고, 적어도 하나의 보호 브랜치에 `git merge-base --is-ancestor`로 머지됐음이 확인되는 로컬 브랜치를 후보로 선택
-3. 후보마다 어느 보호 브랜치에 머지됐는지와 유지할 브랜치의 이유를 함께 보여주고 명시적인 확인 대기. 기본값은 취소
-4. 각 후보를 `git branch -d`로 안전하게 삭제. Git이 거부하면 건너뛰고 보고하며 `-D`로 강제하지 않음
-5. 요약
-
-### `/git-resolve-conflicts`
-
-1. 어떤 작업이 멈췄는지(merge, rebase, cherry-pick, revert)와 그 목표를 먼저 확인합니다. rebase에서는 ours/theirs가 뒤바뀝니다
-2. `git diff --name-only --diff-filter=U`로 충돌 경로를 모두 뽑고, `--conflict=zdiff3`로 공통 조상까지 보이게 합니다
-3. 경로를 종류별로 나눕니다. 소스, 락파일, 생성 파일, 바이너리, 서브모듈, 삭제/수정, 이름 변경입니다. 락파일과 생성 파일은 손으로 합치지 않고 다시 만들고, 서브모듈은 그 저장소의 로그를 보고 정합니다
-4. hunk를 건드리기 전에 양쪽이 왜 그렇게 썼는지 히스토리에서 확인합니다. 양립하면 둘 다 살리고, 아니면 무엇을 버렸는지 남깁니다
-5. 프로젝트 검사를 돌린 뒤 `--continue`로 마칩니다. `--abort`, `--skip`, 푸시는 하지 않습니다
-
-## Conventional Commits 형식
-
-```
-<type>[optional scope][!]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-**허용하는 type:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
-
-**호환성을 깨는 변경** — type/scope 뒤에 `!`를 추가하거나(예: `feat(api)!: drop v1 endpoints`) `BREAKING CHANGE: ...` 푸터를 사용합니다.
-
-**예시:**
-
-```
-feat(parser): add ability to parse arrays
-fix(ui): correct button alignment
-docs: update README with usage instructions
-refactor(auth): extract token validation
-chore: update dependencies
-feat!: send email on registration
-
-BREAKING CHANGE: email service is now required at boot
-```
-
-## 안전 보장
-
-스킬은 **절대로**:
-
-- `git add .`이나 `git add -A` 사용(항상 경로를 직접 지정)
-- `--no-verify`나 `--no-gpg-sign`으로 hook 우회
-- 강제 푸시. `--force-with-lease`도 사용자가 명시적으로 동의한 뒤에만 사용
-- 비밀 정보가 의심되는 파일(`.env*` 중 정확한 파일명 `.env.example`은 예외, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`)을 명시적인 허락 없이 커밋
-- 깨진 상태, 시간만 기준으로 나눈 상태, 임시 내용뿐인 작업 중간 결과를 푸시
-- `feat`와 `fix`를 한 커밋에 합치기
-- 선택지 3개를 보여주지 않고 이미 푸시된 커밋 재작성
-- `git filter-branch --root` 사용
-- 재작성할 때 티켓 참조 누락. 참조는 `Refs:` 푸터로 이동
-- `git branch -D`로 강제 삭제. 항상 `git branch -d`로 안전하게 삭제
-- 머지 충돌 자동 해결, 머지 후 자동 푸시, 원격 브랜치 자동 삭제
+- `git add .` 또는 `git add -A`
+- `--no-verify`, `--no-gpg-sign`으로 hook 우회
+- 강제 푸시(`rewrite force` 제외). `--force-with-lease`는 `rewrite`에서 사용자가 직접 동의한 경우에만 사용
+- 비밀 정보로 보이는 파일(`.env*`, 단 정확한 파일명 `.env.example`은 예외, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`)을 명시적 동의 없이 커밋
+- 깨진 상태나 시간 기준, 자리만 채운 체크포인트를 커밋하거나 푸시
+- 저장소 문서에 없는 대상에 배포하거나, 배포가 확인되기 전에 체크포인트를 배포 완료로 보고
+- 선택지 없이 푸시된 커밋을 다시 쓰기, `git filter-branch --root` 사용, 티켓 참조 삭제
+- `git branch -D` 또는 `git worktree remove --force`
+- 충돌 자동 해결, 머지 후 자동 푸시, 원격 브랜치 삭제
 - 보호 브랜치 삭제: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 
 ## 프로젝트 구조
 
 ```
 git-skill/
-├── .claude-plugin/
-│   └── plugin.json                       # 플러그인 메타데이터
-├── commands/
-│   ├── git-commit.md                     # /git-commit (기본)
-│   ├── git-commit-push.md                # /git-commit-push 커맨드
-│   ├── git-commit-push-realtime.md       # /git-commit-push-realtime 커맨드
-│   ├── gcpr.md                           # /gcpr — 본문이 같은 짧은 별칭
-│   ├── git-commit-push-deploy.md          # 설정에 따른 작업 단위별 배포
-│   ├── gcpd.md                           # /gcpd — 본문이 같은 짧은 별칭
-│   ├── git-commit-realtime.md            # /git-commit-realtime 커맨드
-│   ├── gcr.md                            # /gcr — 본문이 같은 짧은 별칭
-│   ├── git-commit-rewrite.md             # /git-commit-rewrite 커맨드
-│   ├── git-merge-to-main.md              # /git-merge-to-main 커맨드
-│   ├── git-merge-to-dev.md               # /git-merge-to-dev 커맨드
-│   ├── git-branch-cleanup.md             # /git-branch-cleanup 커맨드
-│   └── git-resolve-conflicts.md          # /git-resolve-conflicts 커맨드
+├── .claude-plugin/plugin.json
+├── commands/                    # 스킬마다 /name 명령 하나
 └── skills/
-    ├── git-commit/                       # 메인 커밋 스킬 — 전체 워크플로우 + 공유 스크립트
-    │   ├── SKILL.md
-    │   └── scripts/
-    │       └── rewrite_msg.py            # rewrite 용 filter-branch 헬퍼
-    ├── git-commit-push/                  # push 변형
-    │   └── SKILL.md
-    ├── git-commit-push-realtime/         # 검증한 작업 단위마다 커밋하고 푸시
-    │   ├── SKILL.md
-    │   └── evals/evals.json
-    ├── gcpr/                             # 얇은 Codex selector 별칭
-    │   ├── SKILL.md
-    │   └── agents/openai.yaml
-    ├── git-commit-push-deploy/            # 의미 단위마다 커밋·푸시·배포·확인
-    │   ├── SKILL.md
-    │   ├── agents/openai.yaml
-    │   └── evals/evals.json
-    ├── gcpd/                             # 얇은 Codex 배포 selector 별칭
-    │   ├── SKILL.md
-    │   ├── agents/openai.yaml
-    │   └── evals/evals.json
-    ├── git-commit-realtime/              # 검증한 작업 단위마다 로컬에만 커밋
-    │   ├── SKILL.md
-    │   └── evals/evals.json
-    ├── git-commit-rewrite/               # rewrite 변형
-    │   └── SKILL.md
-    ├── git-merge-to-main/                # main 으로 머지 후 소스 삭제
-    │   └── SKILL.md
-    ├── git-merge-to-dev/                 # dev/develop 로 머지 후 소스 삭제
-    │   └── SKILL.md
-    ├── git-branch-cleanup/               # 머지된 로컬 브랜치 일괄 삭제
-    │   └── SKILL.md
-    └── git-resolve-conflicts/            # 멈춘 머지·리베이스 충돌 마무리
-        └── SKILL.md
+    ├── git-commit/
+    │   ├── SKILL.md             # 모드, 형식, 기본 흐름, 안전 규칙
+    │   ├── references/
+    │   │   ├── checkpoints.md   # realtime, push realtime, deploy 진행 방식
+    │   │   ├── deploy.md        # 문서화된 설정, 배포 경로, 확인 단계
+    │   │   └── rewrite.md       # 커밋 기록 재작성과 force 모드
+    │   └── scripts/rewrite_msg.py
+    ├── gcr/ · gcpr/ · gcpd/     # 모드가 고정된 직접 호출 전용 별칭
+    ├── git-merge/
+    ├── git-resolve-conflicts/
+    └── git-cleanup/
 ```
+
+모든 스킬에는 `agents/openai.yaml`과 `evals/evals.json`이 들어 있습니다.
 
 ## 요구 사항
 
-- [Claude Code](https://code.claude.com) (CLI, 데스크톱 앱, 또는 IDE 확장)
+- Claude Code 또는 Codex
 - Git 저장소
-- Python 3.10+ (`/git-commit-rewrite` 의 `rewrite_msg.py` 실행 시 필요)
+- Python 3.10+ (`/git-commit rewrite`에서 쓰는 `rewrite_msg.py`용)
 
 ## 라이선스
 
