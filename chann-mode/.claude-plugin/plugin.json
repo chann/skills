@@ -1,0 +1,5 @@
+{
+  "name": "chann-mode",
+  "description": "One entry point for non-trivial work: restates the goal and the smallest change, matches one of fourteen playbooks, routes each step to the catalog skill that owns it when installed, applies named principles, and replies with labelled evidence.",
+  "version": "0.1.0"
+}

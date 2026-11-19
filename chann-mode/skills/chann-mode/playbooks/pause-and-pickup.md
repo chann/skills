@@ -1,0 +1,29 @@
+# Pause and pickup
+
+**You own the resume point: a cold start continues without redoing anything.**
+
+Pausing:
+
+1. Stop at a safe boundary. Finish the current atomic step or back out of it,
+   start nothing new, and stop any running delegates.
+2. Take no irreversible action to pause: no push, pull request, or deploy that
+   was not already under way.
+3. Make the work durable: commit uncommitted edits as one `wip:` commit on the
+   task branch, with a line in its body when the tree is broken.
+4. Write a resume note to disk (`handoff session` when installed): intent,
+   progress, what is proven and what is not, the next steps in order, and the
+   traps the next session would fall into. Point at an existing decision trail
+   instead of copying it.
+
+Picking up:
+
+5. Find the prior trail (the resume note, the decision trail, the branch, a
+   routed skill's record) and treat it as authoritative. Use `recall` or
+   `ketchup` when installed to rebuild what happened before this session.
+6. Reconstruct the state (branch, worktree, what landed, what is pending) and
+   name the resume point. Do not redo finished work.
+7. Check each inherited claim the next step depends on against the real
+   artifact. A prior "tests pass" is a lead until you run them.
+8. Route the remaining work to its playbook.
+
+**Reply:** for a pause, where it stopped, what is on disk, the commits made, and the first action on resume; for a pickup, where the prior work stopped, what was inherited versus redone, and the resume point.
