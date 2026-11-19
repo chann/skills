@@ -1,0 +1,49 @@
+{
+  "skill_name": "ketchup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $ketchup. I stepped away for an hour; what changed in this conversation?",
+      "expected_output": "A plain reply that opens with one sentence on what waits on the user, then one line per requested thing with its state, then each decision waiting on the user, then one line on work the agent can still do itself.",
+      "files": [],
+      "assertions": [
+        "Opens with one sentence naming what waits on the user, or saying nothing does",
+        "Checks the live state of each branch, PR, CI run, or agent the conversation touched before reporting and corrects any number that no longer holds",
+        "Keeps the what-happened lines under about 100 words, one line per requested thing, each with a state of done, still running, failed, or not checked",
+        "Changes no code, starts no job, and posts nothing during the turn"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "지금까지 뭐 바뀌었어? PR 두 개 올라와 있었는데.",
+      "expected_output": "A Korean plain-language reply in which each pending decision names its PR by a name the user knows plus its number or link, and gives the call, the pick, the user impact, the evidence, and the risk.",
+      "files": [],
+      "assertions": [
+        "Replies in Korean without hashes, file paths, commands, build numbers, or test counts unless the user needs one to act",
+        "Makes every decision decidable from the reply alone with the call, the pick, what it changes for users, the evidence, and the risk",
+        "Never shrinks or drops decision items to stay short and never invents a call to fill the list",
+        "Treats only items needing a product choice, an approval, an irreversible action, or missing access as the user's; work the agent can still do is not a decision"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use $ketchup. Nothing has happened since my last message, right?",
+      "expected_output": "A short reply that says nothing happened and nothing waits on the user, then stops.",
+      "files": [],
+      "assertions": [
+        "Says plainly that nothing happened and nothing waits, then stops without padding",
+        "Treats notifications and subagent results as not being the user's messages when finding the window"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use $ketchup to tell me what I worked on across all my projects last week.",
+      "expected_output": "Redirects to recall because the request is about history across sessions, not this conversation.",
+      "files": [],
+      "assertions": [
+        "Names recall as the right skill for other sessions and earlier days instead of answering from this conversation",
+        "Does not read any agent history store"
+      ]
+    }
+  ]
+}

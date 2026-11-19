@@ -1,0 +1,70 @@
+{
+  "skill_name": "unslop",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이 문서 AI 티 좀 없애줘. \"계약을 준수하는 엔벨로프\" 같은 표현이 계속 나와.",
+      "expected_output": "Replaces the AI-flavored jargon and smooths the translation-ese rhythm while leaving every fact, number, and established technical term exactly as it was.",
+      "files": [],
+      "assertions": [
+        "No fact, claim, number, date, or proper noun is added, removed, or reordered.",
+        "AI-flavored jargon such as 계약 and 엔벨로프 is replaced with ordinary Korean.",
+        "Established technical terms such as 커밋 and 프롬프트 are left untouched."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "docs/note.ko.md 를 사람답게 다듬어줘.",
+      "expected_output": "Rewrites the file's Korean prose and saves the result beside it rather than overwriting the source.",
+      "files": [],
+      "assertions": [
+        "The source file is never overwritten.",
+        "The rewrite is saved to a separate path and that path is reported.",
+        "Only style, rhythm, and expression change; the content is unchanged."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Please rewrite this English release note so it reads more naturally: \"Certainly! We're thrilled to announce a pivotal update that serves as a testament to our commitment — not just faster, but smarter, more reliable, and more robust.\"",
+      "expected_output": "An English rewrite that applies the English rules: filler opener, inflated vocabulary, 'serves as', dash connector, 'not just X but Y', and the forced triple are removed while every fact stays. The text is not translated.",
+      "files": [],
+      "assertions": [
+        "Applies the English rules from references/english-rules.md and does not translate the text into Korean",
+        "Removes the filler opener, inflated words, 'serves as' verb, dash connector, and not-just-but contrast without adding or dropping a claim",
+        "Lists the kinds of change made, and cites rule ids only if the user asked for them"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "다듬으면서 오탈자도 고치고, 너무 긴 문단은 내용을 좀 줄여줘.",
+      "expected_output": "Fixes only what the style pass covers, and refuses to cut content or act as a spell-checker.",
+      "files": [],
+      "assertions": [
+        "No content is removed to shorten a paragraph.",
+        "The skill states that proofreading and content editing are out of scope.",
+        "Leaked method vocabulary such as 프런티어 or 게이트 does not appear in the rewritten text."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "이 README 문단 다듬어줘: \"The API returns a 200. 이 응답 엔벨로프의 계약을 leverage하여 클라이언트를 정렬한다. It's not just fast — it's reliable.\"",
+      "expected_output": "Each sentence is handled by its own language's rules: the Korean sentence loses its jargon, the English sentences lose their tells, and nothing is translated or changed in fact.",
+      "files": [],
+      "assertions": [
+        "Detects language per passage: Korean rules for the Korean sentence and English rules for the English sentences",
+        "Never translates any sentence and keeps API, 200, and every other established term and number unchanged",
+        "Leaves the already natural English sentence as it was"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Use $unslop and also fix the typos and translate it into Japanese.",
+      "expected_output": "Rewrites style only, and states that proofreading and translation are out of scope and for other tools.",
+      "files": [],
+      "assertions": [
+        "Declines to translate and to act as a spell-checker, and says so explicitly",
+        "Does not change any fact, number, identifier, or link while rewriting"
+      ]
+    }
+  ]
+}

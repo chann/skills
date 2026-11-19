@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unslop"
+  short_description: "Rewrite AI-written Korean or English text so it reads human"
+  default_prompt: "Use $unslop to rewrite this text so it reads like a person wrote it, without changing its meaning."
