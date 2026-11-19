@@ -1,4 +1,4 @@
 interface:
-  display_name: "Code Review"
-  short_description: "Review code changes and generate bilingual reports"
-  default_prompt: "Use $code-review to review the current code changes and generate the default report artifacts."
+  display_name: "Interrogate"
+  short_description: "Try to break a code change and report proof-graded findings"
+  default_prompt: "Use $interrogate to try to break the current code changes and write the review report with a proof level on every finding."

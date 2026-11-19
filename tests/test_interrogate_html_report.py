@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS_DIR = ROOT / "code-review" / "skills" / "code-review" / "scripts"
+SCRIPTS_DIR = ROOT / "interrogate" / "skills" / "interrogate" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from generate_html_report import extract_findings, parse_markdown  # noqa: E402
@@ -194,6 +194,8 @@ The English body is retained.
 PROOF_REPORT = """# Code Review Report
 
 **Language:** en
+**Findings:** 0 critical, 2 high, 0 medium, 1 low, 0 info
+**Dropped:** 2 (below `cited`)
 
 ## Findings
 
@@ -221,8 +223,6 @@ AssertionError: expected 2, got 1
 **File:** `src/names.py` (line 3)
 
 **Observed behavior:** No evidence field.
-
-Dropped: 2 (said only)
 """
 
 
@@ -250,13 +250,16 @@ def test_cited_not_traced_caveat_is_marked_and_backticked_level_parses() -> None
     assert '<span class="proof proof-cited" data-proof-level="cited">cited</span>' in html
 
 
-def test_finding_without_evidence_has_no_proof_pill_and_dropped_line_is_text() -> None:
+def test_finding_without_evidence_has_no_proof_pill_and_dropped_count_is_header() -> None:
     html, _meta, _sidebar = parse_markdown(PROOF_REPORT)
 
     start = html.index('data-finding-id="CR-003"')
     end = html.index("</details>", start)
-    assert "data-proof-level" not in html[start - 200:end]
-    assert "<p>Dropped: 2 (said only)</p>" in html
+    assert "data-proof-level" not in html[start:end]
+    dropped = html.index(
+        "<p><strong>Dropped:</strong> 2 (below <code>cited</code>)</p>"
+    )
+    assert dropped < html.index("<details")
 
 
 def test_unknown_level_falls_back_to_plain_labelled_field() -> None:

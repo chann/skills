@@ -28,6 +28,8 @@ FINDING_ID_RE = re.compile(r"\[([A-Za-z]+-\d+)\]")
 # Proof ladder, weakest first. The level word stays English in every language.
 PROOF_LEVELS = ("said", "cited", "traced", "ran", "reproduced")
 EVIDENCE_LINE_RE = re.compile(r"^\*\*Evidence:\*\*\s*(.*)$")
+# Proof fields always start their own paragraph instead of merging upward.
+PROOF_FIELD_RE = re.compile(r"^\*\*(?:Evidence|Dropped):\*\*")
 PROOF_VALUE_RE = re.compile(
     r"^`?(" + "|".join(PROOF_LEVELS) + r")`?(?![\w-])(.*)$", re.IGNORECASE
 )
@@ -596,7 +598,7 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
             ns = lines[i].strip()
             if not ns or ns[0] in '#|_' or ns.startswith('```') or ns.startswith('---') \
                     or re.match(r'^[-*]\s', ns) \
-                    or (in_finding_body and EVIDENCE_LINE_RE.match(ns)):
+                    or PROOF_FIELD_RE.match(ns):
                 break
             para_lines.append(ns)
             i += 1

@@ -1,6 +1,6 @@
-# Snyk (https://snyk.io) policy file for the `code-review` skill.
+# Snyk (https://snyk.io) policy file for the `interrogate` plugin.
 #
-# The `code-review` skill is a code review automation. Its own runtime code
+# The `interrogate` skill is a code review automation. Its own runtime code
 # (commands/, scripts/, skills/) ships in this folder and should be scanned
 # normally — please report any real vulnerabilities found there.
 #

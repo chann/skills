@@ -1,5 +1,5 @@
 {
-  "name": "code-review",
-  "description": "Automated code review and change intelligence from git diffs, including explanatory diff summaries (diff-summary, diff-summary-md, diff-summary-quiz) and a raw diff viewer (diff-viewer).",
-  "version": "2.5.0"
+  "name": "interrogate",
+  "description": "Adversarial, proof-carrying code review (interrogate) that grades every finding on a proof ladder and writes Markdown plus bilingual HTML under .reviews/, and a blast-radius check (blast-radius) that proves what a change could break outside the diff.",
+  "version": "3.0.0"
 }

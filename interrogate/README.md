@@ -1,165 +1,139 @@
-# code-review
+# interrogate
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-Explain Git diffs, review them for defects, or inspect the raw patch in a browser.
+Try to break a change before it ships, and show how well each claim is proven.
 
-## What it does
+| Skill | Question it answers |
+|---|---|
+| `interrogate` | What is wrong **inside** this diff? |
+| `blast-radius` | What could this change break **outside** the diff? |
 
-- Analyzes code changes across 5 dimensions: correctness, security, complexity/consistency, maintainability, and language-specific best practices
-- Produces date-stamped reports in `.reviews/` (e.g., `2026-04-08_a1b2c3d.md`)
-- Generates a styled, self-contained **bilingual** HTML report by default (Korean + English with a full-page language toggle), featuring severity badges, light/dark/auto themes with a code syntax scheme selector, a compact collapsible sidebar, per-finding markdown copy, in-browser per-finding comments, and a "Copy feedback" payload to regenerate the review against reviewer comments
-- Includes `/diff-summary` for matching Korean/English evidence-based change summaries plus one bilingual interactive HTML, with `/diff-summary-md` for the Markdown pair only and `/diff-summary-quiz` for corresponding comprehension quizzes
-- Includes `/diff-viewer` for a browser-readable HTML view of the current working-tree diff without review analysis
-- Supports multiple review scopes: staged changes, specific commits, commit ranges, branch comparisons, and PRs
-- Includes reference guides for Python and JavaScript/TypeScript best practices
+## Why it is different
+
+A review that sounds right reads exactly like one that is right. So every
+finding here carries its proof level and the proof itself, on one ladder,
+weakest first:
+
+| Level | Means |
+|---|---|
+| `said` | Claimed. Never reported as a finding |
+| `cited` | A real changed `file:line` shows it |
+| `traced` | The failing path walked step by step, each step citing a line |
+| `ran` | A command or test printed the failure; the command and its output are pasted |
+| `reproduced` | Seen in the running product |
+
+- Findings that never reach `cited` are dropped and only counted.
+- CRITICAL and HIGH findings are pushed to `traced` or `ran`; one that stays at
+  `cited` is labelled `cited, not traced`.
+- Proof runs are read-only on the reviewed tree: the project's tests, or a
+  repro script in a temporary directory outside the repository. No edits, no
+  destructive commands, no repository content sent to the network.
+- The review reports. It never applies fixes.
 
 ## Installation
 
-**Recommended (global, one shot):**
+Global:
 
 ```bash
-npx skills add -y -g chann/skills \
-  --skill code-review \
-  --skill code-review-md \
-  --skill diff-summary \
-  --skill diff-summary-md \
-  --skill diff-summary-quiz \
-  --skill diff-viewer
+npx skills add -y -g chann/skills --skill interrogate --skill blast-radius
 ```
 
-**Project-local:**
+Project-local:
 
 ```bash
-npx skills add chann/skills \
-  --skill code-review \
-  --skill code-review-md \
-  --skill diff-summary \
-  --skill diff-summary-md \
-  --skill diff-summary-quiz \
-  --skill diff-viewer
+npx skills add chann/skills --skill interrogate --skill blast-radius
 ```
 
-Use the actual skill names with `--skill`; this plugin packages six independently discoverable skills. Each diff-summary selector bundles the workflow and runtime it needs, so installing only `diff-summary-md` or only `diff-summary-quiz` remains executable. Run `npx skills add chann/skills -l --full-depth` to inspect the selectors before installing.
-
-**Manual:**
-
-```bash
-git clone https://github.com/chann/skills.git
-ln -s "$(pwd)/skills/code-review" ~/.claude/skills/code-review
-```
+Each skill works when installed alone.
 
 ## Usage
 
-The matching skill triggers automatically from natural language. For explicit
-invocation, use the slash selector in Claude Code or the dollar selector in
-Codex:
+| Claude Code | Codex | Output |
+|---|---|---|
+| `/interrogate [scope]` | `$interrogate [scope]` | Korean + English Markdown and one bilingual HTML under `.reviews/`, opened in a browser |
+| `/interrogate [scope] --md` | `$interrogate [scope] --md` | One Markdown report under `.reviews/`; no HTML, no browser |
+| `/blast-radius [scope]` | `$blast-radius [scope]` | A reply: the safety fact with its proof, risks, what was cleared, and the cheapest pre-merge check |
 
-| Claude Code                     | Codex                        | Output                                                                  |
-| ------------------------------- | ---------------------------- | ----------------------------------------------------------------------- |
-| `/code-review [scope]`          | `$code-review [scope]`       | Markdown + self-contained bilingual HTML review under `.reviews/`       |
-| `/code-review-md [scope]`       | `$code-review-md [scope]`    | Markdown-only report at `.reviews/<YYYY-MM-DD>_<short-sha>.md`          |
-| `/diff-summary [scope]`         | `$diff-summary [scope]`      | Korean + English Markdown and bilingual HTML under `.diff-summaries/`   |
-| `/diff-summary-md [scope]`      | `$diff-summary-md [scope]`   | Korean + English Markdown only under `.diff-summaries/`                 |
-| `/diff-summary-quiz [scope]`    | `$diff-summary-quiz [scope]` | Bilingual artifacts plus corresponding `## Quiz` comprehension sections |
-| `/diff-viewer`                  | `$diff-viewer`               | HTML diff viewer at `.diffs/<YYYY-MM-DD>_<tag>.html`                    |
+Examples:
 
-**Examples:**
-
-```
+```text
 > review my changes
-> review the last commit
-> /code-review review staged changes
-> /code-review-md review branch feature-auth compared to main
-> summarize the code changes
-> /diff-summary main..dev
-> summarize the last commit
-> summarize PR #42
-> /diff-viewer
+> 이 변경 깨뜨려봐
+> /interrogate main..dev
+> /interrogate review PR #42 --md
+> adversarial multi-model review of the last commit
+> /blast-radius
+> 이거 바꾸면 뭐가 깨져?
 ```
 
-**Output structure:**
+An explicit range is preserved exactly: `main..dev` and `main...dev` are
+different comparisons and are never rewritten into each other. Supported scopes
+are current, staged, or unstaged changes; the last commit or last N commits; a
+commit, range, or branch comparison; and a PR.
 
-```
-.reviews/
-├── 2026-04-08_a1b2c3d.md       # Korean report (primary)
-├── 2026-04-08_a1b2c3d.en.md    # English report (translation, HTML only)
-└── 2026-04-08_a1b2c3d.html     # merged bilingual HTML
-.diff-summaries/
-├── 2026-04-08_main-dot2-dev-<hash12>.md   # evidence-based change summary
-└── 2026-04-08_main-dot2-dev-<hash12>.html # interactive offline summary
-.diffs/
-└── 2026-04-08_working.html
-```
+### Optional adversary panel
 
-An explicit range is preserved exactly: `main..dev` and `main...dev` are different comparisons and are never normalized into one another. Supported requests include current, staged, or unstaged changes; the last commit or last N commits; a commit/range/branch comparison; and a PR.
+Ask for a multi-model, second-opinion, or adversarial panel and, when the
+`swarm` skill is installed, `interrogate` hands one brief to adversaries on
+different vendors. It reruns every returned command itself, keeps only findings
+whose output shows the failure, merges findings with one root cause, and counts
+unverified ones per adversary under **Dropped**. Without `swarm` it reviews in
+the current session and says the panel was not run.
 
 ### Choose the right workflow
 
-| Goal | Workflow | Result |
-|---|---|---|
-| Explain what changed, why it matters, and how code, architecture, patterns, contracts, tests, and operations relate | `diff-summary` | Evidence-based summary cards; no review severity |
-| Save that explanation as Markdown only, without HTML or a browser open | `diff-summary-md` | Validated Korean and English Markdown artifacts |
-| Explain the change and test comprehension | `diff-summary-quiz` | Bilingual Markdown answer keys plus one interactive offline HTML quiz |
-| Find defects, regressions, vulnerabilities, and recommended fixes | `code-review` or `code-review-md` | Findings grouped by severity |
-| Inspect the patch itself without analysis | `diff-viewer` | Unified/split raw diff in HTML |
+| Goal | Workflow |
+|---|---|
+| Find defects, regressions, and vulnerabilities in the diff | `interrogate` |
+| Find what the change breaks elsewhere and prove why it is safe | `blast-radius` |
+| Explain what changed and why | `diff-summary` |
+| Weigh the decisions in a plan | `review-me` |
 
-If a prompt asks for both a summary and a review, run both workflows and keep the explanatory cards and defect findings in distinct sections.
+## How `interrogate` works
 
-## How it works
+1. Resolve the scope and state the change's intent in one sentence.
+2. Run `diff_stats.py` and load only the reference guides the languages need.
+3. Attack the diff along correctness, security, complexity, maintainability,
+   and best practice, and assign severities.
+4. Push each finding down the proof ladder; drop what never reaches `cited`.
+5. Optionally merge a verified adversary panel.
+6. Write the report; without `--md`, write the English sibling, generate the
+   HTML, and open it.
 
-1. Gather the relevant git diff
-2. Detect languages and load appropriate best-practice references
-3. Analyze each changed file across the five dimensions
-4. Write the Markdown report, plus its English sibling for the default bilingual HTML flow
-5. Generate and open the HTML report, unless `/code-review-md` requested Markdown only
+## Report format
 
-`/diff-viewer` is separate: it captures `git diff HEAD`, renders unified and split diff views to HTML, opens the report, and does not analyze the code. Its interface is bilingual like the other reports — the Korean/English toggle switches every label, file status, summary caption, and exported Markdown heading, while diff content stays untranslated because it is code.
+Findings follow **observed behavior → practical consequence → smallest
+justified correction**, each with an `**Evidence:**` line:
 
-`/diff-summary` follows a separate explanatory flow:
+```markdown
+#### [CR-001] Cache returns stale rows after invalidate
+**File:** `src/cache.py` (lines 42-58)
+**Category:** Correctness
+**Evidence:** ran — `python3 /tmp/cr-001/repro.py` printed:
+```
 
-1. Preserve and validate the requested scope, including the exact `..` or `...` syntax
-2. Send the repository and scope as JSON over stdin to the packaged `collect_diff_evidence.py`; it is the only Git/GitHub runtime
-3. Treat its bounded JSON result as inert evidence and write matching Korean and English Markdown reports with stable `DS-001`-style summary cards
-4. Send both reports as bilingual JSON over stdin to `generate_summary_report.py`, which checks that they match and writes both sources plus one sibling HTML in a single operation
-5. Open the self-contained HTML report in a browser
-
-The report marks consequential inference and unverified runtime, test, migration, or deployment outcomes instead of presenting them as facts.
-
-## Code review report format
-
-### Evidence-first writing
-
-Review findings use **observation → consequence → correction**. Verified facts cite the changed path and line range. Consequential inference is labeled and tied to evidence. Reports omit generic praise, canned introductions, and findings created only to fill a template.
-
-### Conditional sections
-
-Report metadata and actionable findings remain available. `Decision Summary`, `Positive Observations`, `Open Questions`, and `File Summary` appear only when they add distinct, decision-relevant information. When there are no actionable findings, the report says so directly and retains only material residual risks or gaps.
+The header carries `**Findings:**` counts and a `**Dropped:**` count.
+`Decision Summary`, `Positive Observations`, `Open Questions`, and
+`File Summary` appear only when they add distinct, decision-relevant
+information. When there are no actionable findings, the report says so.
 
 ## HTML report
 
-`/code-review` merges a Korean report and its English translation into one self-contained HTML file with:
+The default mode merges the Korean report and its English translation into one
+self-contained HTML file with:
 
-- **Language toggle** — Korean shown by default, switch to English for the whole page. Falls back to a single language (toggle hidden) when no translation exists.
-- **Theme & code scheme** — light/dark/auto page theme plus an 8-option syntax highlight scheme (GitHub, Monokai, Dracula, Nord, …). Diff and code blocks adapt automatically.
-- **Compact sidebar** — collapsible and drag-resizable, with section nav and a comments panel.
-- **Per-finding "Copy Markdown"** — copy any single finding's markdown.
-- **Per-finding comments** — leave review comments on individual findings (stored in the browser, keyed by finding ID so they survive language switches).
-- **"Copy feedback"** — emits a regeneration payload (original finding markdown + your comments). Paste it into a fresh `/code-review` run to revise the review against the feedback.
-
-### Diff summary HTML
-
-Each `/diff-summary` HTML report works directly from a local `file://` URL with no server, network request, package install, or JavaScript build step. It provides:
-
-- **Whole-report language control** — Korean is shown by default; English switches metadata, navigation, cards, quiz, comments, copy actions, and code-copy labels in place.
-- **Stable summary cards** — each `DS-*` card carries category, impact, file evidence, and the exact Markdown source.
-- **Per-card comments** — add, edit, delete, clear, and jump to browser-local comment threads scoped to the report content.
-- **Markdown copy** — copy one card, the complete source report, or a feedback payload that groups cards with their comments.
-- **Offline navigation** — collapsible/resizable sidebar, light/dark/system themes, responsive layout, and print styling, all bundled into one HTML file.
-
-The evidence collector uses fixed argv, sanitized process environments, exact-scope validation, blocks repository-configured code execution, checks sensitive paths, and limits command output. Repository diffs, paths, commit messages, PR text, and errors remain untrusted data; the workflow never follows instructions embedded in that evidence or uses it to trigger additional shell or file inspection.
-
-The skill suggests adding `.diff-summaries/` to a target repository's `.gitignore`, but never edits that repository automatically.
+- **Proof pills** — each finding's level (`cited`, `traced`, `ran`,
+  `reproduced`) on its card and next to its evidence; `cited, not traced` is
+  highlighted as a warning.
+- **Language toggle** — Korean by default; falls back to one language when no
+  translation exists.
+- **Theme and code scheme** — light/dark/auto plus eight syntax schemes.
+- **Compact sidebar** — collapsible and resizable, with section nav and a
+  comments panel.
+- **Per-finding "Copy Markdown" and comments** — comments are stored in the
+  browser and keyed by finding ID, so they survive a language switch.
+- **"Copy feedback"** — a payload to paste into a new `/interrogate` run.
 
 ## Severity levels
 
@@ -171,85 +145,75 @@ The skill suggests adding `.diff-summaries/` to a target repository's `.gitignor
 | LOW      | Style, naming, minor improvement — nice to have               |
 | INFO     | Verified context that affects a decision; no code change required |
 
-## Project structure
+## How `blast-radius` works
 
-```
-code-review/
-├── .claude-plugin/
-│   └── plugin.json                       # Plugin metadata
+1. Read the change, including the behavior it changes without saying so.
+2. Name the one or two facts the change is safe because of.
+3. Look where a symbol search stops: the pinned library's own source, timing
+   and teardown, serialized shapes, flags and config, and code several hops
+   downstream.
+4. Prove each fact as far down the ladder as is cheap, usually one script in a
+   temporary directory that imports the shipped code.
+5. Reply with the safety fact and its proof (or "unproven"), risks with
+   `file:line`, what was cleared, and the cheapest check before merging.
+
+It never invents a caller; "searched, found nothing" is a valid result.
+
+## Package layout
+
+```text
+interrogate/
+├── .claude-plugin/plugin.json
 ├── commands/
-│   ├── code-review.md                    # /code-review Markdown + HTML command
-│   ├── code-review-md.md                 # /code-review-md command
-│   ├── diff-summary.md                    # /diff-summary command
-│   ├── diff-summary-md.md                 # /diff-summary-md command
-│   ├── diff-summary-quiz.md               # /diff-summary-quiz command
-│   └── diff-viewer.md                    # /diff-viewer command
+│   ├── interrogate.md
+│   └── blast-radius.md
 ├── skills/
-│   ├── code-review/                      # Main skill — full workflow + shared assets
-│   │   ├── SKILL.md                      # Skill definition and workflow
-│   │   ├── scripts/
-│   │   │   ├── diff_stats.py             # Git diff statistics extractor
-│   │   │   └── generate_html_report.py   # Markdown → HTML report converter
-│   │   ├── references/
-│   │   │   ├── review-criteria.md        # Detailed review criteria framework
-│   │   │   ├── common-vulnerabilities.md # OWASP-based security checklist
-│   │   │   ├── python.md                 # Python best practices
-│   │   │   └── javascript-typescript.md  # JS/TS best practices
-│   │   └── assets/
-│   │       └── report-template.html      # HTML report template
-│   ├── code-review-md/
-│   │   └── SKILL.md                      # Markdown variant skill
-│   ├── diff-summary/                      # Explanatory Markdown + HTML summaries
+│   ├── interrogate/
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
+│   │   ├── evals/evals.json
 │   │   ├── scripts/
-│   │   │   ├── collect_diff_evidence.py   # Hardened Git/GitHub -> bounded JSON
-│   │   │   └── generate_summary_report.py # Validated Markdown -> offline HTML
-│   │   └── assets/summary-template.html
-│   ├── diff-summary-md/                  # Standalone Markdown-only package
-│   │   ├── SKILL.md
-│   │   ├── references/diff-summary-workflow.md
-│   │   ├── scripts/                      # Synchronized runtime
-│   │   │   ├── collect_diff_evidence.py
-│   │   │   └── generate_summary_report.py
-│   │   └── assets/summary-template.html
-│   ├── diff-summary-quiz/                # Standalone quiz package
-│   │   ├── SKILL.md
-│   │   ├── references/diff-summary-workflow.md
-│   │   ├── scripts/                      # Synchronized runtime
-│   │   │   ├── collect_diff_evidence.py
-│   │   │   └── generate_summary_report.py
-│   │   └── assets/summary-template.html
-│   └── diff-viewer/
-│       ├── SKILL.md                      # HTML diff viewer workflow
-│       ├── scripts/
-│       │   └── generate_diff_report.py   # Git diff -> HTML converter
-│       └── assets/
-│           └── diff-template.html        # Diff viewer template
-└── .snyk                                 # SAST exclude policy for sample fixtures
+│   │   │   ├── diff_stats.py             # git diff --numstat -> JSON
+│   │   │   └── generate_html_report.py   # Markdown -> bilingual HTML
+│   │   ├── references/
+│   │   │   ├── review-criteria.md
+│   │   │   ├── proof-and-panel.md
+│   │   │   ├── common-vulnerabilities.md
+│   │   │   ├── python.md
+│   │   │   └── javascript-typescript.md
+│   │   └── assets/report-template.html
+│   └── blast-radius/
+│       ├── SKILL.md
+│       ├── agents/openai.yaml
+│       └── evals/evals.json
+├── README.md
+├── README.ko.md
+└── .snyk
 ```
 
-Sample fixtures (intentionally vulnerable code the reviewer is meant to flag) live OUTSIDE this plugin folder, at the repo-root [`samples/code-review/`](../samples/code-review/). They are not part of the published plugin artifact.
+Intentionally vulnerable sample fixtures live outside this plugin, at the
+repo-root [`samples/code-review/`](../samples/code-review/).
 
 ## Requirements
 
-- [Claude Code](https://code.claude.com) (CLI, desktop app, or IDE extension)
 - Git repository
-- Git 2.45+ for `diff-summary`, `diff-summary-md`, and `diff-summary-quiz` evidence collection
-- Python 3.10+ (for `code-review`, `diff-summary`, `diff-summary-md`, `diff-summary-quiz`, and `diff-viewer` report generation; standard library only)
+- Python 3.10+ for `interrogate` report generation (standard library only)
+- Permission to run the project's own tests when a finding is proven at `ran`
 
 ## Security notes
 
-If you see Snyk or other SAST tools flag this skill, here is the breakdown:
-
-- **Test fixtures (the main historical High-Risk cause, now removed)**: the previous version of this plugin shipped `samples/python-auth/auth_service.py`, `samples/react-dashboard/Dashboard.tsx`, and `samples/go-api/handler.go` inside the plugin folder. Those files are intentionally vulnerable (SQL injection, MD5, pickle deserialization, hardcoded "secrets", `dangerouslySetInnerHTML`, CORS wildcard, etc.) so the reviewer skill has obvious findings to detect. They have been moved to the repo-root [`samples/code-review/`](../samples/code-review/), outside the published plugin artifact. A `.snyk` policy file additionally tells Snyk Code to skip `samples/**`.
-- **`generate_html_report.py` — fence-language attribute XSS (real, fixed)**: prior to the fix, a malicious markdown fence like ` ```a"><script>... ` could break out of the `class="language-..."` attribute because `html.escape(..., quote=False)` does not escape `"`. The lang token is now whitelisted to `[A-Za-z0-9._+-]{0,32}` via `safe_lang()`, eliminating attribute breakout regardless of input.
-- **`generate_html_report.py` — `html.escape(quote=False)` flagged broadly (false positive)**: the helper deliberately uses `quote=False` and only inserts the result into element-body contexts. All attribute insertions are either hardcoded class names or anchor values produced by `slugify()` (which strips non-word characters). No tainted value reaches an attribute.
-- **`generate_html_report.py` — raw-markdown embed (correctly defended)**: the markdown source is embedded into the HTML inside a `<script type="application/json">` block (not executed by browsers) and `</` sequences are escaped to `<\/` so the script tag cannot be closed prematurely.
-- **`diff-summary` evidence boundary**: `collect_diff_evidence.py` is the only Git/GitHub runtime. It uses fixed argv and sanitized environments, disables lazy fetches and repository-configured code execution, rejects unsafe repository metadata and sensitive paths, and caps time/stdout/stderr before returning JSON. `generate_summary_report.py --bilingual-json-stdin --output-directory` rejects symlinked output directories, derives collision-safe filenames, checks that the Korean and English reports match, and writes two Markdown files plus one bilingual HTML file in a single operation.
-- **`generate_html_report.py` — path arguments (false positive)**: the tool reads `args.input` and writes `args.output`. These are CLI arguments the user typed themselves; there is no privileged read/write surface to attack.
-
-If you ever consider re-adding intentionally vulnerable fixtures to this plugin folder, please keep them under the repo-root `samples/` tree instead — that is what `.snyk` excludes and what keeps SAST quiet without lying about real risk.
+- **Fence-language attribute XSS (fixed):** fence language tokens are
+  whitelisted to `[A-Za-z0-9._+-]{0,32}` by `safe_lang()`, so a malicious
+  fence cannot break out of the `class` attribute.
+- **`html.escape(quote=False)` (false positive):** the result only goes into
+  element bodies; attribute values are hard-coded class names, fixed proof
+  level words, or `slugify()` output.
+- **Raw Markdown embed:** the source is embedded in a
+  `<script type="application/json">` block with `</` escaped to `<\/`.
+- **Path arguments (false positive):** the script reads and writes paths the
+  user passed on the command line.
+- **Fixtures:** vulnerable samples are kept outside the plugin, and `.snyk`
+  excludes `samples/**` if a scanner descends here.
 
 ## License
 
