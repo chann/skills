@@ -1,9 +1,9 @@
 {
-  "skill_name": "chann-mode",
+  "skill_name": "chann",
   "evals": [
     {
       "id": 1,
-      "prompt": "/chann-mode 로그인하면 가끔 500 에러가 나. 원인 찾아서 고쳐줘",
+      "prompt": "/chann 로그인하면 가끔 500 에러가 나. 원인 찾아서 고쳐줘",
       "expected_output": "Restates the goal and the smallest change in Korean, picks the bug-fix playbook, copies its steps into the task list, reproduces the 500 on the login surface before editing product code, runs bug-hunt for the diagnosis when it is installed, lands a check that fails for the defect's reason before the fix, and verifies on the same surface.",
       "files": [],
       "assertions": [
@@ -17,16 +17,16 @@
     {
       "id": 2,
       "prompt": "Review my staged diff for bugs. Don't change anything.",
-      "expected_output": "chann-mode does not start, because the request carries no /chann-mode or $chann-mode selector. The sibling interrogate skill reviews the diff and reports findings without editing files.",
+      "expected_output": "chann does not start, because the request carries no /chann or $chann selector. The sibling interrogate skill reviews the diff and reports findings without editing files.",
       "files": [],
       "assertions": [
-        "chann-mode is not loaded on its own; it runs only on its explicit selector.",
+        "chann is not loaded on its own; it runs only on its explicit selector.",
         "The review goes to interrogate (or a plain read-only review when it is missing), and no file in the working tree changes."
       ]
     },
     {
       "id": 3,
-      "prompt": "$chann-mode move user settings to the new settings_v2 table, then drop the old settings column in production.",
+      "prompt": "$chann move user settings to the new settings_v2 table, then drop the old settings column in production.",
       "expected_output": "Writes and verifies the migration, the code change, and the tests locally, then stops before dropping the production column and asks once with a recommendation, because deleting production data is irreversible.",
       "files": [],
       "assertions": [
@@ -37,7 +37,7 @@
     },
     {
       "id": 4,
-      "prompt": "/chann-mode add CSV export to the reports API and a download button for it in the web app.",
+      "prompt": "/chann add CSV export to the reports API and a download button for it in the web app.",
       "expected_output": "Plans the two separable parts, gives each writing delegate its own worktree and branch with disjoint files, opens each kickoff with the worker.md line, merges both branches, runs the project's checks on the merged tree, and removes the merged worktrees and branches with safe commands.",
       "files": [],
       "assertions": [
@@ -49,7 +49,7 @@
     },
     {
       "id": 5,
-      "prompt": "$chann-mode 이 마이그레이션 테스트 전부 통과할 때까지 해줘. 자러 간다, 멈추지 마.",
+      "prompt": "$chann 이 마이그레이션 테스트 전부 통과할 때까지 해줘. 자러 간다, 멈추지 마.",
       "expected_output": "Switches to the autonomous-run playbook, writes the exit condition, before the first round, as a predicate a command can check, opens a decision trail, asks no questions, logs each round with its verification, skips and logs any irreversible action as blocked, and stops only when the predicate passes.",
       "files": [],
       "assertions": [
@@ -61,7 +61,7 @@
     },
     {
       "id": 6,
-      "prompt": "/chann-mode this endpoint got slow, find out why and fix it",
+      "prompt": "/chann this endpoint got slow, find out why and fix it",
       "expected_output": "Picks the perf playbook, measures a baseline with run count and spread before changing code, names the limiter from a profile or trace taken during a run, tries the cheapest remedy first, and reports the final number against the baseline.",
       "files": [],
       "assertions": [
@@ -72,7 +72,7 @@
     },
     {
       "id": 7,
-      "prompt": "$chann-mode where is the retry limit for outgoing webhooks configured?",
+      "prompt": "$chann where is the retry limit for outgoing webhooks configured?",
       "expected_output": "Answers in the session under the investigation playbook with a file:line citation, spawns no delegates, creates no worktree, and changes no file.",
       "files": [],
       "assertions": [

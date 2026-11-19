@@ -20,16 +20,16 @@ Pushes to `main` deploy the `website/dist/` bundle to GitHub Pages.
 
 ## Start here
 
-`chann-mode` is the one entry point. Give it a task, and it restates the goal
+`chann` is the one entry point. Give it a task, and it restates the goal
 and the least change that satisfies it, picks a playbook, hands each step to the
 skill that owns it when that skill is installed, and replies with labelled
 evidence. It runs only on its own selector. Every other skill is situational:
 the mode routes to it, and you can call it directly.
 
 ```text
-/chann-mode 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
-$chann-mode this endpoint got slow, find out why and fix it
-/chann-mode 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+/chann 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
+$chann this endpoint got slow, find out why and fix it
+/chann 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
 ```
 
 ## Skills
@@ -38,7 +38,7 @@ Eight stages, one row per workflow. Each name links to its plugin README.
 
 | Stage | Skill | What it does |
 | --- | --- | --- |
-| mode | **[chann-mode](chann-mode/README.md)** | Explicit-only entry point: restate the goal, match one of fourteen playbooks, route each step to the skill that owns it, and reply with labelled evidence |
+| mode | **[chann](chann-mode/README.md)** | Explicit-only entry point: restate the goal, match one of fourteen playbooks, route each step to the skill that owns it, and reply with labelled evidence |
 | understand | **[how](understand/README.md)** | Explain how part of the codebase works from the code, with `file:line` citations and no edits |
 | understand | **[why](understand/README.md)** | Explain why code is built this way from commits, blame, pull-request and issue threads, and design notes, quoting the authors |
 | understand | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |
@@ -97,7 +97,7 @@ Install only what you need with `--skill <name>`. Every skill works when
 installed alone; the thin aliases `gcr`, `gcpr`, and `gcpd` are the one
 exception and need `git-commit` beside them.
 
-- Entry point only: `npx skills add chann/skills --skill chann-mode`
+- Entry point only: `npx skills add chann/skills --skill chann`
 - Understand a codebase: `npx skills add chann/skills --skill how --skill why`
 - Review a change: `npx skills add chann/skills --skill interrogate --skill blast-radius`
 - Explain a change: `npx skills add chann/skills --skill diff-summary --skill diff-viewer`
@@ -122,7 +122,7 @@ commands are arguments now: `/diff-summary --md`, `/git-commit push realtime`,
 
 | Claude Code | Codex | Action |
 | --- | --- | --- |
-| `/chann-mode <task>` | `$chann-mode <task>` | Run the task through a playbook, routed skills, and an evidence-labelled reply |
+| `/chann <task>` | `$chann <task>` | Run the task through a playbook, routed skills, and an evidence-labelled reply |
 
 ### understand → [details](understand/README.md)
 

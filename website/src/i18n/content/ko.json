@@ -84,7 +84,7 @@
   "catalog": {
     "label": "Skill catalog",
     "title": ["필요한 워크플로를", "한 자리에서."],
-    "description": "먼저 chann-mode에 작업을 말하면 알맞은 스킬로 이어 줍니다. 직접 고르려면 작업이나 산출물로 검색하세요. --md, --quiz, push, realtime 같은 변형은 별도 스킬이 아니라 인수로 고릅니다.",
+    "description": "먼저 chann에 작업을 말하면 알맞은 스킬로 이어 줍니다. 직접 고르려면 작업이나 산출물로 검색하세요. --md, --quiz, push, realtime 같은 변형은 별도 스킬이 아니라 인수로 고릅니다.",
     "categoryNavigation": "분류별 바로가기",
     "searchLabel": "스킬 검색",
     "searchPlaceholder": "작업, 산출물, 스킬 이름 검색",
@@ -247,7 +247,7 @@
     }
   },
   "skills": {
-    "chann-mode": {
+    "chann": {
       "summary": "작업 하나를 말하면 목표를 한 문장으로 정리하고, 플레이북 14개 중 맞는 것을 골라 단계마다 알맞은 스킬로 이어 줍니다.",
       "whenToUse": "어떤 스킬을 쓸지 고르지 않고 버그 수정, 기능 추가, 조사 같은 작업 전체를 맡길 때. 직접 입력했을 때만 실행됩니다",
       "result": "목표와 가장 작은 변경, 고른 플레이북, 단계별로 쓴 스킬, 적용한 원칙, 근거에 라벨을 붙인 최종 보고"

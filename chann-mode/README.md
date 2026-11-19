@@ -2,8 +2,8 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-One entry point for any non-trivial task. Type `/chann-mode <task>` in Claude
-Code or `$chann-mode <task>` in Codex. The skill restates your goal, names the
+One entry point for any non-trivial task. Type `/chann <task>` in Claude
+Code or `$chann <task>` in Codex. The skill restates your goal, names the
 least change that satisfies it, matches the task to a playbook, hands each step
 to the catalog skill that owns it, and ends with a reply that labels its
 evidence. The other catalog workflows still work on their own; this is how
@@ -34,30 +34,30 @@ they get reached without remembering their names.
 Global:
 
 ```bash
-npx skills add -y -g chann/skills --skill chann-mode
+npx skills add -y -g chann/skills --skill chann
 ```
 
 Project-local:
 
 ```bash
-npx skills add chann/skills --skill chann-mode
+npx skills add chann/skills --skill chann
 ```
 
-`chann-mode` works when installed alone: each playbook carries inline steps.
+`chann` works when installed alone: each playbook carries inline steps.
 Install more of the catalog and each step routes to the skill that owns it.
 
 ## Usage
 
 | Claude Code | Codex | Action |
 |---|---|---|
-| `/chann-mode <task>` | `$chann-mode <task>` | Run the task through a playbook, routed skills, and an evidence-labelled reply |
+| `/chann <task>` | `$chann <task>` | Run the task through a playbook, routed skills, and an evidence-labelled reply |
 
 Examples:
 
 ```text
-/chann-mode 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
-$chann-mode this endpoint got slow, find out why and fix it
-/chann-mode 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+/chann 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
+$chann this endpoint got slow, find out why and fix it
+/chann 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
 ```
 
 It runs only on its selector. A request phrased without it goes straight to
@@ -110,8 +110,8 @@ the skill that owns that kind of work.
 ```text
 chann-mode/
 ├── .claude-plugin/plugin.json
-├── commands/chann-mode.md
-├── skills/chann-mode/
+├── commands/chann.md
+├── skills/chann/
 │   ├── SKILL.md                     # first move, routing, principles index, autonomy, delegation, evidence, reply
 │   ├── worker.md                    # rules every delegate reads first
 │   ├── playbooks/<name>.md          # fourteen playbooks

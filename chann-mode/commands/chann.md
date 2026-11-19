@@ -3,7 +3,7 @@ description: Run a non-trivial task in the owner's working style - restate the g
 argument-hint: "<task>"
 ---
 
-Use the **chann-mode** skill for this task.
+Use the **chann** skill for this task.
 
 Task:
 - Use `$ARGUMENTS` as the task when it is non-empty.

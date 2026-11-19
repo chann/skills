@@ -22,13 +22,13 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name. The 30 names are `chann-mode`, `how`, `why`, `research-brief`, `recall`, `ketchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
+Use `--skill <name>` with the actual skill name. The 30 names are `chann`, `how`, `why`, `research-brief`, `recall`, `ketchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
 
 Every skill works when installed alone. The three aliases are the one exception: each runs the installed `git-commit` with a fixed mode and refuses when `git-commit` is missing.
 
 | Install | Command |
 |---|---|
-| Entry point only | `npx skills add chann/skills --skill chann-mode` |
+| Entry point only | `npx skills add chann/skills --skill chann` |
 | Understand a codebase | `npx skills add chann/skills --skill how --skill why` |
 | Review a change | `npx skills add chann/skills --skill interrogate --skill blast-radius` |
 | Explain a change | `npx skills add chann/skills --skill diff-summary --skill diff-viewer` |
@@ -68,7 +68,7 @@ For the deepest per-skill detail, see each plugin's own README: [chann-mode](cha
 ## Quick start
 
 ```
-> /chann-mode login sometimes returns a 500, find the cause and fix it   # the one entry point
+> /chann login sometimes returns a 500, find the cause and fix it   # the one entry point
 > /how does the job scheduler pick the next task                         # explain code from the code
 > /why did we pick Postgres advisory locks over Redis                    # explain it from the record
 > /interrogate review staged changes                                     # try to break the diff
@@ -117,7 +117,7 @@ command reference below.
 
 | Workflow | Claude Code | Codex |
 |---|---|---|
-| Entry point | `/chann-mode` | `$chann-mode` |
+| Entry point | `/chann` | `$chann` |
 | How code works | `/how` | `$how` |
 | Why code is built this way | `/why` | `$why` |
 | Primary-source research | `/research-brief` | `$research-brief` |
@@ -173,13 +173,13 @@ The output directories `.work-summaries/`, `.diff-summaries/`, `.plan-summaries/
 
 ## Command reference
 
-### chann-mode
+### chann
 
 | Command | Action |
 |---|---|
-| `/chann-mode <task>` | Run a non-trivial task in the owner's working style: restate the goal and the smallest change, match one of fourteen playbooks, route each step to the skill that owns it, and reply with labelled evidence |
+| `/chann <task>` | Run a non-trivial task in the owner's working style: restate the goal and the smallest change, match one of fourteen playbooks, route each step to the skill that owns it, and reply with labelled evidence |
 
-Codex invokes the same workflow as `$chann-mode <task>`. It runs only on its own selector. Without it, call the owning skill directly: `bug-hunt` for a defect, `interrogate` for a diff review, `swarm` for parallel slices, `long-task` for a multi-milestone build.
+Codex invokes the same workflow as `$chann <task>`. It runs only on its own selector. Without it, call the owning skill directly: `bug-hunt` for a defect, `interrogate` for a diff review, `swarm` for parallel slices, `long-task` for a multi-milestone build.
 
 The playbooks are investigation, bug-fix, perf, feature, refactoring, prototype, plan, review, fan-out, autonomous-run, shipping, pause-and-pickup, docs, and authoring-a-skill. Each step names the skill that owns it. When that skill is installed, the mode loads it; when it is not, the playbook's inline steps apply and the mode never stops to ask for an install. A routed skill keeps its own gates and refusals, and of two safety rules the stricter wins.
 
@@ -525,7 +525,7 @@ commands.
 
 ```
 # Run a task through the one entry point
-> /chann-mode this endpoint got slow, find out why and fix it
+> /chann this endpoint got slow, find out why and fix it
 
 # Try to break a change and persist a bilingual HTML report for staged changes
 > /interrogate review staged changes
@@ -594,7 +594,7 @@ commands.
 | `/swarm` keeps the work in this session | Only one usable route exists and no agent was named | install or name another coding agent (`codex`, `claude`, `opencode` 2.0.0+, or `agy`) |
 | `/build-reinstall` stops before install | Build, target, or verification evidence is ambiguous | add project instructions or copy and fill `references/build-reinstall.example.yaml` as `.build-reinstall.yaml` |
 | Reinstall command exits zero but verification fails | Smoke check failed or installed SHA-256 differs from the built file | keep the result marked failed and inspect the exact command or artifact pair |
-| `/chann-mode` seems to do nothing for a plain request | It runs only on its own selector | type `/chann-mode <task>` or `$chann-mode <task>`, or call the owning skill directly |
+| `/chann` seems to do nothing for a plain request | It runs only on its own selector | type `/chann <task>` or `$chann <task>`, or call the owning skill directly |
 | long-task won't auto-continue | `.agent/state.md` missing or not `active` | run `/long-task` to start, or `/long-task resume` |
 | long-task stopped early | hit `LONG_TASK_MAX_STOP_CONTINUES` | raise it, e.g. `export LONG_TASK_MAX_STOP_CONTINUES=1000` |
 

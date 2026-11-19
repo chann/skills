@@ -11,7 +11,7 @@ descriptor at `agents/openai.yaml`, and optional `references/`, `templates/`,
 on top, while every Codex descriptor publishes a display name and `$name`
 default prompt.
 
-The catalog is organized in eight stages, the same grouping the website uses: mode, understand, design, build, verify, ship, delegate, and meta. `chann-mode` is the single entry point; every other skill is situational and can be called directly.
+The catalog is organized in eight stages, the same grouping the website uses: mode, understand, design, build, verify, ship, delegate, and meta. `chann` is the single entry point; every other skill is situational and can be called directly.
 
 ## Components
 
@@ -19,7 +19,7 @@ The catalog is organized in eight stages, the same grouping the website uses: mo
 
 | Plugin | Version | Skills | Responsibility |
 |---|---|---|---|
-| `chann-mode` | 0.1.0 | `chann-mode` | The one entry point: restate the goal and the smallest change, match one of fourteen playbooks, route each step to the skill that owns it when installed, apply named principles, and reply with labelled evidence |
+| `chann-mode` | 0.2.0 | `chann` | The one entry point: restate the goal and the smallest change, match one of fourteen playbooks, route each step to the skill that owns it when installed, apply named principles, and reply with labelled evidence |
 | `understand` | 0.1.0 | `how`, `why` | Read-only answers about a codebase, split by source of truth: `how` from the code with `file:line` citations, `why` from the commit, pull-request, and issue record, with inference and gaps labelled |
 | `research-brief` | 0.1.0 | `research-brief` | Answer a technical question from primary sources and persist a cited brief under `.research/` — tiered sources, version-pinned claims, a contradiction ledger, and mandatory open questions |
 | `recall` | 1.0.0 | `recall`, `ketchup` | `recall` mines Claude Code, Codex, opencode, and agy history read-only into a date-ranged report or a topic brief for resuming work; `ketchup` tells you what moved in this conversation after your last message |
@@ -55,7 +55,7 @@ Every plugin shares the same layout:
     └── scripts/                 # optional Python helpers (stdlib only)
 ```
 
-- **`chann-mode`** is one router skill with data around it. `SKILL.md` owns the first move, the routing table, the index of principles, the autonomy rules, delegation, the evidence vocabulary, and the reply contract. `playbooks/<name>.md` holds the fourteen playbooks (investigation, bug-fix, perf, feature, refactoring, prototype, plan, review, fan-out, autonomous-run, shipping, pause-and-pickup, docs, authoring-a-skill), each a numbered step list that names the skill owning each step and carries inline steps for when that skill is not installed. `references/principles.md` states twenty-five principles, each with the test that tells whether it applies, and `references/decision-trail.md` defines the log for long or unattended runs. `worker.md` is the first file every delegate reads. It declares `disable-model-invocation: true`, so it runs only on its own selector.
+- **`chann-mode`** holds one router skill, `chann`, with data around it. `SKILL.md` owns the first move, the routing table, the index of principles, the autonomy rules, delegation, the evidence vocabulary, and the reply contract. `playbooks/<name>.md` holds the fourteen playbooks (investigation, bug-fix, perf, feature, refactoring, prototype, plan, review, fan-out, autonomous-run, shipping, pause-and-pickup, docs, authoring-a-skill), each a numbered step list that names the skill owning each step and carries inline steps for when that skill is not installed. `references/principles.md` states twenty-five principles, each with the test that tells whether it applies, and `references/decision-trail.md` defines the log for long or unattended runs. `worker.md` is the first file every delegate reads. It declares `disable-model-invocation: true`, so it runs only on its own selector.
 - **`understand`** holds two read-only skills with no scripts. `how` answers in a fixed five-part shape (overview, key concepts, runtime flow, a `file:line` map, gotchas) and labels anything unread `inferred`. `why` reads git history, blame, pull-request and issue discussion, and design notes through `git` and, when available, `gh`, and answers with a decision timeline whose rows each carry a commit or PR and a date.
 - **`recall`** carries two skills. `recall` is a read-only reporter over local agent history. Its `SKILL.md` owns the mode choice between a report and a brief, the date-range grammar, local-timezone bucketing, period-classified save paths, store mining order, the summary/detailed report contract, the brief's scope lock and status tags, and a self-contained Korean prose fallback; `references/agent-history-stores.md` maps each store's paths, record shapes, timestamp fields, and epoch units so the workflow filters records instead of guessing. Every branch, PR, and file a brief names is checked against live `git` first. `ketchup` reads only the current conversation plus live branch, PR, CI, and agent state.
 - **`diff-summary`** holds two standalone skills. `diff-summary` is the single authoring source — `collect_diff_evidence.py` owns the hardened Git/GitHub boundary, its `SKILL.md` owns aligned Korean/English analysis and the `--md` and `--quiz` options, and `generate_summary_report.py` plus `summary-template.html` validate and merge the two Markdown sources into interactive offline HTML. `--md` adds `--markdown-only` (no HTML, no browser open) and `--quiz` appends aligned validated `## Quiz` sections rendered as interactive multiple-choice quizzes. `diff-viewer` is a separate skill — `generate_diff_report.py` plus `diff-template.html` — that displays the raw patch without analysis behind the same bilingual interface, localizing only its chrome because the diff body is code.
@@ -106,10 +106,10 @@ Every plugin shares the same layout:
    directory and selector exactly.
 4. The portable workflow and output contract are the same as in Claude Code.
 
-### Routing through `chann-mode`
+### Routing through `chann`
 
 ```text
-/chann-mode <task>  (or $chann-mode <task>)
+/chann <task>  (or $chann <task>)
   → restate the goal and the least change that satisfies it
   → match one playbook; copy its numbered steps into the host's task list
   → for each step: load the owning skill when installed, else follow the playbook's inline steps
@@ -117,7 +117,7 @@ Every plugin shares the same layout:
   → pause before an irreversible action; reply with labelled evidence, the principles that changed a decision, and what was skipped
 ```
 
-A routed skill keeps its own gates and refusals; of two safety rules the stricter wins. `chann-mode` owns what comes next, when to pause, and the final reply. A delegate's report is never evidence: the branch is merged and checked first.
+A routed skill keeps its own gates and refusals; of two safety rules the stricter wins. `chann` owns what comes next, when to pause, and the final reply. A delegate's report is never evidence: the branch is merged and checked first.
 
 ### Review pipeline
 
@@ -178,10 +178,10 @@ Generated from the filesystem. Every skill directory also holds `agents/openai.y
 
 ```
 skills/
-├── chann-mode/                           # plugin (v0.1.0)
+├── chann-mode/                           # plugin (v0.2.0)
 │   ├── .claude-plugin/plugin.json
-│   ├── commands/chann-mode.md
-│   ├── skills/chann-mode/
+│   ├── commands/chann.md
+│   ├── skills/chann/
 │   │   ├── SKILL.md
 │   │   ├── worker.md
 │   │   ├── playbooks/                    # fourteen playbooks
@@ -378,9 +378,9 @@ skills/
 
 - **Portable `SKILL.md` is the unit of work.** Skill bodies avoid Claude-Code-only tools, so the same files run on other agent platforms. The Claude Code plugin wrapper (`.claude-plugin` + `commands` + `npx skills`) is additive, not required.
 - **One plugin per workflow domain.** The 17 plugins are versioned and installable independently, so users adopt only what they need. A plugin groups skills that share a question or a runtime: `understand` holds `how` and `why`, `recall` holds `recall` and `ketchup`, `interrogate` holds `interrogate` and `blast-radius`.
-- **One router skill, with playbooks and principles.** A catalog of 27 workflows is hard to remember, so `chann-mode` is the single entry point. It matches the task to one of fourteen playbooks, and each playbook step names the skill that owns it. The playbooks and principles live in files the skill loads on demand, so `SKILL.md` stays short and a principle is cited only after it was read. It routes to a skill only when that skill is installed and carries inline steps otherwise, so it works alone. It is `Use only when` explicitly invoked, so it never takes over a request that a specific skill should handle.
+- **One router skill, with playbooks and principles.** A catalog of 27 workflows is hard to remember, so `chann` is the single entry point. It matches the task to one of fourteen playbooks, and each playbook step names the skill that owns it. The playbooks and principles live in files the skill loads on demand, so `SKILL.md` stays short and a principle is cited only after it was read. It routes to a skill only when that skill is installed and carries inline steps otherwise, so it works alone. It is `Use only when` explicitly invoked, so it never takes over a request that a specific skill should handle.
 - **Variants are arguments of one canonical skill; no synchronized copies remain.** `diff-summary`, `plan-summary`, `interrogate`, `git-commit`, `git-merge`, and `handoff` each used to ship their variants as separate packages that carried byte-synchronized copies of the same workflow and runtime, kept equal by parity tests. Each variant is now an argument (`--md`, `--quiz`, `push realtime`, `main`, `session`) of one skill with one workflow, one runtime, and one set of evals. A bug is fixed in one place, and an installed skill cannot drift from a sibling. The old names are listed in the migration tables in [README.md](README.md#migrating-from-the-previous-lineup) and [USAGE.md](USAGE.md#migrating-from-the-previous-lineup).
-- **One evidence vocabulary across skills.** Verdicts are `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE`, and inconclusive is never a pass. A claim without direct evidence is labelled `measured`, `inferred`, or `guess`. Where a skill grades how well a finding is proven, it uses one proof ladder, weakest first: `said` < `cited` (a real `file:line`) < `traced` (the failing path walked step by step) < `ran` (a command or test whose output shows it) < `reproduced` (seen in the running product). A reader who learns the words once can read the output of `interrogate`, `blast-radius`, `how`, `why`, `bug-hunt`, `handoff`, and the `chann-mode` reply the same way.
+- **One evidence vocabulary across skills.** Verdicts are `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE`, and inconclusive is never a pass. A claim without direct evidence is labelled `measured`, `inferred`, or `guess`. Where a skill grades how well a finding is proven, it uses one proof ladder, weakest first: `said` < `cited` (a real `file:line`) < `traced` (the failing path walked step by step) < `ran` (a command or test whose output shows it) < `reproduced` (seen in the running product). A reader who learns the words once can read the output of `interrogate`, `blast-radius`, `how`, `why`, `bug-hunt`, `handoff`, and the `chann` reply the same way.
 - **Thin aliases only for the three checkpoint modes of `git-commit`.** `/gcr`, `/gcpr`, and `/gcpd` exist because those modes are typed constantly while work continues, and Codex has no alias metadata. `$gcr`, `$gcpr`, and `$gcpd` are thin, explicit-only selector skills that load `git-commit` with a fixed mode and refuse when it is missing. They add no policy and no catalog workflow. No other variant gets an alias, so the 30 selectors are the 27 workflows plus these three.
 - **Each skill works when installed alone.** A reference to a sibling is an optional enhancement: when `swarm` is installed `interrogate` can seat an adversary panel, and when `unslop` is installed `handoff` can use it as a wording pass. Otherwise the skill does the steps itself. The aliases are the one exception, because they exist only to select a mode of `git-commit`.
 - **One skill contract with an executable audit.** Nine rules cover naming, description grammar, invocation mode, the Codex descriptor, the slash command, evals, catalog and locale parity, the plugin manifest, and published counts. `skill-audit` is their executable form and `tests/test_skill_contract.py` runs it, so a half-published skill fails the suite instead of shipping.

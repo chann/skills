@@ -1,6 +1,6 @@
 ---
-name: chann-mode
-description: Use only when the user explicitly invokes "/chann-mode <task>" in Claude Code or "$chann-mode <task>" in Codex to run a non-trivial task in the owner's working style, as in "/chann-mode 로그인하면 가끔 500 에러 나, 원인 찾아서 고쳐줘", "$chann-mode 자러 간다, 이 마이그레이션 끝까지 해줘", or "/chann-mode this endpoint got slow, find out why and fix it". Restates the goal and the smallest change, matches one of fourteen playbooks, routes each step to the catalog skill that owns it when that skill is installed, names the principles that shaped each decision, and replies with labelled evidence. Without the selector, call the owning skill directly - bug-hunt for a defect, interrogate for a diff review, swarm for parallel slices, long-task for a multi-milestone build.
+name: chann
+description: Use only when the user explicitly invokes "/chann <task>" in Claude Code or "$chann <task>" in Codex to run a non-trivial task in the owner's working style, as in "/chann 로그인하면 가끔 500 에러 나, 원인 찾아서 고쳐줘", "$chann 자러 간다, 이 마이그레이션 끝까지 해줘", or "/chann this endpoint got slow, find out why and fix it". Restates the goal and the smallest change, matches one of fourteen playbooks, routes each step to the catalog skill that owns it when that skill is installed, names the principles that shaped each decision, and replies with labelled evidence. Without the selector, call the owning skill directly - bug-hunt for a defect, interrogate for a diff review, swarm for parallel slices, long-task for a multi-milestone build.
 disable-model-invocation: true
 ---
 

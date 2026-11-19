@@ -19,16 +19,16 @@ npm --prefix website run dev
 
 ## 시작하기
 
-입구는 `chann-mode` 하나입니다. 작업을 주면 목표와 그 목표를 채우는 가장 작은
+입구는 `chann` 하나입니다. 작업을 주면 목표와 그 목표를 채우는 가장 작은
 변경을 먼저 정리하고, 플레이북을 고른 뒤, 단계마다 그 일을 맡은 스킬이
 설치되어 있으면 그 스킬에 넘깁니다. 마지막 답변에는 근거를 표시합니다.
-`chann-mode`는 자기 selector로만 실행됩니다. 나머지 스킬은 필요한 상황에서
+`chann`은 자기 selector로만 실행됩니다. 나머지 스킬은 필요한 상황에서
 쓰는 도구입니다. 모드가 알아서 연결해 주고, 직접 호출해도 됩니다.
 
 ```text
-/chann-mode 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
-$chann-mode this endpoint got slow, find out why and fix it
-/chann-mode 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+/chann 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
+$chann this endpoint got slow, find out why and fix it
+/chann 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
 ```
 
 ## 스킬 목록
@@ -38,7 +38,7 @@ $chann-mode this endpoint got slow, find out why and fix it
 
 | 단계 | 스킬 | 설명 |
 | --- | --- | --- |
-| mode | **[chann-mode](chann-mode/README.ko.md)** | 직접 호출할 때만 실행되는 입구. 목표를 정리하고 14개 플레이북 중 하나를 고른 뒤, 단계마다 맡은 스킬로 넘기고 근거를 표시해 답함 |
+| mode | **[chann](chann-mode/README.ko.md)** | 직접 호출할 때만 실행되는 입구. 목표를 정리하고 14개 플레이북 중 하나를 고른 뒤, 단계마다 맡은 스킬로 넘기고 근거를 표시해 답함 |
 | understand | **[how](understand/README.ko.md)** | 코드가 어떻게 동작하는지 코드를 읽고 설명. 모든 주장에 `file:line`을 달고 파일은 고치지 않음 |
 | understand | **[why](understand/README.ko.md)** | 코드가 왜 이렇게 만들어졌는지 커밋, blame, PR·이슈 논의, 설계 노트에서 찾아 작성자의 말을 인용해 설명 |
 | understand | **[research-brief](research-brief/README.ko.md)** | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김 |
@@ -97,7 +97,7 @@ npx skills add chann/skills \
 작동합니다. 별칭 `gcr`, `gcpr`, `gcpd`만 예외로, 옆에 `git-commit`이 있어야
 합니다.
 
-- 입구만 설치: `npx skills add chann/skills --skill chann-mode`
+- 입구만 설치: `npx skills add chann/skills --skill chann`
 - 코드베이스 이해: `npx skills add chann/skills --skill how --skill why`
 - 변경 검토: `npx skills add chann/skills --skill interrogate --skill blast-radius`
 - 변경 설명: `npx skills add chann/skills --skill diff-summary --skill diff-viewer`
@@ -122,7 +122,7 @@ Claude Code에서는 `/스킬-이름`, Codex에서는 `$스킬-이름`으로 직
 
 | Claude Code | Codex | 동작 |
 | --- | --- | --- |
-| `/chann-mode <작업>` | `$chann-mode <작업>` | 플레이북, 연결된 스킬, 근거를 표시한 답변으로 작업을 진행 |
+| `/chann <작업>` | `$chann <작업>` | 플레이북, 연결된 스킬, 근거를 표시한 답변으로 작업을 진행 |
 
 ### understand → [상세](understand/README.ko.md)
 

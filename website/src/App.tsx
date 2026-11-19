@@ -51,7 +51,7 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
           <ul>
             <li className="is-active">
               <span>Chann Mode</span>
-              <code>$chann-mode</code>
+              <code>$chann</code>
             </li>
             <li>
               <span>Interrogate</span>
@@ -70,7 +70,7 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
 
         <div className="product-editor">
           <div className="product-editor__tab">
-            <span>chann-mode</span>
+            <span>chann</span>
             <code>{content.tab}</code>
           </div>
           <div className="product-editor__content">
@@ -80,7 +80,7 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
 
             <div className="run-card">
               <span className="run-card__prompt">›</span>
-              <code>$chann-mode this endpoint got slow, find out why and fix it</code>
+              <code>$chann this endpoint got slow, find out why and fix it</code>
             </div>
 
             <div className="proof-row">

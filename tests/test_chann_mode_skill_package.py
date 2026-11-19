@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "chann-mode"
-SKILL = PACKAGE / "skills" / "chann-mode"
+SKILL = PACKAGE / "skills" / "chann"
 PLAYBOOKS = SKILL / "playbooks"
 
 
@@ -45,7 +45,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
     def test_plugin_shape_is_complete(self) -> None:
         expected = (
             PACKAGE / ".claude-plugin" / "plugin.json",
-            PACKAGE / "commands" / "chann-mode.md",
+            PACKAGE / "commands" / "chann.md",
             PACKAGE / "README.md",
             PACKAGE / "README.ko.md",
             SKILL / "SKILL.md",
@@ -59,27 +59,27 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             with self.subTest(path=path.relative_to(ROOT)):
                 self.assertTrue(path.is_file())
 
-    def test_plugin_metadata_is_a_new_plugin(self) -> None:
+    def test_plugin_metadata_names_the_plugin(self) -> None:
         metadata = json.loads(
             (PACKAGE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual("chann-mode", metadata["name"])
-        self.assertEqual("0.1.0", metadata["version"])
+        self.assertEqual("0.2.0", metadata["version"])
         self.assertIn("playbooks", metadata["description"])
 
     def test_skill_is_explicit_only_on_both_selectors(self) -> None:
         frontmatter = skill_text().split("---\n", 2)[1]
         description = frontmatter_description(SKILL / "SKILL.md")
         openai = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
-        command = (PACKAGE / "commands" / "chann-mode.md").read_text(encoding="utf-8")
+        command = (PACKAGE / "commands" / "chann.md").read_text(encoding="utf-8")
 
-        self.assertIn("name: chann-mode", frontmatter)
+        self.assertIn("name: chann\n", frontmatter)
         self.assertTrue(description.startswith("Use only when"))
         self.assertIn("disable-model-invocation: true", frontmatter)
-        self.assertIn("/chann-mode", description)
-        self.assertIn("$chann-mode", description)
-        self.assertIn("$chann-mode", openai)
-        self.assertIn("Use the **chann-mode** skill", command)
+        self.assertIn("/chann ", description)
+        self.assertIn("$chann ", description)
+        self.assertIn("$chann ", openai)
+        self.assertIn("Use the **chann** skill", command)
         self.assertIn("$ARGUMENTS", command)
         self.assertIn('argument-hint: "<task>"', command)
 
@@ -162,7 +162,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
     def test_evals_cover_the_routing_gates(self) -> None:
         payload = json.loads((SKILL / "evals" / "evals.json").read_text(encoding="utf-8"))
         evals = payload["evals"]
-        self.assertEqual("chann-mode", payload["skill_name"])
+        self.assertEqual("chann", payload["skill_name"])
         self.assertGreaterEqual(len(evals), 5)
         for item in evals:
             with self.subTest(eval=item["id"]):
@@ -186,7 +186,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
         workflows = {
             path.parent.name
             for path in ROOT.glob("*/skills/*/SKILL.md")
-            if path.parent.name != "chann-mode"
+            if path.parent.name != "chann"
             and "alias" not in frontmatter_description(path).lower()
         }
         self.assertEqual(set(), workflows - routed)

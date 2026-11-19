@@ -3,7 +3,7 @@
 [English](README.md) · [← 메인으로](../README.ko.md)
 
 규모 있는 작업을 시작할 때 쓰는 하나의 입구입니다. Claude Code에서는
-`/chann-mode <작업>`, Codex에서는 `$chann-mode <작업>`을 입력합니다. 먼저
+`/chann <작업>`, Codex에서는 `$chann <작업>`을 입력합니다. 먼저
 목표와 그 목표를 채우는 가장 작은 변경을 한 문장씩 정리하고, 작업에 맞는
 플레이북을 고른 뒤, 단계마다 그 일을 맡은 카탈로그 스킬에 넘깁니다. 마지막
 답변에는 근거가 무엇인지 표시합니다. 다른 워크플로도 그대로 따로 쓸 수
@@ -33,16 +33,16 @@
 전역 설치:
 
 ```bash
-npx skills add -y -g chann/skills --skill chann-mode
+npx skills add -y -g chann/skills --skill chann
 ```
 
 현재 프로젝트에 설치:
 
 ```bash
-npx skills add chann/skills --skill chann-mode
+npx skills add chann/skills --skill chann
 ```
 
-`chann-mode`만 설치해도 동작합니다. 플레이북마다 직접 따라 할 단계가 들어
+`chann`만 설치해도 동작합니다. 플레이북마다 직접 따라 할 단계가 들어
 있습니다. 카탈로그의 다른 스킬을 함께 설치하면 각 단계가 그 일을 맡은
 스킬로 넘어갑니다.
 
@@ -50,14 +50,14 @@ npx skills add chann/skills --skill chann-mode
 
 | Claude Code | Codex | 동작 |
 |---|---|---|
-| `/chann-mode <작업>` | `$chann-mode <작업>` | 플레이북과 담당 스킬로 작업을 진행하고 근거를 표시해 답변 |
+| `/chann <작업>` | `$chann <작업>` | 플레이북과 담당 스킬로 작업을 진행하고 근거를 표시해 답변 |
 
 예시:
 
 ```text
-/chann-mode 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
-$chann-mode this endpoint got slow, find out why and fix it
-/chann-mode 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+/chann 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
+$chann this endpoint got slow, find out why and fix it
+/chann 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
 ```
 
 선택자를 입력했을 때만 실행됩니다. 선택자 없이 요청하면 그 일을 맡은 스킬이
@@ -110,8 +110,8 @@ $chann-mode this endpoint got slow, find out why and fix it
 ```text
 chann-mode/
 ├── .claude-plugin/plugin.json
-├── commands/chann-mode.md
-├── skills/chann-mode/
+├── commands/chann.md
+├── skills/chann/
 │   ├── SKILL.md                     # 첫 동작, 라우팅, 원칙 목록, 자율성, 위임, 증거, 답변
 │   ├── worker.md                    # 모든 하위 에이전트가 먼저 읽는 규칙
 │   ├── playbooks/<name>.md          # 플레이북 14개

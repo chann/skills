@@ -12,7 +12,7 @@ export const categoryOrder = [
 export type SkillCategory = (typeof categoryOrder)[number];
 
 export type SkillId =
-  | "chann-mode"
+  | "chann"
   | "how"
   | "why"
   | "research-brief"
@@ -53,12 +53,12 @@ export interface SkillDefinition {
 
 export const skillDefinitions = [
   {
-    id: "chann-mode",
+    id: "chann",
     title: "Chann Mode",
     category: "mode",
-    example: "$chann-mode this endpoint got slow, find out why and fix it",
-    claudeSelector: "/chann-mode",
-    codexSelector: "$chann-mode",
+    example: "$chann this endpoint got slow, find out why and fix it",
+    claudeSelector: "/chann",
+    codexSelector: "$chann",
     tags: ["router", "playbook", "entry-point", "evidence", "principles"],
   },
   {

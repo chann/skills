@@ -84,7 +84,7 @@
   "catalog": {
     "label": "Skill catalog",
     "title": ["Every workflow you need,", "all in one place."],
-    "description": "Tell chann-mode the task first and it routes you to the right skill, or search by task or deliverable to choose yourself. Variants such as --md, --quiz, push, and realtime are arguments, not separate skills.",
+    "description": "Tell chann the task first and it routes you to the right skill, or search by task or deliverable to choose yourself. Variants such as --md, --quiz, push, and realtime are arguments, not separate skills.",
     "categoryNavigation": "Browse by category",
     "searchLabel": "Search skills",
     "searchPlaceholder": "Search tasks, deliverables, or skill names",
@@ -247,7 +247,7 @@
     }
   },
   "skills": {
-    "chann-mode": {
+    "chann": {
       "summary": "Give it one task and it restates the goal in a sentence, picks one of 14 playbooks, and routes each step to the skill that owns it.",
       "whenToUse": "When you want a whole task handled, such as a bug fix, a feature, or an investigation, without choosing the skills yourself. Runs only when you type it",
       "result": "The goal and the smallest change, the playbook chosen, the skill used at each step, the principles applied, and a final report with labelled evidence"

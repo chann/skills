@@ -1,4 +1,4 @@
 interface:
   display_name: "Chann Mode"
   short_description: "Run a task through a playbook, routed skills, and labelled evidence"
-  default_prompt: "Use $chann-mode to restate the goal, pick a playbook, and drive this task to a verified result."
+  default_prompt: "Use $chann to restate the goal, pick a playbook, and drive this task to a verified result."
