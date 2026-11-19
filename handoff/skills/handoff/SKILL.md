@@ -89,21 +89,21 @@ them "User-provided session context" unless a file or command verified them.
   it. Never count it as proven.
 
 Do not claim unverified tests, deploys, or runtime behavior, and do not claim
-anything works without the command that proved it. If no command output proves it,
-it is not proven; unproven work goes under the unproven heading. A reading of the code that no run confirmed is
-labeled `inferred`; a hunch is labeled `guess`.
+anything works without the command that proved it. If no command output proves
+it, it is not proven; unproven work goes under the unproven heading. A reading of
+the code that no run confirmed is labeled `inferred`; a hunch is labeled `guess`.
 
 ## 5. Write the document
 
 Write in the language of the request. For Korean, write reader-facing text as
-plain, concrete Korean: direct sentences, no translation-like rhythm, no vague AI
-filler, no internal method vocabulary. Preserve facts, numbers, dates, proper
+plain, concrete Korean prose: direct sentences, no translation-like rhythm, no
+vague AI filler, no internal method vocabulary. Preserve facts, numbers, dates, proper
 nouns, code identifiers, commands, quotes, links, API fields, and evidence.
 
 This skill is self-contained. When the runtime already exposes `unslop`, it may
 run once, as an optional pass over only the newly written Korean draft before the
 file is saved. Do not install, fetch, or require it; if it is absent or unreadable,
-continue with the rules above. After an optional pass, validate the document
+continue with the rules above. After an optional pass, run the normal validation
 again. The pass may change wording only — never evidence, template headings, API
 details, or the instructions in the Continuation Prompt or resume prompt.
 
