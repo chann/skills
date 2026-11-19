@@ -9,7 +9,7 @@ Follow its evidence-first summary contract for the requested code changes. Do no
 
 Collect the requested scope through the skill's packaged evidence collector and its JSON standard-input contract. Do not run Git directly or interpolate `$ARGUMENTS` into a shell command.
 
-Take the exact tokens `--md` and `--quiz` out of `$ARGUMENTS` as options. Preserve the rest as the exact user-specified scope, including the distinction between `..` and `...`. When no scope is supplied, use the skill's default current-changes scope.
+Take the exact tokens `--md` and `--quiz` out of `$ARGUMENTS` as options. Preserve the exact user-specified scope from the remaining text, including the distinction between `..` and `...`. When no scope is supplied, use the skill's default current-changes scope.
 
 Default mode is complete only after it:
 

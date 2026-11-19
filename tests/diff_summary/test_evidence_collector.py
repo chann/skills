@@ -12,7 +12,7 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS_DIR = ROOT / "code-review" / "skills" / "diff-summary" / "scripts"
+SCRIPTS_DIR = ROOT / "diff-summary" / "skills" / "diff-summary" / "scripts"
 SCRIPT_PATH = SCRIPTS_DIR / "collect_diff_evidence.py"
 sys.path.insert(0, str(SCRIPTS_DIR))
 

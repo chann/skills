@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS_DIR = PLUGIN_ROOT / "code-review" / "skills" / "diff-viewer" / "scripts"
+SCRIPTS_DIR = PLUGIN_ROOT / "diff-summary" / "skills" / "diff-viewer" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from generate_diff_report import (  # noqa: E402

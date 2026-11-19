@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SUMMARY_TEMPLATE = (
     ROOT
-    / "code-review"
+    / "diff-summary"
     / "skills"
     / "diff-summary"
     / "assets"
@@ -26,7 +26,7 @@ TEMPLATES = {
     "diff-summary": SUMMARY_TEMPLATE,
     "diff-viewer": (
         ROOT
-        / "code-review"
+        / "diff-summary"
         / "skills"
         / "diff-viewer"
         / "assets"
