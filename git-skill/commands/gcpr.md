@@ -1,14 +1,11 @@
 ---
-description: Alias for `/git-commit-push-realtime` — commit and push verified outcome checkpoints continuously while working
+description: Alias for `/git-commit push realtime` — commit and push verified outcome checkpoints continuously while working
+argument-hint: "[task]"
 ---
 
-Use the **git-commit-push-realtime** skill for the requested implementation.
+Use the **git-commit** skill in mode `push realtime` for the requested work; `$ARGUMENTS` is the task.
 
-Plan meaningful, outcome-based checkpoints before the first commit. Complete and
-verify one coherent unit, stage only its explicit paths, create a Conventional
-Commit, push it immediately, and prove `HEAD` matches its upstream before
-starting the next unit.
-
-Do not create time-based or knowingly broken checkpoint commits. Never use
-`git add .`, bypass hooks, auto-reconcile a moved upstream, or force-push. If a
-push is rejected, surface the error and stop.
+Read the installed `git-commit` skill and every reference its `push realtime` mode loads
+before any Git command. If `git-commit` is not installed, stop and report it.
+The fixed mode never moves to a farther-reaching one, and this alias never
+relaxes a `git-commit` rule.

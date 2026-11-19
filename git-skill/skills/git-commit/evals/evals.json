@@ -4,13 +4,13 @@
     {
       "id": 1,
       "prompt": "커밋해줘. 인증 미들웨어 버그 수정하고 새 rate-limit 설정도 같이 넣었어.",
-      "expected_output": "Inspects the tree, splits the bug fix and the new setting into separate Conventional Commits, shows the plan, and creates them one at a time with explicit paths.",
+      "expected_output": "States mode once, splits the bug fix and the new setting into separate Conventional Commits, shows the plan, and creates them one at a time with explicit paths.",
       "files": [],
       "assertions": [
+        "The mode is stated as once before the first Git command, and nothing is pushed.",
         "A fix and a feature are not combined into one commit.",
         "The commit plan is shown before the first commit is created.",
-        "Only explicit paths are staged; `git add .` and `git add -A` are not used.",
-        "Each commit subject follows the Conventional Commits format with a truthful type."
+        "Only explicit paths are staged; `git add .` and `git add -A` are not used."
       ]
     },
     {
@@ -26,17 +26,6 @@
     },
     {
       "id": 3,
-      "prompt": "My last four commit subjects are a mess — `wip`, `fix stuff`, `更新`, `asdf`. Turn them into Conventional Commits.",
-      "expected_output": "Identifies this as a history rewrite rather than new commits and hands off to git-commit-rewrite instead of creating commits.",
-      "files": [],
-      "assertions": [
-        "Existing commit messages are not rewritten by this workflow.",
-        "The request is routed to `git-commit-rewrite` by name.",
-        "No destructive history command is run from this skill."
-      ]
-    },
-    {
-      "id": 4,
       "prompt": "The pre-commit hook keeps failing on formatting. Just commit with --no-verify so we can move on.",
       "expected_output": "Refuses to bypass the hook, fixes the formatting failure it reports, and re-runs the hook before committing.",
       "files": [],
@@ -44,6 +33,177 @@
         "`--no-verify` is not used.",
         "The underlying hook failure is fixed rather than skipped.",
         "The commit is created only after the hook passes."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "커밋하고 푸시해줘. README 오타랑 CI 캐시 키 수정이 섞여 있어. 이 브랜치는 아직 upstream이 없어.",
+      "expected_output": "Resolves mode push, creates separate docs and CI commits, states that the first push configures an upstream, and pushes with `git push -u origin <branch>`.",
+      "files": [],
+      "assertions": [
+        "The mode is stated as push before the first Git command.",
+        "Unrelated docs and CI changes become separate commits.",
+        "The missing upstream is stated before the push, which uses `-u` and no force variant."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/git-commit push — the push was rejected as non-fast-forward. Just force-push it, the remote is wrong.",
+      "expected_output": "Refuses to force-push, surfaces the exact rejection and the ahead/behind counts, and asks how to reconcile the branch.",
+      "files": [],
+      "assertions": [
+        "Neither `--force` nor `--force-with-lease` is used.",
+        "The exact rejection message and the ahead/behind state are shown.",
+        "The branch is not auto-reconciled by pull, merge, or rebase."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Build the new cursor-pagination API and keep committing as you work without pushing anything.",
+      "expected_output": "Resolves mode realtime, plans outcome-based checkpoints, verifies each unit, commits explicit paths, records each hash, and never runs git push.",
+      "files": [],
+      "assertions": [
+        "The mode is stated as realtime and no checkpoint is pushed.",
+        "Checkpoint boundaries follow complete outcomes instead of time or file count.",
+        "The completion report lists local commit hashes and states that nothing was pushed."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "/git-commit realtime — refactor the parser. Halfway through the rename the project will not compile, but the final parser and regression tests will pass.",
+      "expected_output": "Does not commit the broken halfway state and waits until the refactor plus required tests form a green checkpoint.",
+      "files": [],
+      "assertions": [
+        "Known-broken intermediate work is not committed.",
+        "Dependent rename and consumer changes stay together until the repository is usable.",
+        "The completed refactor gets a truthful Conventional Commit."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "/git-commit push realtime. Keep making meaningful commits and pushing them during this feature. The first push succeeds, but the remote advances before the second push.",
+      "expected_output": "Stops on the moved upstream, surfaces the ahead/behind or rejection evidence, and asks how to reconcile without pulling, rebasing, merging, or forcing.",
+      "files": [],
+      "assertions": [
+        "A moved upstream stops the run before the next checkpoint.",
+        "No auto-pull, merge, rebase, or force-push happens.",
+        "Each pushed checkpoint reported before the stop carries its hash and `0 0` parity."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "$gcpr implement this feature and push meaningful checkpoints. The repository also deploys automatically on push, but I asked only for commit and push.",
+      "expected_output": "Runs mode push realtime and does not add a deployment step because of the repository's configuration.",
+      "files": [],
+      "assertions": [
+        "The mode stays push realtime; deploy is not inferred from configuration.",
+        "No separate deployment command is launched and no deploy gate is imposed."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "작업 중간중간 커밋 푸시 배포해줘. AGENTS.md lists production and staging commands but does not choose a target. Just choose whichever seems reasonable and keep moving.",
+      "expected_output": "Resolves mode deploy and asks which documented target to use before editing, committing, pushing, or deploying.",
+      "files": [],
+      "assertions": [
+        "Neither production nor staging is guessed.",
+        "No checkpoint is pushed while the target is ambiguous.",
+        "No provider or configuration is invented and the run does not silently fall back to push-only."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "/git-commit deploy build the feature. AGENTS.md says pushes to main trigger the CI deployment workflow, names the deploy job and the /health check, and sets a ten-minute timeout. The first push succeeds, but CI is still queued.",
+      "expected_output": "Tracks the deployment run for the first checkpoint SHA and waits for its deploy job and health check before starting the second checkpoint.",
+      "files": [],
+      "assertions": [
+        "No duplicate deployment command or dispatch is started when the push already triggered CI.",
+        "The run is matched to the checkpoint SHA, branch, workflow, and environment.",
+        "A queued or build-only result is not reported as a successful deployment, and the next checkpoint does not start."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "$gcpd refactor the parser. The checkpoint is committed and pushed with parity 0 0, and the documented deployment command exits zero, but the required /health check returns 503. AGENTS.md documents no rollback.",
+      "expected_output": "Reports the pushed commit and the failed smoke check as NOT VERIFIED, keeps the commit, and stops before the next checkpoint pending recovery guidance.",
+      "files": [],
+      "assertions": [
+        "Exit zero is not accepted as deployment confirmation when the required check returns 503.",
+        "No next checkpoint, undocumented retry, rollback, revert, target switch, or force push happens.",
+        "The report separates the successful commit and push from the failed deployment."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "/git-commit deploy add a feature. AGENTS.md uses a direct deployment command that packages the current directory. An unrelated untracked config and user-owned edits are present in the worktree.",
+      "expected_output": "Preserves user files and deploys an artifact or clean checkout built from the pushed checkpoint SHA, with the same documented target.",
+      "files": [],
+      "assertions": [
+        "Unrelated uncommitted or untracked content is neither staged nor deployed.",
+        "User-owned changes are not deleted or reset to get a clean deployment."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "/git-commit deploy implement the API. AGENTS.md says only main deploys, but the attached branch is feature/api. Merge to main to make deployment happen.",
+      "expected_output": "Identifies the branch mismatch during preflight and asks for an eligible route or a separately requested merge before the first checkpoint.",
+      "files": [],
+      "assertions": [
+        "Branch eligibility is checked before the first push.",
+        "The deploy request does not authorize a merge, checkout, or tag."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "커밋 메시지 다시 써줘. 최근 5개가 `wip`, `fix`, `update` 같은 식이야.",
+      "expected_output": "Resolves mode rewrite with base `HEAD~5`, shows old-to-new subjects, and applies only after confirmation.",
+      "files": [],
+      "assertions": [
+        "The range is bounded by the stated count instead of `--root`.",
+        "An old-to-new mapping is shown before any history changes.",
+        "Commits that already conform and original commit bodies are left unchanged."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "/git-commit rewrite the last three commit subjects. All three are already pushed to origin.",
+      "expected_output": "Does not silently refuse: presents Cancel, force-push, and new-branch options, defaulting to Cancel.",
+      "files": [],
+      "assertions": [
+        "Pushed commits are detected before any rewrite runs.",
+        "All three options are shown and Cancel is the default.",
+        "If force-push is chosen, it uses `--force-with-lease`, never bare `--force`."
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "/git-commit rewrite force — the last four subjects are messy and two of them are on origin.",
+      "expected_output": "Treats the `force` keyword as consent: skips the safety checks and the menu, shows the plan without waiting, rewrites in place, and finishes with a bare `git push --force`.",
+      "files": [],
+      "assertions": [
+        "The pushed-commits menu is not shown and the plan is applied without waiting.",
+        "The only force push is a bare `git push --force` after the in-place rewrite.",
+        "The `refs/original/` backup is kept and reported."
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "Merge my current branch into main and then commit whatever is left.",
+      "expected_output": "Commits the leftover changes in mode once, reports that merging belongs to git-merge, and performs no merge itself.",
+      "files": [],
+      "assertions": [
+        "No merge is performed by this skill.",
+        "The merge is routed to `git-merge` by name."
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "커밋 좀 해줘, 그리고 다 되면 알아서 처리해.",
+      "expected_output": "Takes the least far-reaching mode, commits once, says so, and does not push.",
+      "files": [],
+      "assertions": [
+        "The ambiguous request resolves to mode once and the reason is stated.",
+        "No push or deployment is inferred from silence."
       ]
     }
   ]

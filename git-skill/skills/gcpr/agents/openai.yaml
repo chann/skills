@@ -1,4 +1,4 @@
 interface:
   display_name: "GCPR"
-  short_description: "Alias for verified realtime commit and push"
+  short_description: "Alias for git-commit push realtime: verified checkpoints pushed as you work"
   default_prompt: "Use $gcpr to commit and push each verified outcome while working."

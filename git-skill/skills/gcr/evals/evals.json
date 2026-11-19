@@ -1,0 +1,46 @@
+{
+  "skill_name": "gcr",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/gcr implement the cursor-pagination endpoint and commit each verified unit as you go.",
+      "expected_output": "Reads the installed git-commit skill completely and runs it in mode realtime with the rest of the request as the task.",
+      "files": [],
+      "assertions": [
+        "The installed git-commit skill is read completely, including references/checkpoints.md, before any Git command runs.",
+        "The run uses mode realtime and never pushes a checkpoint."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$gcr on this refactor. The git-commit skill is not installed in this environment.",
+      "expected_output": "Stops before any Git command and reports that git-commit must also be installed.",
+      "files": [],
+      "assertions": [
+        "No Git repository is inspected or changed once git-commit is found to be missing.",
+        "The report names git-commit as the missing dependency.",
+        "The workflow is not rebuilt from memory and no other alias is used instead."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "작업 중간중간 커밋만 해줘.",
+      "expected_output": "Recognizes a natural-language request rather than the alias selector and uses git-commit directly in the mode the words select.",
+      "files": [],
+      "assertions": [
+        "The selector-only gcr alias is not chosen from phrasing alone.",
+        "git-commit states the resolved mode before its first Git command."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/gcr and push each checkpoint too, it is fine.",
+      "expected_output": "Keeps the fixed realtime mode: the alias does not escalate to a push mode from the remaining text, and states that pushing needs /git-commit push realtime or /gcpr.",
+      "files": [],
+      "assertions": [
+        "No git push runs from the gcr alias.",
+        "The reply names /gcpr or /git-commit push realtime as the way to request pushes."
+      ]
+    }
+  ]
+}

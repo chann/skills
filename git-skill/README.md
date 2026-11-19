@@ -2,18 +2,22 @@
 
 [한국어](README.ko.md) · [← back to main](../README.md)
 
-A bundle of Git workflow skills: split working-tree changes into [Conventional Commits](https://www.conventionalcommits.org/), push once or continuously at meaningful checkpoints, keep realtime checkpoints local until you decide to push, rewrite messy commit history, merge a branch into `main` or `dev` (and delete the source unless protected), and bulk-delete local branches that are already merged.
+Git workflow skills with conservative safety rules. One `git-commit` workflow
+turns changes into [Conventional Commits](https://www.conventionalcommits.org/)
+once, with a push, as verified checkpoints while you work (local, pushed, or
+deployed), or rewrites messy commit subjects. `git-merge` merges into `main`,
+`dev`, or any local branch; `git-resolve-conflicts` finishes a stopped merge or
+rebase; `git-cleanup` removes finished worktrees and merged branches.
 
 ## What it does
 
-- **Commit / Push / Realtime / Rewrite** — group staged + unstaged changes into logical Conventional Commits, optionally push, keep committing verified outcomes during implementation (pushing each one immediately, or leaving them all local), or rewrite non-conformant subjects in place
-- **Checkpoint deployment** — commit, push, and deploy each verified outcome using settings already documented in `AGENTS.md` or repository instructions; confirm deployment and required runtime checks before the next outcome
-- Creates each commit with explicit `git add <paths>` — never `git add .`
-- Refuses to stage suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
-- Rewrites non-conformant commit subjects via `git filter-branch`, preserving the original body
-- Refuses to rewrite commits already pushed to a remote (3-option menu instead) — unless you opt in with the `force` keyword
-- **Merge / Cleanup** — merge into `main` (or `dev`/`develop`) then `git branch -d` the source unless it is protected; bulk-delete every local branch already merged into a protected branch
-- Never force-pushes (except the explicit `/git-commit-rewrite` `force` opt-in), never bypasses hooks, never `git branch -D`
+- **Commit modes** — `git-commit` groups staged and unstaged changes into one Conventional Commit per logical unit; `push` adds an ordinary push; `realtime` commits each verified outcome while work continues; `push realtime` pushes each one and proves upstream parity; `deploy` also deploys each checkpoint through the settings already documented in `AGENTS.md` and confirms it before the next one; `rewrite` fixes non-conformant subjects
+- Stages explicit paths only — never `git add .`
+- Excludes suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
+- Rewrites commit subjects with `git filter-branch`, keeping each original body; pushed commits get a three-option menu unless you opt in with the `force` keyword
+- **Merge** — merge the current branch into the resolved target, then `git branch -d` the source unless it is protected
+- **Cleanup** — remove clean, unlocked, merged linked worktrees and delete local branches already merged into a protected branch
+- Never force-pushes (except the explicit `rewrite force` opt-in), never bypasses hooks, never `git branch -D`, never `git worktree remove --force`
 
 ## Installation
 
@@ -22,17 +26,12 @@ A bundle of Git workflow skills: split working-tree changes into [Conventional C
 ```bash
 npx skills add -y -g chann/skills \
   --skill git-commit \
-  --skill git-commit-push \
-  --skill git-commit-push-realtime \
+  --skill gcr \
   --skill gcpr \
-  --skill git-commit-push-deploy \
   --skill gcpd \
-  --skill git-commit-realtime \
-  --skill git-commit-rewrite \
-  --skill git-merge-to-main \
-  --skill git-merge-to-dev \
-  --skill git-branch-cleanup \
-  --skill git-resolve-conflicts
+  --skill git-merge \
+  --skill git-resolve-conflicts \
+  --skill git-cleanup
 ```
 
 **Project-local:**
@@ -40,40 +39,19 @@ npx skills add -y -g chann/skills \
 ```bash
 npx skills add chann/skills \
   --skill git-commit \
-  --skill git-commit-push \
-  --skill git-commit-push-realtime \
+  --skill gcr \
   --skill gcpr \
-  --skill git-commit-push-deploy \
   --skill gcpd \
-  --skill git-commit-realtime \
-  --skill git-commit-rewrite \
-  --skill git-merge-to-main \
-  --skill git-merge-to-dev \
-  --skill git-branch-cleanup \
-  --skill git-resolve-conflicts
+  --skill git-merge \
+  --skill git-resolve-conflicts \
+  --skill git-cleanup
 ```
 
-Use the actual skill names with `--skill`; `git-skill` is the plugin directory that packages these Git workflows.
-
-To add only the Codex `$gcpr` selector and its required workflows:
-
-```bash
-npx skills add -y -g chann/skills \
-  --skill gcpr \
-  --skill git-commit-push-realtime \
-  --skill git-commit \
-  --skill git-commit-push
-```
-
-To add only the Codex `$gcpd` selector and all required workflows:
+Use the skill names with `--skill`; `git-skill` is the plugin directory. Each
+alias needs `git-commit` installed next to it and refuses to run without it:
 
 ```bash
-npx skills add -y -g chann/skills \
-  --skill gcpd \
-  --skill git-commit-push-deploy \
-  --skill git-commit-push-realtime \
-  --skill git-commit \
-  --skill git-commit-push
+npx skills add -y -g chann/skills --skill git-commit --skill gcpr
 ```
 
 **Manual:**
@@ -85,237 +63,147 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 
 ## Usage
 
-Natural-language requests trigger the matching workflow. Explicit invocation
-uses `/name` in Claude Code and `$name` in Codex:
+Natural-language requests select the matching workflow and mode. Explicit
+invocation uses `/name` in Claude Code and `$name` in Codex.
 
-| Claude Code                     | Codex                        | Action                                                                                         |
-| ------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------- |
-| `/git-commit`                   | `$git-commit`                | Group staged + unstaged changes into logical units; create one Conventional Commit per unit    |
-| `/git-commit-push`              | `$git-commit-push`           | Same as above, then `git push` (no force)                                                      |
-| `/git-commit-push-realtime` · `/gcpr` | `$git-commit-push-realtime` · `$gcpr` | During implementation, commit and immediately push each verified, meaningful outcome     |
-| `/git-commit-push-deploy` · `/gcpd` | `$git-commit-push-deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
-| `/git-commit-realtime` · `/gcr` | `$git-commit-realtime`       | During implementation, commit each verified, meaningful outcome locally — never push           |
-| `/git-commit-rewrite`           | `$git-commit-rewrite`        | Rewrite recent non-conformant commit subjects to Conventional format                           |
-| `/git-merge-to-main`            | `$git-merge-to-main`         | Merge current branch into `main`, then delete the source unless protected                      |
-| `/git-merge-to-dev`             | `$git-merge-to-dev`          | Merge current branch into `dev` (fallback `develop`), then delete the source unless protected  |
-| `/git-branch-cleanup`           | `$git-branch-cleanup`        | Delete every local branch already merged into a protected branch                               |
-| `/git-resolve-conflicts`        | `$git-resolve-conflicts`     | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it                  |
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/git-commit` | `$git-commit` | Group the current changes into Conventional Commits, once |
+| `/git-commit push` | `$git-commit push` | The same, then an ordinary `git push` (never force) |
+| `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | Commit each verified outcome while working; every checkpoint stays local |
+| `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | Commit and immediately push each verified outcome, proving upstream parity |
+| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
+| `/git-commit rewrite [range] [force]` | `$git-commit rewrite [range] [force]` | Rewrite recent non-conformant commit subjects |
+| `/git-merge [main \| dev \| <branch>]` | `$git-merge` | Merge the current branch into the target, then delete the source unless protected |
+| `/git-resolve-conflicts` | `$git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it |
+| `/git-cleanup` | `$git-cleanup` | Remove finished worktrees and delete local branches already merged into a protected branch |
+
+`gcr`, `gcpr`, and `gcpd` are explicit-only aliases: they never start from
+natural language, and they run the installed `git-commit` with a fixed mode.
 
 **Examples:**
 
 ```
 > commit my changes
 > 변경사항 의미 단위로 커밋해줘
-> /git-commit-push
+> 커밋하고 푸시해줘
 > keep committing and pushing meaningful checkpoints as you work
 > $gcpr
-> commit push and deploy each meaningful outcome using AGENTS.md
-> $gcpd
-> keep committing as you work, I'll push later
-> /gcr
-> /git-commit-rewrite
+> 의미 있는 단위마다 배포해줘
+> /git-commit rewrite HEAD~5
 > dev에 머지해줘
-> 머지된 브랜치 다 정리해줘
+> 머지된 브랜치랑 끝난 워크트리 정리해줘
 ```
+
+### Migrating from 0.x
+
+| Old selector | New invocation |
+| --- | --- |
+| `/git-commit-push` | `/git-commit push` |
+| `/git-commit-realtime` | `/git-commit realtime` or `/gcr` |
+| `/git-commit-push-realtime` | `/git-commit push realtime` or `/gcpr` |
+| `/git-commit-push-deploy` | `/git-commit deploy` or `/gcpd` |
+| `/git-commit-rewrite` | `/git-commit rewrite` |
+| `/git-merge-to-main` | `/git-merge main` |
+| `/git-merge-to-dev` | `/git-merge dev` |
+| `/git-branch-cleanup` | `/git-cleanup` |
+
+The same mapping applies to the `$name` selectors in Codex.
 
 ## How it works
 
-### `/git-commit` (default)
+### `git-commit`
 
-1. Inspect working tree (`git status --short`, `git diff`, `git diff --cached`)
-2. Group staged + unstaged changes into logical units (one Conventional Commit per unit)
-3. Show a commit plan and wait for user confirmation
-4. Create commits one at a time with explicit `git add <paths>`
-5. Show final summary via `git log --oneline`
+1. Resolve the mode from the arguments or the request and state it before any Git command; an ambiguous request takes the less far-reaching mode, and `push` or `deploy` is never inferred from silence
+2. Inspect the tree, group changes by intent, exclude suspected secrets, and show the commit plan
+3. Stage explicit paths and create one Conventional Commit per unit; a failing hook is fixed, never bypassed
+4. `push`: run `git push` (`-u` when no upstream exists); on rejection, stop and ask how to reconcile
 
-### `/git-commit-push`
+**Checkpoint modes** (`realtime`, `push realtime`, `deploy`) plan outcome-based
+checkpoints, never time- or file-count-based ones, verify each with the
+narrowest relevant checks plus `git diff --check`, and commit it.
+`realtime` keeps every checkpoint local. `push realtime` pushes each one and
+proves `HEAD...@{u}` is `0 0` before the next. `deploy` resolves the target,
+route, source, and confirmation method from the repository's documented settings
+before the first checkpoint, deploys the exact pushed revision, and does not
+start the next outcome until the deployment and required health checks are
+confirmed. Each run ends with a full-scope completion audit.
 
-Runs the default workflow, then `git push`. Never `--force` or `--force-with-lease`. If the push is rejected, the skill stops and surfaces the error rather than auto-resolving.
+**Rewrite** determines the range, checks for a clean tree, an attached HEAD,
+and pushed commits (Cancel / force-with-lease / new-branch menu, default
+Cancel), proposes subjects while keeping bodies and moving ticket prefixes to
+`Refs:` footers, and applies after confirmation. The `force` keyword skips the
+checks and the menu and finishes with a bare `git push --force` when pushed
+commits were rewritten.
 
-### `/git-commit-push-realtime` (aliases `/gcpr` and `$gcpr`)
+### `git-merge`
 
-1. Inspect the branch, upstream, existing commits, working tree, and secret-path risks before editing
-2. Plan outcome-based checkpoints; do not split work by elapsed time, file count, or token pressure
-3. Complete one coherent unit and run its relevant tests plus repository-required checks
-4. Show the checkpoint paths and evidence, stage explicit paths, and create one truthful Conventional Commit
-5. Push immediately and prove `HEAD...@{u}` is `0 0` before starting the next unit
-6. Stop on a moved upstream or rejected push; never auto-pull, merge, rebase, or force
-7. Finish with full-scope verification, checkpoint history, and remote-parity evidence
+1. Resolve the target: the argument wins; `dev` falls back to `develop`; with no argument, the default branch from `origin/HEAD`, otherwise `main`. The target must exist locally
+2. Refuse a detached HEAD, a dirty tree, or a source equal to the target
+3. Show the plan, including the resolved target, and wait for confirmation (default no)
+4. Plain `git merge`; on conflicts, stop and report
+5. `git branch -d` the source unless it is protected; never `-D`, never push
 
-### `/git-commit-push-deploy` (aliases `/gcpd` and `$gcpd`)
+Protected branches: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`.
 
-1. Read the realtime, commit, and push skills, then resolve the existing deployment settings from `AGENTS.md` or its referenced instructions
-2. Confirm the target, command/trigger, working directory, eligible branch, source selection, and deployment confirmation method before editing or pushing; request only settings that are missing or ambiguous
-3. Plan independently deployable outcomes and verify, commit, and push each one using the realtime workflow, including upstream parity
-4. Deploy the exact pushed revision or its traceable artifact; observe push-triggered CI rather than launching a duplicate deployment
-5. Confirm the deployment and required health/smoke checks before beginning the next outcome, including local implementation work
-6. Stop before the next planned outcome on a failed, timed-out, cancelled, or mismatched deployment; a source repair within the authorized task is a new recovery checkpoint with the same verification and deployment gates
-7. Finish with full-scope verification, checkpoint hashes, remote parity, target, and deployment evidence
+### `git-cleanup`
 
-The invocation authorizes repeated deployments to the documented target without
-asking again each time, while honoring existing mandatory approval gates. Deployment
-setup must already exist; this workflow does not choose a provider or target,
-merge branches, create release tags, or invent rollback commands. Local deployment
-inputs exclude unrelated edits and untracked files. `/gcpr` continues to use the
-commit-and-push workflow.
+1. Find which protected branches exist locally (anchors)
+2. Worktree pass: from `git worktree list --porcelain`, a linked worktree is removable only when it is not the main or current worktree, not locked, `git status --short` is empty, and its non-protected branch tip is reachable from an anchor
+3. Branch pass: every non-protected, non-current branch whose tip is reachable from an anchor
+4. Show one plan for both, with the proving anchor per item and every kept item's reason; wait for confirmation
+5. `git worktree remove` (never `--force`), `git worktree prune`, `git branch -d` (never `-D`); a refusal is left in place and reported
 
-### `/git-commit-realtime` (alias `/gcr`)
+### `git-resolve-conflicts`
 
-Same checkpoint discipline as `/git-commit-push-realtime`, minus the remote:
-
-1. Inspect the branch, existing commits, working tree, and secret-path risks before editing
-2. Plan outcome-based checkpoints; complete and verify one coherent unit at a time
-3. Stage explicit paths and create one truthful Conventional Commit per unit
-4. Record the commit hash and keep it local — never `git push`, pull, merge, or rebase
-5. Finish with full-scope verification, the checkpoint history, and an explicit unpushed-commits report; publication stays a separate request (`/git-commit-push`, `/gcpr`)
-
-### `/git-commit-rewrite`
-
-1. Determine the rewrite range (default: from upstream / `main` / `master` merge-base to HEAD)
-2. Run safety checks (working tree clean; HEAD attached; no commit in range pushed to a remote)
-3. If any commit is pushed, present a 3-option menu (Cancel / Force-push / Branch-based) — defaults to Cancel
-4. Identify non-conformant commits via the Conventional Commits regex (skips merges)
-5. Generate new subjects using the mapping table; preserve each original body verbatim
-6. Show old → new plan and wait for explicit confirmation
-7. Apply via `git filter-branch --msg-filter` (in-place) or branch-based cherry-pick
-8. Post-rewrite cleanup
-
-### `/git-merge-to-main`
-
-1. Preconditions — git repo, attached HEAD, current branch ≠ `main`, working tree clean, `main` exists locally
-2. Show plan (`main..$src` log + delete step) and wait for confirmation
-3. Optional fetch + warn if local `main` is behind `origin/main` (no auto-pull)
-4. Checkout `main` and `git merge "$src"` — fast-forward when possible. On conflict: stop; do NOT auto-resolve
-5. Delete or keep source: run `git branch -d "$src"` for non-protected sources; for protected sources, skip the local delete
-6. Show `git log --oneline -5`. User pushes manually
-
-Protected source branches: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`.
-
-### `/git-merge-to-dev`
-
-Same as `/git-merge-to-main`, but the target is resolved as: `dev` if it exists locally, else `develop`, else abort.
-
-### `/git-branch-cleanup`
-
-1. Find which protected branches exist locally (anchors): `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
-2. Identify candidates — every non-protected, non-current branch whose tip is `git merge-base --is-ancestor` of at least one anchor
-3. Show the plan with the proving anchor per candidate, plus what's kept and why; wait for confirmation (default: no)
-4. Delete each candidate with `git branch -d` (safe). On refusal: skip + report; never `-D`
-5. Summary
-
-### `/git-resolve-conflicts`
-
-1. Identify which operation stopped — merge, rebase, cherry-pick, or revert — and its stated goal. A rebase swaps the ours/theirs labels
-2. List every conflicted path with `git diff --name-only --diff-filter=U`, and turn on the base view with `--conflict=zdiff3`
-3. Classify each path: source, lockfile, generated, binary, submodule, delete/modify, rename. Lockfiles and generated files are regenerated, never hand-merged; a submodule is resolved from its own log
-4. Recover both sides' intent from history before touching a hunk; keep both where compatible, and record what was dropped where not
+1. Identify which operation stopped and its goal; a rebase swaps the ours/theirs labels
+2. List conflicted paths with `--diff-filter=U` and turn on `--conflict=zdiff3`
+3. Classify each path; regenerate lockfiles and generated files instead of hand-merging them
+4. Recover both sides' intent before touching a hunk, keep both where compatible, and record what was dropped
 5. Run the project's own checks, then `--continue`. Never `--abort`, never `--skip`, never push
-
-## Conventional Commits format
-
-```
-<type>[optional scope][!]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-**Allowed types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
-
-**Breaking changes** — append `!` after type/scope (e.g. `feat(api)!: drop v1 endpoints`) and/or include a `BREAKING CHANGE: ...` footer.
-
-**Examples:**
-
-```
-feat(parser): add ability to parse arrays
-fix(ui): correct button alignment
-docs: update README with usage instructions
-refactor(auth): extract token validation
-chore: update dependencies
-feat!: send email on registration
-
-BREAKING CHANGE: email service is now required at boot
-```
 
 ## Safety guarantees
 
 The skills **never**:
 
-- Use `git add .` or `git add -A` (always explicit paths)
+- Use `git add .` or `git add -A`
 - Bypass hooks with `--no-verify` or `--no-gpg-sign`
-- Force-push (`--force-with-lease` only after explicit user consent)
+- Force-push, except `rewrite force`; `--force-with-lease` only inside `rewrite` after explicit consent
 - Commit suspected secret files (`.env*` except the exact basename `.env.example`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) without explicit override
-- Push a knowingly broken, time-based, or placeholder-only live checkpoint
-- Combine `feat` and `fix` in one commit
-- Rewrite pushed commits without showing the 3-option menu first
-- Use `git filter-branch --root`
-- Drop ticket references during rewrite (moves them to a `Refs:` footer)
-- Use `git branch -D` (force delete) — only `git branch -d` (safe delete)
-- Auto-resolve merge conflicts; auto-push after merging; auto-delete remote branches
+- Commit or push a knowingly broken, time-based, or placeholder checkpoint
+- Deploy to a target the repository does not document, or report a checkpoint deployed before its deployment is confirmed
+- Rewrite pushed commits without the three-option menu, use `git filter-branch --root`, or drop ticket references
+- Use `git branch -D` or `git worktree remove --force`
+- Auto-resolve conflicts, push after merging, or delete remote branches
 - Delete protected branches: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
 
 ## Project structure
 
 ```
 git-skill/
-├── .claude-plugin/
-│   └── plugin.json                       # Plugin metadata
-├── commands/
-│   ├── git-commit.md                     # /git-commit (default)
-│   ├── git-commit-push.md                # /git-commit-push command
-│   ├── git-commit-push-realtime.md       # /git-commit-push-realtime command
-│   ├── gcpr.md                           # /gcpr — short alias, same body
-│   ├── git-commit-push-deploy.md          # Configured checkpoint deployments
-│   ├── gcpd.md                           # /gcpd — short alias, same body
-│   ├── git-commit-realtime.md            # /git-commit-realtime command
-│   ├── gcr.md                            # /gcr — short alias, same body
-│   ├── git-commit-rewrite.md             # /git-commit-rewrite command
-│   ├── git-merge-to-main.md              # /git-merge-to-main command
-│   ├── git-merge-to-dev.md               # /git-merge-to-dev command
-│   ├── git-branch-cleanup.md             # /git-branch-cleanup command
-│   └── git-resolve-conflicts.md          # /git-resolve-conflicts command
+├── .claude-plugin/plugin.json
+├── commands/                    # one /name command per skill
 └── skills/
-    ├── git-commit/                       # Main commit skill — full workflow + shared scripts
-    │   ├── SKILL.md
-    │   └── scripts/
-    │       └── rewrite_msg.py            # filter-branch helper for rewrite
-    ├── git-commit-push/                  # Push variant
-    │   └── SKILL.md
-    ├── git-commit-push-realtime/         # Verified realtime-checkpoint variant
-    │   ├── SKILL.md
-    │   └── evals/evals.json
-    ├── gcpr/                             # Thin Codex selector alias
-    │   ├── SKILL.md
-    │   └── agents/openai.yaml
-    ├── git-commit-push-deploy/            # Commit, push, deploy, and confirm each outcome
-    │   ├── SKILL.md
-    │   ├── agents/openai.yaml
-    │   └── evals/evals.json
-    ├── gcpd/                             # Thin Codex deployment selector alias
-    │   ├── SKILL.md
-    │   ├── agents/openai.yaml
-    │   └── evals/evals.json
-    ├── git-commit-realtime/              # Local-only realtime-checkpoint variant
-    │   ├── SKILL.md
-    │   └── evals/evals.json
-    ├── git-commit-rewrite/               # Rewrite variant
-    │   └── SKILL.md
-    ├── git-merge-to-main/                # Merge into main + delete source
-    │   └── SKILL.md
-    ├── git-merge-to-dev/                 # Merge into dev/develop + delete source
-    │   └── SKILL.md
-    ├── git-branch-cleanup/               # Bulk-delete merged local branches
-    │   └── SKILL.md
-    └── git-resolve-conflicts/            # Finish a conflicted merge or rebase
-        └── SKILL.md
+    ├── git-commit/
+    │   ├── SKILL.md             # modes, format, default workflow, safety rules
+    │   ├── references/
+    │   │   ├── checkpoints.md   # realtime, push realtime, deploy cadence
+    │   │   ├── deploy.md        # documented settings, deploy route, confirmation gate
+    │   │   └── rewrite.md       # history rewrite and force mode
+    │   └── scripts/rewrite_msg.py
+    ├── gcr/ · gcpr/ · gcpd/     # explicit-only aliases with a fixed mode
+    ├── git-merge/
+    ├── git-resolve-conflicts/
+    └── git-cleanup/
 ```
+
+Every skill ships `agents/openai.yaml` and `evals/evals.json`.
 
 ## Requirements
 
-- [Claude Code](https://code.claude.com) (CLI, desktop app, or IDE extension)
+- Claude Code or Codex
 - Git repository
-- Python 3.10+ (for `rewrite_msg.py` used by `/git-commit-rewrite`)
+- Python 3.10+ (for `rewrite_msg.py` used by `/git-commit rewrite`)
 
 ## License
 

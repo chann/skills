@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Cleanup"
+  short_description: "Safely remove finished worktrees and merged local branches"
+  default_prompt: "Use $git-cleanup to safely remove finished worktrees and local branches that are already merged."

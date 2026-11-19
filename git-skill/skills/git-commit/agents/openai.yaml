@@ -1,4 +1,4 @@
 interface:
   display_name: "Git Commit"
-  short_description: "Group changes into logical Conventional Commits"
+  short_description: "Conventional Commits once, pushed, as verified checkpoints, deployed, or rewritten"
   default_prompt: "Use $git-commit to group the current changes into logical Conventional Commits."

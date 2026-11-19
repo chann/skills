@@ -1,17 +1,24 @@
 ---
 name: gcpr
-description: Use only when the user explicitly invokes "/gcpr" or "$gcpr" as the short alias for "/git-commit-push-realtime" or "$git-commit-push-realtime". Delegates to that canonical skill without restating or weakening it. For a request phrased in natural language, use git-commit-push-realtime directly.
+description: Use only when the user explicitly invokes "/gcpr" or "$gcpr", the short alias for "/git-commit push realtime" and "$git-commit push realtime". Runs the installed git-commit skill with its mode fixed to push realtime and passes the rest of the request through; refuses when git-commit is not installed. For a request in natural language, such as "commit and push as you work" or "작업 중간중간 커밋 푸시해줘", use git-commit directly.
 disable-model-invocation: true
 ---
 
 # GCPR
 
-This skill is only a selector alias for `git-commit-push-realtime`.
+A selector alias for `git-commit` with the mode fixed to `push realtime`.
 
-Before inspecting or mutating any Git repository, locate the installed
-`git-commit-push-realtime` skill, read its `SKILL.md` completely, and follow it
-exactly, including every required shared workflow.
+1. Before inspecting or changing any Git repository, locate
+   the installed `git-commit` skill and read its `SKILL.md` completely, together
+   with every reference file its `push realtime` mode loads.
+2. Run `git-commit` in mode `push realtime`. Treat the rest of the user's text as the
+   task description for that run. Mode words in that text never move the run to
+   a farther-reaching mode; say so and name the selector that would.
+3. Follow `git-commit` exactly. This alias neither restates nor relaxes any of
+   its rules.
 
-If the canonical skill is unavailable, stop before any Git command and report
-that `git-commit-push-realtime` must also be installed. Do not recreate,
-summarize, or weaken the canonical workflow in this alias.
+If `git-commit` is not installed, stop before any Git command and report that
+`git-commit` must also be installed. Do not rebuild its workflow from memory and
+do not fall back to another alias.
+
+**Reply:** what the `git-commit` reply contract requires for mode `push realtime`, or the missing-dependency report.
