@@ -1,4 +1,0 @@
-interface:
-  display_name: "All Subagents"
-  short_description: "Route subagent work to another coding agent and record the call tree"
-  default_prompt: "Use $all-subagents to route this task through subagents and record the call tree."

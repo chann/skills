@@ -1,0 +1,69 @@
+{
+  "skill_name": "swarm",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이 작업 코덱스에 시켜줘. Ask Codex to review the auth diff and leave a record of which model ran.",
+      "expected_output": "States the done predicate and the return, probes authenticated CLIs, writes a plan whose rationale names the Codex route and the quota evidence, runs from a prompt file with the diff passed as a context file, then reads meta.json and result.md itself and shows the report with the call tree.",
+      "files": [],
+      "assertions": [
+        "The done predicate and the single return are stated before probe runs.",
+        "Probe with --check-auth completes before a route is chosen.",
+        "The diff is passed with --context-file and is not pasted into the prompt.",
+        "The final report shows the worker's PASS, ISSUES, or BLOCKED verdict and the call tree from report.md."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "다른 모델로 한 번 더 확인해줘. Only Claude Code is installed and authenticated, and I did not name a model.",
+      "expected_output": "Reports that the machine is not heterogeneous and does the check in the current session without spawning a CLI.",
+      "files": [],
+      "assertions": [
+        "Does not call run when probe reports heterogeneous false and the user named no agent or model.",
+        "Tells the user the work stayed in this session because only one usable route exists."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Build this whole project end to end and keep going until it is done. Use subagents in worktrees.",
+      "expected_output": "Does not run swarm and uses long-task, because the request is a multi-milestone autonomous project rather than one fan-out.",
+      "files": [],
+      "assertions": [
+        "Does not probe CLIs or write a swarm plan for this request.",
+        "Selects long-task instead of swarm."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Race the same read-only review of the auth diff on two model vendors, then poll every few seconds until result.md appears.",
+      "expected_output": "Frames a race, declares its selection rule before spawning, plans two arms on different vendors, and waits on the process timeout or the host completion notice. It does not sleep-poll for the result file.",
+      "files": [],
+      "assertions": [
+        "The race selection rule (first pass, rank all, or best of) is declared before any arm runs.",
+        "The plan is rejected if both arms use the same vendor.",
+        "The run does not use a sleep loop to wait for result.md."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "병렬로 나눠서 돌려줘. Split the lint fixes across the api/ and web/ packages with subagents. The web worker came back without saying whether the build passed.",
+      "expected_output": "Partitions the work into two disjoint write sets, reruns the web worker once because its result omitted the required verification, and records a gap if it misses again instead of counting it as a pass.",
+      "files": [],
+      "assertions": [
+        "The two slices have disjoint write sets.",
+        "The incomplete web result is rerun once before it is recorded as a gap.",
+        "The report does not count the gap as PASS and the done predicate is not VERIFIED."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "후보 여러 개 경쟁시켜줘. Give me three attempts at the config loader API and keep the best design.",
+      "expected_output": "Selects arena, because the user wants competing attempts at one artifact with one winner grafted together, not slices of one job.",
+      "files": [],
+      "assertions": [
+        "Selects arena instead of swarm.",
+        "Does not write a partition plan for the three attempts."
+      ]
+    }
+  ]
+}

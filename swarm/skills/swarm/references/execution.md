@@ -1,6 +1,6 @@
 # How a run is executed
 
-`scripts/all_subagents.py run` builds the CLI command. Do not hand-assemble
+`scripts/swarm.py run` builds the CLI command. Do not hand-assemble
 one. This note is the posture contract the command implements.
 
 ## Sandbox
@@ -65,3 +65,55 @@ guard means the snapshotted state matched, which is not a promise that no
 transient write occurred.
 
 The helper never polls. The timeout is the wait.
+
+## Command lines
+
+Probe, record the plan, then run one task per step:
+
+```bash
+python3 <skill-dir>/scripts/swarm.py probe --check-auth --json
+python3 <skill-dir>/scripts/swarm.py plan --run-id <run-id> --file <plan.json>
+python3 <skill-dir>/scripts/swarm.py run \
+  --run-id <run-id> \
+  --task-id <task-id> \
+  --prompt-file <task.md> \
+  --cwd <repo> \
+  --sandbox read-only \
+  --write-set <path> \
+  --timeout 600
+```
+
+For a later turn with the same child, pass `--keep-session` on the first call
+and `--resume-task <task-id>` on the next.
+
+A review that found nothing actionable can be marked before the report, and
+`--only-significant` then hides it:
+
+```bash
+python3 <skill-dir>/scripts/swarm.py mark \
+  --run-id <run-id> \
+  --task-id <task-id> \
+  --insignificant \
+  --outcome-summary "Reviewed the diff and reported no actionable issues."
+
+python3 <skill-dir>/scripts/swarm.py report --run-id <run-id> [--only-significant]
+```
+
+`report.md` names every participating agent and official model id, the
+rationale, the outcome, and whether the write set held.
+
+A step that ran on the host's own subagent tool joins the same tree:
+
+```bash
+python3 <skill-dir>/scripts/swarm.py record-native \
+  --run-id <run-id> \
+  --task-id <task-id> \
+  --agent "Claude Code" \
+  --model <model-id> \
+  --summary "Why this model ran natively." \
+  --outcome-summary "What it produced."
+```
+
+Use the host's subagent tool when it can run that exact model id. Use the CLI
+when the route is a different agent, a different vendor, or needs a session
+the host tool cannot resume.

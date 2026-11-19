@@ -1,0 +1,67 @@
+{
+  "skill_name": "arena",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "arena this: design the public API for the new config loader. Give me three attempts and pick the best.",
+      "expected_output": "Names the artifact, writes a hidden rubric of three to six criteria, sends one identical prompt to three candidates in separate output locations, runs a read-only judge from another vendor on neutral labels, reads every candidate before picking a base, grafts by hand, and verifies the result.",
+      "files": [],
+      "assertions": [
+        "The rubric has three to six criteria and is not included in the candidate prompt.",
+        "Each candidate writes to its own worktree or temporary directory.",
+        "The judge sees candidates by neutral label, never by model or vendor name.",
+        "The reply names the base and why, each graft with its source candidate, and the verification verdict."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "후보 여러 개 경쟁시켜줘. Bump the package version from 1.4.2 to 1.4.3 in package.json.",
+      "expected_output": "Refuses to run an arena because the task is mechanical and its shape is settled, and does the bump once.",
+      "files": [],
+      "assertions": [
+        "Does not spawn candidates or a judge.",
+        "Says the task is mechanical and does it once instead."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "병렬로 나눠서 돌려줘. Fix the lint errors in api/ and web/ with separate subagents and give me one report.",
+      "expected_output": "Selects swarm, because the job is disjoint slices of one piece of work with one report, not competing attempts at one artifact.",
+      "files": [],
+      "assertions": [
+        "Selects swarm instead of arena.",
+        "Does not derive a rubric or pick a base among candidates."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "여러 안 만들어서 비교해줘. Three candidates for the retry policy module; one of them returned nothing, and the other two came back with nearly the same design.",
+      "expected_output": "Records the empty candidate as a dropout, continues with the two that answered, notes that they converged, and ships the shared shape without grafting.",
+      "files": [],
+      "assertions": [
+        "The empty candidate is reported as a dropout and the arena continues.",
+        "Convergence is reported and no graft is made."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Give me N attempts and pick the best for the onboarding copy. Only one vendor's models are available here.",
+      "expected_output": "Runs the candidates and the judge on the available vendor, and says that the candidates share one vendor and the cross-vendor check did not run.",
+      "files": [],
+      "assertions": [
+        "Says the candidates share one vendor.",
+        "Says the judge's vendor check did not run instead of claiming cross-vendor judging."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Before we build anything, compare the options in plan.md with me: ask me about each decision one question at a time.",
+      "expected_output": "Does not run an arena, because the user wants an interview about a plan's decisions rather than competing attempts at an artifact; points the user to /review-me or $review-me, which runs only on its explicit selector.",
+      "files": [],
+      "assertions": [
+        "Does not spawn candidates or a judge.",
+        "Names review-me and its explicit selector as the right workflow."
+      ]
+    }
+  ]
+}

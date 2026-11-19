@@ -1,0 +1,4 @@
+interface:
+  display_name: "Arena"
+  short_description: "Race competing attempts at one artifact, cross-judge them, and graft the best"
+  default_prompt: "Use $arena to run competing attempts at this artifact and keep the best design."
