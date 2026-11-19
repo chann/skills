@@ -9,6 +9,7 @@ import { categoryOrder, type SkillCategory } from "../data/skills";
 import { formatMessage, type LocalizedSkill } from "../i18n/content";
 import type { CatalogContent, SiteContent } from "../i18n/types";
 import { CopyButton } from "./CopyButton";
+import { withFlags } from "./Text";
 
 type Filter = "all" | SkillCategory;
 
@@ -200,17 +201,17 @@ export function SkillExplorer({
                   {categories[selected.category].label}
                 </span>
                 <h3>{selected.title}</h3>
-                <p>{selected.summary}</p>
+                <p>{withFlags(selected.summary)}</p>
               </div>
 
               <dl className="skill-detail__facts">
                 <div>
                   <dt>{content.whenToUse}</dt>
-                  <dd>{selected.whenToUse}</dd>
+                  <dd>{withFlags(selected.whenToUse)}</dd>
                 </div>
                 <div>
                   <dt>{content.result}</dt>
-                  <dd>{selected.result}</dd>
+                  <dd>{withFlags(selected.result)}</dd>
                 </div>
               </dl>
 

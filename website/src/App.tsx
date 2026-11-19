@@ -13,6 +13,7 @@ import { GitHubMark } from "./components/GitHubMark";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
+import { Lines, withFlags } from "./components/Text";
 import { TaglineReveal } from "./components/TaglineReveal";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { categoryOrder } from "./data/skills";
@@ -75,7 +76,7 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
           </div>
           <div className="product-editor__content">
             <p className="product-kicker">{content.kicker}</p>
-            <h2>{content.title.map((line) => <span key={line}>{line}</span>)}</h2>
+            <h2><Lines lines={content.title} /></h2>
             <p className="product-editor__lede">{content.lede}</p>
 
             <div className="run-card">
@@ -184,7 +185,7 @@ export function App({ locale }: AppProps) {
           >
             <p className="hero__brand">{content.hero.brand}</p>
             <h1 id="hero-title">
-              {content.hero.headline.map((line) => <span key={line}>{line}</span>)}
+              <Lines lines={content.hero.headline} />
             </h1>
             <p className="hero__lede">
               {formatMessage(content.hero.lede, { count: skills.length })}
@@ -222,17 +223,9 @@ export function App({ locale }: AppProps) {
             <Reveal className="efficiency-intro">
               <span className="section-label">{content.benefits.label}</span>
               <h2 id="efficiency-title">
-                {content.benefits.title.map((line) => <span key={line}>{line}</span>)}
+                <Lines lines={content.benefits.title} />
               </h2>
               <p>{content.benefits.description}</p>
-              <dl
-                className="efficiency-stats"
-                aria-label={content.accessibility.repositoryStats}
-              >
-                <div><dt>{content.tagline.stats.skills}</dt><dd>{skills.length}</dd></div>
-                <div><dt>{content.tagline.stats.categories}</dt><dd>{categoryOrder.length}</dd></div>
-                <div><dt>{content.tagline.stats.platforms}</dt><dd>2</dd></div>
-              </dl>
             </Reveal>
 
             <div className="efficiency-list">
@@ -241,16 +234,16 @@ export function App({ locale }: AppProps) {
                 return (
                   <Reveal key={benefit.title}>
                     <article className="efficiency-item">
-                      <span className="efficiency-item__icon">
-                        <Icon size={22} weight="regular" aria-hidden="true" />
-                      </span>
-                      <div>
-                        <span>
+                      <header>
+                        <span className="efficiency-item__icon">
+                          <Icon size={20} weight="regular" aria-hidden="true" />
+                        </span>
+                        <span className="efficiency-item__label">
                           {String(index + 1).padStart(2, "0")} · {benefit.label}
                         </span>
-                        <h3>{benefit.title}</h3>
-                        <p>{benefit.description}</p>
-                      </div>
+                      </header>
+                      <h3>{benefit.title}</h3>
+                      <p>{benefit.description}</p>
                     </article>
                   </Reveal>
                 );
@@ -269,7 +262,10 @@ export function App({ locale }: AppProps) {
               lines={content.tagline.lines}
             />
             <Reveal delay={0.05}>
-              <dl className="tagline-stats">
+              <dl
+                className="tagline-stats"
+                aria-label={content.accessibility.repositoryStats}
+              >
                 <div>
                   <dt>{content.tagline.stats.skills}</dt>
                   <dd>{skills.length}</dd>
@@ -290,9 +286,7 @@ export function App({ locale }: AppProps) {
         <section className="workflow section" id="usage" aria-labelledby="workflow-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.workflow.label}</span>
-            <h2 id="workflow-title">
-              {content.workflow.title[0]}<br />{content.workflow.title[1]}
-            </h2>
+            <h2 id="workflow-title"><Lines lines={content.workflow.title} /></h2>
             <p>{content.workflow.description}</p>
           </Reveal>
 
@@ -328,10 +322,8 @@ export function App({ locale }: AppProps) {
         <section className="explore-section section" id="explore" aria-labelledby="explore-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.catalog.label}</span>
-            <h2 id="explore-title">
-              {content.catalog.title[0]}<br />{content.catalog.title[1]}
-            </h2>
-            <p>{content.catalog.description}</p>
+            <h2 id="explore-title"><Lines lines={content.catalog.title} /></h2>
+            <p>{withFlags(content.catalog.description)}</p>
           </Reveal>
           <Reveal delay={0.06}>
             <SkillExplorer
@@ -346,9 +338,7 @@ export function App({ locale }: AppProps) {
         <section className="platforms section" aria-labelledby="platforms-title">
           <Reveal className="platforms__copy">
             <span className="section-label">{content.platforms.label}</span>
-            <h2 id="platforms-title">
-              {content.platforms.title[0]}<br />{content.platforms.title[1]}
-            </h2>
+            <h2 id="platforms-title"><Lines lines={content.platforms.title} /></h2>
             <p>
               {content.platforms.descriptionBeforeCodex}
               <code>$</code>
@@ -366,7 +356,7 @@ export function App({ locale }: AppProps) {
             <div className="platform-contract">
               <span>{content.platforms.sharedInstructions}</span>
               <strong>diff-summary</strong>
-              <p>{content.platforms.contractDescription}</p>
+              <p>{withFlags(content.platforms.contractDescription)}</p>
             </div>
             <div className="platform-targets">
               <div className="platform-node">
@@ -410,9 +400,11 @@ export function App({ locale }: AppProps) {
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.install.label}</span>
             <h2 id="install-title">
-              {formatMessage(content.install.title[0], { count: skills.length })}
-              <br />
-              {formatMessage(content.install.title[1], { count: skills.length })}
+              <Lines
+                lines={content.install.title.map((line) =>
+                  formatMessage(line, { count: skills.length }),
+                )}
+              />
             </h2>
             <p>{content.install.description}</p>
           </Reveal>
