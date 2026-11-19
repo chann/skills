@@ -10,23 +10,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CHECKED_SUFFIXES = {".md", ".json", ".yaml", ".yml", ".ts", ".tsx", ".mjs", ".py"}
 
-# Directories that ship to users. Design notes under docs/ and local scratch
-# directories are excluded on purpose.
+# Directories that ship to users: every plugin directory, found on disk so a
+# renamed or new plugin is swept without editing this file, plus the website
+# sources. Design notes under docs/ and local scratch directories are excluded
+# on purpose.
 SHIPPED_ROOTS = (
-    "build-reinstall",
-    "bug-hunt",
-    "code-review",
-    "all-subagents",
-    "doc-skill",
-    "git-skill",
-    "handoff",
-    "human-friendly-writing",
-    "long-task",
-    "plan-summary",
-    "research-brief",
-    "review-me",
-    "skill-forge",
-    "work-summary",
+    *sorted(
+        manifest.parent.parent.name
+        for manifest in ROOT.glob("*/.claude-plugin/plugin.json")
+    ),
     "website/src",
     "website/scripts",
 )

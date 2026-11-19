@@ -32,11 +32,11 @@ TEMPLATES = {
         / "assets"
         / "diff-template.html"
     ),
-    "code-review": (
+    "interrogate": (
         ROOT
-        / "code-review"
+        / "interrogate"
         / "skills"
-        / "code-review"
+        / "interrogate"
         / "assets"
         / "report-template.html"
     ),
@@ -44,12 +44,12 @@ TEMPLATES = {
 THEME_SELECTORS = {
     "diff-summary": ("body", 'body[data-theme="dark"]'),
     "diff-viewer": (":root", 'html[data-page-theme="dark"]'),
-    "code-review": (":root", 'html[data-page-theme="dark"]'),
+    "interrogate": (":root", 'html[data-page-theme="dark"]'),
 }
 LEGACY_TOKENS = {
     "diff-summary": (),
     "diff-viewer": ("bg", "surface", "surface-muted", "text"),
-    "code-review": ("bg", "surface", "surface-muted", "text"),
+    "interrogate": ("bg", "surface", "surface-muted", "text"),
 }
 PRIMARY_CONTROL_SELECTORS = {
     "diff-viewer": (
@@ -57,7 +57,7 @@ PRIMARY_CONTROL_SELECTORS = {
         ".copy-md-btn",
         ".btn-comment.btn-save",
     ),
-    "code-review": (
+    "interrogate": (
         '.control button[aria-pressed="true"]',
         ".copy-md-btn",
         ".diff-toggle.active",
@@ -67,14 +67,14 @@ PRIMARY_CONTROL_SELECTORS = {
 PRESSED_CONTROL_SELECTORS = {
     "diff-summary": '.control button[aria-pressed="true"]',
     "diff-viewer": 'button[aria-pressed="true"]',
-    "code-review": '.control button[aria-pressed="true"]',
+    "interrogate": '.control button[aria-pressed="true"]',
 }
 DESTRUCTIVE_CONTROL_SELECTORS = {
     "diff-viewer": (
         ".clear-comments-btn:hover:not(:disabled)",
         ".btn-comment.btn-delete:hover",
     ),
-    "code-review": (
+    "interrogate": (
         ".clear-comments-btn:hover:not(:disabled)",
         ".btn-comment.btn-delete:hover",
     ),
@@ -89,7 +89,7 @@ SMALL_SIDEBAR_TEXT_SELECTORS = {
         ".comment-list button",
         ".comment-list .comment-empty",
     ),
-    "code-review": (
+    "interrogate": (
         ".icon-btn",
         ".brand",
         ".repo",
@@ -167,7 +167,7 @@ PRINT_THEME_SELECTORS = {
         '      body[data-default-theme="auto"]:not([data-theme])'
     ),
     "diff-viewer": ':root,\n      html[data-page-theme="dark"]',
-    "code-review": ':root,\n      html[data-page-theme="dark"]',
+    "interrogate": ':root,\n      html[data-page-theme="dark"]',
 }
 STATUS_TOKENS = (
     "status-success",
@@ -220,7 +220,7 @@ EXPECTED_DARK_CODE_DIFF_TEXT = {
 DARK_CODE_TONE_SELECTORS = {
     "diff-summary": None,
     "diff-viewer": 'html[data-code-tone="dark"]',
-    "code-review": 'html[data-code-tone="dark"]',
+    "interrogate": 'html[data-code-tone="dark"]',
 }
 SOFT_STATUS_PAIRS = (
     ("status-success", "status-success-soft"),
@@ -229,7 +229,7 @@ SOFT_STATUS_PAIRS = (
     ("status-info", "status-info-soft"),
 )
 REPORT_STATUS_ALIASES = {
-    "code-review": {
+    "interrogate": {
         "critical": "status-danger",
         "medium": "status-warning",
         "low": "status-info",
@@ -317,7 +317,7 @@ PROSE_KEEP_ALL_SELECTORS = {
         ".comment-body",
         ".empty-state h2",
     ),
-    "code-review": (
+    "interrogate": (
         "h2",
         "p",
         ".finding-summary-text",
@@ -337,7 +337,7 @@ CODE_SELECTOR_MARKERS = (
 TABULAR_NUMERAL_SELECTORS = {
     "diff-summary": (".align-right",),
     "diff-viewer": (".line-no", ".metric strong"),
-    "code-review": (".diff-ln",),
+    "interrogate": (".diff-ln",),
 }
 
 
@@ -581,7 +581,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
 
     def test_every_translation_key_in_markup_exists_in_both_tables(self) -> None:
         """A key with no entry renders as the key itself — e.g. a "themeAuto" button."""
-        for name in ("diff-viewer", "code-review"):
+        for name in ("diff-viewer", "interrogate"):
             source = self.templates[name]
             keys = set(
                 re.findall(
@@ -614,7 +614,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         skip_targets = {
             "diff-summary": "#report-main",
             "diff-viewer": "#top",
-            "code-review": "#top",
+            "interrogate": "#top",
         }
         for name, source in self.templates.items():
             with self.subTest(template=name, contract="skip-link"):
@@ -707,7 +707,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 ".summary-card[open] .card-summary::before",
             ),
             (
-                "code-review",
+                "interrogate",
                 ".finding-summary-text::before",
                 "details.finding[open] > summary .finding-summary-text::before",
             ),
@@ -727,7 +727,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         """One expand affordance per report — no native triangle beside a custom one."""
         for name, selectors in (
             ("diff-summary", (".card-summary", ".quiz-explanation summary")),
-            ("code-review", ("details.finding > summary",)),
+            ("interrogate", ("details.finding > summary",)),
         ):
             source = self.templates[name]
             for selector in selectors:
@@ -1023,12 +1023,12 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                             declarations[target],
                         )
 
-    def test_code_review_high_severity_stays_a_distinct_accessible_family(
+    def test_interrogate_high_severity_stays_a_distinct_accessible_family(
         self,
     ) -> None:
-        source = self.templates["code-review"]
+        source = self.templates["interrogate"]
         for theme in ("light", "dark"):
-            declarations = theme_declarations(source, "code-review", theme)
+            declarations = theme_declarations(source, "interrogate", theme)
             expected = EXPECTED_HIGH_SEVERITY[theme]
             with self.subTest(theme=theme, contract="exact"):
                 self.assertEqual(
@@ -1053,10 +1053,10 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     4.5,
                 )
 
-    def test_code_review_severity_badges_use_accessible_soft_status_pairs(
+    def test_interrogate_severity_badges_use_accessible_soft_status_pairs(
         self,
     ) -> None:
-        source = self.templates["code-review"]
+        source = self.templates["interrogate"]
         self.assertNotRegex(
             css_rule(source, ".badge"),
             r"color:\s*#fff(?:fff)?\s*;",
@@ -1067,7 +1067,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 self.assertRegex(rule, rf"color:\s*var\(--{foreground}\)\s*;")
                 self.assertRegex(rule, rf"background:\s*var\(--{background}\)\s*;")
             for theme in ("light", "dark"):
-                declarations = theme_declarations(source, "code-review", theme)
+                declarations = theme_declarations(source, "interrogate", theme)
                 with self.subTest(severity=severity, theme=theme, contract="contrast"):
                     self.assertGreaterEqual(
                         contrast_ratio(
@@ -1279,7 +1279,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 self.assertIn("@media print", source)
 
     def test_viewer_and_review_share_control_component_states(self) -> None:
-        for name in ("diff-viewer", "code-review"):
+        for name in ("diff-viewer", "interrogate"):
             source = self.templates[name]
             control_rule = re.search(
                 r"button\s*,\s*select\s*\{(?P<body>.*?)\}",
@@ -1395,10 +1395,10 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                     r"var\(--accent(?:-foreground)?\)",
                 )
 
-    def test_code_review_control_group_declares_effective_neutral_hover_states(
+    def test_interrogate_control_group_declares_effective_neutral_hover_states(
         self,
     ) -> None:
-        source = self.templates["code-review"]
+        source = self.templates["interrogate"]
         hover_rule = re.search(
             r'\.control button:not\(\[aria-pressed="true"\]\)'
             r":where\(\s*:hover:not\(:disabled\)\s*\)\s*,\s*"
@@ -1460,17 +1460,17 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             r"[^}]*box-shadow:\s*none\s*;",
         )
 
-    def test_code_review_finding_accent_cards_remain_flat(self) -> None:
+    def test_interrogate_finding_accent_cards_remain_flat(self) -> None:
         finding_rule = css_rule(
-            self.templates["code-review"],
+            self.templates["interrogate"],
             "details.finding",
         )
         self.assertNotIn("border-radius", finding_rule)
 
-    def test_code_review_narrow_report_tables_scroll_without_expanding_page(
+    def test_interrogate_narrow_report_tables_scroll_without_expanding_page(
         self,
     ) -> None:
-        source = self.templates["code-review"]
+        source = self.templates["interrogate"]
         narrow_rule = css_rule(source, "@media (max-width: 860px)")
         table_scroll_rule = css_rule(source, ".table-scroll")
         table_scroll_declarations = {
@@ -1513,10 +1513,10 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             r"overflow-x:\s*visible\s*;",
         )
 
-    def test_code_review_muted_microcopy_binds_accessible_token_pairs(
+    def test_interrogate_muted_microcopy_binds_accessible_token_pairs(
         self,
     ) -> None:
-        source = self.templates["code-review"]
+        source = self.templates["interrogate"]
         selector_pairs = (
             ("table:not(.diff-table) th", "table:not(.diff-table) th"),
             (".finding-tool-btn", ".finding-tool-btn"),
@@ -1542,7 +1542,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                 self.assertEqual(background_match.group(1), "muted")
 
             for theme in ("light", "dark"):
-                declarations = theme_declarations(source, "code-review", theme)
+                declarations = theme_declarations(source, "interrogate", theme)
                 with self.subTest(selector=text_selector, theme=theme):
                     self.assertGreaterEqual(
                         contrast_ratio(
@@ -1552,10 +1552,10 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         4.5,
                     )
 
-    def test_code_review_finding_tool_copied_state_uses_monochrome_pair(
+    def test_interrogate_finding_tool_copied_state_uses_monochrome_pair(
         self,
     ) -> None:
-        source = self.templates["code-review"]
+        source = self.templates["interrogate"]
         copied_declarations = {
             name: value.strip()
             for name, value in re.findall(
@@ -1583,7 +1583,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         )
 
         for theme in ("light", "dark"):
-            declarations = theme_declarations(source, "code-review", theme)
+            declarations = theme_declarations(source, "interrogate", theme)
 
             def resolve_color(value: str) -> str:
                 token_match = re.fullmatch(r"var\(--([\w-]+)\)", value)
@@ -1670,7 +1670,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
         """Controls must sit above the text column, not float off at the viewport edge."""
         for name, selectors in (
             ("diff-summary", ("#report-main", ".topbar", ".report-footer")),
-            ("code-review", (".lang-body", ".controls")),
+            ("interrogate", (".lang-body", ".controls")),
         ):
             source = self.templates[name]
             for selector in selectors:
@@ -1720,7 +1720,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
                         4.5,
                     )
 
-    def test_diff_summary_cards_use_code_review_finding_skin(self) -> None:
+    def test_diff_summary_cards_use_interrogate_finding_skin(self) -> None:
         card = css_rule(self.template, ".summary-card")
         self.assertRegex(card, r"background:\s*var\(--card\)\s*;")
         self.assertRegex(card, r"color:\s*var\(--card-foreground\)\s*;")
@@ -2102,7 +2102,7 @@ class HtmlReportStyleContractTests(unittest.TestCase):
             self.template,
             ".summary-card.impact-high .badge--impact",
         )
-        # Same soft-tint recipe as the code-review severity badges, so the hue
+        # Same soft-tint recipe as the interrogate severity badges, so the hue
         # carries the meaning instead of a solid slab of it.
         self.assertRegex(high_badge_rule, r"color:\s*var\(--impact-high\)\s*;")
         self.assertRegex(
