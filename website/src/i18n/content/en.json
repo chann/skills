@@ -84,7 +84,7 @@
   "catalog": {
     "label": "Skill catalog",
     "title": ["Every workflow you need,", "all in one place."],
-    "description": "Search by task or deliverable, then copy the command for your platform.",
+    "description": "Tell chann-mode the task first and it routes you to the right skill, or search by task or deliverable to choose yourself. Variants such as --md, --quiz, push, and realtime are arguments, not separate skills.",
     "categoryNavigation": "Browse by category",
     "searchLabel": "Search skills",
     "searchPlaceholder": "Search tasks, deliverables, or skill names",
@@ -109,7 +109,7 @@
     "descriptionBetweenSelectors": " in Codex and ",
     "descriptionAfterClaude": " in Claude Code.",
     "sharedInstructions": "Shared instructions",
-    "contractDescription": "From source evidence to a bilingual report and a comprehension check."
+    "contractDescription": "Builds Korean and English reports from the source evidence, and adding --quiz also writes a comprehension quiz."
   },
   "faq": {
     "label": "FAQ",
@@ -142,7 +142,7 @@
       },
       {
         "question": "Can a skill commit or push on its own?",
-        "answer": "Each skill states its safety rules explicitly. For example, Git skills use explicit staging only, forbid force pushes, and stop to report when a push is rejected."
+        "answer": "Each skill states its safety rules explicitly. For example, git-commit stages only the files it names and makes only ordinary pushes. A force push is possible only in rewrite, which changes history, and only after you explicitly agree. If a push is rejected, it stops and reports what happened."
       },
       {
         "question": "Can I install only selected skills?",
@@ -213,189 +213,159 @@
     "installResults": "Installation results"
   },
   "categories": {
-    "review": {
-      "label": "Review",
-      "description": "Review plans and changes, explain them, and find defects."
+    "mode": {
+      "label": "Entry point",
+      "description": "Say the task and it routes you to the right playbook and skills."
     },
-    "engineering": {
-      "label": "Investigate",
-      "description": "Reproduce a defect, or confirm a fact against the source that owns it."
+    "understand": {
+      "label": "Understand",
+      "description": "Learn how code works, why it was built that way, and what changed."
     },
-    "docs": {
-      "label": "Docs",
-      "description": "Bring project documentation back in sync with the code."
+    "design": {
+      "label": "Design",
+      "description": "Settle every decision in a plan, or race several options and keep one."
     },
-    "git": {
-      "label": "Git",
-      "description": "Commit, push, merge, and clean up safely."
+    "build": {
+      "label": "Build",
+      "description": "Find the cause of a bug, refresh docs and prose, and reinstall a fresh build."
     },
-    "handoff": {
-      "label": "Handoff",
-      "description": "Leave the context the next developer needs."
+    "verify": {
+      "label": "Verify",
+      "description": "Try to break a change and check what it could break outside the diff."
     },
-    "automation": {
-      "label": "Automation",
-      "description": "Run large projects through verifiable milestones."
+    "ship": {
+      "label": "Ship",
+      "description": "Commit, push, merge, resolve conflicts, and clean up safely."
     },
-    "authoring": {
-      "label": "Authoring",
-      "description": "Build and check skill packages against one contract."
+    "delegate": {
+      "label": "Delegate",
+      "description": "Fan work out to subagents, hand off long jobs, and pass work to the next person."
     },
-    "report": {
-      "label": "Report",
-      "description": "Turn agent history into reports for a date range."
+    "meta": {
+      "label": "Skill upkeep",
+      "description": "Build and check skill packages, and turn lessons from your work into rules."
     }
   },
   "skills": {
-    "review-me": {
-      "summary": "Review every important choice in a plan or design so nothing is left unresolved.",
-      "whenToUse": "Before implementation, when ambiguous choices, boundaries, and failure or recovery conditions must be resolved",
-      "result": "Resolved choices, completion criteria for each one, acceptance examples, and an explicit deferral list"
+    "chann-mode": {
+      "summary": "Give it one task and it restates the goal in a sentence, picks one of 14 playbooks, and routes each step to the skill that owns it.",
+      "whenToUse": "When you want a whole task handled, such as a bug fix, a feature, or an investigation, without choosing the skills yourself. Runs only when you type it",
+      "result": "The goal and the smallest change, the playbook chosen, the skill used at each step, the principles applied, and a final report with labelled evidence"
     },
-    "code-review": {
-      "summary": "Find defects and risks in code changes and produce a bilingual report.",
-      "whenToUse": "When reviewing a PR, commit, branch, or working tree before release",
-      "result": "A Markdown review and a standalone HTML review"
+    "how": {
+      "summary": "Reads the code and explains how a part of the codebase works and where new code belongs.",
+      "whenToUse": "When you need to understand an unfamiliar subsystem or know which module owns something",
+      "result": "An overview, key concepts, runtime flow, a file:line map, and gotchas. Every claim is cited, and anything unread is marked inferred"
     },
-    "code-review-md": {
-      "summary": "Save a code review as Markdown only, without browser output.",
-      "whenToUse": "When a review must be posted to a PR comment or documentation pipeline",
-      "result": "A Markdown review under .reviews/"
-    },
-    "diff-summary": {
-      "summary": "Explain a change’s purpose, behavior, structure, and test impact with evidence.",
-      "whenToUse": "When you need to understand quickly why code changed",
-      "result": "Korean and English Markdown plus an interactive HTML summary"
-    },
-    "diff-summary-md": {
-      "summary": "Save the same change explanation as Markdown only, without HTML.",
-      "whenToUse": "When a change summary needs to go directly into repository docs or an issue",
-      "result": "Structured Korean and English Markdown"
-    },
-    "diff-summary-quiz": {
-      "summary": "Add an interactive comprehension quiz to a change summary.",
-      "whenToUse": "For onboarding, review training, or validating a change handoff",
-      "result": "A bilingual summary and a quiz with answers"
-    },
-    "diff-viewer": {
-      "summary": "Render the current Git diff as a readable standalone HTML page.",
-      "whenToUse": "When you want to inspect the raw patch in a browser without analysis",
-      "result": "A unified or split-view HTML diff"
-    },
-    "bug-hunt": {
-      "summary": "Reproduce first, falsify hypotheses in a ledger, and pin the fix with a check that failed first.",
-      "whenToUse": "When a bug's cause is not obvious, a test fails intermittently, or something suddenly got slower",
-      "result": "A recorded reproduction, a falsification ledger, a failing-first check, and a record under .bug-hunts/"
+    "why": {
+      "summary": "Finds why code is built this way in git history, blame, pull-request and issue discussion, and design notes.",
+      "whenToUse": "When you need a reason the code itself cannot show, such as why a flag is still off or why one approach was chosen",
+      "result": "A decision timeline that quotes the authors, inferences marked, and what the record does not answer"
     },
     "research-brief": {
       "summary": "Answer a technical question from primary sources, with every claim tiered and version-pinned.",
       "whenToUse": "When behavior or a specification must be confirmed against official sources you can check again later",
       "result": "A bottom-line answer with confidence, a tiered claim table, a contradiction ledger, and open questions"
     },
+    "recall": {
+      "summary": "Builds a date-ranged report from local agent history (Claude Code, Codex, opencode, agy), or a short brief on where one topic stands now.",
+      "whenToUse": "When you want a summary of what you did this week, or need to know where you left off before resuming earlier work",
+      "result": "A Markdown report, or a short brief whose branch, PR, and file claims are checked against live git"
+    },
+    "ketchup": {
+      "summary": "Tells you what changed in this conversation while you were away and which decisions are waiting on you.",
+      "whenToUse": "When you come back to an agent that kept working and need to catch up fast",
+      "result": "What waits on you first, then what happened, then each decision you must make. Live branch, PR, CI, and agent state are checked first, read-only"
+    },
+    "diff-summary": {
+      "summary": "Explains a change's purpose, behavior, structure, and test impact with evidence. --md gives Markdown only, and --quiz adds a comprehension quiz.",
+      "whenToUse": "When you need to understand fast why a range such as main..dev, a branch, a commit, or a PR changed",
+      "result": "Korean and English Markdown plus an interactive HTML summary. --md skips the HTML, and --quiz adds a quiz with answers"
+    },
+    "plan-summary": {
+      "summary": "Summarizes the plans, PRDs, specs, and design documents you name as aligned Korean and English reports. --md and --quiz also work.",
+      "whenToUse": "When a team needs to grasp a document's goals, scope, decisions, dependencies, risks, and open questions quickly",
+      "result": "Korean and English PS-* Markdown cards plus a self-contained bilingual HTML report. --md gives Markdown only, and --quiz adds matching QZ-* questions"
+    },
+    "diff-viewer": {
+      "summary": "Render the current Git diff as a readable standalone HTML page.",
+      "whenToUse": "When you want to inspect the raw patch in a browser without analysis",
+      "result": "A unified or split-view HTML diff"
+    },
+    "review-me": {
+      "summary": "Review every important choice in a plan or design so nothing is left unresolved.",
+      "whenToUse": "Before implementation, when ambiguous choices, boundaries, and failure or recovery conditions must be resolved",
+      "result": "Resolved choices, completion criteria for each one, acceptance examples, and an explicit deferral list"
+    },
+    "arena": {
+      "summary": "Runs one prompt on several candidates, has a judge from another vendor score them against a hidden rubric, and grafts the best parts of the others into the winner by hand.",
+      "whenToUse": "When you want competing designs or drafts and only the best one kept. Not for mechanical tasks whose shape is already settled",
+      "result": "The finished artifact, the base chosen and why, the judge's verdict, each graft with its source, what was rejected and why, and the verification result"
+    },
+    "bug-hunt": {
+      "summary": "Reproduce first, falsify hypotheses in a ledger, and pin the fix with a check that failed first.",
+      "whenToUse": "When a bug's cause is not obvious, a test fails intermittently, or something suddenly got slower",
+      "result": "A recorded reproduction, a falsification ledger, a failing-first check, and a record under .bug-hunts/"
+    },
     "gen-docs": {
       "summary": "Create or update core project docs while preserving existing wording.",
       "whenToUse": "When README, architecture, or usage docs have drifted from the code",
       "result": "README, README.ko, ARCHITECTURE, and USAGE"
     },
-    "plan-summary": {
-      "summary": "Summarize explicit plans, PRDs, specifications, and designs in matching Korean and English reports.",
-      "whenToUse": "When a team needs the goals, scope, decisions, dependencies, risks, and open questions from selected documents",
-      "result": "Korean and English PS-* Markdown cards plus one self-contained bilingual HTML report"
+    "unslop": {
+      "summary": "Rewrites AI-written Korean or English so it reads like a person wrote it, without changing the meaning.",
+      "whenToUse": "When text sounds machine-made: translation-ese, literal jargon, filler openers, or inflated vocabulary",
+      "result": "The rewritten text and a short note on what kind of change was made. Text that is already fine is barely touched"
     },
-    "plan-summary-md": {
-      "summary": "Write the matching Korean and English plan summaries as Markdown only.",
-      "whenToUse": "When a plan summary belongs in repository docs, an issue, or another text-only workflow",
-      "result": "Two validated Markdown reports under .plan-summaries/ with no HTML or browser open"
+    "build-reinstall": {
+      "summary": "Build the current project, reinstall it with project-owned commands, and verify that the installed result matches the new build.",
+      "whenToUse": "After code work is complete and a local app or CLI must be replaced with the new build",
+      "result": "Build, reinstall, smoke-check, and SHA-256 installed-artifact evidence"
     },
-    "plan-summary-quiz": {
-      "summary": "Add a corresponding comprehension quiz to a bilingual plan summary.",
-      "whenToUse": "For onboarding, plan handoffs, or checking understanding of requirements and design decisions",
-      "result": "Bilingual PS-* summaries and corresponding QZ-* questions in Markdown and interactive offline HTML"
+    "interrogate": {
+      "summary": "Tries to break a code change and reports defects tagged with severity and proof level. It never applies fixes.",
+      "whenToUse": "When you review a PR, commit, branch, or working tree before merging",
+      "result": "A Markdown review and a bilingual HTML review, each finding carrying its proof level (cited, traced, ran, reproduced) and the proof. --md gives Markdown only"
     },
-    "human-friendly-writing": {
-      "summary": "Rewrite AI-written Korean text into natural, human-sounding prose without changing its meaning.",
-      "whenToUse": "When Korean text reads AI-flavored — English concept words like contract, envelope, or parity calqued literally, or translation-ese rhythm",
-      "result": "The rewritten Korean text plus a short plain-language note on what changed"
+    "blast-radius": {
+      "summary": "Finds what a change could break outside its diff and proves the fact it is safe because of, running real code in a temporary directory.",
+      "whenToUse": "When even a small change makes you worry about its reach before you merge",
+      "result": "The safety fact with its proof level, risks with file:line, what was checked and cleared, and the cheapest check to run before merging"
     },
     "git-commit": {
-      "summary": "Split working-tree changes into logical Conventional Commit units.",
-      "whenToUse": "When mixed changes need to become reviewable commits",
-      "result": "One or more explicitly staged commits"
+      "summary": "Splits changes into Conventional Commits. Arguments pick the mode: push, realtime, deploy, or rewrite.",
+      "whenToUse": "When you want mixed changes turned into reviewable commits, or verified checkpoints committed, pushed, or deployed as you work. Also reachable as gcr, gcpr, and gcpd",
+      "result": "Commits staged by explicit path, ordinary pushes, and deploys only through documented repository settings. rewrite redoes commit messages"
     },
-    "git-commit-push": {
-      "summary": "Create logical commits, then publish them with a normal push.",
-      "whenToUse": "When completed work should be organized and published in one pass",
-      "result": "Conventional Commits and a remote push"
-    },
-    "git-commit-push-realtime": {
-      "summary": "Commit and push each verified result as soon as it is complete.",
-      "whenToUse": "When a long implementation needs reviewable commit-and-push checkpoints; use git-commit-push-deploy to confirm each deployment too",
-      "result": "Verified checkpoints with remote publication confirmed every time"
-    },
-    "git-commit-push-deploy": {
-      "summary": "Commit, push, and deploy each verified outcome using settings documented in AGENTS.md or repository instructions.",
-      "whenToUse": "When each implementation checkpoint must be deployed and confirmed before the next begins",
-      "result": "Checkpoint commits, remote parity, deployment targets, and deployment plus runtime-check evidence"
-    },
-    "git-commit-realtime": {
-      "summary": "Create a local commit for each verified result and leave pushing for later.",
-      "whenToUse": "When the work history should be preserved but publication timing remains manual",
-      "result": "Local checkpoints that do not touch the remote"
-    },
-    "git-commit-rewrite": {
-      "summary": "Rewrite recent commit titles in Conventional Commit format.",
-      "whenToUse": "When existing commit messages need a consistent structure",
-      "result": "A consistent commit history after safety checks"
-    },
-    "git-merge-to-main": {
-      "summary": "Merge the current branch into main safely and clean up the source branch.",
-      "whenToUse": "When integrating a feature branch into main",
-      "result": "A verified main merge and safe branch deletion"
-    },
-    "git-merge-to-dev": {
-      "summary": "Merge the current branch into dev or develop and clean it up safely.",
-      "whenToUse": "When integrating a feature branch into the development branch",
-      "result": "A verified dev merge and safe branch deletion"
+    "git-merge": {
+      "summary": "Merges the current branch into main, dev, or a local branch you name, and deletes the merged source branch unless it is protected.",
+      "whenToUse": "When you fold a feature branch into main or dev. With no argument it merges into the repository default branch",
+      "result": "A confirmed plan, a merge that is not pushed, and a source branch deleted only with git branch -d"
     },
     "git-resolve-conflicts": {
       "summary": "Finish a stopped merge or rebase while keeping both intents, and record what was dropped.",
       "whenToUse": "When a merge, rebase, or cherry-pick has stopped on conflicts and must be completed rather than aborted",
       "result": "A classified conflict inventory, a resolution ledger, the project's check results, and a completed operation"
     },
-    "git-branch-cleanup": {
-      "summary": "Safely delete only local branches already merged into a protected branch.",
-      "whenToUse": "When accumulated local branches need risk-free cleanup",
-      "result": "Cleanup limited to merged branches eligible for safe delete"
+    "git-cleanup": {
+      "summary": "Removes local branches that are already merged and worktrees that are finished, after you confirm one plan.",
+      "whenToUse": "When merged branches and finished worktrees have piled up and you want them cleared safely",
+      "result": "Each worktree removed and branch deleted with the proof it was merged, plus what was kept and why. --force and -D are never used"
     },
-    "gen-frontend-handoff": {
-      "summary": "Turn backend changes into the context needed for frontend and client work.",
-      "whenToUse": "When handing API changes to web, mobile, or SDK developers",
-      "result": "A frontend handoff covering the API contract, UI states, errors, and verification"
-    },
-    "gen-backend-handoff": {
-      "summary": "Document API and data changes for the server work that follows.",
-      "whenToUse": "When handing backend implementation or operations work to another developer",
-      "result": "A backend handoff covering APIs, databases, jobs, and rollout"
-    },
-    "gen-session-handoff": {
-      "summary": "Hand this session to a fresh agent with proven state separated from unproven.",
-      "whenToUse": "When context is running out, the work spans sessions, or someone else will continue it",
-      "result": "Command-backed proven state, unproven items, decisions and traps, next actions with done-checks, and a resume prompt"
+    "swarm": {
+      "summary": "Fans work out to subagents or hands it to another coding agent or model, then returns one report.",
+      "whenToUse": "When you want parallel work through subagents, a second opinion from another model, or the load spread across quota. To race candidates for one winner, use arena",
+      "result": "The done-predicate verdict, a table of each worker's PASS, ISSUES, or BLOCKED result, why each route was chosen, and a call tree"
     },
     "long-task": {
       "summary": "Run a large project end to end through milestones and verification cycles.",
       "whenToUse": "When delegating an autonomous implementation that will take several hours",
       "result": "An execution record covering planning, parallel work, review, and completion checks"
     },
-    "all-subagents": {
-      "summary": "Hand subagent work to another coding agent and keep the route rationale with the call tree.",
-      "whenToUse": "When work should run through subagents, on a named agent or model, as a second opinion from another vendor, or across quota pools",
-      "result": "A run record with the route rationale, each task result, and a call-tree report"
-    },
-    "build-reinstall": {
-      "summary": "Build the current project, reinstall it with project-owned commands, and verify that the installed result matches the new build.",
-      "whenToUse": "After code work is complete and a local app or CLI must be replaced with the new build",
-      "result": "Build, reinstall, smoke-check, and SHA-256 installed-artifact evidence"
+    "handoff": {
+      "summary": "Writes an evidence-based handoff document for frontend, backend, or the next session. Pick frontend, backend, or session.",
+      "whenToUse": "When API changes go to client developers, server changes go to backend developers, or this session must be picked up by a fresh agent",
+      "result": "A document under .handoffs/ that separates what is proven from what is not and ends with a prompt to continue from"
     },
     "skill-forge": {
       "summary": "Author a skill package against the contract and publish every surface it needs.",
@@ -407,10 +377,10 @@
       "whenToUse": "Before a merge or release, to confirm packages and the catalog have not drifted apart",
       "result": "A violation list naming rule, skill, and file, plus a non-zero exit code"
     },
-    "work-summary": {
-      "summary": "Create a date-range work report from local coding-agent history.",
-      "whenToUse": "When summarizing requests and work completed today, this week, this month, or another period",
-      "result": "A concise or detailed Markdown work report, optionally under .work-summaries/"
+    "reflect": {
+      "summary": "Keeps only the lessons from a session or repository history that will still hold later, and puts each where it is enforced most strongly.",
+      "whenToUse": "When you want what this work taught turned into a rule so the same mistake is not repeated. Choose session (the default) or repo",
+      "result": "Three lists to approve before any edit: Accepted, Rejected, and Backlog. After approval, each edit is proven by a check that fails on the past mistake first"
     }
   },
   "notFound": {

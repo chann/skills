@@ -84,7 +84,7 @@
   "catalog": {
     "label": "技能目录",
     "title": ["所需的工作流，", "都在这里。"],
-    "description": "按任务或成果搜索，然后直接复制适合当前平台的调用命令。",
+    "description": "先把任务告诉chann-mode，它会带你找到合适的技能；想自己选，可以按任务或成果搜索。--md、--quiz、push、realtime这类变体不是单独的技能，而是通过参数选择。",
     "categoryNavigation": "按分类浏览",
     "searchLabel": "搜索技能",
     "searchPlaceholder": "搜索任务、成果或技能名称",
@@ -109,7 +109,7 @@
     "descriptionBetweenSelectors": "；在Claude Code中，名称前加",
     "descriptionAfterClaude": "。",
     "sharedInstructions": "共享指令",
-    "contractDescription": "根据原始依据生成双语报告，并检查理解程度。"
+    "contractDescription": "根据原始依据生成韩文和英文报告，加上--quiz还会生成理解测验。"
   },
   "faq": {
     "label": "常见问题",
@@ -142,7 +142,7 @@
       },
       {
         "question": "技能会自行提交或推送吗？",
-        "answer": "每个技能都会明确写出安全规则。例如，Git技能只暂存指定文件，并禁止强制推送；如果推送被拒绝，就会停止并报告原因。"
+        "answer": "每个技能都会明确写出安全规则。例如，git-commit只暂存指定的文件，推送也只做普通推送。强制推送只可能出现在会改写历史的rewrite中，而且必须经你明确同意。如果推送被拒绝，就会停止并报告原因。"
       },
       {
         "question": "可以只安装部分技能吗？",
@@ -213,189 +213,159 @@
     "installResults": "安装结果"
   },
   "categories": {
-    "review": {
-      "label": "审查",
-      "description": "审查并解释计划与变更，找出缺陷。"
+    "mode": {
+      "label": "入口",
+      "description": "说出任务，就会把你带到合适的剧本和技能。"
     },
-    "engineering": {
-      "label": "调查",
-      "description": "复现异常行为，或在一手来源中核实事实。"
+    "understand": {
+      "label": "理解",
+      "description": "弄清代码如何运作、为什么这样设计，以及改了什么。"
     },
-    "docs": {
-      "label": "文档",
-      "description": "让项目文档与当前代码保持一致。"
+    "design": {
+      "label": "设计",
+      "description": "把计划中的决策逐一定下来，或让多个方案竞争后只留一个。"
     },
-    "git": {
-      "label": "Git",
-      "description": "安全地提交、推送、合并和清理。"
+    "build": {
+      "label": "构建",
+      "description": "查找缺陷的原因，整理文档和文字，并重新安装新构建。"
     },
-    "handoff": {
-      "label": "交接",
-      "description": "为下一位开发者留下所需上下文。"
+    "verify": {
+      "label": "验证",
+      "description": "尝试破坏一次变更，并确认它在diff之外可能破坏什么。"
     },
-    "automation": {
-      "label": "自动化",
-      "description": "通过可验证的里程碑推进大型任务。"
+    "ship": {
+      "label": "交付",
+      "description": "安全地提交、推送、合并、解决冲突和清理。"
     },
-    "authoring": {
-      "label": "技能管理",
-      "description": "按同一规范创建并检查技能包。"
+    "delegate": {
+      "label": "委派",
+      "description": "把工作分给子代理，托付耗时的任务，并交接给下一个人。"
     },
-    "report": {
-      "label": "报告",
-      "description": "把智能体工作记录整理成指定日期范围的报告。"
+    "meta": {
+      "label": "技能维护",
+      "description": "创建并检查技能包，把工作中得到的教训写成规则。"
     }
   },
   "skills": {
-    "review-me": {
-      "summary": "逐一审查计划和设计中的重要选择，确保没有遗漏。",
-      "whenToUse": "在实现前，需要彻底明确模糊选项、边界以及失败与恢复条件时",
-      "result": "已确定的选择、各项完成标准、验收示例和明确的暂缓清单"
+    "chann-mode": {
+      "summary": "只需交给它一项任务，它会用一句话重述目标，从14个剧本中选出合适的一个，并把每一步交给对应的技能。",
+      "whenToUse": "想把修复缺陷、新增功能、调查问题这类整项任务交出去，又不想自己挑技能时。只有你亲自输入时才会运行",
+      "result": "目标与最小改动、选定的剧本、每一步用到的技能、应用的原则，以及为证据标注了标签的最终报告"
     },
-    "code-review": {
-      "summary": "从代码变更中找出缺陷与风险，并生成双语报告。",
-      "whenToUse": "在发布前审查PR、提交、分支或工作区时",
-      "result": "Markdown审查报告和独立运行的HTML审查报告"
+    "how": {
+      "summary": "阅读代码，说明代码库中某一部分如何运作，以及新代码应该放在哪里。",
+      "whenToUse": "需要弄清陌生子系统的结构，或想知道某件事由哪个模块负责时",
+      "result": "概览、关键概念、运行流程、file:line对照表和注意事项。每条结论都有出处，未读过的部分会标为推测"
     },
-    "code-review-md": {
-      "summary": "不生成浏览器输出，只把代码审查保存为Markdown。",
-      "whenToUse": "需要把审查结果用于PR评论或文档流水线时",
-      "result": ".reviews/目录下的Markdown审查报告"
-    },
-    "diff-summary": {
-      "summary": "基于证据解释变更的目的、行为、结构和测试影响。",
-      "whenToUse": "需要快速理解代码为何发生变化时",
-      "result": "韩语和英语Markdown，以及交互式HTML摘要"
-    },
-    "diff-summary-md": {
-      "summary": "不生成HTML，只把同一份变更说明保存为Markdown。",
-      "whenToUse": "需要把变更摘要直接放入仓库文档或Issue时",
-      "result": "结构清晰的韩语和英语Markdown"
-    },
-    "diff-summary-quiz": {
-      "summary": "为变更摘要加入用于检验理解程度的交互式测验。",
-      "whenToUse": "用于入职培训、审查学习或验证变更交接时",
-      "result": "双语摘要和带答案的测验"
-    },
-    "diff-viewer": {
-      "summary": "把当前Git diff渲染为易读的独立HTML页面。",
-      "whenToUse": "希望不做分析，直接在浏览器中查看原始补丁时",
-      "result": "统一视图或分栏视图的HTML diff"
-    },
-    "bug-hunt": {
-      "summary": "先复现，再通过反证逐步收敛原因，并用先失败的检查锁定修复。",
-      "whenToUse": "原因不明的缺陷、间歇失败的测试，或突然变慢的行为需要定位时",
-      "result": "复现命令、反证记录、先失败的检查，以及 .bug-hunts/ 下的诊断记录"
+    "why": {
+      "summary": "从git历史、blame、PR和Issue讨论以及设计笔记中，找出代码为什么是现在这样。",
+      "whenToUse": "想知道代码本身看不出的原因时，例如某个开关为什么仍然关着，或为什么选了这种方案",
+      "result": "引用作者原话的决策时间线、标明的推测，以及记录无法回答的部分"
     },
     "research-brief": {
       "summary": "用一手来源回答技术问题，每条主张都标注出处、等级与验证版本。",
       "whenToUse": "需要以官方来源确认行为或规范，且日后还要复核这些依据时",
       "result": "结论与置信度、带等级的主张表、矛盾记录，以及未解决的问题"
     },
+    "recall": {
+      "summary": "根据本地智能体记录（Claude Code、Codex、opencode、agy）生成指定日期范围的工作报告，或简要说明某个主题目前的进展。",
+      "whenToUse": "想整理本周做过的事，或在继续以前的工作之前确认做到了哪一步时",
+      "result": "Markdown报告，或把分支、PR、文件的说法与实际git状态核对过的简短简报"
+    },
+    "ketchup": {
+      "summary": "告诉你离开期间这段对话里发生了什么变化，以及有哪些决定在等你。",
+      "whenToUse": "把工作交给智能体后回来，需要快速了解当前状态时",
+      "result": "先说明等你处理的事，再说明发生了什么，最后列出你要做的决定。会先确认分支、PR、CI和智能体的实时状态，全程只读"
+    },
+    "diff-summary": {
+      "summary": "结合证据说明一次变更的目的、行为、结构和对测试的影响。--md只生成Markdown，--quiz会再加一份理解测验。",
+      "whenToUse": "需要快速弄清main..dev这样的范围、某个分支、提交或PR为什么发生变化时",
+      "result": "韩文和英文的Markdown，以及交互式HTML摘要。--md不生成HTML，--quiz会附带带答案的测验"
+    },
+    "plan-summary": {
+      "summary": "把你指定的计划、PRD、规格和设计文档，总结成内容一一对应的韩文和英文报告。也可以使用--md和--quiz。",
+      "whenToUse": "团队需要快速了解文档的目标、范围、决策、依赖、风险和待解决问题时",
+      "result": "韩文和英文的PS-* Markdown卡片，以及可独立打开的双语HTML报告。--md只生成Markdown，--quiz会再加对应的QZ-*题目"
+    },
+    "diff-viewer": {
+      "summary": "把当前Git diff渲染为易读的独立HTML页面。",
+      "whenToUse": "希望不做分析，直接在浏览器中查看原始补丁时",
+      "result": "统一视图或分栏视图的HTML diff"
+    },
+    "review-me": {
+      "summary": "逐一审查计划和设计中的重要选择，确保没有遗漏。",
+      "whenToUse": "在实现前，需要彻底明确模糊选项、边界以及失败与恢复条件时",
+      "result": "已确定的选择、各项完成标准、验收示例和明确的暂缓清单"
+    },
+    "arena": {
+      "summary": "用同一个请求生成多个候选方案，让另一家厂商的模型按隐藏标准打分，再把其他方案的优点手动移植到选中的最佳方案里。",
+      "whenToUse": "想让多个设计或草稿互相竞争，只保留最好的一个时。不适用于形态早已确定的机械性任务",
+      "result": "整合完成的成果、选作基础的方案及原因、评审结论、每处移植的来源、被舍弃的方案及原因，以及验证结果"
+    },
+    "bug-hunt": {
+      "summary": "先复现，再通过反证逐步收敛原因，并用先失败的检查锁定修复。",
+      "whenToUse": "原因不明的缺陷、间歇失败的测试，或突然变慢的行为需要定位时",
+      "result": "复现命令、反证记录、先失败的检查，以及 .bug-hunts/ 下的诊断记录"
+    },
     "gen-docs": {
       "summary": "在保留现有表述的同时，创建或更新核心项目文档。",
       "whenToUse": "README、架构或使用文档与代码不一致时",
       "result": "README、README.ko、ARCHITECTURE和USAGE"
     },
-    "plan-summary": {
-      "summary": "将指定的计划、PRD、规格和设计整理为内容与依据相互对应的韩文和英文摘要。",
-      "whenToUse": "团队需要快速理解所选文档中的目标、范围、决策、依赖、风险和未决问题时",
-      "result": "相互对应的韩文和英文PS-* Markdown卡片，以及一份可独立打开的双语HTML报告"
+    "unslop": {
+      "summary": "把AI写的韩文或英文改得像人写的，意思保持不变。",
+      "whenToUse": "文字因翻译腔、直译术语、啰嗦的开场白或夸大的措辞而带有AI味时",
+      "result": "改写后的文字，以及对修改类型的简短说明。本来就没问题的文字几乎不改"
     },
-    "plan-summary-md": {
-      "summary": "仅以韩文和英文Markdown输出内容与依据相互对应的计划摘要。",
-      "whenToUse": "计划摘要需要直接进入仓库文档、Issue或纯文本工作流时",
-      "result": "在.plan-summaries/中生成两份经过验证的Markdown报告，不创建HTML或打开浏览器"
+    "build-reinstall": {
+      "summary": "使用项目规定的命令构建并重新安装，然后验证已安装结果与新构建一致。",
+      "whenToUse": "完成代码工作后，需要用新构建替换本地应用或CLI时",
+      "result": "构建、重新安装、冒烟检查结果，以及通过SHA-256确认的已安装文件"
     },
-    "plan-summary-quiz": {
-      "summary": "为双语计划摘要添加两种语言相互对应的理解测验。",
-      "whenToUse": "用于入职培训、计划交接，或检验对需求和设计决策的理解时",
-      "result": "以Markdown和交互式离线HTML生成双语PS-*摘要与相互对应的QZ-*问题"
+    "interrogate": {
+      "summary": "尝试破坏一次代码变更，并报告标有严重程度和证明级别的缺陷。不会自行修复。",
+      "whenToUse": "在合并前审查PR、提交、分支或工作区时",
+      "result": "每条发现都带证明级别（cited、traced、ran、reproduced）和证据的Markdown审查与双语HTML审查。--md只生成Markdown"
     },
-    "human-friendly-writing": {
-      "summary": "在不改变内容的前提下，把 AI 写的韩文改写成自然的人类文风。",
-      "whenToUse": "当韩文文本带有 AI 味——如“契约、信封、奇偶校验”式的直译术语或翻译腔时",
-      "result": "改写后的韩文文本，以及关于修改内容的简短说明"
+    "blast-radius": {
+      "summary": "找出一次变更在diff之外可能破坏什么，并在临时目录里实际运行代码，证明它之所以安全的依据。",
+      "whenToUse": "即使改动很小，合并前也担心影响范围时",
+      "result": "安全依据及其证明级别、带file:line的风险、已检查并排除的项目，以及合并前成本最低的检查"
     },
     "git-commit": {
-      "summary": "把工作区中的变更拆分成逻辑清晰的Conventional Commit。",
-      "whenToUse": "需要把混合变更整理成便于审查的提交时",
-      "result": "一个或多个只暂存指定文件的提交"
+      "summary": "把变更拆成Conventional Commit提交。通过参数选择push、realtime、deploy或rewrite模式。",
+      "whenToUse": "想把混杂的变更整理成便于审查的提交，或在工作过程中每完成一个已验证的单元就提交、推送或部署时。也可以用gcr、gcpr、gcpd调用",
+      "result": "按明确路径暂存的提交、普通推送，以及只依据文档中记载的仓库设置进行的部署。提交信息用rewrite重写"
     },
-    "git-commit-push": {
-      "summary": "按逻辑单位提交，然后通过普通推送发布到远程仓库。",
-      "whenToUse": "需要一次性整理并发布已完成的变更时",
-      "result": "Conventional Commits和远程推送"
-    },
-    "git-commit-push-realtime": {
-      "summary": "每完成一个经过验证的结果，就立即提交并推送。",
-      "whenToUse": "需要为较长的实现保留可审查的提交和推送检查点时；如需确认每次部署，请使用git-commit-push-deploy",
-      "result": "已验证的检查点，以及每次都确认过的远程发布状态"
-    },
-    "git-commit-push-deploy": {
-      "summary": "每完成一个经过验证的工作单元，就提交、推送，并按AGENTS.md等仓库说明中的配置部署。",
-      "whenToUse": "需要按现有部署配置完成并确认每个工作单元的部署后，再开始下一个实现时",
-      "result": "每个工作单元的提交、远程同步状态、部署目标及部署与运行检查结果"
-    },
-    "git-commit-realtime": {
-      "summary": "为每个经过验证的结果创建本地提交，把推送留到之后。",
-      "whenToUse": "希望保留工作过程，但自行决定发布时间时",
-      "result": "不会触及远程仓库的本地检查点"
-    },
-    "git-commit-rewrite": {
-      "summary": "把最近的提交标题改写为Conventional Commit格式。",
-      "whenToUse": "需要统一已有提交消息的质量和结构时",
-      "result": "经过安全检查、格式一致的提交记录"
-    },
-    "git-merge-to-main": {
-      "summary": "把当前分支安全合并到main，并清理源分支。",
-      "whenToUse": "把功能分支集成到main时",
-      "result": "经过验证的main合并和安全的分支删除"
-    },
-    "git-merge-to-dev": {
-      "summary": "把当前分支合并到dev或develop，并安全清理。",
-      "whenToUse": "把功能分支集成到开发分支时",
-      "result": "经过验证的dev合并和安全的分支删除"
+    "git-merge": {
+      "summary": "把当前分支合并到main、dev或你指定的本地分支，并在源分支不是受保护分支时删除已合并的源分支。",
+      "whenToUse": "把功能分支并入main或dev时。不带参数则合并到仓库默认分支",
+      "result": "经你确认的计划、不推送的合并，以及只用git branch -d完成的源分支删除"
     },
     "git-resolve-conflicts": {
       "summary": "在保留双方意图的前提下完成中断的合并或变基，并记录被舍弃的一侧。",
       "whenToUse": "合并、变基或 cherry-pick 因冲突中断，且需要完成而非放弃时",
       "result": "按类型划分的冲突清单、解决记录、项目检查结果，以及已完成的操作"
     },
-    "git-branch-cleanup": {
-      "summary": "只删除已经合并到受保护分支的本地分支。",
-      "whenToUse": "需要安全清理积累的本地分支时",
-      "result": "仅清理可以安全删除的已合并分支"
+    "git-cleanup": {
+      "summary": "在你确认计划后，清理已经合并的本地分支和已完成的工作树。",
+      "whenToUse": "想安全地清掉堆积的已合并分支和已完成的工作树时",
+      "result": "已删除的工作树和分支及其已合并的依据，以及保留的内容和原因。不会使用--force和-D"
     },
-    "gen-frontend-handoff": {
-      "summary": "把后端变更整理成前端和客户端工作所需的上下文。",
-      "whenToUse": "把API变更交接给Web、移动端或SDK开发者时",
-      "result": "包含API规范、界面状态、错误处理和验证方法的前端交接文档"
-    },
-    "gen-backend-handoff": {
-      "summary": "把API和数据变更整理成服务器工作所需的交接文档。",
-      "whenToUse": "把后端实现或运维工作交接给其他开发者时",
-      "result": "包含API、DB、后台任务和发布信息的后端交接文档"
-    },
-    "gen-session-handoff": {
-      "summary": "把当前会话交给新的智能体，并把已验证与未验证的状态分开。",
-      "whenToUse": "上下文即将耗尽、工作跨越多个会话，或将由他人接手时",
-      "result": "有命令支撑的已验证状态、未验证项、决策与陷阱、带完成条件的后续步骤，以及续接提示"
+    "swarm": {
+      "summary": "把工作分给子代理，或交给其他编码智能体和模型，再把结果汇总成一份报告。",
+      "whenToUse": "想用子代理并行处理、需要其他模型再确认一遍，或想分摊额度时。若要让候选方案竞争并只留一个，请用arena",
+      "result": "完成条件的判定、每个执行者的PASS、ISSUES或BLOCKED结果表、选择路线的原因，以及调用树"
     },
     "long-task": {
       "summary": "把大型项目分成多个阶段，并在验证后逐步推进到底。",
       "whenToUse": "委派需要数小时完成的自主端到端实现时",
       "result": "涵盖规划、并行工作、审查和完成确认的执行记录"
     },
-    "all-subagents": {
-      "summary": "把子代理任务交给另一个编程代理，并留下路线理由和调用树。",
-      "whenToUse": "当任务要通过子代理执行、交给指定代理或模型、需要另一家模型复核，或要按额度并行分摊时",
-      "result": "包含路线理由、每项任务结果和调用树的运行记录"
-    },
-    "build-reinstall": {
-      "summary": "使用项目规定的命令构建并重新安装，然后验证已安装结果与新构建一致。",
-      "whenToUse": "完成代码工作后，需要用新构建替换本地应用或CLI时",
-      "result": "构建、重新安装、冒烟检查结果，以及通过SHA-256确认的已安装文件"
+    "handoff": {
+      "summary": "为前端、后端或下一次会话撰写有依据的交接文档。可在frontend、backend、session中选择。",
+      "whenToUse": "要把API变更交给客户端开发者、把服务端变更交给后端开发者，或让新的智能体接手当前会话时",
+      "result": ".handoffs/下的文档。区分已证实与未证实的内容，并以可直接接着用的提示词收尾"
     },
     "skill-forge": {
       "summary": "按规范编写技能包，并一次性补齐所有对外内容。",
@@ -407,10 +377,10 @@
       "whenToUse": "合并或发布前，确认技能包与目录没有脱节时",
       "result": "标明规则、技能与文件的违规清单，以及非零退出码"
     },
-    "work-summary": {
-      "summary": "从本地编程智能体记录中生成指定日期范围的工作报告。",
-      "whenToUse": "汇总今天、本周、本月或其他时间段的工作与请求时",
-      "result": "简要或详细的Markdown工作报告，可按需保存到.work-summaries/"
+    "reflect": {
+      "summary": "只挑出会话或仓库历史中日后仍然成立的教训，并把每一条放进最能强制执行的地方。",
+      "whenToUse": "想把这次工作学到的东西写成规则，避免重复同样的错误时。可选择session（默认）或repo",
+      "result": "修改之前先停下来给你看的三份清单（采纳、否决、待定）。获批后，每处修改都用一个先在过去错误上失败的检查来证明"
     }
   },
   "notFound": {
