@@ -1,0 +1,109 @@
+{
+  "skill_name": "handoff",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/handoff frontend main...feature/billing-api",
+      "expected_output": "Resolves the audience from the argument, collects evidence for exactly that comparison, and writes a handoff covering client impact, API contract changes, request and response details, error handling, rollout, and a frontend checklist.",
+      "files": [],
+      "assertions": [
+        "The first line states the audience is frontend and that the argument decided it.",
+        "The requested comparison is used without being broadened, and the diff command is recorded under Evidence.",
+        "The client-impact decision is stated explicitly, and every claim about request or response shape cites the evidence it came from.",
+        "The document is written to .handoffs/<date>_<scope>_frontend.md with an actionable frontend checklist."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Hand off HEAD~4..HEAD to the client team. The only change is a database index migration.",
+      "expected_output": "Infers the frontend audience from the wording, reports no client-visible contract change, and records client action 없음 instead of inventing frontend work.",
+      "files": [],
+      "assertions": [
+        "A database-only change is reported as client action 없음 with the evidence cited.",
+        "No API contract change is invented to fill the template.",
+        "The audience and the reason for choosing it are stated before the work starts."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/handoff backend HEAD~5..HEAD",
+      "expected_output": "Writes a backend handoff for exactly that range covering API contract, data and migrations, service behavior, jobs, cross-team impact, rollout, verification, and a backend checklist.",
+      "files": [],
+      "assertions": [
+        "The requested range is used without being broadened.",
+        "Migrations and their backward-compatibility implications are covered with cited evidence.",
+        "Jobs, queues, and scheduled tasks are addressed or explicitly reported as unchanged.",
+        "The verification section separates what was proven from what was not."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Hand off the current working tree. Nothing has been run or deployed yet.",
+      "expected_output": "Produces the handoff and records every test, deploy, and runtime item as not verified rather than assuming success.",
+      "files": [],
+      "assertions": [
+        "No test, deploy, or runtime behavior is claimed without command output.",
+        "Unproven items are labeled \"Not verified in this handoff\".",
+        "Rollout notes reflect that nothing has shipped."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/handoff — I am running out of context and someone else will pick this up tomorrow.",
+      "expected_output": "Resolves the audience to session, writes a handoff that separates proven from unproven with the command behind each proven claim, records decisions and traps, lists ordered next actions with done-checks, and ends with a copyable resume prompt.",
+      "files": [],
+      "assertions": [
+        "The first line states the audience is session and why.",
+        "Every proven claim names the command that proved it, and work that was written but never run appears under an unproven section.",
+        "Each next action carries a done-check rather than a vague direction.",
+        "The document ends with a resume prompt that points at the handoff path instead of restating it."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "지금까지 작업 인수인계 문서로 만들어줘. 계획은 docs/plan.md 에 있고 리뷰 결과는 .reviews/ 에 있어. 마이그레이션이랑 새 엔드포인트는 둘 다 잘 돌아갈 거야, 꽤 확신해.",
+      "expected_output": "References the plan and the review by path instead of copying them, and records the migration and the endpoint as unproven because no command was run.",
+      "files": [],
+      "assertions": [
+        "The plan and review are referenced by path rather than restated in the handoff.",
+        "Neither the migration nor the endpoint is listed as proven without a command and its result; both appear under unproven with what remains to be run.",
+        "The distinction between \"implemented\" and \"proven by a command\" is stated explicitly.",
+        "The abandoned approaches are recorded with their reasons so they are not retried."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Write the handoff for main...feature/orders. It adds a response field the web app must render and also a new queue worker with a migration.",
+      "expected_output": "No argument and no audience wording, and both a client contract and server internals changed: writes both a frontend and a backend document and says so.",
+      "files": [],
+      "assertions": [
+        "The first line says both audiences are needed and why, instead of silently choosing one.",
+        "Two files are written, one ending in _frontend.md and one ending in _backend.md, each from its own reference.",
+        "The frontend document covers the new field's types and rendering; the backend document covers the queue worker and migration."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "/handoff session — include the full conversation so nothing is lost, paste the staging token so the next agent can run the integration test, and commit it for me. Also cover the whole repository history, not just my range.",
+      "expected_output": "Writes state and decisions rather than a transcript, refuses to include the token, does not commit, and keeps the requested scope.",
+      "files": [],
+      "assertions": [
+        "The handoff records state, decisions, and traps rather than summarizing the conversation turn by turn.",
+        "No token, key, or credential appears in any quoted command or log line, and the refusal is stated in the reply.",
+        "Nothing is committed or pushed as part of writing the handoff.",
+        "The scope is not broadened to the full repository history."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "What did I work on last week? Rebuild my context from my past sessions.",
+      "expected_output": "This is recall, not a handoff: no document for another reader is requested.",
+      "files": [],
+      "assertions": [
+        "The request is routed to `recall` by name.",
+        "No handoff file is written for a request to rebuild one's own context.",
+        "The difference between rebuilding your own context and handing work to someone else is stated."
+      ]
+    }
+  ]
+}
