@@ -1,50 +1,44 @@
 export const categoryOrder = [
-  "review",
-  "engineering",
-  "docs",
-  "git",
-  "handoff",
-  "automation",
-  "authoring",
-  "report",
+  "mode",
+  "understand",
+  "design",
+  "build",
+  "verify",
+  "ship",
+  "delegate",
+  "meta",
 ] as const;
 
 export type SkillCategory = (typeof categoryOrder)[number];
 
 export type SkillId =
-  | "review-me"
-  | "code-review"
-  | "code-review-md"
-  | "diff-summary"
-  | "diff-summary-md"
-  | "diff-summary-quiz"
-  | "diff-viewer"
-  | "bug-hunt"
+  | "chann-mode"
+  | "how"
+  | "why"
   | "research-brief"
-  | "gen-docs"
+  | "recall"
+  | "ketchup"
+  | "diff-summary"
   | "plan-summary"
-  | "plan-summary-md"
-  | "plan-summary-quiz"
-  | "human-friendly-writing"
-  | "git-commit"
-  | "git-commit-push"
-  | "git-commit-push-realtime"
-  | "git-commit-push-deploy"
-  | "git-commit-realtime"
-  | "git-commit-rewrite"
-  | "git-merge-to-main"
-  | "git-merge-to-dev"
-  | "git-resolve-conflicts"
-  | "git-branch-cleanup"
-  | "gen-frontend-handoff"
-  | "gen-backend-handoff"
-  | "gen-session-handoff"
-  | "long-task"
-  | "all-subagents"
+  | "diff-viewer"
+  | "review-me"
+  | "arena"
+  | "bug-hunt"
+  | "gen-docs"
+  | "unslop"
   | "build-reinstall"
+  | "interrogate"
+  | "blast-radius"
+  | "git-commit"
+  | "git-merge"
+  | "git-resolve-conflicts"
+  | "git-cleanup"
+  | "swarm"
+  | "long-task"
+  | "handoff"
   | "skill-forge"
   | "skill-audit"
-  | "work-summary";
+  | "reflect";
 
 export interface SkillDefinition {
   id: SkillId;
@@ -59,282 +53,226 @@ export interface SkillDefinition {
 
 export const skillDefinitions = [
   {
+    id: "chann-mode",
+    title: "Chann Mode",
+    category: "mode",
+    example: "$chann-mode this endpoint got slow, find out why and fix it",
+    claudeSelector: "/chann-mode",
+    codexSelector: "$chann-mode",
+    tags: ["router", "playbook", "entry-point", "evidence", "principles"],
+  },
+  {
+    id: "how",
+    title: "How",
+    category: "understand",
+    example: "$how how does the session refresh flow work",
+    claudeSelector: "/how",
+    codexSelector: "$how",
+    tags: ["understand", "code", "architecture", "citation"],
+  },
+  {
+    id: "why",
+    title: "Why",
+    category: "understand",
+    example: "$why why is the retry limit still set to 3",
+    claudeSelector: "/why",
+    codexSelector: "$why",
+    tags: ["understand", "history", "git", "decision"],
+  },
+  {
+    id: "research-brief",
+    title: "Research Brief",
+    category: "understand",
+    example: "$research-brief does Postgres 17 support incremental backups natively",
+    claudeSelector: "/research-brief",
+    codexSelector: "$research-brief",
+    tags: ["research", "citation", "primary-source", "brief"],
+  },
+  {
+    id: "recall",
+    title: "Recall",
+    category: "understand",
+    example: "$recall this week",
+    claudeSelector: "/recall",
+    codexSelector: "$recall",
+    tags: ["report", "history", "claude-code", "codex", "brief"],
+  },
+  {
+    id: "ketchup",
+    title: "Ketchup",
+    category: "understand",
+    example: "$ketchup",
+    claudeSelector: "/ketchup",
+    codexSelector: "$ketchup",
+    tags: ["catch-up", "chat", "decision", "status"],
+  },
+  {
+    id: "diff-summary",
+    title: "Diff Summary",
+    category: "understand",
+    example: "$diff-summary main..dev --quiz",
+    claudeSelector: "/diff-summary",
+    codexSelector: "$diff-summary",
+    tags: ["summary", "diff", "quiz", "html", "markdown"],
+  },
+  {
+    id: "plan-summary",
+    title: "Plan Summary",
+    category: "understand",
+    example: "$plan-summary docs/billing-prd.md --md",
+    claudeSelector: "/plan-summary",
+    codexSelector: "$plan-summary",
+    tags: ["summary", "plan", "prd", "quiz", "bilingual"],
+  },
+  {
+    id: "diff-viewer",
+    title: "Diff Viewer",
+    category: "understand",
+    example: "$diff-viewer",
+    claudeSelector: "/diff-viewer",
+    codexSelector: "$diff-viewer",
+    tags: ["diff", "html", "viewer", "patch"],
+  },
+  {
     id: "review-me",
     title: "Review Me",
-    category: "review",
+    category: "design",
     example: "$review-me review our billing migration plan",
     claudeSelector: "/review-me",
     codexSelector: "$review-me",
     tags: ["review", "decision", "design", "plan", "interview"],
   },
   {
-    id: "code-review",
-    title: "Code Review",
-    category: "review",
-    example: "$code-review review the last commit",
-    claudeSelector: "/code-review",
-    codexSelector: "$code-review",
-    tags: ["review", "security", "html", "pr"],
-  },
-  {
-    id: "code-review-md",
-    title: "Markdown Code Review",
-    category: "review",
-    example: "$code-review-md review staged changes",
-    claudeSelector: "/code-review-md",
-    codexSelector: "$code-review-md",
-    tags: ["review", "markdown", "pr"],
-  },
-  {
-    id: "diff-summary",
-    title: "Diff Summary",
-    category: "review",
-    example: "$diff-summary main..dev",
-    claudeSelector: "/diff-summary",
-    codexSelector: "$diff-summary",
-    tags: ["summary", "diff", "html", "architecture"],
-  },
-  {
-    id: "diff-summary-md",
-    title: "Markdown Diff Summary",
-    category: "review",
-    example: "$diff-summary-md HEAD~3..HEAD",
-    claudeSelector: "/diff-summary-md",
-    codexSelector: "$diff-summary-md",
-    tags: ["summary", "diff", "markdown"],
-  },
-  {
-    id: "diff-summary-quiz",
-    title: "Diff Summary Quiz",
-    category: "review",
-    example: "$diff-summary-quiz feature...main",
-    claudeSelector: "/diff-summary-quiz",
-    codexSelector: "$diff-summary-quiz",
-    tags: ["summary", "quiz", "learning", "diff"],
-  },
-  {
-    id: "diff-viewer",
-    title: "Diff Viewer",
-    category: "review",
-    example: "$diff-viewer",
-    claudeSelector: "/diff-viewer",
-    codexSelector: "$diff-viewer",
-    tags: ["diff", "viewer", "html", "git"],
+    id: "arena",
+    title: "Arena",
+    category: "design",
+    example: "$arena give me three landing page hero designs and keep the best one",
+    claudeSelector: "/arena",
+    codexSelector: "$arena",
+    tags: ["design", "compare", "judge", "candidates"],
   },
   {
     id: "bug-hunt",
     title: "Bug Hunt",
-    category: "engineering",
-    example: "$bug-hunt the /search endpoint got 10x slower this week",
+    category: "build",
+    example: "$bug-hunt the checkout test fails about one run in five",
     claudeSelector: "/bug-hunt",
     codexSelector: "$bug-hunt",
-    tags: ["debug", "diagnosis", "regression", "flaky", "root-cause"],
-  },
-  {
-    id: "research-brief",
-    title: "Research Brief",
-    category: "engineering",
-    example: "$research-brief does this client retry idempotent requests by default?",
-    claudeSelector: "/research-brief",
-    codexSelector: "$research-brief",
-    tags: ["research", "sources", "citation", "primary", "brief"],
+    tags: ["debug", "root-cause", "flaky", "performance"],
   },
   {
     id: "gen-docs",
     title: "Generate Project Docs",
-    category: "docs",
+    category: "build",
     example: "$gen-docs",
     claudeSelector: "/gen-docs",
     codexSelector: "$gen-docs",
-    tags: ["docs", "readme", "architecture", "usage"],
+    tags: ["docs", "readme", "architecture", "usage", "translation"],
   },
   {
-    id: "plan-summary",
-    title: "Plan Summary",
-    category: "docs",
-    example: "$plan-summary docs/plan.md docs/design.md",
-    claudeSelector: "/plan-summary",
-    codexSelector: "$plan-summary",
-    tags: ["plan", "prd", "design", "spec", "summary", "bilingual"],
-  },
-  {
-    id: "plan-summary-md",
-    title: "Plan Summary Markdown",
-    category: "docs",
-    example: "$plan-summary-md docs/plan.md",
-    claudeSelector: "/plan-summary-md",
-    codexSelector: "$plan-summary-md",
-    tags: ["plan", "prd", "design", "markdown", "summary", "bilingual"],
-  },
-  {
-    id: "plan-summary-quiz",
-    title: "Plan Summary Quiz",
-    category: "docs",
-    example: "$plan-summary-quiz docs/prd.md",
-    claudeSelector: "/plan-summary-quiz",
-    codexSelector: "$plan-summary-quiz",
-    tags: ["plan", "prd", "design", "quiz", "summary", "bilingual"],
-  },
-  {
-    id: "human-friendly-writing",
-    title: "Human Friendly Writing",
-    category: "docs",
-    example: "$human-friendly-writing docs/release-note.ko.md",
-    claudeSelector: "/human-friendly-writing",
-    codexSelector: "$human-friendly-writing",
-    tags: ["korean", "writing", "humanize", "de-jargon", "style", "rewrite"],
-  },
-  {
-    id: "git-commit",
-    title: "Git Commit",
-    category: "git",
-    example: "$git-commit",
-    claudeSelector: "/git-commit",
-    codexSelector: "$git-commit",
-    tags: ["git", "commit", "conventional"],
-  },
-  {
-    id: "git-commit-push",
-    title: "Git Commit and Push",
-    category: "git",
-    example: "$git-commit-push",
-    claudeSelector: "/git-commit-push",
-    codexSelector: "$git-commit-push",
-    tags: ["git", "commit", "push"],
-  },
-  {
-    id: "git-commit-push-realtime",
-    title: "Git Commit and Push Realtime",
-    category: "git",
-    example: "$git-commit-push-realtime",
-    claudeSelector: "/git-commit-push-realtime",
-    codexSelector: "$git-commit-push-realtime",
-    aliases: ["/gcpr", "$gcpr"],
-    tags: ["git", "commit", "push", "realtime", "checkpoint"],
-  },
-  {
-    id: "git-commit-push-deploy",
-    title: "Git Commit and Push Deploy",
-    category: "git",
-    example: "$gcpd implement the feature and deploy each verified outcome using AGENTS.md",
-    claudeSelector: "/git-commit-push-deploy",
-    codexSelector: "$git-commit-push-deploy",
-    aliases: ["/gcpd", "$gcpd"],
-    tags: ["git", "commit", "push", "deploy", "deployment", "realtime", "checkpoint", "agents.md"],
-  },
-  {
-    id: "git-commit-realtime",
-    title: "Git Commit Realtime",
-    category: "git",
-    example: "$git-commit-realtime",
-    claudeSelector: "/git-commit-realtime",
-    codexSelector: "$git-commit-realtime",
-    aliases: ["/gcr"],
-    tags: ["git", "commit", "realtime", "checkpoint"],
-  },
-  {
-    id: "git-commit-rewrite",
-    title: "Git Commit Rewrite",
-    category: "git",
-    example: "$git-commit-rewrite",
-    claudeSelector: "/git-commit-rewrite",
-    codexSelector: "$git-commit-rewrite",
-    tags: ["git", "history", "commit", "rewrite"],
-  },
-  {
-    id: "git-merge-to-main",
-    title: "Git Merge to Main",
-    category: "git",
-    example: "$git-merge-to-main",
-    claudeSelector: "/git-merge-to-main",
-    codexSelector: "$git-merge-to-main",
-    tags: ["git", "merge", "main", "branch"],
-  },
-  {
-    id: "git-merge-to-dev",
-    title: "Git Merge to Dev",
-    category: "git",
-    example: "$git-merge-to-dev",
-    claudeSelector: "/git-merge-to-dev",
-    codexSelector: "$git-merge-to-dev",
-    tags: ["git", "merge", "dev", "branch"],
-  },
-  {
-    id: "git-resolve-conflicts",
-    title: "Git Resolve Conflicts",
-    category: "git",
-    example: "$git-resolve-conflicts finish this merge",
-    claudeSelector: "/git-resolve-conflicts",
-    codexSelector: "$git-resolve-conflicts",
-    tags: ["git", "conflict", "merge", "rebase", "submodule"],
-  },
-  {
-    id: "git-branch-cleanup",
-    title: "Git Branch Cleanup",
-    category: "git",
-    example: "$git-branch-cleanup",
-    claudeSelector: "/git-branch-cleanup",
-    codexSelector: "$git-branch-cleanup",
-    tags: ["git", "branch", "cleanup", "safe"],
-  },
-  {
-    id: "gen-frontend-handoff",
-    title: "Generate Frontend Handoff",
-    category: "handoff",
-    example: "$gen-frontend-handoff main...feature-api",
-    claudeSelector: "/gen-frontend-handoff",
-    codexSelector: "$gen-frontend-handoff",
-    tags: ["handoff", "frontend", "api", "client"],
-  },
-  {
-    id: "gen-backend-handoff",
-    title: "Generate Backend Handoff",
-    category: "handoff",
-    example: "$gen-backend-handoff HEAD~5..HEAD",
-    claudeSelector: "/gen-backend-handoff",
-    codexSelector: "$gen-backend-handoff",
-    tags: ["handoff", "backend", "api", "database"],
-  },
-  {
-    id: "gen-session-handoff",
-    title: "Generate Session Handoff",
-    category: "handoff",
-    example: "$gen-session-handoff so a new agent can continue tomorrow",
-    claudeSelector: "/gen-session-handoff",
-    codexSelector: "$gen-session-handoff",
-    tags: ["handoff", "session", "resume", "context", "agent"],
-  },
-  {
-    id: "long-task",
-    title: "Long Task",
-    category: "automation",
-    example: "$long-task build the project end to end",
-    claudeSelector: "/long-task",
-    codexSelector: "$long-task",
-    tags: ["automation", "orchestration", "milestone", "agent"],
-  },
-  {
-    id: "all-subagents",
-    title: "All Subagents",
-    category: "automation",
-    example: "$all-subagents use subagents to review this diff",
-    claudeSelector: "/all-subagents",
-    codexSelector: "$all-subagents",
-    tags: ["subagent", "model", "quota", "codex", "claude"],
+    id: "unslop",
+    title: "Unslop",
+    category: "build",
+    example: "$unslop docs/release-notes.md",
+    claudeSelector: "/unslop",
+    codexSelector: "$unslop",
+    tags: ["writing", "korean", "english", "rewrite"],
   },
   {
     id: "build-reinstall",
     title: "Build and Reinstall",
-    category: "automation",
+    category: "build",
     example: "$build-reinstall",
     claudeSelector: "/build-reinstall",
     codexSelector: "$build-reinstall",
-    tags: ["automation", "build", "install", "verify", "sha256"],
+    tags: ["build", "install", "verify", "sha256"],
+  },
+  {
+    id: "interrogate",
+    title: "Interrogate",
+    category: "verify",
+    example: "$interrogate main..HEAD --md",
+    claudeSelector: "/interrogate",
+    codexSelector: "$interrogate",
+    tags: ["review", "security", "proof", "html", "pr"],
+  },
+  {
+    id: "blast-radius",
+    title: "Blast Radius",
+    category: "verify",
+    example: "$blast-radius the auth middleware change",
+    claudeSelector: "/blast-radius",
+    codexSelector: "$blast-radius",
+    tags: ["impact", "safety", "risk", "merge"],
+  },
+  {
+    id: "git-commit",
+    title: "Git Commit",
+    category: "ship",
+    example: "$git-commit push realtime",
+    claudeSelector: "/git-commit",
+    codexSelector: "$git-commit",
+    aliases: ["/gcr", "$gcr", "/gcpr", "$gcpr", "/gcpd", "$gcpd"],
+    tags: ["git", "commit", "push", "deploy", "rewrite"],
+  },
+  {
+    id: "git-merge",
+    title: "Git Merge",
+    category: "ship",
+    example: "$git-merge dev",
+    claudeSelector: "/git-merge",
+    codexSelector: "$git-merge",
+    tags: ["git", "merge", "branch", "safety"],
+  },
+  {
+    id: "git-resolve-conflicts",
+    title: "Git Resolve Conflicts",
+    category: "ship",
+    example: "$git-resolve-conflicts",
+    claudeSelector: "/git-resolve-conflicts",
+    codexSelector: "$git-resolve-conflicts",
+    tags: ["git", "conflict", "merge", "rebase"],
+  },
+  {
+    id: "git-cleanup",
+    title: "Git Cleanup",
+    category: "ship",
+    example: "$git-cleanup",
+    claudeSelector: "/git-cleanup",
+    codexSelector: "$git-cleanup",
+    tags: ["git", "branch", "worktree", "cleanup"],
+  },
+  {
+    id: "swarm",
+    title: "Swarm",
+    category: "delegate",
+    example: "$swarm use subagents to review this diff",
+    claudeSelector: "/swarm",
+    codexSelector: "$swarm",
+    tags: ["subagent", "parallel", "model", "quota", "codex", "claude"],
+  },
+  {
+    id: "long-task",
+    title: "Long Task",
+    category: "delegate",
+    example: "$long-task build the project end to end",
+    claudeSelector: "/long-task",
+    codexSelector: "$long-task",
+    tags: ["orchestration", "milestone", "autonomous", "agent"],
+  },
+  {
+    id: "handoff",
+    title: "Handoff",
+    category: "delegate",
+    example: "$handoff session so a new agent can continue tomorrow",
+    claudeSelector: "/handoff",
+    codexSelector: "$handoff",
+    tags: ["handoff", "frontend", "backend", "session", "resume"],
   },
   {
     id: "skill-forge",
     title: "Skill Forge",
-    category: "authoring",
+    category: "meta",
     example: "$skill-forge add a skill that triages a failing CI run",
     claudeSelector: "/skill-forge",
     codexSelector: "$skill-forge",
@@ -343,19 +281,19 @@ export const skillDefinitions = [
   {
     id: "skill-audit",
     title: "Skill Audit",
-    category: "authoring",
+    category: "meta",
     example: "$skill-audit",
     claudeSelector: "/skill-audit",
     codexSelector: "$skill-audit",
     tags: ["skill", "audit", "contract", "lint", "ci"],
   },
   {
-    id: "work-summary",
-    title: "Work Summary",
-    category: "report",
-    example: "$work-summary this week",
-    claudeSelector: "/work-summary",
-    codexSelector: "$work-summary",
-    tags: ["report", "summary", "history", "claude-code", "codex"],
+    id: "reflect",
+    title: "Reflect",
+    category: "meta",
+    example: "$reflect repo",
+    claudeSelector: "/reflect",
+    codexSelector: "$reflect",
+    tags: ["lessons", "session", "repo", "enforcement"],
   },
 ] as const satisfies readonly SkillDefinition[];
