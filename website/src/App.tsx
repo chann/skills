@@ -50,8 +50,8 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
           </div>
           <ul>
             <li className="is-active">
-              <span>Review Me</span>
-              <code>$review-me</code>
+              <span>Chann Mode</span>
+              <code>$chann-mode</code>
             </li>
             <li>
               <span>Interrogate</span>
@@ -70,17 +70,17 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
 
         <div className="product-editor">
           <div className="product-editor__tab">
-            <span>review-me</span>
+            <span>chann-mode</span>
             <code>{content.tab}</code>
           </div>
           <div className="product-editor__content">
             <p className="product-kicker">{content.kicker}</p>
-            <h2>{content.title[0]}<br />{content.title[1]}</h2>
+            <h2>{content.title.map((line) => <span key={line}>{line}</span>)}</h2>
             <p className="product-editor__lede">{content.lede}</p>
 
             <div className="run-card">
               <span className="run-card__prompt">›</span>
-              <code>$review-me review our billing migration plan</code>
+              <code>$chann-mode this endpoint got slow, find out why and fix it</code>
             </div>
 
             <div className="proof-row">

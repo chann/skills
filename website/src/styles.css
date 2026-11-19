@@ -567,6 +567,11 @@ code {
   line-height: 1.02;
 }
 
+.product-editor h2 span {
+  display: block;
+  text-wrap: balance;
+}
+
 .product-editor__lede {
   max-width: 620px;
   margin: 24px 0 0;
@@ -1871,11 +1876,7 @@ code {
   }
 
   .product-editor h2 {
-    font-size: clamp(2.15rem, 10vw, 3rem);
-  }
-
-  .product-editor h2 br {
-    display: none;
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
   }
 
   .product-editor__lede {

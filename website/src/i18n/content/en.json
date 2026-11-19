@@ -184,10 +184,10 @@
     "workspace": "workspace",
     "ready": "ready",
     "tab": "SKILL.md",
-    "kicker": "DECISION REVIEW",
-    "title": ["Review every decision", "all the way to the final choice."],
-    "lede": "Trace assumptions through the final choice, then separate confirmed evidence from the risks that remain.",
-    "proof": ["12 decisions traced", "3 risks surfaced", "report ready"]
+    "kicker": "ENTRY POINT",
+    "title": ["Say the task once.", "It routes to the right skill."],
+    "lede": "It restates the goal, picks a playbook, and hands each step to the skill that owns it. The final reply labels its evidence.",
+    "proof": ["playbook matched", "steps routed to skills", "evidence-labelled reply"]
   },
   "copy": {
     "idle": "Copy",
