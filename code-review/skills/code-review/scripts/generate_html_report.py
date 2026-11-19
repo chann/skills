@@ -25,6 +25,12 @@ SEVERITY_LEVELS = ("CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO")
 SEVERITY_LOWER = {s: s.lower() for s in SEVERITY_LEVELS}
 LANG_TOKEN_RE = re.compile(r"[^\w.+-]")
 FINDING_ID_RE = re.compile(r"\[([A-Za-z]+-\d+)\]")
+# Proof ladder, weakest first. The level word stays English in every language.
+PROOF_LEVELS = ("said", "cited", "traced", "ran", "reproduced")
+EVIDENCE_LINE_RE = re.compile(r"^\*\*Evidence:\*\*\s*(.*)$")
+PROOF_VALUE_RE = re.compile(
+    r"^`?(" + "|".join(PROOF_LEVELS) + r")`?(?![\w-])(.*)$", re.IGNORECASE
+)
 # Recognized language suffixes for auto-detecting the translation sibling.
 KNOWN_LANGS = ("ko", "en", "ja", "zh", "es", "fr", "de", "pt", "ru", "it")
 LANG_LABELS = {
@@ -75,6 +81,52 @@ def finding_key(title: str) -> str:
     """
     match = FINDING_ID_RE.search(title)
     return match.group(1) if match else slugify(title)
+
+
+def parse_proof(value: str) -> tuple[str, str] | None:
+    """Split an ``**Evidence:**`` value into (level, rest).
+
+    ``ran — `pytest -q` printed 1 failed`` -> ("ran", "— `pytest -q` printed 1 failed").
+    Returns None when the value does not open with a ladder level.
+    """
+    match = PROOF_VALUE_RE.match(value.strip())
+    if not match:
+        return None
+    return match.group(1).lower(), match.group(2).strip()
+
+
+def finding_proof(lines: list[str], start: int) -> str | None:
+    """Proof level of the finding whose body starts at ``lines[start]``."""
+    for raw in lines[start:]:
+        stripped = raw.strip()
+        if stripped.startswith('#') or re.match(r'^-{3,}$', stripped):
+            return None
+        match = EVIDENCE_LINE_RE.match(stripped)
+        if match:
+            parsed = parse_proof(match.group(1))
+            return parsed[0] if parsed else None
+    return None
+
+
+def proof_pill_html(level: str) -> str:
+    return f'<span class="proof proof-{level}" data-proof-level="{level}">{level}</span>'
+
+
+def evidence_line_html(value: str) -> str:
+    """Render ``**Evidence:** <level> <proof>`` as a labelled field with a pill."""
+    parsed = parse_proof(value)
+    if not parsed:
+        return (
+            '<p class="finding-evidence"><strong>Evidence:</strong> '
+            f'{convert_inline(escape(value))}</p>'
+        )
+    level, rest = parsed
+    caveat = ' data-proof-caveat="not-traced"' if "not traced" in rest.lower() else ""
+    rest_html = f' {convert_inline(escape(rest))}' if rest else ""
+    return (
+        f'<p class="finding-evidence"{caveat}><strong>Evidence:</strong> '
+        f'{proof_pill_html(level)}{rest_html}</p>'
+    )
 
 
 def parse_table(lines: list[str], label: str) -> str:
@@ -488,14 +540,25 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
             finding_cls = f" finding-{sl}" if sl else ""
             open_attr = " open" if current_severity in ("CRITICAL", "HIGH") else ""
             badge = f'<span class="badge badge-{sl}">{current_severity}</span>' if sl else ""
+            proof = finding_proof(lines, i + 1)
+            proof_attr = f' data-proof-level="{proof}"' if proof else ""
+            proof_pill = proof_pill_html(proof) if proof else ""
             out.append(
                 f'<details class="finding{finding_cls}"{open_attr} id="{anchor}"'
-                f' data-finding-id="{escape(fid)}">'
-                f'<summary><span class="finding-summary-text">{badge}{escape(text)}</span>'
+                f' data-finding-id="{escape(fid)}"{proof_attr}>'
+                f'<summary><span class="finding-summary-text">{badge}{escape(text)}{proof_pill}</span>'
                 f'<span class="finding-comment-chip" data-comment-chip hidden></span></summary>'
                 f'<div class="finding-body">'
             )
             in_finding_body = True
+            i += 1
+            continue
+
+        # Evidence field inside a finding: proof level pill + the proof itself
+        evidence = EVIDENCE_LINE_RE.match(stripped) if in_finding_body else None
+        if evidence:
+            flush_list(list_items)
+            out.append(evidence_line_html(evidence.group(1)))
             i += 1
             continue
 
@@ -532,7 +595,8 @@ def parse_markdown(md: str, anchor_prefix: str = "") -> tuple[str, ReportMetadat
         while i < total:
             ns = lines[i].strip()
             if not ns or ns[0] in '#|_' or ns.startswith('```') or ns.startswith('---') \
-                    or re.match(r'^[-*]\s', ns):
+                    or re.match(r'^[-*]\s', ns) \
+                    or (in_finding_body and EVIDENCE_LINE_RE.match(ns)):
                 break
             para_lines.append(ns)
             i += 1
@@ -571,6 +635,7 @@ def extract_findings(md: str) -> list[dict]:
                 'id': finding_key(title),
                 'title': title,
                 'severity': current_severity,
+                'proof': None,
                 '_lines': [raw],
             }
         elif stripped.startswith('### '):
@@ -582,6 +647,10 @@ def extract_findings(md: str) -> list[dict]:
         elif re.match(r'^-{3,}$', stripped):
             flush()
         elif cur is not None:
+            evidence = EVIDENCE_LINE_RE.match(stripped)
+            if evidence and cur['proof'] is None:
+                parsed = parse_proof(evidence.group(1))
+                cur['proof'] = parsed[0] if parsed else None
             cur['_lines'].append(raw)
 
     flush()
@@ -647,7 +716,8 @@ def render_document(md: str, lang: str) -> dict:
         'raw': md,
         'sidebar_html': build_sidebar_html(sidebar),
         'findings': {f['id']: {'title': f['title'], 'severity': f['severity'],
-                               'md': f['markdown']} for f in findings},
+                               'proof': f['proof'], 'md': f['markdown']}
+                     for f in findings},
     }
 
 

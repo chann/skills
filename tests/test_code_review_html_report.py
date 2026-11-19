@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = ROOT / "code-review" / "skills" / "code-review" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from generate_html_report import parse_markdown  # noqa: E402
+from generate_html_report import extract_findings, parse_markdown  # noqa: E402
 
 
 GENERATOR = SCRIPTS_DIR / "generate_html_report.py"
@@ -189,3 +189,114 @@ The English body is retained.
     assert 'langCodes: ["ko", "en"],' in html
     assert 'commentScope: "chann/skills::bilingual-review"' in html
     assert html.count('data-finding-id="CR-001"') == 2
+
+
+PROOF_REPORT = """# Code Review Report
+
+**Language:** en
+
+## Findings
+
+### HIGH
+
+#### [CR-001] Cache returns stale rows after invalidate
+**File:** `src/cache.py` (lines 10-14)
+**Evidence:** ran — `python3 /tmp/repro/check.py` printed:
+
+```text
+AssertionError: expected 2, got 1
+```
+
+**Observed behavior:** The cache keeps the old row.
+
+#### [CR-002] Token compared with ==
+**File:** `src/auth.py` (line 7)
+**Evidence:** `cited`, not traced — `src/auth.py:7`
+
+**Observed behavior:** A plain comparison.
+
+### LOW
+
+#### [CR-003] Name drift
+**File:** `src/names.py` (line 3)
+
+**Observed behavior:** No evidence field.
+
+Dropped: 2 (said only)
+"""
+
+
+def test_evidence_field_renders_proof_level_pill_in_body_and_summary() -> None:
+    html, _meta, _sidebar = parse_markdown(PROOF_REPORT)
+
+    assert 'data-finding-id="CR-001" data-proof-level="ran"' in html
+    assert (
+        '<p class="finding-evidence"><strong>Evidence:</strong> '
+        '<span class="proof proof-ran" data-proof-level="ran">ran</span> '
+        '— <code>python3 /tmp/repro/check.py</code> printed:</p>'
+    ) in html
+    summary_start = html.index('data-finding-id="CR-001"')
+    summary_end = html.index("</summary>", summary_start)
+    assert 'class="proof proof-ran"' in html[summary_start:summary_end]
+    # The pasted output stays a code block under the field.
+    assert "AssertionError: expected 2, got 1" in html
+
+
+def test_cited_not_traced_caveat_is_marked_and_backticked_level_parses() -> None:
+    html, _meta, _sidebar = parse_markdown(PROOF_REPORT)
+
+    assert 'data-finding-id="CR-002" data-proof-level="cited"' in html
+    assert '<p class="finding-evidence" data-proof-caveat="not-traced">' in html
+    assert '<span class="proof proof-cited" data-proof-level="cited">cited</span>' in html
+
+
+def test_finding_without_evidence_has_no_proof_pill_and_dropped_line_is_text() -> None:
+    html, _meta, _sidebar = parse_markdown(PROOF_REPORT)
+
+    start = html.index('data-finding-id="CR-003"')
+    end = html.index("</details>", start)
+    assert "data-proof-level" not in html[start - 200:end]
+    assert "<p>Dropped: 2 (said only)</p>" in html
+
+
+def test_unknown_level_falls_back_to_plain_labelled_field() -> None:
+    html, _meta, _sidebar = parse_markdown(
+        PROOF_REPORT.replace("**Evidence:** ran", "**Evidence:** runaway")
+    )
+
+    assert (
+        '<p class="finding-evidence"><strong>Evidence:</strong> runaway'
+    ) in html
+    assert 'data-finding-id="CR-001" data-proof-level' not in html
+
+
+def test_extracted_findings_carry_proof_level_for_copy_payload() -> None:
+    findings = {f["id"]: f for f in extract_findings(PROOF_REPORT)}
+
+    assert findings["CR-001"]["proof"] == "ran"
+    assert findings["CR-002"]["proof"] == "cited"
+    assert findings["CR-003"]["proof"] is None
+    assert "**Evidence:** ran" in findings["CR-001"]["markdown"]
+
+
+def test_generated_html_ships_proof_pill_styles(tmp_path: Path) -> None:
+    report = tmp_path / "proof.md"
+    output = tmp_path / "proof.html"
+    report.write_text(PROOF_REPORT, encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, str(GENERATOR), str(report), "-o", str(output)],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=30,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stdout
+    html = output.read_text(encoding="utf-8")
+    assert ".proof {" in html
+    assert ".proof-ran, .proof-reproduced {" in html
+    assert html.count('class="proof proof-ran"') == 2
+    assert '"proof": "ran"' in html
