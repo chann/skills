@@ -1,6 +1,6 @@
 ---
 name: git-resolve-conflicts
-description: Use when a merge, rebase, cherry-pick, revert, or stash pop has stopped with conflicts and the working tree must be finished rather than abandoned, including "충돌 해결해줘", "머지 컨플릭트 정리해줘", "rebase 중에 멈췄어", "resolve these conflicts", "finish this merge", "fix the conflict markers", "/git-resolve-conflicts", or "$git-resolve-conflicts". Classifies every conflicted path, recovers both sides' intent before touching a hunk, records which intent survived, and runs the project's own checks. Never aborts and never invents behavior. For merging a clean branch use git-merge-to-main or git-merge-to-dev.
+description: Use when a merge, rebase, cherry-pick, revert, or stash pop has stopped with conflicts and the working tree must be finished rather than abandoned, including "충돌 해결해줘", "머지 컨플릭트 정리해줘", "rebase 중에 멈췄어", "resolve these conflicts", "finish this merge", "fix the conflict markers", "/git-resolve-conflicts", or "$git-resolve-conflicts". Classifies every conflicted path, recovers both sides' intent before touching a hunk, records which intent survived, and runs the project's own checks. Never aborts and never invents behavior. For merging a clean branch use git-merge.
 ---
 
 # Git Resolve Conflicts
@@ -152,7 +152,7 @@ Report:
 - the checks that ran and their results;
 - anything unresolved, named explicitly.
 
-Do not push. Publication is a separate, explicit request — `git-commit-push` or
+Do not push. Publication is a separate, explicit request — `/git-commit push` or
 `/gcpr`.
 
 ## Refusals
@@ -170,9 +170,9 @@ Do not push. Publication is a separate, explicit request — `git-commit-push` o
 
 ## Integration
 
-**Pairs with:** `git-merge-to-main` and `git-merge-to-dev`, which route here when a
-merge stops; `bug-hunt` when a check fails after the resolution and the cause is
-not obvious; `git-commit-push` to publish afterwards.
+**Pairs with:** `git-merge`, which routes here when a merge stops; `bug-hunt`
+when a check fails after the resolution and the cause is not obvious;
+`git-commit push` to publish afterwards.
 
 **Use instead of:** editing conflict markers directly, which loses both intents
 and the record of the trade-off.
