@@ -22,7 +22,11 @@ equals the directory name. The name is the selector: `/<name>` in Claude Code,
 - names at least one natural-language trigger a user would actually type;
 - contains both the `/<name>` and `$<name>` selector tokens; and
 - disambiguates from sibling skills when a near neighbour exists
-  (`For defects use interrogate`).
+  (`For defects use interrogate`); and
+- parses as YAML: an unquoted value keeps `: ` (colon then space) and ` #`
+  (space then hash) out of it. An installer skips a skill whose frontmatter
+  does not parse, and a ` #` silently cuts the description short. The same
+  holds for a command file's `description`.
 
 The description is the only text the model sees before deciding to load the
 skill. `references/description-grammar.md` covers how to write one that fires on

@@ -8,8 +8,10 @@ instead of shipping.
 """
 
 import json
+import os
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -70,6 +72,45 @@ class SkillContractTests(unittest.TestCase):
             declared = "disable-model-invocation: true" in frontmatter
             with self.subTest(skill=skill_md.parent.name):
                 self.assertEqual(selector_only, declared)
+
+    def test_the_installer_accepts_every_packaged_skill(self) -> None:
+        # The installer parses frontmatter with a strict YAML parser and skips
+        # a skill it cannot read, so a skill can pass the audit and still never
+        # install. Run the real installer over the whole tree.
+        packaged = sorted(path.parent.name for path in ROOT.glob("*/skills/*/SKILL.md"))
+        environment = os.environ.copy()
+        environment.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
+
+        with tempfile.TemporaryDirectory() as target:
+            subprocess.run(["git", "init", "-q"], cwd=target, check=True)
+            result = subprocess.run(
+                [
+                    "npx",
+                    "--yes",
+                    "skills",
+                    "add",
+                    str(ROOT),
+                    "--skill",
+                    "*",
+                    "--agent",
+                    "codex",
+                    "--copy",
+                    "--yes",
+                    "--full-depth",
+                ],
+                cwd=target,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=180,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stdout)
+            installed = sorted(
+                path.name for path in (Path(target) / ".agents" / "skills").iterdir()
+            )
+            self.assertEqual(packaged, installed, result.stdout)
 
     def test_contract_document_and_auditor_cover_the_same_rules(self) -> None:
         document = CONTRACT.read_text(encoding="utf-8")

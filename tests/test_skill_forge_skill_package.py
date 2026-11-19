@@ -161,6 +161,48 @@ class SkillForgePackageTests(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, result.stdout)
 
+    def test_auditor_rejects_frontmatter_a_yaml_parser_cannot_read(self) -> None:
+        # An installer skipped a whole skill once because its unquoted
+        # description contained "Modes: none"; the audit must fail first.
+        import shutil
+        import tempfile
+
+        cases = {
+            "colon": "Use when x, /demo-skill or $demo-skill. Modes: none, push.",
+            "comment": "Use when x, /demo-skill or $demo-skill, see issue #12.",
+            "quoted": '"Use when x, /demo-skill or $demo-skill. Modes: none, push."',
+            "plain": "Use when x, /demo-skill or $demo-skill, with no hazard.",
+        }
+        for label, description in cases.items():
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as workspace:
+                skill = Path(workspace) / "demo" / "skills" / "demo-skill"
+                skill.mkdir(parents=True)
+                (skill / "SKILL.md").write_text(
+                    f"---\nname: demo-skill\ndescription: {description}\n---\n\nBody.\n",
+                    encoding="utf-8",
+                )
+                shutil.copy(AUDITOR, Path(workspace) / "audit_skills.py")
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(Path(workspace) / "audit_skills.py"),
+                        "--root",
+                        workspace,
+                        "--format",
+                        "json",
+                    ],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                )
+                yaml_violations = [
+                    violation
+                    for violation in json.loads(result.stdout)["violations"]
+                    if violation["rule"] == "C2" and "YAML" in violation["detail"]
+                ]
+                self.assertEqual(label in ("colon", "comment"), bool(yaml_violations))
+
 
 if __name__ == "__main__":
     unittest.main()

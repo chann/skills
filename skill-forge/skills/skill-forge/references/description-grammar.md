@@ -61,6 +61,7 @@ A boundary clause costs one sentence and prevents a whole class of wrong runs.
 | Two siblings fire at random | Neither names the other | Add the disambiguation clause to both |
 | Explicit invocation is ignored | `/name` or `$name` missing | Add both selector tokens |
 | Skill starts on its own | `Use when` on a workflow that should be selector-only | Switch to `Use only when` and set `disable-model-invocation: true` |
+| Skill is missing after install | The unquoted description contains `: ` or ` #`, so the frontmatter is not valid YAML and the installer skips the skill | Reword the sentence ("The modes are ...", not "Modes: ...") or quote the whole value |
 
 ## Length
 

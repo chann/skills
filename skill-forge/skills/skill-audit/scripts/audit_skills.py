@@ -36,6 +36,9 @@ MIN_EVALS = 3
 MIN_ASSERTIONS = 2
 MAX_DESCRIPTION = 1024
 MAX_SHORT_DESCRIPTION = 90
+# In an unquoted YAML value, ": " starts a nested mapping and " #" starts a
+# comment. A strict parser rejects the first and silently truncates the second.
+PLAIN_SCALAR_HAZARD = re.compile(r": | #")
 
 COUNT_PATTERNS = {
     "workflows": (
@@ -96,8 +99,8 @@ class Report:
         self.violations.append(Violation(rule, skill, detail, path))
 
 
-def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
-    """Parse the flat `key: value` frontmatter block a SKILL.md uses."""
+def raw_frontmatter(text: str) -> tuple[dict[str, str], str]:
+    """Read the flat `key: value` frontmatter block exactly as written."""
     if not text.startswith("---"):
         return {}, text
     end = text.find("\n---", 3)
@@ -116,10 +119,35 @@ def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
             fields[key] = match.group(2).strip()
         elif key and line.startswith((" ", "\t")):
             fields[key] = f"{fields[key]} {line.strip()}".strip()
+    return fields, body
+
+
+def parse_frontmatter(text: str) -> tuple[dict[str, str], str]:
+    """Parse the flat `key: value` frontmatter block a SKILL.md uses."""
+    fields, body = raw_frontmatter(text)
     for key, value in fields.items():
         if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
             fields[key] = value[1:-1]
     return fields, body
+
+
+def yaml_hazard(path: Path, key: str = "description") -> str | None:
+    """Name what makes an unquoted frontmatter value unreadable as YAML.
+
+    Installers parse frontmatter with a strict YAML parser and skip the whole
+    skill when it fails, so the hazard has to fail the audit first.
+    """
+    value = raw_frontmatter(path.read_text(encoding="utf-8"))[0].get(key, "")
+    if value[:1] in ("\"", "'", "|", ">"):
+        return None
+    hazard = PLAIN_SCALAR_HAZARD.search(value)
+    if not hazard:
+        return None
+    return (
+        f"unquoted {key} contains {hazard.group()!r} near "
+        f"{value[max(0, hazard.start() - 20) : hazard.end() + 10]!r}, which YAML "
+        "rejects or truncates; reword it or quote the value"
+    )
 
 
 def parse_yaml_interface(text: str) -> dict[str, str]:
@@ -213,6 +241,9 @@ def check_c2(skill: Skill, report: Report) -> None:
             f"description is {len(description)} characters, over {MAX_DESCRIPTION}",
             path,
         )
+    hazard = yaml_hazard(skill.directory / "SKILL.md")
+    if hazard:
+        report.add("C2", skill.name, hazard, path)
 
 
 def check_c3(skill: Skill, report: Report) -> None:
@@ -286,6 +317,9 @@ def check_c5(skill: Skill, report: Report) -> None:
     frontmatter, _ = parse_frontmatter(command.read_text(encoding="utf-8"))
     if not frontmatter.get("description"):
         report.add("C5", skill.name, "command frontmatter has no description", relative)
+    hazard = yaml_hazard(command)
+    if hazard:
+        report.add("C5", skill.name, f"command {hazard}", relative)
 
 
 def check_c6(skill: Skill, report: Report) -> None:
