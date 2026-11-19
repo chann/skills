@@ -54,8 +54,8 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
               <code>$review-me</code>
             </li>
             <li>
-              <span>Code Review</span>
-              <code>$code-review</code>
+              <span>Interrogate</span>
+              <code>$interrogate</code>
             </li>
             <li>
               <span>Diff Summary</span>
