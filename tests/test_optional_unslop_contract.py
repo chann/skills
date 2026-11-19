@@ -58,7 +58,7 @@ class OptionalUnslopContractTests(unittest.TestCase):
                 self.assertNotIn("dependencies", metadata)
                 self.assertNotIn("unslop", json.dumps(metadata))
 
-    def test_each_selector_installs_without_human_friendly_writing(self) -> None:
+    def test_each_selector_installs_without_unslop(self) -> None:
         environment = os.environ.copy()
         environment.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
 
