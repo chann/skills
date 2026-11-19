@@ -26,11 +26,11 @@
     {
       "id": 3,
       "prompt": "Show me the diff and tell me which parts are risky.",
-      "expected_output": "Renders the patch and routes the risk assessment to code-review instead of producing findings itself.",
+      "expected_output": "Renders the patch and routes the risk assessment to interrogate instead of producing findings itself.",
       "files": [],
       "assertions": [
         "No severity-tagged findings are produced by this skill.",
-        "The risk assessment is routed to `code-review` by name.",
+        "The risk assessment is routed to `interrogate` by name.",
         "The raw-patch boundary is stated explicitly."
       ]
     },

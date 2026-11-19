@@ -1,6 +1,6 @@
 ---
 name: diff-summary
-description: Use when the user wants an explanatory code, diff, branch, commit, or PR change summary, including "코드를 요약해줘", "변경사항을 요약해줘", "diff 요약", "main..dev 코드를 요약해줘", "브랜치 변경 요약", "PR 변경 요약", "summarize the code changes", "summarize this diff", "change summary", "main..dev summary", "what changed between branches", "summarize this PR", "/diff-summary", or "$diff-summary". Produces evidence-based purpose, behavior, architecture, patterns, contracts, tests, and operations in Markdown and interactive HTML. Use diff-summary-md for a Markdown-only artifact, diff-summary-quiz for a comprehension quiz, code-review for defects and risks, and diff-viewer for a raw patch; when both summary and review are requested, run distinct workflows.
+description: Use when the user wants an explanatory code, diff, branch, commit, or PR change summary, including "코드를 요약해줘", "변경사항을 요약해줘", "diff 요약", "main..dev 코드를 요약해줘", "브랜치 변경 요약", "PR 변경 요약", "summarize the code changes", "summarize this diff", "change summary", "main..dev summary", "what changed between branches", "summarize this PR", "/diff-summary", or "$diff-summary". Add --md ("마크다운 요약만 저장", "markdown-only diff summary") for Markdown files with no HTML, or --quiz ("diff 퀴즈 만들어줘", "quiz me on this diff") for a comprehension quiz. Produces evidence-based purpose, behavior, architecture, patterns, contracts, tests, and operations in Korean and English Markdown plus interactive HTML. Use interrogate for defects and risks (formerly code-review), diff-viewer for a raw patch, and how for how existing code works; when both summary and review are requested, run distinct workflows.
 ---
 
 # Diff Summary
@@ -9,17 +9,29 @@ description: Use when the user wants an explanatory code, diff, branch, commit, 
 
 Turn a precisely scoped git diff into aligned Korean and English evidence-based explanatory reports plus one self-contained bilingual HTML report. Explain what changed, why it matters, and how the changed pieces relate without turning the summary into a defect review.
 
+## Options
+
+| Invocation | Result |
+|---|---|
+| `/diff-summary [scope]` | Aligned Korean and English Markdown plus one bilingual interactive HTML report, opened in a browser (default) |
+| `/diff-summary [scope] --md`, "markdown only", "마크다운만" | The two Markdown files only: no HTML, no browser |
+| `/diff-summary [scope] --quiz`, "퀴즈", "quiz me" | The default report with an aligned `## Quiz` in both languages and an interactive quiz in the HTML |
+| `/diff-summary [scope] --md --quiz` | Both Markdown files with the aligned `## Quiz` and nothing else: the generator validates the quiz section in Markdown-only mode, and `--md` decides that no HTML or browser is produced |
+
+Strip only the exact tokens `--md` and `--quiz` (or their natural-language equivalents) from the request. Everything else is the scope and is preserved exactly as the rules below require. The option changes the authoring and generation steps; every collection, validation, and safety rule below applies to all modes unchanged.
+
 ## Choose The Right Workflow
 
 | User intent | Workflow |
 |---|---|
 | Explain what changed, why, and how the pieces fit together | `diff-summary` |
-| Persist the summary as a Markdown-only artifact, with no HTML and no browser open | `diff-summary-md` |
-| Produce the summary plus an interactive comprehension quiz | `diff-summary-quiz` |
-| Find defects, regressions, vulnerabilities, or review findings | `code-review` or `code-review-md` |
+| Persist the summary as a Markdown-only artifact, with no HTML and no browser open | `diff-summary --md` |
+| Produce the summary plus an interactive comprehension quiz | `diff-summary --quiz` |
+| Find defects, regressions, vulnerabilities, or review findings | `interrogate` when installed; otherwise say review is out of scope here |
+| Explain how existing code works, with no change to explain | `how` when installed |
 | Display the raw patch with no explanatory analysis | `diff-viewer` |
 
-Do not attach review severity to explanatory observations. If the request combines summary and review, keep the summary cards separate from clearly labeled review findings and use the code-review workflow for those findings.
+Do not attach review severity to explanatory observations. If the request combines summary and review, keep the summary cards separate from clearly labeled review findings and use the review workflow for those findings.
 
 ## Use The Packaged Evidence Collector
 
@@ -246,6 +258,34 @@ Every card must contain exactly one `Category`, `Impact`, and `Files` field befo
 
 Use Markdown headings, tables, lists, inline code, and fenced code or diff blocks supported by the packaged renderer. Keep the observed change, practical consequence, and evidence in the prose body, with file paths, symbols, configuration keys, or exact command facts. The renderer extracts each card's exact Markdown slice for its per-card **Copy Markdown** action and uses its stable identity for comments.
 
+## Quiz Authoring Contract (`--quiz`)
+
+Add `## Quiz` as the final level-two section of each report before generation. The heading `Quiz` and the `**Explanation:**` key are parser-significant English keys; question prose stays in each report's language.
+
+- Author five questions by default. Use fewer only when the diff cannot support five without padding, and never state facts absent from the report's evidence.
+- Aim for medium difficulty: a reader should need to understand the substance of the change — purpose, behavior, architecture, contracts, operations — not trivia such as line counts. Wrong options must be plausible; no trick questions.
+- Each question is a `#### [QZ-001] Title` heading. Question IDs are unique and sequential from `QZ-001`, mirroring the `DS-*` rules.
+- The Korean and English quiz sections use the same `QZ-*` IDs in the same order, the same option count, and the same correct-option position. Translate the question, options, and explanation without changing what knowledge is tested.
+- Options are one contiguous task list of 2 to 6 single-line items shaped exactly `- [ ] option`, with exactly one correct option marked `- [x]`. Duplicate option text is rejected.
+- Exactly one non-empty `**Explanation:**` line follows the options and justifies the correct answer with report evidence. Only blank lines may follow it inside the question.
+- Question prose may appear between the heading and the options. Quiz-like lines inside fenced code are inert.
+
+```markdown
+## Quiz
+
+#### [QZ-001] 이 변경 이후 Git 실행을 소유하는 구성 요소는 무엇인가요?
+
+- [ ] generate_summary_report.py
+- [x] collect_diff_evidence.py
+- [ ] summary-template.html
+
+**Explanation:** 수집기는 이 워크플로의 유일한 Git/GitHub 런타임이며, 렌더러는 표현만 담당합니다.
+```
+
+Question-level validation errors identify the question ID and heading line. Quiz-section validation errors identify the relevant source line. Fix the Markdown and rerun the packaged generator rather than dropping the quiz or claiming partial delivery.
+
+In the generated HTML, each option is a clickable control: one click marks the choice correct or incorrect, highlights the correct answer, disables the question, and reveals the explanation. Printing the page produces an answer key. The page needs no network access and stores no quiz state. In Markdown the `- [x]` mark is the answer key.
+
 ## Write, Render, And Open
 
 1. Put the local canonical `YYYY-MM-DD` in `Date` and the exact, unsanitized collector scope in `Scope`. Do not compute or supply an artifact filename. The packaged generator owns that operation: fixed scopes become stable tags; arbitrary scopes encode `..` as `-dot2-` and `...` as `-dot3-`, cap the readable portion at 60 characters, and append the first 12 lowercase hex characters of SHA-256 over the exact UTF-8 scope. This makes two-dot, three-dot, and punctuation-sanitization collisions distinct.
@@ -265,9 +305,24 @@ Use Markdown headings, tables, lists, inline code, and fenced code or diff block
 5. Verify that all three files exist, that the HTML is self-contained, and that the language control switches between the aligned Korean and English views without navigation. Then use the host agent's browser/file-opening capability to open the absolute HTML `file://` URI; do not delegate opening through repository PATH or an ambient `BROWSER` command.
 6. If host browser opening fails, keep the valid files and report the warning instead of treating the report as missing. The renderer's optional `--open` path also uses only a fixed system launcher with `BROWSER` and Python startup variables removed, but the host-open path is preferred.
 
-Completion requires both Markdown reports, the bilingual HTML report, and an attempted browser open. A malformed or misaligned report or output error is incomplete: fix the Markdown contract or output path and rerun the renderer rather than claiming partial delivery.
+Outside `--md`, completion requires both Markdown reports, the bilingual HTML report, and an attempted browser open. A malformed or misaligned report or output error is incomplete: fix the Markdown contract or output path and rerun the renderer rather than claiming partial delivery.
 
 If `.diff-summaries/` is not ignored by the target repository, suggest adding it to that repository's `.gitignore`. Never edit `.gitignore` automatically.
+
+### Markdown only (`--md`)
+
+Author the same aligned Korean and English pair, then change only the generation step: add `--markdown-only` to the same fixed argv and omit `--theme`.
+
+```text
+/absolute/trusted/python3 -I <skill-path>/scripts/generate_summary_report.py \
+  --bilingual-json-stdin \
+  --output-directory ".diff-summaries" \
+  --markdown-only
+```
+
+Send the same `{"ko":"...","en":"..."}` object through standard input. The generator validates both full report contracts and their alignment, derives the collision-safe stem, and atomically writes only `.diff-summaries/<date>_<scope-tag>.md` and `.diff-summaries/<date>_<scope-tag>.en.md`. Require a zero exit status and use the exact absolute Markdown paths it prints.
+
+Do not generate the HTML report, do not use `--open`, and do not attempt a browser open; point a request for the interactive page at the default mode. For an explicitly requested single language, use the legacy `--markdown-stdin --markdown-only` path. Completion in this mode requires both Markdown files and nothing else.
 
 ## Conversation Handoff
 
@@ -281,9 +336,13 @@ Report only these artifact and verification facts:
 
 Do not repeat card or Executive Summary prose, even for one-card mechanical diffs.
 
+Mode adjustments: with `--quiz`, add the generated question count and never repeat quiz prose. With `--md`, report only the two absolute Markdown paths and omit the HTML path and the browser-open fact.
+
 ## Empty Or Invalid Scope
 
 - For current or unstaged changes, an empty tracked diff is not sufficient: apply the untracked rules above and report no changes only when the tracked diff and the untracked list are both empty. For scopes that cannot contain untracked files, if the valid evidence command returns an empty diff, report that exact empty scope and do not invent cards. Do not create artifacts unless the user explicitly requests an empty report.
 - If a ref, range, PR, repository, or command is invalid, show the concise error and ask for a corrected scope. Do not fall back to the working tree.
 - If an explicit range is valid but unexpectedly empty, preserve it, report the result, and offer a likely alternative only as a suggestion.
 - If `gh` or PR access is unavailable, report that limitation rather than substituting a local branch comparison.
+
+**Reply:** the exact scope and evidence command, card count (plus question count with `--quiz`), languages, absolute artifact paths (Markdown only with `--md`), the browser-open result or warning (none with `--md`), fresh verification, and material unknowns, with no card, Executive Summary, or quiz prose.
