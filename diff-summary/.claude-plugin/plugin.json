@@ -1,0 +1,5 @@
+{
+  "name": "diff-summary",
+  "description": "Evidence-based diff, branch, commit, and PR change summaries in Korean and English Markdown plus interactive HTML, with --md for Markdown only and --quiz for a comprehension quiz (diff-summary), and a raw diff viewer (diff-viewer).",
+  "version": "3.0.0"
+}

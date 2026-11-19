@@ -1,5 +1,5 @@
 {
   "name": "plan-summary",
-  "description": "Bilingual plan, PRD, and design-document summaries through plan-summary, plan-summary-md, and plan-summary-quiz.",
-  "version": "1.0.0"
+  "description": "Bilingual plan, PRD, and design-document summaries in Korean and English Markdown plus HTML, with --md for Markdown only and --quiz for a comprehension quiz.",
+  "version": "2.0.0"
 }

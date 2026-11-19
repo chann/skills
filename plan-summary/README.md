@@ -2,52 +2,36 @@
 
 [한국어](README.ko.md)
 
-Summarize explicitly selected plans, PRDs, specifications, and design documents as matching Korean and English reports. The plugin ships three independently installable selectors.
+Summarize explicitly selected plans, PRDs, specifications, and design documents as matching Korean and English reports. One skill covers three output modes through options.
 
 ## Workflows
 
 | Claude Code | Codex | Artifacts |
 | --- | --- | --- |
-| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | Korean Markdown, English Markdown, bilingual HTML |
-| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | Korean and English Markdown only |
-| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | Korean and English Markdown plus interactive bilingual quiz HTML |
+| `/plan-summary <source-path ...>` | `$plan-summary <source-path ...>` | Korean Markdown, English Markdown, bilingual HTML |
+| `/plan-summary <source-path ...> --md` | `$plan-summary <source-path ...> --md` | Korean and English Markdown only |
+| `/plan-summary <source-path ...> --quiz` | `$plan-summary <source-path ...> --quiz` | Korean and English Markdown plus interactive bilingual quiz HTML |
 
-Natural-language triggers include “summarize this plan,” “summarize this PRD,” “design document summary,” and their Korean equivalents.
+Natural-language equivalents also work: "markdown only" and "마크다운만" select `--md`; "퀴즈" and "quiz me" select `--quiz`. Using both options writes the two Markdown files with their quiz sections and no HTML. Other triggers include "summarize this plan," "summarize this PRD," "design document summary," and their Korean equivalents.
 
 ## Installation
 
-Install all three globally:
+Install globally:
 
 ```bash
 npx skills add chann/skills \
   --skill plan-summary \
-  --skill plan-summary-md \
-  --skill plan-summary-quiz \
   --agent claude-code codex \
   --global --yes
 ```
 
-Install all three in the current project:
-
-```bash
-npx skills add chann/skills \
-  --skill plan-summary \
-  --skill plan-summary-md \
-  --skill plan-summary-quiz
-```
-
-Each exact selector can also be installed alone:
+Install in the current project:
 
 ```bash
 npx skills add chann/skills --skill plan-summary
-npx skills add chann/skills --skill plan-summary-md
-npx skills add chann/skills --skill plan-summary-quiz
 ```
 
-The Markdown and quiz variants carry synchronized copies of the workflow, collector, generator, and HTML template. A standalone exact-selector installation does not depend on a sibling skill directory.
-All three selectors also carry their own natural-Korean fallback. If the
-runtime already exposes `human-friendly-writing`, they may use it as an
-optional wording-only pass before validation; they never install or require it.
+The skill bundles its collector, generator, and HTML template, so a standalone installation does not depend on a sibling skill directory. It also carries its own natural-Korean rules. If the runtime already exposes `unslop`, the skill may use it as an optional wording-only pass before validation; it never installs or requires it.
 
 ## Input boundary
 
@@ -57,19 +41,18 @@ The packaged `collect_plan_evidence.py` reads a bounded JSON request from standa
 
 ## Report requirements
 
-Korean and English reports use the same evidence map. Their source order, digests, `PS-*` card IDs, categories, and source references must match. The generator rejects mismatches rather than silently dropping a claim.
-Korean prose stays direct and concrete. The same alignment and artifact
-validation runs again after any optional writing pass.
+Korean and English reports use the same evidence map. Their source order, digests, `PS-*` card IDs, categories, and source references must match. The generator rejects mismatches rather than silently dropping a claim. Korean prose stays direct and concrete, and the same alignment and artifact validation runs again after any optional writing pass.
 
-`plan-summary-quiz` adds corresponding `QZ-*` questions with 2–6 options, exactly one correct answer, and evidence-backed explanations. Both languages keep the same option count and answer position.
+With `--quiz`, both reports end with corresponding `QZ-*` questions with 2–6 options, exactly one correct answer, and evidence-backed explanations. Both languages keep the same option count and answer position.
 
 ## Artifacts
 
-| Selector | Korean Markdown | English Markdown | HTML | Browser |
+| Mode | Korean Markdown | English Markdown | HTML | Browser |
 | --- | --- | --- | --- | --- |
-| `plan-summary` | yes | yes | bilingual | open attempt |
-| `plan-summary-md` | yes | yes | no | no |
-| `plan-summary-quiz` | yes, with quiz | yes, with quiz | bilingual, interactive | open attempt |
+| default | yes | yes | bilingual | open attempt |
+| `--md` | yes | yes | no | no |
+| `--quiz` | yes, with quiz | yes, with quiz | bilingual, interactive | open attempt |
+| `--md --quiz` | yes, with quiz | yes, with quiz | no | no |
 
 Files are atomically created under `.plan-summaries/` with a collision-safe stem derived from the local date and ordered source identity. Source documents are never modified or overwritten.
 
@@ -77,4 +60,4 @@ Files are atomically created under `.plan-summaries/` with a collision-safe stem
 
 - Python 3.10+ using only the standard library
 - A host agent that can send JSON through standard input to a fixed process argv
-- A browser/file-opening capability for the two HTML selectors
+- A browser/file-opening capability for modes that produce HTML

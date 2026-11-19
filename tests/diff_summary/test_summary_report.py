@@ -15,7 +15,7 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS_DIR = ROOT / "code-review" / "skills" / "diff-summary" / "scripts"
+SCRIPTS_DIR = ROOT / "diff-summary" / "skills" / "diff-summary" / "scripts"
 SCRIPT_PATH = SCRIPTS_DIR / "generate_summary_report.py"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -3315,6 +3315,42 @@ class MarkdownOnlyCliTests(unittest.TestCase):
                 self.assertIn(expected_error, result.stderr)
                 self.assertFalse(self.artifact_root.exists())
 
+    def test_markdown_only_validates_and_writes_an_aligned_bilingual_quiz(self) -> None:
+        english_quiz_report = ENGLISH_REPORT + "\n" + QUIZ_SECTION
+        expected_stem = f"2026-07-13_{renderer.scope_tag('main..dev')}"
+
+        result = self.run_cli(
+            "--bilingual-json-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            "--markdown-only",
+            stdin=json.dumps({"ko": QUIZ_REPORT, "en": english_quiz_report}),
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            sorted(path.name for path in self.artifact_root.iterdir()),
+            [f"{expected_stem}.en.md", f"{expected_stem}.md"],
+        )
+        self.assertIn("Quiz questions: 2", result.stdout)
+        self.assertNotIn("HTML:", result.stdout)
+
+    def test_markdown_only_rejects_a_misaligned_bilingual_quiz(self) -> None:
+        english_quiz_report = ENGLISH_REPORT + "\n" + QUIZ_SECTION
+        misaligned = english_quiz_report[: english_quiz_report.index("#### [QZ-002]")]
+
+        result = self.run_cli(
+            "--bilingual-json-stdin",
+            "--output-directory",
+            str(self.artifact_root),
+            "--markdown-only",
+            stdin=json.dumps({"ko": QUIZ_REPORT, "en": misaligned}),
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertRegex(result.stderr, r"QZ question count")
+        self.assertFalse(self.artifact_root.exists())
+
     def test_quiz_question_count_is_reported_in_generation_output(self) -> None:
         with_quiz = self.run_cli(
             "--markdown-stdin",
@@ -3354,7 +3390,7 @@ class MarkdownOnlyCliTests(unittest.TestCase):
 class SkillRendererIntegrationTests(unittest.TestCase):
     def test_documented_report_template_is_parseable_and_renderable(self) -> None:
         skill_text = (
-            ROOT / "code-review" / "skills" / "diff-summary" / "SKILL.md"
+            ROOT / "diff-summary" / "skills" / "diff-summary" / "SKILL.md"
         ).read_text(encoding="utf-8")
         match = re.search(
             r"Use this top-level structure:\n\n```markdown\n(?P<report>.*?)\n```",
@@ -3376,10 +3412,7 @@ class SkillRendererIntegrationTests(unittest.TestCase):
 
     def test_documented_quiz_example_is_parseable_and_renderable(self) -> None:
         main_skill_text = (
-            ROOT / "code-review" / "skills" / "diff-summary" / "SKILL.md"
-        ).read_text(encoding="utf-8")
-        quiz_skill_text = (
-            ROOT / "code-review" / "skills" / "diff-summary-quiz" / "SKILL.md"
+            ROOT / "diff-summary" / "skills" / "diff-summary" / "SKILL.md"
         ).read_text(encoding="utf-8")
         report_match = re.search(
             r"Use this top-level structure:\n\n```markdown\n(?P<report>.*?)\n```",
@@ -3388,7 +3421,7 @@ class SkillRendererIntegrationTests(unittest.TestCase):
         )
         quiz_match = re.search(
             r"```markdown\n(?P<quiz>## Quiz\n.*?)\n```",
-            quiz_skill_text,
+            main_skill_text,
             re.DOTALL,
         )
         if report_match is None or quiz_match is None:

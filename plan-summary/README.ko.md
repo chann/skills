@@ -2,52 +2,36 @@
 
 [English](README.md)
 
-사용자가 지정한 계획, PRD, 명세서와 설계 문서를 내용과 근거가 서로 맞는 한국어·영어 보고서로 요약합니다. 세 selector는 각각 독립적으로 설치할 수 있습니다.
+사용자가 지정한 계획, PRD, 명세서와 설계 문서를 내용과 근거가 서로 맞는 한국어·영어 보고서로 요약합니다. 스킬 하나가 옵션으로 세 가지 출력을 맡습니다.
 
 ## 워크플로
 
 | Claude Code | Codex | 산출물 |
 | --- | --- | --- |
-| `/plan-summary [source-path ...]` | `$plan-summary [source-path ...]` | 한국어 Markdown, 영어 Markdown, 이중언어 HTML |
-| `/plan-summary-md [source-path ...]` | `$plan-summary-md [source-path ...]` | 한국어·영어 Markdown만 생성 |
-| `/plan-summary-quiz [source-path ...]` | `$plan-summary-quiz [source-path ...]` | 한국어·영어 Markdown과 대화형 이중언어 퀴즈 HTML |
+| `/plan-summary <source-path ...>` | `$plan-summary <source-path ...>` | 한국어 Markdown, 영어 Markdown, 이중언어 HTML |
+| `/plan-summary <source-path ...> --md` | `$plan-summary <source-path ...> --md` | 한국어·영어 Markdown만 생성 |
+| `/plan-summary <source-path ...> --quiz` | `$plan-summary <source-path ...> --quiz` | 한국어·영어 Markdown과 대화형 이중언어 퀴즈 HTML |
 
-“plan 요약”, “PRD 요약”, “설계문서 요약”, “기획서 요약” 같은 자연어로도 활성화됩니다.
+"마크다운만", "markdown only"는 `--md`로, "퀴즈", "quiz me"는 `--quiz`로 인식합니다. 두 옵션을 함께 쓰면 퀴즈 섹션이 들어간 Markdown 두 개만 만들고 HTML은 만들지 않습니다. “plan 요약”, “PRD 요약”, “설계문서 요약”, “기획서 요약” 같은 자연어로도 활성화됩니다.
 
 ## 설치
 
-세 selector를 전역으로 설치:
+전역으로 설치:
 
 ```bash
 npx skills add chann/skills \
   --skill plan-summary \
-  --skill plan-summary-md \
-  --skill plan-summary-quiz \
   --agent claude-code codex \
   --global --yes
 ```
 
-세 selector를 현재 프로젝트에 설치:
-
-```bash
-npx skills add chann/skills \
-  --skill plan-summary \
-  --skill plan-summary-md \
-  --skill plan-summary-quiz
-```
-
-필요한 selector 하나만 설치할 수도 있습니다:
+현재 프로젝트에 설치:
 
 ```bash
 npx skills add chann/skills --skill plan-summary
-npx skills add chann/skills --skill plan-summary-md
-npx skills add chann/skills --skill plan-summary-quiz
 ```
 
-Markdown 전용판과 퀴즈판에는 워크플로, 수집기, 생성기와 HTML 템플릿의 동일한 복사본이 들어 있습니다. selector 하나만 설치해도 다른 스킬 디렉터리 없이 실행됩니다.
-세 스킬 모두 자연스러운 한국어를 쓰는 기본 규칙을 포함합니다.
-`human-friendly-writing`이 이미 있으면 검증 전에 문장만 한 번 더 다듬지만,
-해당 스킬을 설치하거나 요구하지 않습니다.
+스킬에 수집기, 생성기, HTML 템플릿이 함께 들어 있어 다른 스킬 디렉터리 없이 실행됩니다. 자연스러운 한국어를 쓰는 기본 규칙도 포함합니다. `unslop`이 이미 있으면 검증 전에 문장만 한 번 더 다듬지만, 해당 스킬을 설치하거나 요구하지 않습니다.
 
 ## 입력 경계
 
@@ -57,19 +41,18 @@ Markdown 전용판과 퀴즈판에는 워크플로, 수집기, 생성기와 HTML
 
 ## 보고서 작성 규칙
 
-한국어와 영어 보고서는 같은 근거를 사용합니다. 소스 순서, 해시값, `PS-*` 카드 ID, 분류와 출처가 서로 일치해야 합니다. 생성기는 두 언어의 내용이 어긋나면 그대로 넘어가지 않고 출력을 거부합니다.
-한국어는 군더더기 없이 구체적으로 쓰며, 선택적 윤문 뒤에도 두 언어의 내용과
-결과 파일을 다시 검증합니다.
+한국어와 영어 보고서는 같은 근거를 사용합니다. 소스 순서, 해시값, `PS-*` 카드 ID, 분류와 출처가 서로 일치해야 합니다. 생성기는 두 언어의 내용이 어긋나면 그대로 넘어가지 않고 출력을 거부합니다. 한국어는 군더더기 없이 구체적으로 쓰며, 선택적 윤문 뒤에도 두 언어의 내용과 결과 파일을 다시 검증합니다.
 
-`plan-summary-quiz`는 마지막에 한국어와 영어가 서로 대응하는 `QZ-*` 문제를 추가합니다. 각 문제에는 선택지 2–6개, 정확히 하나의 정답과 근거가 있는 해설이 있으며, 두 언어의 선택지 수와 정답 위치가 같습니다.
+`--quiz`이면 두 보고서 마지막에 한국어와 영어가 서로 대응하는 `QZ-*` 문제를 추가합니다. 각 문제에는 선택지 2–6개, 정확히 하나의 정답과 근거가 있는 해설이 있으며, 두 언어의 선택지 수와 정답 위치가 같습니다.
 
 ## 산출물
 
-| Selector | 한국어 Markdown | 영어 Markdown | HTML | 브라우저 |
+| 모드 | 한국어 Markdown | 영어 Markdown | HTML | 브라우저 |
 | --- | --- | --- | --- | --- |
-| `plan-summary` | 생성 | 생성 | 이중언어 | 열기 시도 |
-| `plan-summary-md` | 생성 | 생성 | 생성하지 않음 | 열지 않음 |
-| `plan-summary-quiz` | 퀴즈 포함 | 퀴즈 포함 | 이중언어·대화형 | 열기 시도 |
+| 기본 | 생성 | 생성 | 이중언어 | 열기 시도 |
+| `--md` | 생성 | 생성 | 생성하지 않음 | 열지 않음 |
+| `--quiz` | 퀴즈 포함 | 퀴즈 포함 | 이중언어·대화형 | 열기 시도 |
+| `--md --quiz` | 퀴즈 포함 | 퀴즈 포함 | 생성하지 않음 | 열지 않음 |
 
 파일은 로컬 날짜와 순서대로 지정한 소스를 기준으로 충돌하지 않는 이름을 정해 `.plan-summaries/` 아래에 한 번에 생성합니다. 원본 문서는 수정하거나 덮어쓰지 않습니다.
 
@@ -77,4 +60,4 @@ Markdown 전용판과 퀴즈판에는 워크플로, 수집기, 생성기와 HTML
 
 - 표준 라이브러리만 사용하는 Python 3.10+
 - 고정된 프로세스 인자에 JSON을 표준 입력으로 보낼 수 있는 호스트 에이전트
-- HTML selector 두 개를 위한 브라우저/파일 열기 기능
+- HTML을 만드는 모드를 위한 브라우저/파일 열기 기능

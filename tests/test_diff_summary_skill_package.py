@@ -11,10 +11,11 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CODE_REVIEW = ROOT / "code-review"
-DIFF_SUMMARY = CODE_REVIEW / "skills" / "diff-summary"
-DIFF_SUMMARY_MD = CODE_REVIEW / "skills" / "diff-summary-md"
-DIFF_SUMMARY_QUIZ = CODE_REVIEW / "skills" / "diff-summary-quiz"
+PLUGIN = ROOT / "diff-summary"
+DIFF_SUMMARY = PLUGIN / "skills" / "diff-summary"
+DIFF_VIEWER = PLUGIN / "skills" / "diff-viewer"
+# Variant selectors folded into `diff-summary --md` and `diff-summary --quiz`.
+REMOVED_VARIANT_SKILLS = ("diff-summary-md", "diff-summary-quiz")
 DESIGN = ROOT / "docs" / "superpowers" / "specs" / "2026-07-13-diff-summary-design.md"
 PLAN = ROOT / "docs" / "superpowers" / "plans" / "2026-07-13-diff-summary.md"
 HARDENED_GIT_PREFIX = (
@@ -115,14 +116,18 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         expected_files = (
             DIFF_SUMMARY / "SKILL.md",
             DIFF_SUMMARY / "agents" / "openai.yaml",
+            DIFF_SUMMARY / "evals" / "evals.json",
             DIFF_SUMMARY / "scripts" / "collect_diff_evidence.py",
             DIFF_SUMMARY / "scripts" / "generate_summary_report.py",
             DIFF_SUMMARY / "assets" / "summary-template.html",
-            DIFF_SUMMARY_MD / "SKILL.md",
-            DIFF_SUMMARY_QUIZ / "SKILL.md",
-            CODE_REVIEW / "commands" / "diff-summary.md",
-            CODE_REVIEW / "commands" / "diff-summary-md.md",
-            CODE_REVIEW / "commands" / "diff-summary-quiz.md",
+            DIFF_VIEWER / "SKILL.md",
+            DIFF_VIEWER / "scripts" / "generate_diff_report.py",
+            DIFF_VIEWER / "assets" / "diff-template.html",
+            PLUGIN / ".claude-plugin" / "plugin.json",
+            PLUGIN / "README.md",
+            PLUGIN / "README.ko.md",
+            PLUGIN / "commands" / "diff-summary.md",
+            PLUGIN / "commands" / "diff-viewer.md",
         )
 
         for path in expected_files:
@@ -131,55 +136,46 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                     path.is_file(), f"canonical package file is missing: {path}"
                 )
 
-    def test_variant_skills_bundle_a_synchronized_standalone_runtime(self) -> None:
-        canonical_files = {
-            Path("references/diff-summary-workflow.md"): (
-                DIFF_SUMMARY / "SKILL.md"
-            ).read_text(encoding="utf-8").split("---\n", 2)[2].lstrip("\n"),
-            Path("scripts/collect_diff_evidence.py"): (
-                DIFF_SUMMARY / "scripts" / "collect_diff_evidence.py"
-            ).read_text(encoding="utf-8"),
-            Path("scripts/generate_summary_report.py"): (
-                DIFF_SUMMARY / "scripts" / "generate_summary_report.py"
-            ).read_text(encoding="utf-8"),
-            Path("assets/summary-template.html"): (
-                DIFF_SUMMARY / "assets" / "summary-template.html"
-            ).read_text(encoding="utf-8"),
-        }
+    def test_variant_selectors_are_gone_and_one_runtime_copy_remains(self) -> None:
+        for name in REMOVED_VARIANT_SKILLS:
+            with self.subTest(name=name):
+                self.assertFalse((PLUGIN / "skills" / name).exists())
+                self.assertFalse((PLUGIN / "commands" / f"{name}.md").exists())
+                self.assertFalse((ROOT / "code-review" / "skills" / name).exists())
+        self.assertFalse((ROOT / "code-review" / "skills" / "diff-summary").exists())
+        self.assertFalse((ROOT / "code-review" / "skills" / "diff-viewer").exists())
 
-        for variant in (DIFF_SUMMARY_MD, DIFF_SUMMARY_QUIZ):
-            with self.subTest(variant=variant.name):
+        self.assertEqual(
+            sorted(path.name for path in (PLUGIN / "skills").iterdir()),
+            ["diff-summary", "diff-viewer"],
+        )
+        for filename in (
+            "collect_diff_evidence.py",
+            "generate_summary_report.py",
+            "summary-template.html",
+            "diff-summary-workflow.md",
+        ):
+            with self.subTest(filename=filename):
+                copies = [
+                    path
+                    for path in PLUGIN.rglob(filename)
+                    if path.is_file()
+                ]
                 self.assertEqual(
-                    sorted(
-                        path.relative_to(variant)
-                        for path in variant.rglob("*")
-                        if path.is_file()
-                    ),
-                    sorted(
-                        [
-                            Path("SKILL.md"),
-                            Path("agents/openai.yaml"),
-                            Path("evals/evals.json"),
-                            *canonical_files,
-                        ]
-                    ),
+                    len(copies),
+                    0 if filename == "diff-summary-workflow.md" else 1,
+                    copies,
                 )
-                for relative_path, canonical_text in canonical_files.items():
-                    self.assertEqual(
-                        (variant / relative_path).read_text(encoding="utf-8"),
-                        canonical_text,
-                        f"standalone runtime drifted: {variant.name}/{relative_path}",
-                    )
 
     def test_plugin_metadata_registers_diff_summary_release(self) -> None:
-        metadata = json.loads(
-            (CODE_REVIEW / ".claude-plugin" / "plugin.json").read_text()
-        )
+        metadata = json.loads((PLUGIN / ".claude-plugin" / "plugin.json").read_text())
 
-        self.assertEqual(metadata["version"], "2.5.0")
+        self.assertEqual(metadata["name"], "diff-summary")
+        self.assertEqual(metadata["version"], "3.0.0")
         self.assertIn("diff-summary", metadata["description"])
-        self.assertIn("diff-summary-md", metadata["description"])
-        self.assertIn("diff-summary-quiz", metadata["description"])
+        self.assertIn("diff-viewer", metadata["description"])
+        self.assertIn("--md", metadata["description"])
+        self.assertIn("--quiz", metadata["description"])
 
     def test_skill_documents_triggers_scope_preservation_and_boundaries(self) -> None:
         skill_path = DIFF_SUMMARY / "SKILL.md"
@@ -212,10 +208,23 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
 
         self.assertIn("Preserve an explicit user-specified range exactly", skill_text)
         self.assertIn("Do not rewrite `..` to `...`", skill_text)
-        self.assertIn("code-review", description)
-        self.assertIn("diff-viewer", description)
-        self.assertIn("diff-summary-md", description)
-        self.assertIn("diff-summary-quiz", description)
+        for fragment in (
+            "interrogate",
+            "diff-viewer",
+            "how",
+            "/diff-summary",
+            "$diff-summary",
+            "--md",
+            "--quiz",
+            "마크다운 요약만 저장",
+            "markdown-only diff summary",
+            "diff 퀴즈 만들어줘",
+            "quiz me on this diff",
+        ):
+            with self.subTest(description_fragment=fragment):
+                self.assertIn(fragment, description)
+        self.assertLessEqual(len(description), 1024)
+        self.assertTrue(description.startswith("Use when"))
         self.assertIn(".diff-summaries/<date>_<scope-tag>.md", skill_text)
         self.assertIn(".diff-summaries/<date>_<scope-tag>.html", skill_text)
 
@@ -225,8 +234,8 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
 
         for fragment in (
-            "`diff-summary-md`",
-            "`diff-summary-quiz`",
+            "`diff-summary --md`",
+            "`diff-summary --quiz`",
             "## Explanatory Depth",
             "## Background",
             "skippable",
@@ -243,83 +252,104 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self.assertLess(writing_contract, explanatory_depth)
         self.assertLess(explanatory_depth, report_contract)
 
-    def test_markdown_variant_documents_a_markdown_only_contract(self) -> None:
-        skill_path = DIFF_SUMMARY_MD / "SKILL.md"
-        skill_text = skill_path.read_text(encoding="utf-8")
-        frontmatter = skill_text.split("---", 2)[1]
-        description_match = re.search(r"(?m)^description:\s*(.+)$", frontmatter)
-        self.assertIsNotNone(description_match, "frontmatter description is required")
-        description = description_match.group(1) if description_match else ""
-
-        self.assertRegex(frontmatter, r"(?m)^name:\s*diff-summary-md$")
-        for trigger in (
-            "마크다운",
-            "마크다운 요약만 저장",
-            "markdown-only diff summary",
-            "/diff-summary-md",
-            "diff-summary-quiz",
-        ):
-            with self.subTest(trigger=trigger):
-                self.assertIn(trigger, description)
+    def test_skill_documents_the_option_table_for_all_three_modes(self) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+        match = re.search(r"(?ms)^## Options\n(?P<body>.*?)(?=^## )", skill_text)
+        self.assertIsNotNone(match, "the skill must have an ## Options section")
+        options = match.group("body") if match else ""
 
         for fragment in (
-            "references/diff-summary-workflow.md",
-            "--markdown-only",
-            "--markdown-stdin",
-            ".diff-summaries/<date>_<scope-tag>.md",
-            "Do not generate the HTML report",
-            "Do not attempt a browser open",
-            "Do not repeat card or Executive Summary prose",
+            "| `/diff-summary [scope]` |",
+            "`--md`",
+            "`--quiz`",
+            "`/diff-summary [scope] --md --quiz`",
+            "markdown only",
+            "마크다운만",
+            "퀴즈",
+            "quiz me",
+            "Strip only the exact tokens `--md` and `--quiz`",
+            "the generator validates the quiz section in Markdown-only mode",
+            "`--md` decides that no HTML or browser is produced",
         ):
             with self.subTest(fragment=fragment):
-                self.assertIn(fragment, skill_text)
-        self.assertNotIn("--open", skill_text)
+                self.assertIn(fragment, options)
 
-    def test_quiz_variant_documents_the_quiz_authoring_contract(self) -> None:
-        skill_path = DIFF_SUMMARY_QUIZ / "SKILL.md"
-        skill_text = skill_path.read_text(encoding="utf-8")
-        frontmatter = skill_text.split("---", 2)[1]
-        description_match = re.search(r"(?m)^description:\s*(.+)$", frontmatter)
-        self.assertIsNotNone(description_match, "frontmatter description is required")
-        description = description_match.group(1) if description_match else ""
-
-        self.assertRegex(frontmatter, r"(?m)^name:\s*diff-summary-quiz$")
-        for trigger in (
-            "퀴즈",
-            "이 변경 이해했는지 퀴즈로 확인",
-            "quiz me on this diff",
-            "test my understanding",
-            "/diff-summary-quiz",
-            "diff-summary-md",
-        ):
-            with self.subTest(trigger=trigger):
-                self.assertIn(trigger, description)
+    def test_markdown_mode_documents_a_markdown_only_contract(self) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+        match = re.search(
+            r"(?ms)^### Markdown only \(`--md`\)\n(?P<body>.*?)(?=^## )", skill_text
+        )
+        self.assertIsNotNone(match, "the skill must document the --md generation step")
+        section = match.group("body") if match else ""
 
         for fragment in (
-            "references/diff-summary-workflow.md",
+            "--bilingual-json-stdin",
+            "--markdown-only",
+            "--markdown-stdin --markdown-only",
+            ".diff-summaries/<date>_<scope-tag>.md",
+            ".diff-summaries/<date>_<scope-tag>.en.md",
+            "Do not generate the HTML report",
+            "do not attempt a browser open",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, section)
+        fenced = re.search(r"```text\n(?P<command>.*?)\n```", section, re.DOTALL)
+        self.assertIsNotNone(fenced)
+        command = fenced.group("command") if fenced else ""
+        self.assertNotIn("--open", command)
+        self.assertNotIn("--theme", command)
+        self.assertIn("Do not repeat card or Executive Summary prose", skill_text)
+
+    def test_quiz_mode_documents_the_quiz_authoring_contract(self) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+        match = re.search(
+            r"(?ms)^## Quiz Authoring Contract \(`--quiz`\)\n(?P<body>.*?)(?=^## Write)",
+            skill_text,
+        )
+        self.assertIsNotNone(match, "the skill must document the quiz contract")
+        section = match.group("body") if match else ""
+
+        for fragment in (
             "## Quiz",
             "#### [QZ-001]",
             "- [x]",
             "**Explanation:**",
             "exactly one",
-            "2",
-            "6",
+            "2 to 6",
             "five questions",
             "medium difficulty",
             "answer key",
-            "question count",
+            "same `QZ-*` IDs",
         ):
             with self.subTest(fragment=fragment):
-                self.assertIn(fragment, skill_text)
+                self.assertIn(fragment, section)
 
         self.assertIn(
             "Question-level validation errors identify the question ID and heading line",
-            skill_text,
+            section,
         )
         self.assertIn(
             "Quiz-section validation errors identify the relevant source line",
-            skill_text,
+            section,
         )
+        self.assertIn("question count", skill_text)
+
+    def test_skill_ends_with_a_reply_contract_and_routes_to_new_names(self) -> None:
+        skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
+        last_line = skill_text.rstrip("\n").splitlines()[-1]
+        # The description may say "formerly code-review" so old triggers still route.
+        skill_text = skill_text.split("---\n", 2)[2]
+
+        self.assertTrue(last_line.startswith("**Reply:**"), last_line)
+        for stale in (
+            "code-review",
+            "diff-summary-md",
+            "diff-summary-quiz",
+            "references/diff-summary-workflow.md",
+            "synchronized",
+        ):
+            with self.subTest(stale=stale):
+                self.assertNotIn(stale, skill_text)
 
     def test_requirements_document_shared_diff_summary_runtime_dependencies(
         self,
@@ -328,8 +358,8 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
             (ROOT / "README.md", "Requirements"),
             (ROOT / "README.ko.md", "요구 사항"),
             (ROOT / "USAGE.md", "Requirements"),
-            (CODE_REVIEW / "README.md", "Requirements"),
-            (CODE_REVIEW / "README.ko.md", "요구 사항"),
+            (PLUGIN / "README.md", "Requirements"),
+            (PLUGIN / "README.ko.md", "요구 사항"),
         )
 
         for path, heading in documents:
@@ -343,50 +373,29 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                 requirements = match.group("body") if match else ""
                 self.assertIn("Git 2.45+", requirements)
                 self.assertIn("Python 3.10+", requirements)
-                for skill_name in (
-                    "diff-summary",
-                    "diff-summary-md",
-                    "diff-summary-quiz",
-                ):
-                    self.assertIn(skill_name, requirements)
+                self.assertIn("diff-summary", requirements)
 
-    def test_variant_commands_route_to_their_skills(self) -> None:
-        md_command = (CODE_REVIEW / "commands" / "diff-summary-md.md").read_text(
-            encoding="utf-8"
-        )
-        quiz_command = (CODE_REVIEW / "commands" / "diff-summary-quiz.md").read_text(
-            encoding="utf-8"
-        )
+    def test_command_documents_the_md_and_quiz_options(self) -> None:
+        command = (PLUGIN / "commands" / "diff-summary.md").read_text(encoding="utf-8")
 
-        for command_text, skill_name in (
-            (md_command, "diff-summary-md"),
-            (quiz_command, "diff-summary-quiz"),
+        self.assertIn('argument-hint: "[scope] [--md] [--quiz]"', command)
+        for fragment in (
+            "`--md`",
+            "`--quiz`",
+            "Do NOT generate an HTML report",
+            "## Quiz",
+            "question count",
+            "no HTML",
+            "`interrogate`",
         ):
-            with self.subTest(skill=skill_name):
-                self.assertIn(
-                    f"Apply the **{skill_name}** skill internally. Do not echo or "
-                    "announce this routing instruction.",
-                    command_text,
-                )
-                self.assertIn('argument-hint: "[scope]"', command_text)
-                self.assertIn("packaged evidence collector", command_text)
-                self.assertIn("Preserve the exact user-specified scope", command_text)
-
-        self.assertIn("Do not repeat card or Executive Summary prose", md_command)
-        self.assertIn(
-            "Do not repeat card, Executive Summary, or quiz prose", quiz_command
-        )
-        self.assertIn("Markdown", md_command)
-        self.assertNotIn("browser", md_command.lower())
-        self.assertIn("Do NOT generate an HTML report", md_command)
-        self.assertIn("## Quiz", quiz_command)
-        self.assertIn("interactive", quiz_command)
-        self.assertIn("question count", quiz_command)
-        self.assertIn("open", quiz_command.lower())
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, command)
+        self.assertNotIn("code-review", command)
+        self.assertNotIn("diff-summary-md", command)
 
     def test_skill_uses_the_packaged_collector_as_the_only_git_runtime(self) -> None:
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
-        command_text = (CODE_REVIEW / "commands" / "diff-summary.md").read_text(
+        command_text = (PLUGIN / "commands" / "diff-summary.md").read_text(
             encoding="utf-8"
         )
 
@@ -431,10 +440,9 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self,
     ) -> None:
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
-        command_text = (CODE_REVIEW / "commands" / "diff-summary.md").read_text(
+        command_text = (PLUGIN / "commands" / "diff-summary.md").read_text(
             encoding="utf-8"
         )
-        quiz_text = (DIFF_SUMMARY_QUIZ / "SKILL.md").read_text(encoding="utf-8")
 
         for fragment in (
             "bilingual",
@@ -448,7 +456,7 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, skill_text)
         self.assertIn("Korean and English", command_text)
-        self.assertIn("same `QZ-*` IDs", quiz_text)
+        self.assertIn("same `QZ-*` IDs", skill_text)
 
     def test_skill_enforces_evidence_first_summary_writing(self) -> None:
         skill_text = (DIFF_SUMMARY / "SKILL.md").read_text(encoding="utf-8")
@@ -1293,13 +1301,13 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                 self.assertTrue(callable(getattr(module, api, None)), api)
 
     def test_slash_command_routes_scope_to_markdown_and_html_workflow(self) -> None:
-        command_path = CODE_REVIEW / "commands" / "diff-summary.md"
+        command_path = PLUGIN / "commands" / "diff-summary.md"
         self.assertTrue(
             command_path.is_file(), f"diff-summary command is missing: {command_path}"
         )
         command_text = command_path.read_text(encoding="utf-8")
 
-        self.assertIn('argument-hint: "[scope]"', command_text)
+        self.assertIn('argument-hint: "[scope] [--md] [--quiz]"', command_text)
         self.assertIn(
             "Apply the **diff-summary** skill internally. Do not echo or announce "
             "this routing instruction.",
@@ -1311,7 +1319,9 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         self.assertIn("HTML", command_text)
         self.assertIn("open", command_text.lower())
         self.assertIn("artifact and verification facts only", command_text)
-        self.assertIn("Do not repeat card or Executive Summary prose", command_text)
+        self.assertIn(
+            "Do not repeat card, Executive Summary, or quiz prose", command_text
+        )
 
     def test_skills_cli_discovers_exact_diff_summary_name(self) -> None:
         env = os.environ.copy()
@@ -1322,7 +1332,7 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
                 "--yes",
                 "skills",
                 "add",
-                str(CODE_REVIEW),
+                str(PLUGIN),
                 "-l",
                 "--full-depth",
             ],
@@ -1336,70 +1346,75 @@ class DiffSummarySkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stdout)
-        for skill_name in ("diff-summary", "diff-summary-md", "diff-summary-quiz"):
+        for skill_name in ("diff-summary", "diff-viewer"):
             with self.subTest(skill=skill_name):
                 self.assertRegex(
                     result.stdout,
                     re.compile(rf"(?m)^[^A-Za-z0-9]*{re.escape(skill_name)}\s*$"),
                 )
+        for skill_name in REMOVED_VARIANT_SKILLS:
+            with self.subTest(removed=skill_name):
+                self.assertNotRegex(
+                    result.stdout,
+                    re.compile(rf"(?m)^[^A-Za-z0-9]*{re.escape(skill_name)}\s*$"),
+                )
 
-    def test_variant_exact_selector_installs_a_usable_standalone_package(self) -> None:
+    def test_exact_selector_installs_a_usable_standalone_package(self) -> None:
         env = os.environ.copy()
         env.update({"NO_COLOR": "1", "FORCE_COLOR": "0"})
+        skill_name = "diff-summary"
 
-        for skill_name in ("diff-summary-md", "diff-summary-quiz"):
-            with self.subTest(skill=skill_name), tempfile.TemporaryDirectory() as target:
-                subprocess.run(["git", "init", "-q"], cwd=target, check=True)
-                result = subprocess.run(
-                    [
-                        "npx",
-                        "--yes",
-                        "skills",
-                        "add",
-                        str(CODE_REVIEW),
-                        "--skill",
-                        skill_name,
-                        "--agent",
-                        "codex",
-                        "--copy",
-                        "-y",
-                        "--full-depth",
-                    ],
-                    cwd=target,
-                    env=env,
-                    text=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    timeout=60,
-                    check=False,
+        with tempfile.TemporaryDirectory() as target:
+            subprocess.run(["git", "init", "-q"], cwd=target, check=True)
+            result = subprocess.run(
+                [
+                    "npx",
+                    "--yes",
+                    "skills",
+                    "add",
+                    str(PLUGIN),
+                    "--skill",
+                    skill_name,
+                    "--agent",
+                    "codex",
+                    "--copy",
+                    "-y",
+                    "--full-depth",
+                ],
+                cwd=target,
+                env=env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=60,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout)
+            installed = Path(target) / ".agents" / "skills" / skill_name
+            for relative_path in (
+                "SKILL.md",
+                "scripts/collect_diff_evidence.py",
+                "scripts/generate_summary_report.py",
+                "assets/summary-template.html",
+            ):
+                self.assertTrue(
+                    (installed / relative_path).is_file(),
+                    f"exact selector omitted {skill_name}/{relative_path}",
                 )
 
-                self.assertEqual(result.returncode, 0, result.stdout)
-                installed = Path(target) / ".agents" / "skills" / skill_name
-                for relative_path in (
-                    "SKILL.md",
-                    "references/diff-summary-workflow.md",
-                    "scripts/collect_diff_evidence.py",
-                    "scripts/generate_summary_report.py",
-                    "assets/summary-template.html",
-                ):
-                    self.assertTrue(
-                        (installed / relative_path).is_file(),
-                        f"exact selector omitted {skill_name}/{relative_path}",
-                    )
-
-                help_result = subprocess.run(
-                    [
-                        sys.executable,
-                        "-I",
-                        str(installed / "scripts" / "generate_summary_report.py"),
-                        "--help",
-                    ],
-                    cwd=target,
-                    text=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    check=False,
-                )
-                self.assertEqual(help_result.returncode, 0, help_result.stderr)
-                self.assertIn("--markdown-only", help_result.stdout)
+            help_result = subprocess.run(
+                [
+                    sys.executable,
+                    "-I",
+                    str(installed / "scripts" / "generate_summary_report.py"),
+                    "--help",
+                ],
+                cwd=target,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            self.assertEqual(help_result.returncode, 0, help_result.stderr)
+            self.assertIn("--markdown-only", help_result.stdout)
