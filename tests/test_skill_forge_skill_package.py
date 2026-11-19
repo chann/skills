@@ -53,7 +53,7 @@ class SkillForgePackageTests(unittest.TestCase):
         )
 
         self.assertEqual("skill-forge", metadata["name"])
-        self.assertEqual("0.1.0", metadata["version"])
+        self.assertEqual("0.2.0", metadata["version"])
         self.assertIn("contract", metadata["description"])
 
     def test_interfaces_publish_both_explicit_selectors(self) -> None:

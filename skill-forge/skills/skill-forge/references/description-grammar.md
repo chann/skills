@@ -84,7 +84,7 @@ description: Use when the user wants an explanatory code, diff, branch, commit,
   or PR change summary, including "코드를 요약해줘", "변경사항을 요약해줘",
   "summarize this diff", "what changed between branches", "/diff-summary", or
   "$diff-summary". Produces evidence-based purpose, behavior, architecture,
-  contracts, tests, and operations in Markdown and interactive HTML. Use
-  diff-summary-md for a Markdown-only artifact, diff-summary-quiz for a
-  comprehension quiz, and code-review for defects and risks.
+  contracts, tests, and operations in Markdown and interactive HTML. Pass
+  `--md` for a Markdown-only artifact and `--quiz` for a comprehension quiz;
+  use interrogate for defects and risks.
 ```

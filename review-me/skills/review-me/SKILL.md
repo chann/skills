@@ -1,6 +1,6 @@
 ---
 name: review-me
-description: Use only when the user explicitly invokes "/review-me" in Claude Code or "$review-me" in Codex to review a plan, design, or consequential decision one question at a time. Runs a read-only decision-tree interview and ends with a confirmed record in which every consequential branch is resolved, ruled out, or deliberately deferred. For defects in a Git diff use code-review instead.
+description: Use only when the user explicitly invokes "/review-me" in Claude Code or "$review-me" in Codex to review a plan, design, or consequential decision one question at a time. Runs a read-only decision-tree interview and ends with a confirmed record in which every consequential branch is resolved, ruled out, or deliberately deferred. For defects in a Git diff use interrogate instead.
 disable-model-invocation: true
 ---
 

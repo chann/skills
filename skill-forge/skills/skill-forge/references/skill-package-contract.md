@@ -22,7 +22,7 @@ equals the directory name. The name is the selector: `/<name>` in Claude Code,
 - names at least one natural-language trigger a user would actually type;
 - contains both the `/<name>` and `$<name>` selector tokens; and
 - disambiguates from sibling skills when a near neighbour exists
-  (`For a Markdown-only artifact use diff-summary-md`).
+  (`For defects use interrogate`).
 
 The description is the only text the model sees before deciding to load the
 skill. `references/description-grammar.md` covers how to write one that fires on
@@ -60,8 +60,8 @@ the skill from a list with no other context.
 `<plugin>/commands/<name>.md` exists with a `description` in its frontmatter,
 and adds `argument-hint` when the skill takes an argument. The body tells the
 agent which skill to use and restates the constraints that must survive the
-command layer. A command file may be a selector alias for another skill; when it
-is, it names that skill in its first line.
+command layer. A command file may be a selector alias for another skill (`gcpr` for
+`git-commit push realtime`); when it is, it names that skill in its first line.
 
 ## C6 — Evals
 

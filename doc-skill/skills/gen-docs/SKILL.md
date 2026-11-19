@@ -48,7 +48,7 @@ identifiers, commands, quotes, links, and the faithful relationship with
 `README.md`. Never rewrite preserved custom prose merely to change its style.
 
 This selector is self-contained. If the runtime already exposes
-`human-friendly-writing`, it is an optional final pass over only the newly
+`unslop`, it is an optional final pass over only the newly
 authored Korean draft before showing the diff. Do not install, fetch, or
 require it. If it is absent or unreadable, continue silently with the rules
 above and complete the documents. After an optional pass, run the normal

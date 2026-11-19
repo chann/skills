@@ -1,6 +1,6 @@
 ---
 name: bug-hunt
-description: Use when something is broken, throwing, failing, flaky, or slower than it should be and the cause is not obvious, including "버그 원인 찾아줘", "이거 왜 안 되는지 추적해줘", "테스트가 간헐적으로 깨져", "성능이 갑자기 느려졌어", "diagnose this bug", "find the root cause", "this test is flaky", "/bug-hunt", or "$bug-hunt". Reproduces first, falsifies hypotheses in a written ledger, pins the fix with a check that failed for the defect's reason, and leaves a diagnosis record under `.bug-hunts/`. For defects found by reading a diff use code-review instead.
+description: Use when something is broken, throwing, failing, flaky, or slower than it should be and the cause is not obvious, including "버그 원인 찾아줘", "이거 왜 안 되는지 추적해줘", "테스트가 간헐적으로 깨져", "성능이 갑자기 느려졌어", "diagnose this bug", "find the root cause", "this test is flaky", "/bug-hunt", or "$bug-hunt". Reproduces first, falsifies hypotheses in a written ledger, pins the fix with a check that failed for the defect's reason, and leaves a diagnosis record under `.bug-hunts/`. For defects found by reading a diff use interrogate instead.
 ---
 
 # Bug Hunt
@@ -155,9 +155,9 @@ plans for.
 
 ## Integration
 
-**Pairs with:** `code-review` when the fix needs review, `git-commit` to land the
-fix together with its regression check, and `gen-session-handoff` when the hunt
+**Pairs with:** `interrogate` when the fix needs review, `git-commit` to land the
+fix together with its regression check, and `handoff session` when the hunt
 outlives the session.
 
-**Use instead of:** reading a diff for defects, which is `code-review`. This
+**Use instead of:** reading a diff for defects, which is `interrogate`. This
 skill starts from a broken behavior, not from a change.
