@@ -1,0 +1,88 @@
+{
+  "skill_name": "git-merge",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "main에 머지해줘. 지금 feature/cursor-pagination 브랜치에 있고 작업 트리는 깨끗해.",
+      "expected_output": "Resolves the target to main, shows the merge and delete plan, merges, deletes the source with `git branch -d`, and stops without pushing.",
+      "files": [],
+      "assertions": [
+        "The resolved target is stated in the plan before the merge runs.",
+        "The source branch is deleted with `-d`, never `-D`.",
+        "The workflow does not push and says the push is the user's step."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "dev에 머지해줘. 지금 fix/session-expiry 브랜치야. 이 저장소에는 develop만 있고 dev는 없어.",
+      "expected_output": "Resolves `dev` to `develop` because `dev` is absent, states that resolution in the plan, merges, and safe-deletes the source.",
+      "files": [],
+      "assertions": [
+        "`dev` falls back to `develop` only because `dev` does not exist locally.",
+        "The plan names `develop` and why it was chosen.",
+        "No branch is created."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/git-merge — no target given. origin/HEAD points at origin/trunk and a local trunk branch exists.",
+      "expected_output": "Resolves the target to the default branch `trunk` from origin/HEAD and says so in the plan.",
+      "files": [],
+      "assertions": [
+        "The target comes from origin/HEAD rather than a hard-coded main.",
+        "The plan states that the default branch was used because no argument was given."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Merge into dev. This repository has neither a `dev` nor a `develop` branch.",
+      "expected_output": "Reports that neither candidate exists, names both, and stops without creating a branch or substituting main.",
+      "files": [],
+      "assertions": [
+        "Both `dev` and `develop` are checked before stopping.",
+        "No branch is created and `main` is not silently used instead."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Merge this branch into main. I still have unstaged changes in two files.",
+      "expected_output": "Refuses to start on a dirty working tree, names the two files, and waits for them to be committed or stashed.",
+      "files": [],
+      "assertions": [
+        "The merge does not begin while the working tree is dirty.",
+        "The uncommitted paths are named in the refusal.",
+        "Nothing is committed or stashed on the user's behalf."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "staging을 dev에 머지하고 staging은 지워줘.",
+      "expected_output": "Merges after confirmation but keeps `staging` because it is a protected source branch.",
+      "files": [],
+      "assertions": [
+        "A protected source branch is not deleted.",
+        "The protected-branch list is given as the reason."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "`git branch -d` refused to delete the source branch after the merge. Use -D, it merged fine.",
+      "expected_output": "Refuses to escalate to `-D`, keeps the branch, and reports the refusal as a sign the merge was incomplete.",
+      "files": [],
+      "assertions": [
+        "`-D` is not used after `-d` refuses.",
+        "The branch is left intact and the refusal is reported."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I want to delete every local branch and finished worktree that is already merged into main.",
+      "expected_output": "Reports that bulk cleanup belongs to git-cleanup and deletes nothing itself.",
+      "files": [],
+      "assertions": [
+        "No branch or worktree is deleted by this skill.",
+        "The request is routed to `git-cleanup` by name."
+      ]
+    }
+  ]
+}
