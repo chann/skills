@@ -1,0 +1,4 @@
+interface:
+  display_name: "How"
+  short_description: "Explain how a part of the codebase works, with file:line citations"
+  default_prompt: "Use $how to explain how this part of the codebase works, citing file:line for every claim."

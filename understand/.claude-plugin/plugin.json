@@ -1,0 +1,5 @@
+{
+  "name": "understand",
+  "description": "Answer how a codebase works with cited file:line evidence, and why it was built that way from the commit, pull-request, and issue record — read-only, with inference and gaps labelled.",
+  "version": "0.1.0"
+}
