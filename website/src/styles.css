@@ -19,8 +19,36 @@
   --danger: #f0a39c;
   --shadow: rgba(0, 0, 0, 0.42);
   --header-bg: rgba(24, 24, 24, 0.86);
-  --max-width: 1200px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* layout: two content widths, one gutter, one vertical rhythm */
+  --max-width: 1200px;
+  --narrow-width: 760px;
+  --gutter: 24px;
+  --section-space: clamp(88px, 11vw, 144px);
+  --block-space: clamp(48px, 5vw, 64px);
+
+  /* shape: controls and inner rows, cards, windows */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* type scale */
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, monospace;
+  --text-hero: clamp(3rem, 5.4vw, 4.75rem);
+  --text-display: clamp(2.5rem, 5vw, 4.25rem);
+  --text-title: clamp(2rem, 3.6vw, 3.25rem);
+  --text-heading: 1.375rem;
+  --text-lead: clamp(1rem, 1.5vw, 1.125rem);
+  --text-small: 0.875rem;
+  --text-caption: 0.8125rem;
+  --text-meta: 0.75rem;
+  --text-label: 0.6875rem;
+  --leading-display: 1.04;
+  --tracking-display: -0.055em;
+  --tracking-label: 0.08em;
   font-family: "Geist Variable", ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
@@ -66,13 +94,15 @@ body {
   overflow-wrap: break-word;
   background: var(--canvas);
   color: var(--ink);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.6;
   word-break: keep-all;
 }
 
 html[data-locale="jp"] body,
 html[data-locale="cn"] body {
+  word-break: normal;
+  line-break: strict;
   overflow-wrap: anywhere;
 }
 
@@ -96,8 +126,7 @@ button {
 }
 
 code {
-  font-family: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 ::selection {
@@ -137,7 +166,7 @@ code {
   left: 10px;
   z-index: 1000;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 700;
@@ -162,12 +191,12 @@ code {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  width: min(760px, 100%);
+  width: min(var(--narrow-width), 100%);
   min-height: 58px;
   margin: 0 auto;
   padding: 6px 8px 6px 20px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--header-bg);
   box-shadow: 0 12px 30px var(--shadow);
   backdrop-filter: blur(18px);
@@ -190,9 +219,9 @@ code {
 
 .main-navigation a {
   padding: 9px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: var(--text-small);
   font-weight: 620;
   transition: color 160ms var(--ease-out), background 160ms var(--ease-out);
 }
@@ -221,11 +250,11 @@ code {
   gap: 3px;
   padding: 0 11px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--ink-soft);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
   font-weight: 650;
   cursor: pointer;
   transition: color 160ms var(--ease-out), background 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 160ms var(--ease-out);
@@ -254,7 +283,7 @@ code {
   min-width: 176px;
   padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface-raised);
   box-shadow: 0 18px 40px var(--shadow);
 }
@@ -272,9 +301,9 @@ code {
   min-height: 38px;
   align-items: center;
   padding: 7px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: var(--text-caption);
   font-weight: 600;
   transition: color 160ms var(--ease-out), background 160ms var(--ease-out);
 }
@@ -292,7 +321,7 @@ code {
   height: 42px;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--ink-soft);
   cursor: pointer;
@@ -300,7 +329,7 @@ code {
 }
 
 .hero {
-  padding: 176px 24px 0;
+  padding: clamp(132px, 13vw, 176px) var(--gutter) 0;
 }
 
 .hero__copy {
@@ -326,10 +355,10 @@ code {
   min-width: 0;
   max-width: 680px;
   margin: 0;
-  font-size: clamp(3rem, 5vw, 4.4rem);
+  font-size: var(--text-hero);
   font-weight: 720;
-  letter-spacing: -0.065em;
-  line-height: 0.98;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
   text-wrap: balance;
   background: linear-gradient(90deg, var(--ink) 12%, var(--ink-fade) 100%);
   -webkit-background-clip: text;
@@ -348,8 +377,8 @@ code {
   max-width: 680px;
   margin: 26px 0 0;
   color: var(--ink-soft);
-  font-size: clamp(1rem, 1.7vw, 1.22rem);
-  line-height: 1.55;
+  font-size: var(--text-lead);
+  line-height: 1.6;
   text-wrap: balance;
 }
 
@@ -369,8 +398,8 @@ code {
   gap: 9px;
   padding: 0 20px;
   border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  font-size: 15px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
   font-weight: 690;
   transition: background 160ms var(--ease-out), color 160ms var(--ease-out), border-color 160ms var(--ease-out),
     box-shadow 160ms var(--ease-out), transform 160ms var(--ease-out);
@@ -391,13 +420,13 @@ code {
 .hero__meta {
   margin: 14px 0 0;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
 }
 
 .hero__preview {
   max-width: var(--max-width);
-  margin: 120px auto 0;
+  margin: clamp(64px, 8vw, 104px) auto 0;
 }
 
 .product-window,
@@ -412,7 +441,7 @@ code {
 
 .product-window {
   overflow: hidden;
-  border-radius: 14px 14px 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .product-window__chrome,
@@ -426,7 +455,7 @@ code {
   border-bottom: 1px solid var(--line);
   background: var(--surface-raised);
   color: var(--ink-muted);
-  font-size: 13px;
+  font-size: var(--text-caption);
 }
 
 .product-window__chrome > span:nth-child(2),
@@ -438,9 +467,9 @@ code {
 .workflow-window__chrome > code {
   justify-self: end;
   color: var(--accent-text);
-  font-size: 11px;
+  font-size: var(--text-label);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-label);
 }
 
 .window-dots {
@@ -479,15 +508,15 @@ code {
   justify-content: space-between;
   padding: 0 12px 14px;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .product-sidebar__heading strong {
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .product-sidebar ul {
@@ -503,14 +532,14 @@ code {
   gap: 2px;
   padding: 11px 12px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: var(--text-small);
 }
 
 .product-sidebar li code {
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--text-label);
 }
 
 .product-sidebar li.is-active {
@@ -535,12 +564,12 @@ code {
   padding: 0 20px;
   border-bottom: 1px solid var(--line);
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: var(--text-caption);
 }
 
 .product-editor__tab code {
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--text-label);
 }
 
 .product-editor__content {
@@ -553,18 +582,18 @@ code {
   display: inline-block;
   margin: 0 0 18px;
   color: var(--accent-text);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
   font-weight: 600;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .product-editor h2 {
   margin: 0;
-  font-size: clamp(2.25rem, 4.2vw, 4rem);
-  letter-spacing: -0.055em;
-  line-height: 1.02;
+  font-size: var(--text-title);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
 }
 
 .product-editor h2 span {
@@ -576,7 +605,7 @@ code {
   max-width: 620px;
   margin: 24px 0 0;
   color: var(--ink-soft);
-  font-size: 17px;
+  font-size: var(--text-lead);
 }
 
 .run-card {
@@ -587,7 +616,7 @@ code {
   margin-top: 40px;
   padding: 13px 14px;
   border: 1px solid var(--accent-line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
 }
 
@@ -601,7 +630,7 @@ code {
   min-width: 0;
   overflow: hidden;
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: var(--text-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -612,8 +641,8 @@ code {
   gap: 10px 20px;
   margin-top: 18px;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
 }
 
 .proof-row span,
@@ -632,12 +661,12 @@ code {
 }
 
 .section {
-  padding: 150px 24px;
+  padding: var(--section-space) var(--gutter);
   border-top: 1px solid var(--line);
 }
 
 .section-heading {
-  max-width: 760px;
+  max-width: var(--narrow-width);
 }
 
 .section-heading--center {
@@ -648,10 +677,10 @@ code {
 .section-heading h2,
 .platforms__copy h2 {
   margin: 0;
-  font-size: clamp(2.45rem, 5vw, 4.4rem);
+  font-size: var(--text-display);
   font-weight: 700;
-  letter-spacing: -0.058em;
-  line-height: 1.02;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
   text-wrap: balance;
 }
 
@@ -660,7 +689,7 @@ code {
   max-width: 660px;
   margin: 24px auto 0;
   color: var(--ink-soft);
-  font-size: 18px;
+  font-size: var(--text-lead);
   line-height: 1.65;
   text-wrap: balance;
 }
@@ -672,8 +701,8 @@ code {
 .efficiency-layout {
   display: grid;
   grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.28fr);
-  gap: 96px;
-  max-width: 1080px;
+  gap: clamp(48px, 8vw, 96px);
+  max-width: var(--max-width);
   margin: 0 auto;
 }
 
@@ -685,10 +714,10 @@ code {
 
 .efficiency-intro h2 {
   margin: 0;
-  font-size: clamp(2.45rem, 4.6vw, 4rem);
+  font-size: var(--text-display);
   font-weight: 700;
-  letter-spacing: -0.058em;
-  line-height: 1.02;
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
   text-wrap: balance;
 }
 
@@ -699,7 +728,7 @@ code {
 .efficiency-intro > p {
   margin: 24px 0 0;
   color: var(--ink-soft);
-  font-size: 18px;
+  font-size: var(--text-lead);
   line-height: 1.65;
   text-wrap: pretty;
 }
@@ -719,9 +748,9 @@ code {
 .efficiency-stats dt {
   order: 2;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -745,7 +774,7 @@ code {
   min-height: 240px;
   padding: 32px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface-raised);
 }
 
@@ -754,22 +783,22 @@ code {
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   background: var(--accent-soft);
   color: var(--accent-text);
 }
 
 .efficiency-item > div > span {
   color: var(--accent-text);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 
 .efficiency-item h3 {
   margin: 48px 0 12px;
-  font-size: 24px;
+  font-size: var(--text-heading);
   letter-spacing: -0.035em;
   line-height: 32px;
   text-wrap: balance;
@@ -779,7 +808,7 @@ code {
   max-width: 580px;
   margin: 0;
   color: var(--ink-soft);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 24px;
   text-wrap: pretty;
 }
@@ -803,10 +832,10 @@ code {
   max-width: 100%;
   min-width: 0;
   margin: 0;
-  font-size: clamp(2.25rem, 4.8vw, 3.75rem);
+  font-size: var(--text-title);
   font-weight: 700;
-  letter-spacing: -0.055em;
-  line-height: 1.12;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.14;
 }
 
 .tagline__line {
@@ -833,9 +862,9 @@ code {
 .tagline-stats dt {
   order: 2;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -855,9 +884,9 @@ code {
   overflow: hidden;
   width: 100%;
   min-width: 0;
-  max-width: 1080px;
-  margin: 76px auto 0;
-  border-radius: 14px;
+  max-width: var(--max-width);
+  margin: var(--block-space) auto 0;
+  border-radius: var(--radius-lg);
 }
 
 .workflow-grid {
@@ -884,27 +913,27 @@ code {
   align-items: center;
   justify-content: space-between;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .workflow-step > div code {
   color: var(--accent-text);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .workflow-step h3 {
   margin: 100px 0 12px;
-  font-size: 21px;
+  font-size: var(--text-heading);
   letter-spacing: -0.03em;
 }
 
 .workflow-step p {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 15px;
+  font-size: 1rem;
 }
 
 .workflow-window__status {
@@ -916,12 +945,12 @@ code {
   border-top: 1px solid var(--line);
   background: var(--surface-soft);
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .workflow-window__status span {
   color: var(--accent-text);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-weight: 600;
 }
 
@@ -931,7 +960,7 @@ code {
 
 .explore-section > div:last-child {
   max-width: var(--max-width);
-  margin: 76px auto 0;
+  margin: var(--block-space) auto 0;
 }
 
 .category-grid {
@@ -947,7 +976,7 @@ code {
   gap: 8px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--ink-soft);
   text-align: left;
@@ -964,17 +993,17 @@ code {
 
 .category-card__head strong {
   color: var(--ink);
-  font-size: 15px;
+  font-size: 1rem;
   letter-spacing: -0.02em;
 }
 
 .category-card__head code {
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--text-label);
 }
 
 .category-card__desc {
-  font-size: 13px;
+  font-size: var(--text-caption);
 }
 
 .category-card.is-active {
@@ -988,7 +1017,7 @@ code {
 
 .explorer {
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
 }
 
 .explorer__controls {
@@ -1009,7 +1038,7 @@ code {
   min-height: 46px;
   padding: 0 13px;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
   color: var(--ink-muted);
   transition: border-color 160ms var(--ease-out);
@@ -1039,7 +1068,7 @@ code {
   height: 30px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink-muted);
   cursor: pointer;
@@ -1065,17 +1094,17 @@ code {
   gap: 6px;
   padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: var(--text-caption);
   cursor: pointer;
 }
 
 .filters button span {
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
 }
 
 .filters button.is-active {
@@ -1091,8 +1120,8 @@ code {
 .explorer__count {
   margin: 0;
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
   white-space: nowrap;
 }
 
@@ -1138,7 +1167,7 @@ code {
 
 .skill-row__main > span {
   overflow: hidden;
-  font-size: 14px;
+  font-size: var(--text-small);
   font-weight: 620;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1147,15 +1176,15 @@ code {
 .skill-row__main code {
   overflow: hidden;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--text-label);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .skill-row__category {
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
   text-transform: uppercase;
 }
 
@@ -1178,25 +1207,25 @@ code {
 
 .skill-detail__package {
   color: var(--accent-text);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .skill-detail h3 {
   margin: 14px 0 12px;
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  letter-spacing: -0.05em;
-  line-height: 1.05;
+  font-size: var(--text-title);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
 }
 
 .skill-detail__header > p {
   max-width: 620px;
   margin: 0;
   color: var(--ink-soft);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .skill-detail__facts {
@@ -1209,7 +1238,7 @@ code {
 .skill-detail__facts div {
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
 }
 
@@ -1218,16 +1247,16 @@ code {
 .example-command > span,
 .platform-node span {
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .skill-detail__facts dd {
   margin: 7px 0 0;
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: var(--text-small);
 }
 
 .selector-pair {
@@ -1238,7 +1267,7 @@ code {
   min-height: 58px;
   padding: 9px 10px 9px 14px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
 }
 
@@ -1254,7 +1283,7 @@ code {
 .selector-pair code {
   overflow: hidden;
   color: var(--accent-text);
-  font-size: 13px;
+  font-size: var(--text-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1267,10 +1296,10 @@ code {
   gap: 7px;
   padding: 0 13px;
   border: 1px solid var(--line-strong);
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: var(--surface-raised);
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--text-meta);
   font-weight: 650;
   cursor: pointer;
   transition: background 160ms var(--ease-out), color 160ms var(--ease-out), border-color 160ms var(--ease-out);
@@ -1307,7 +1336,7 @@ code {
   margin-top: 22px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
 }
 
@@ -1319,14 +1348,14 @@ code {
   min-width: 0;
   overflow-x: auto;
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
 .skill-detail__alias {
   margin: 18px 0 0;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .skill-detail__alias code {
@@ -1360,7 +1389,7 @@ code {
   margin-top: 20px;
   padding: 0 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: var(--surface-raised);
   cursor: pointer;
 }
@@ -1369,9 +1398,8 @@ code {
   display: grid;
   grid-template-columns: minmax(0, 0.72fr) minmax(520px, 1.28fr);
   align-items: center;
-  gap: clamp(60px, 9vw, 130px);
-  max-width: calc(var(--max-width) + 48px);
-  margin: 0 auto;
+  gap: clamp(48px, 8vw, 96px);
+  padding-inline: max(var(--gutter), calc((100% - var(--max-width)) / 2));
 }
 
 .platforms__copy .section-label {
@@ -1389,7 +1417,7 @@ code {
 
 .platform-window {
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
 }
 
 .platform-window__chrome {
@@ -1398,7 +1426,7 @@ code {
 
 .platform-window__chrome code {
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--text-label);
 }
 
 .platform-contract {
@@ -1409,9 +1437,9 @@ code {
 
 .platform-contract > span {
   color: var(--accent-text);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
@@ -1424,7 +1452,7 @@ code {
 .platform-contract p {
   margin: 8px 0 0;
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: var(--text-small);
 }
 
 .platform-targets {
@@ -1441,7 +1469,7 @@ code {
   gap: 14px;
   padding: 12px 12px 12px 16px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface-raised);
 }
 
@@ -1451,7 +1479,7 @@ code {
 
 .platform-node code {
   color: var(--accent-text);
-  font-size: 13px;
+  font-size: var(--text-caption);
 }
 
 .faq {
@@ -1461,13 +1489,13 @@ code {
 .faq-list {
   display: grid;
   gap: 8px;
-  max-width: 760px;
-  margin: 64px auto 0;
+  max-width: var(--narrow-width);
+  margin: var(--block-space) auto 0;
 }
 
 .faq-item {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   transition: border-color 160ms var(--ease-out);
 }
@@ -1478,7 +1506,7 @@ code {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 24px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 620;
   list-style: none;
   cursor: pointer;
@@ -1508,7 +1536,7 @@ code {
   margin: 0;
   padding: 0 24px 16px;
   color: var(--ink-soft);
-  font-size: 15px;
+  font-size: 1rem;
 }
 
 .install {
@@ -1516,10 +1544,10 @@ code {
 }
 
 .install-card {
-  max-width: 760px;
-  margin: 68px auto 0;
+  max-width: var(--narrow-width);
+  margin: var(--block-space) auto 0;
   padding: 24px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
 .install-card__heading {
@@ -1531,25 +1559,25 @@ code {
 .install-badge {
   flex: 0 0 auto;
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   color: var(--accent-ink);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
 }
 
 .install-card__heading h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .install-card__heading p {
   margin: 4px 0 0;
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: var(--text-small);
 }
 
 .install-command {
@@ -1560,20 +1588,20 @@ code {
   margin-top: 24px;
   padding: 10px 10px 10px 14px;
   border: 1px solid var(--accent-line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--canvas);
 }
 
 .install-command > span {
   color: var(--accent-text);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
+  font-family: var(--font-mono);
 }
 
 .install-command > code {
   min-width: 0;
   overflow-x: auto;
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--text-meta);
   white-space: nowrap;
   scrollbar-width: thin;
 }
@@ -1585,7 +1613,7 @@ code {
   margin: 18px 0 0;
   padding: 0;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--text-meta);
   list-style: none;
 }
 
@@ -1617,8 +1645,8 @@ code {
 
 .install-actions > span {
   color: var(--ink-muted);
-  font-family: "Geist Mono Variable", ui-monospace, monospace;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
 }
 
 .site-footer {
@@ -1640,7 +1668,7 @@ code {
 .site-footer__top > p {
   margin: 0;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .site-footer__top > div {
@@ -1654,7 +1682,7 @@ code {
   align-items: center;
   gap: 5px;
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .site-footer__word {
@@ -1765,7 +1793,7 @@ code {
 
   .platforms {
     grid-template-columns: 1fr;
-    max-width: 760px;
+    padding-inline: max(var(--gutter), calc((100% - var(--narrow-width)) / 2));
   }
 
   .platforms__copy {
@@ -1780,6 +1808,13 @@ code {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --gutter: 20px;
+    --text-hero: clamp(2.55rem, 12vw, 3.55rem);
+    --text-display: clamp(2.25rem, 10.5vw, 3.1rem);
+    --text-title: clamp(1.75rem, 8vw, 2.5rem);
+  }
+
   .site-header {
     top: 12px;
     padding: 0 12px;
@@ -1809,16 +1844,8 @@ code {
     padding-left: 9px;
   }
 
-  .hero {
-    padding: 132px 16px 0;
-  }
-
   .hero__brand {
     margin-bottom: 14px;
-  }
-
-  .hero h1 {
-    font-size: clamp(2.55rem, 12vw, 3.55rem);
   }
 
   html[data-locale="jp"] .hero h1,
@@ -1839,12 +1866,8 @@ code {
     width: min(100%, 320px);
   }
 
-  .hero__preview {
-    margin-top: 80px;
-  }
-
   .product-window {
-    border-radius: 12px 12px 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
 
   .product-window__chrome,
@@ -1875,12 +1898,8 @@ code {
     padding: 48px 24px 54px;
   }
 
-  .product-editor h2 {
-    font-size: clamp(1.75rem, 8vw, 2.5rem);
-  }
-
   .product-editor__lede {
-    font-size: 15px;
+    font-size: 1rem;
   }
 
   .run-card {
@@ -1888,7 +1907,7 @@ code {
   }
 
   .run-card code {
-    font-size: 11px;
+    font-size: var(--text-label);
   }
 
   .proof-row {
@@ -1896,17 +1915,7 @@ code {
   }
 
   .section {
-    padding: 104px 20px;
-  }
-
-  .section-heading h2,
-  .platforms__copy h2 {
-    font-size: clamp(2.35rem, 11vw, 3.2rem);
-  }
-
-  .section-heading p,
-  .platforms__copy > p {
-    font-size: 16px;
+    padding: var(--section-space) var(--gutter);
   }
 
   .efficiency-layout {
@@ -1925,7 +1934,7 @@ code {
   }
 
   .efficiency-intro > p {
-    font-size: 16px;
+    font-size: 1rem;
   }
 
   .efficiency-stats {
@@ -1944,19 +1953,9 @@ code {
     margin-top: 32px;
   }
 
-  .tagline__text {
-    font-size: clamp(1.9rem, 8.4vw, 2.5rem);
-  }
-
   .tagline-stats {
     gap: 24px 40px;
     margin-top: 48px;
-  }
-
-  .workflow-window,
-  .explore-section > div:last-child,
-  .install-card {
-    margin-top: 52px;
   }
 
   .workflow-grid {
@@ -1984,7 +1983,7 @@ code {
   }
 
   .workflow-window__status code {
-    font-size: 10px;
+    font-size: var(--text-label);
   }
 
   .explorer__controls {
@@ -2032,10 +2031,6 @@ code {
     padding: 28px 22px;
   }
 
-  .faq-list {
-    margin-top: 52px;
-  }
-
   .faq-item summary,
   .faq-item > p {
     padding-right: 16px;
@@ -2056,7 +2051,7 @@ code {
   }
 
   .site-footer {
-    padding: 28px 20px 0;
+    padding: 28px var(--gutter) 0;
   }
 
   .site-footer__top {
@@ -2091,7 +2086,7 @@ code {
 
   .product-kicker,
   .section-label {
-    font-size: 10px;
+    font-size: var(--text-label);
   }
 
   .run-card {
