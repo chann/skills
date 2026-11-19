@@ -1,5 +1,5 @@
 {
-  "skill_name": "human-friendly-writing",
+  "skill_name": "unslop",
   "evals": [
     {
       "id": 1,
@@ -25,13 +25,13 @@
     },
     {
       "id": 3,
-      "prompt": "Please rewrite this English release note so it reads more naturally.",
-      "expected_output": "Reports that the skill handles Korean text only and declines rather than rewriting English prose.",
+      "prompt": "Please rewrite this English release note so it reads more naturally: \"Certainly! We're thrilled to announce a pivotal update that serves as a testament to our commitment — not just faster, but smarter, more reliable, and more robust.\"",
+      "expected_output": "An English rewrite that applies the English rules: filler opener, inflated vocabulary, 'serves as', dash connector, 'not just X but Y', and the forced triple are removed while every fact stays. The text is not translated.",
       "files": [],
       "assertions": [
-        "English input is declined instead of rewritten.",
-        "The Korean-only boundary is stated explicitly.",
-        "No translation is attempted in either direction."
+        "Applies the English rules from references/english-rules.md and does not translate the text into Korean",
+        "Removes the filler opener, inflated words, 'serves as' verb, dash connector, and not-just-but contrast without adding or dropping a claim",
+        "Lists the kinds of change made, and cites rule ids only if the user asked for them"
       ]
     },
     {
@@ -43,6 +43,27 @@
         "No content is removed to shorten a paragraph.",
         "The skill states that proofreading and content editing are out of scope.",
         "Leaked method vocabulary such as 프런티어 or 게이트 does not appear in the rewritten text."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "이 README 문단 다듬어줘: \"The API returns a 200. 이 응답 엔벨로프의 계약을 leverage하여 클라이언트를 정렬한다. It's not just fast — it's reliable.\"",
+      "expected_output": "Each sentence is handled by its own language's rules: the Korean sentence loses its jargon, the English sentences lose their tells, and nothing is translated or changed in fact.",
+      "files": [],
+      "assertions": [
+        "Detects language per passage: Korean rules for the Korean sentence and English rules for the English sentences",
+        "Never translates any sentence and keeps API, 200, and every other established term and number unchanged",
+        "Leaves the already natural English sentence as it was"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Use $unslop and also fix the typos and translate it into Japanese.",
+      "expected_output": "Rewrites style only, and states that proofreading and translation are out of scope and for other tools.",
+      "files": [],
+      "assertions": [
+        "Declines to translate and to act as a spell-checker, and says so explicitly",
+        "Does not change any fact, number, identifier, or link while rewriting"
       ]
     }
   ]

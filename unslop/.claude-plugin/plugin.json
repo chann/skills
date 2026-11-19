@@ -1,5 +1,5 @@
 {
-  "name": "human-friendly-writing",
-  "description": "Rewrite AI-written Korean text into natural, human-sounding prose — replace AI-flavored jargon and smooth the style without changing meaning.",
-  "version": "0.1.0"
+  "name": "unslop",
+  "description": "Rewrite AI-written Korean or English text into natural, human-sounding prose: replace AI-flavored jargon and tells, smooth the style, and never change the meaning.",
+  "version": "1.0.0"
 }
