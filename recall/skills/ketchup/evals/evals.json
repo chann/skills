@@ -9,7 +9,7 @@
       "assertions": [
         "Opens with one sentence naming what waits on the user, or saying nothing does",
         "Checks the live state of each branch, PR, CI run, or agent the conversation touched before reporting and corrects any number that no longer holds",
-        "Keeps the what-happened lines under about 100 words, one line per requested thing, each with a state of done, still running, failed, or not checked",
+        "Keeps the what-happened lines under about 100 words, one line per requested thing, each with a state of finished, in progress, failed, or unverified",
         "Changes no code, starts no job, and posts nothing during the turn"
       ]
     },
@@ -19,16 +19,16 @@
       "expected_output": "A Korean plain-language reply in which each pending decision names its PR by a name the user knows plus its number or link, and gives the call, the pick, the user impact, the evidence, and the risk.",
       "files": [],
       "assertions": [
-        "Replies in Korean without hashes, file paths, commands, build numbers, or test counts unless the user needs one to act",
-        "Makes every decision decidable from the reply alone with the call, the pick, what it changes for users, the evidence, and the risk",
+        "Replies in Korean with no commit hashes, paths, shell commands, build numbers, or counts of tests beyond what the user must have in order to act",
+        "Makes every decision decidable from the reply alone by giving the call, the recommended pick, its effect on users, the supporting evidence, and the risk",
         "Never shrinks or drops decision items to stay short and never invents a call to fill the list",
-        "Treats only items needing a product choice, an approval, an irreversible action, or missing access as the user's; work the agent can still do is not a decision"
+        "Treats an item as the user's only when it takes a product decision, their sign-off, a step that cannot be undone, or access the session lacks; anything the agent can still finish is not a decision"
       ]
     },
     {
       "id": 3,
       "prompt": "Use $ketchup. Nothing has happened since my last message, right?",
-      "expected_output": "A short reply that says nothing happened and nothing waits on the user, then stops.",
+      "expected_output": "A short reply stating that there was no change and no pending decision, then nothing more.",
       "files": [],
       "assertions": [
         "Says plainly that nothing happened and nothing waits, then stops without padding",

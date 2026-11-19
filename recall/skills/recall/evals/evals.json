@@ -73,7 +73,7 @@
       "expected_output": "A Korean brief on the auth refactor that states window, topic, and workspace before mining, then gives a capsule, status-tagged threads checked against live git, recurring problems, and one next move.",
       "files": [],
       "assertions": [
-        "States the window (default the last 7 days), the topic, and the active workspace back to the user before searching any history",
+        "States the window (the past 7 days unless told otherwise), the topic, and the active workspace back to the user before searching any history",
         "Checks every named branch, PR, and file against live git (and gh when available) before writing the claim",
         "Gives a capsule of at most 5 bullets, threads with exactly one status tag each, at most 5 recurring problems, and one concrete next move",
         "Does not save the brief to a file because the user did not ask"

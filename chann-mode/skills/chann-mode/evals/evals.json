@@ -42,7 +42,7 @@
       "files": [],
       "assertions": [
         "Each delegate that edits files gets its own worktree and branch, and the two write sets do not overlap.",
-        "The first line of each kickoff is 'Read <absolute path>/worker.md before anything else.' with this skill's folder as the path.",
+        "The first line of each kickoff is 'Before anything else, read <absolute path>/worker.md.' with this skill's folder as the path.",
         "Both branches are merged and the project's checks run on the merged tree before any success is reported; a delegate's own report is not accepted as the evidence.",
         "Cleanup uses git worktree remove without --force and git branch -d, only after the delegate branch has no commits missing from the merged branch."
       ]
@@ -50,7 +50,7 @@
     {
       "id": 5,
       "prompt": "$chann-mode 이 마이그레이션 테스트 전부 통과할 때까지 해줘. 자러 간다, 멈추지 마.",
-      "expected_output": "Switches to the autonomous-run playbook, writes the exit condition as a checkable predicate before the first round, opens a decision trail, asks no questions, logs each round with its verification, skips and logs any irreversible action as blocked, and stops only when the predicate passes.",
+      "expected_output": "Switches to the autonomous-run playbook, writes the exit condition, before the first round, as a predicate a command can check, opens a decision trail, asks no questions, logs each round with its verification, skips and logs any irreversible action as blocked, and stops only when the predicate passes.",
       "files": [],
       "assertions": [
         "A checkable exit predicate is written before the first change.",

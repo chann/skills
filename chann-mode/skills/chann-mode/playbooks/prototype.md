@@ -2,7 +2,7 @@
 
 **You own one decision. The code is a throwaway instrument.**
 
-1. Write the decision the prototype exists to make in one line, such as "stream
+1. Write, in one line, the single decision this prototype is built to settle, such as "stream
    or page the results". No decision means no prototype: go to feature.
 2. Build outside production source, in a scratch directory or a throwaway
    worktree, with the lightest stack that shows the difference. No tests, no

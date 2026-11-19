@@ -3,8 +3,8 @@
 [한국어](README.ko.md) · [← back to main](../README.md)
 
 One entry point for any non-trivial task. Type `/chann-mode <task>` in Claude
-Code or `$chann-mode <task>` in Codex. The skill restates your goal and the
-smallest change that meets it, matches the task to a playbook, hands each step
+Code or `$chann-mode <task>` in Codex. The skill restates your goal, names the
+least change that satisfies it, matches the task to a playbook, hands each step
 to the catalog skill that owns it, and ends with a reply that labels its
 evidence. The other catalog workflows still work on their own; this is how
 they get reached without remembering their names.
@@ -19,8 +19,8 @@ they get reached without remembering their names.
   Their branches are merged and the project's checks run on the merged tree;
   a delegate's report alone is never the proof.
 - **Autonomy.** Reversible work proceeds without asking. A force-push, a deploy
-  outside the documented settings, deleting data, or a message to someone
-  outside the session pauses. "자러 간다" or "don't stop" switches to an
+  outside the documented settings, deleting data, or contacting anyone beyond
+  the session pauses. "자러 간다" or "don't stop" switches to an
   unattended run that asks nothing and logs every decision.
 - **Evidence.** Verdicts are `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE`.
   Claims without direct evidence are labelled `measured`, `inferred`, or
@@ -79,7 +79,7 @@ the skill that owns that kind of work.
 | autonomous-run | Unattended work | The exit condition |
 | shipping | Commit, push, deploy, merge, cleanup | What lands and how far it reaches |
 | pause-and-pickup | Stopping safely or resuming | The resume point |
-| docs | One document | Its truth at the commit that lands it |
+| docs | One document | Every claim holding for the commit it ships in |
 | authoring-a-skill | Writing or fixing a skill | Every sentence an agent reads |
 
 ## Routing

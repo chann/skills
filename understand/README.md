@@ -54,7 +54,7 @@ $why 이 플래그 왜 아직 꺼져 있어?
 
 | Skill | Shape |
 |---|---|
-| `how` | Overview · Key concepts · How it works · Where things live · Gotchas |
+| `how` | Overview · Key concepts · Runtime flow · Code map · Gotchas |
 | `why` | Short answer with confidence · decision timeline (commit or PR, date, quote) · inferences · what the record does not answer |
 
 ## What it refuses

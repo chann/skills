@@ -5,14 +5,14 @@ description: Use when the user asks what happened in this conversation while the
 
 # Ketchup
 
-Catch the user up on this conversation. They stepped away, work kept moving, and
+Bring the user up to date on this conversation. They stepped away, work kept moving, and
 they need to know what changed and what is waiting on them, in words they can
 act on without scrolling back.
 
 ## Rules
 
-- **The window** is everything since the last message the user wrote before
-  asking. Notifications, subagent results, and tool output are not their
+- **The window** opens right after the user's most recent message and runs up
+  to this request. Notifications, subagent results, and tool output are not their
   messages. Assume they remember that last message and nothing after it.
 - **The turn is read-only.** Change no code, start no job, post nothing, and
   merge nothing. Reading live state is allowed and required.
@@ -20,9 +20,10 @@ act on without scrolling back.
   this conversation touched, look at it now. A number that was true an hour ago
   (checks passing, a PR open, an agent running) may not be true; correct it or
   say it was not checked.
-- **Plain words, in the user's language** (Korean when they write Korean). No
-  hashes, file paths, commands, build numbers, or test counts unless the user
-  needs one to act. Say things the way you would say them aloud.
+- **Plain words, in the user's language** (Korean when they write Korean).
+  Technical identifiers stay out: no commit hashes, paths, shell commands,
+  build numbers, or counts of tests, unless the user needs one of them to act. Say things the way you would
+  say them aloud.
 
 ## Steps
 
@@ -30,10 +31,10 @@ act on without scrolling back.
 2. Collect what happened in it: what each request became, and the state of
    anything started. Check live state for every branch, PR, CI run, and agent
    involved.
-3. Sort what waits on the user from what you can still do yourself. An item is
-   the user's only when it needs a product choice, an approval, an irreversible
-   action, or access you lack. Work you can still do yourself is not a decision
-   for them.
+3. Sort what waits on the user from what you can still do yourself. An item
+   belongs to the user only when it takes a product decision, their sign-off, a
+   step that cannot be undone, or access this session does not have. Anything
+   this session can finish without them is not theirs to decide.
 4. Write the reply in the order below.
 
 ## The reply
@@ -41,9 +42,10 @@ act on without scrolling back.
 1. **One opening sentence** naming what waits on the user, or saying nothing
    does. If nothing happened and nothing waits, say exactly that and stop.
 2. **What happened**, under about 100 words: one line per thing the user asked
-   for, with its state — done, still running, failed, or not checked. Leave out
-   work that changed nothing for the user. Each line must stay true when read
-   alone, so name the thing instead of pointing at "it" or "that".
+   for, with its state — finished, in progress, failed, or unverified. Skip
+   work whose result the user would not notice. Write each line so it is still
+   correct with the others removed: name the thing instead of pointing at "it"
+   or "that".
 3. **Decisions waiting on the user.** Each one must be decidable from the reply
    alone, with:
    - the call to make;
@@ -52,8 +54,8 @@ act on without scrolling back.
    - the evidence behind the pick;
    - its risk.
 
-   Name every PR, branch, or agent by a name the user knows and give its number
-   or link. Never invent a call to fill the list, and never shrink or drop items
+   Refer to each PR, branch, or agent by the name the user already uses for
+   it, and add its number or link. Never invent a call to fill the list, and never shrink or drop items
    to stay short: this part grows with the number of items.
 4. **One line on work you can still do yourself**, so the user knows what moves
    without them.

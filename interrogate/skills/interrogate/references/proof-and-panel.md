@@ -44,21 +44,22 @@ severity or drop it.
 
 Hand each adversary the same text, filled in:
 
-> Break this change. Scope: `<git command>`. Intent: `<one sentence>`. Prove
-> each finding by running the real code: a failing existing test or a small
-> repro script in a temporary directory outside the repository. Do not edit
-> the repository, run destructive commands, or call the network. Report each
-> finding with a title, `file:line`, the exact command, the output it printed,
-> and the output the intent requires. Leave out anything you did not run:
-> style, naming, and risks that need a future change to matter. No findings is
-> a valid result.
+> Try to make this change fail. Scope: `<git command>`. Intent: `<one
+> sentence>`. A finding counts only with a run behind it: an existing test
+> that fails, or a small repro script kept in a temporary directory outside
+> the repository. Do not edit the repository, run destructive commands, or
+> call the network. For each finding give a title, the `file:line`, the
+> command exactly as you ran it, what it printed, and what the intent says it
+> should have printed. Whatever you did not run stays out, including style,
+> naming, and hazards that only a later change would trigger. Finding nothing
+> is an acceptable answer.
 
 ## Verifying panel findings
 
 - Rerun every returned command yourself under the safe-proof rules. Output that
   matches is `ran`; a command you cannot rerun safely is unverified.
-- Keep a finding only when the rerun output shows the failure and the failure
-  breaks the stated intent.
+- Keep a finding only when your rerun reproduces the failure and that failure
+  contradicts the stated intent.
 - Two findings share a root cause when one correction would fix both. Merge
   them, keep the strongest proof, and list every adversary that found it.
 - Record unverified findings per adversary in the header, for example

@@ -67,7 +67,7 @@ quota bucket and reset, vision or speed when set) before running.
 1. The goal, how this slice or arm fits it, and why it is needed.
 2. The scope and the exact slice or race arm, with its write set (or
    read-only).
-3. How to verify, and what to report.
+3. The check that proves the work, and the fields the report must carry.
 4. The verdict: `PASS`, `ISSUES` (every issue the worker can prove, not only
    the first), or `BLOCKED` (what stopped it), each with evidence such as a
    `file:line` or a command and its output.

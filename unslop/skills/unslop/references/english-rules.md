@@ -8,8 +8,9 @@ heavily edited. Each rule shows a direction, not a fixed phrase.
 ## Words and openers
 
 **E1. Filler openers and chatbot phrases.** Delete lines that talk about the
-reply instead of giving it: "Certainly!", "Great question!", "I hope this
-helps", "Let me know if you need anything else", "In today's fast-paced world".
+reply instead of giving it: "Certainly!", "Great question!", "Hope that
+helps!", "Feel free to reach out with any questions", "In today's fast-paced
+world".
 Start with the first sentence that carries content.
 
 **E2. Praise or agreement openers.** Drop "You're absolutely right" and "That's

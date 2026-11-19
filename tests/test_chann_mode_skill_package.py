@@ -132,8 +132,8 @@ class ChannModeSkillPackageTests(unittest.TestCase):
 
     def test_every_kickoff_points_at_worker_rules(self) -> None:
         worker = (SKILL / "worker.md").read_text(encoding="utf-8")
-        self.assertIn("`Read <absolute path>/worker.md before anything else.`", skill_text())
-        for rule in ("operator", "whole bar", "force-push", "Never push", "INCONCLUSIVE"):
+        self.assertIn("`Before anything else, read <absolute path>/worker.md.`", skill_text())
+        for rule in ("operator", "complete bar", "force-push", "Never push", "INCONCLUSIVE"):
             with self.subTest(rule=rule):
                 self.assertIn(rule, worker)
 

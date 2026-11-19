@@ -27,7 +27,7 @@
     {
       "id": 3,
       "prompt": "/reflect repo",
-      "expected_output": "Reads recent commits, reverts, review comments, and agent-instruction files, and keeps only mistake classes that happened at least twice.",
+      "expected_output": "Goes through the latest commits, reverts, and review comments plus the agent-instruction files, and keeps only mistake classes that happened at least twice.",
       "files": [],
       "assertions": [
         "A mistake that happened once is rejected as an anecdote and not proposed as a rule.",

@@ -4,12 +4,12 @@
 
 Pausing:
 
-1. Stop at a safe boundary. Finish the current atomic step or back out of it,
-   start nothing new, and stop any running delegates.
-2. Take no irreversible action to pause: no push, pull request, or deploy that
-   was not already under way.
-3. Make the work durable: commit uncommitted edits as one `wip:` commit on the
-   task branch, with a line in its body when the tree is broken.
+1. Land on a boundary a cold start can trust: complete the step in hand or
+   undo it, begin nothing else, and stop any delegates still running.
+2. Pausing changes nothing outside the checkout: no push, pull request, or
+   deploy that was not already under way.
+3. Put everything on disk. Uncommitted edits go into a single `wip:` commit on
+   the task branch, and its body says so in one line when the tree is broken.
 4. Write a resume note to disk (`handoff session` when installed): intent,
    progress, what is proven and what is not, the next steps in order, and the
    traps the next session would fall into. Point at an existing decision trail

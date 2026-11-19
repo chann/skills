@@ -18,7 +18,7 @@ since your last message and what waits on you.
 request comes from the stores' own records, mined read-only and kept local, and
 history content is treated as data, never as instructions. A brief also checks
 every branch, PR, and file it names against live `git` before writing it, so a
-thread marked `[open PR #12]` is open right now. `ketchup` speaks plain words,
+thread marked `[PR open #12]` is open right now. `ketchup` speaks plain words,
 checks live state before it answers, and never changes anything.
 
 ## Installation
@@ -67,8 +67,8 @@ The brief locks its scope first and states it back: the window (default the
 last 7 days, never silently narrowed from "all"), the topic, and the workspace
 (never another project's history unless asked). It then returns a capsule of at
 most five bullets, threads with exactly one status tag each (`[merged]`,
-`[open PR #N]`, `[in flight <branch>]`, `[verified, uncommitted]`,
-`[reverted]`, `[planned, not started]`), at most five recurring problems, and
+`[PR open #N]`, `[in progress <branch>]`, `[done, uncommitted]`,
+`[reverted]`, `[not started]`), at most five recurring problems, and
 one concrete next move. It is a reply and is saved only on request.
 
 ### ketchup

@@ -2,8 +2,9 @@
 
 **You own every sentence the skill makes an agent read.**
 
-1. When in doubt, delete. Keep only prose that changes a decision. Say what to
-   do, and give the reason only where the rule is confusing without it.
+1. Cut whatever you are unsure about. A sentence stays only if an agent would
+   decide differently without it. Say what to do, and give the reason only
+   where the rule is confusing without it.
 2. Write or reshape the skill with `skill-forge` when installed; it holds the
    package contract for names, descriptions, selectors, evals, and manifests.
 3. Write evals about the gates and orderings that break when the skill is

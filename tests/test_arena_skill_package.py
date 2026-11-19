@@ -86,7 +86,7 @@ class ArenaSkillPackageTests(unittest.TestCase):
             "read-only judge",
             "neutral labels",
             "the vendor check did not run",
-            "Read every candidate end to end yourself",
+            "Go through each candidate in full yourself",
             "prefer the smaller interface",
             "Reframe and rerun",
             "graft nothing",

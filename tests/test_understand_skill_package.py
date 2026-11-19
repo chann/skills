@@ -89,8 +89,8 @@ class UnderstandSkillPackageTests(unittest.TestCase):
         ordered = [
             "**Overview**",
             "**Key concepts**",
-            "**How it works**",
-            "**Where things live**",
+            "**Runtime flow**",
+            "**Code map**",
             "**Gotchas**",
         ]
         positions = [text.find(heading) for heading in ordered]

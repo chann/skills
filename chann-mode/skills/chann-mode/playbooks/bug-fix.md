@@ -2,8 +2,8 @@
 
 **You own the root cause and the proof that it is gone.**
 
-Every shipped line traces to runtime evidence. A change that "might help" is a
-hypothesis, not a fix, and it does not ship.
+Nothing ships unless runtime evidence stands behind it. An edit kept because it "could
+help" is an untested hypothesis, so it does not ship.
 
 1. Reproduce it yourself on the surface where it was reported: the page, the
    command, the API call, the failing test. If it will not fire, narrow the
@@ -15,10 +15,12 @@ hypothesis, not a fix, and it does not ship.
    line, a probe, a bisect, a debugger. Each round, take the test that
    eliminates the most. When evidence refutes a hypothesis, revert every edit
    it motivated.
-3. After two fixes on one premise fail, write the premise down and test it
-   directly before a third.
-4. Fix the first place the system went wrong, not where the symptom surfaced.
-   A guard is a fix only when the state it handles is legitimate.
+3. When two fixes built on the same assumption have failed, put that
+   assumption in one sentence and check it by itself before trying a third.
+4. Repair the earliest point where state went bad, not the spot where the
+   symptom showed up.
+   Adding a guard counts as the fix only if the guarded state is one the
+   system is meant to reach.
 5. Write the check before the fix and watch it fail for the defect's reason.
    It lands before the fix in history. Skip the automated check only when it
    would cost more than the bug, and say so.

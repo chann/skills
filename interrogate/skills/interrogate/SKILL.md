@@ -126,8 +126,9 @@ same brief (scope, intent, and the proof rules above) to adversaries on
 different vendors. Then, in this session:
 
 1. Rerun each returned finding's command under the safe-proof rules. Keep it
-   only when the output shows the failure and the failure breaks the intent.
-2. Merge findings that share a root cause into one, naming every adversary that
+   only when your rerun reproduces the failure and that failure contradicts the
+   stated intent.
+2. Fold findings with the same root cause into one, naming every adversary that
    found it.
 3. Count each adversary's unverified findings under `**Dropped:**`, per
    adversary, with the reason.

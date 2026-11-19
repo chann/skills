@@ -1,4 +1,4 @@
 interface:
   display_name: "Ketchup"
-  short_description: "Catch me up on what changed in this chat since my last message"
+  short_description: "Tell me what moved in this conversation while I was away"
   default_prompt: "Use $ketchup to tell me what changed in this conversation and what is waiting on me."

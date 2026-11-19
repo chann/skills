@@ -10,6 +10,6 @@ Question:
 - Otherwise use the subsystem already under discussion.
 
 State your reading of the scope and proceed. Answer in five sections — Overview,
-Key concepts, How it works, Where things live, Gotchas — cite every claim as
+Key concepts, Runtime flow, Code map, Gotchas — cite every claim as
 `file:line`, mark anything unread `inferred`, and name what you did not read.
 Stay read-only: no edits, no commits.

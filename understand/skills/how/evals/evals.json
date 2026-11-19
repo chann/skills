@@ -7,7 +7,7 @@
       "expected_output": "States the scope, reads the entry points and the call path, and answers in the five fixed sections with file:line citations.",
       "files": [],
       "assertions": [
-        "The answer has Overview, Key concepts, How it works, Where things live, and Gotchas, in that order.",
+        "The answer has Overview, Key concepts, Runtime flow, Code map, and Gotchas, in that order.",
         "Every claim about the code carries a file:line citation taken from a file that was actually read.",
         "The reply ends by naming what was not read, and unread parts are labelled inferred.",
         "No file is edited and nothing is committed."

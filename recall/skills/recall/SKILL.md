@@ -195,14 +195,15 @@ default and is not saved unless the user asks.
 
 State these three back to the user before reading any history:
 
-- **Window.** "Recent" is a real range; default to the last 7 days. Never
+- **Window.** Turn "recent" into concrete dates; with nothing else to go on,
+  use the past 7 days. Never
   silently shrink "all" or "everything" to "recent": if the user said all, the
   window is all.
 - **Topic.** The feature, bug, branch, ticket, or phrase to look for. If the
   request names none, take the workspace's current branch as the topic and say
   so.
-- **Workspace.** Default to the active one. Never read another project's
-  history unless the user asks for it.
+- **Workspace.** Use the active workspace unless told otherwise. History that
+  belongs to a different project is read only when the user asks for it.
 
 ### B2. Mine for the topic
 
@@ -238,7 +239,7 @@ Use exactly this shape:
 
 ## Capsule
 
-- <at most 5 bullets: what this work is and where it stands now>
+- <no more than 5 bullets covering what the work is for and its current state>
 
 ## Threads
 
@@ -253,9 +254,9 @@ Use exactly this shape:
 <one concrete action the user can take first>
 ```
 
-- Every thread carries exactly one tag: `[merged]`, `[open PR #N]`,
-  `[in flight <branch>]`, `[verified, uncommitted]`, `[reverted]`, or
-  `[planned, not started]`.
+- Every thread carries exactly one tag: `[merged]`, `[PR open #N]`,
+  `[in progress <branch>]`, `[done, uncommitted]`, `[reverted]`, or
+  `[not started]`.
 - Cite sessions by id and live facts by commit, branch, or PR.
 - The capsule is at most 5 bullets and the recurring problems at most 5. If
   there is nothing to say, omit the section's bullets with "none recorded"

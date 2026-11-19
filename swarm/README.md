@@ -16,7 +16,7 @@ Two ways to put more than one agent on a job:
 
 - **Frame:** states the done predicate and the single return, and picks a
   shape: `partition` (disjoint slices), `race` (one brief on different
-  routes, with a selection rule declared up front), or a mix
+  routes, under a selection rule fixed before the run), or a mix
 - **Fan out:** probes Codex, Claude Code, OpenCode 2.x, and Antigravity,
   records a route plan with a rationale and a quota transcript, and rejects a
   plan that invents a number or reuses one vendor for independent steps

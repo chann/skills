@@ -77,7 +77,7 @@ The name and when it applies; the rule and its test are in `references/principle
 - **boundary-discipline**: validation, error handling, or adapters to outside systems.
 - **make-operations-idempotent**: commands, setup steps, or loops that may crash and rerun.
 - **migrate-callers-then-delete**: replacing an internal API, name, or path that still has callers.
-- **separate-before-serializing**: two actors could write the same file, branch, key, or record.
+- **separate-before-serializing**: two actors might both write to one file, branch, key, or record.
 
 **Verification**
 - **prove-it-works**: before calling anything done.
@@ -110,8 +110,9 @@ The name and when it applies; the rule and its test are in `references/principle
   done", or "going to bed" switch to the autonomous-run playbook. From then on
   nothing is asked: an irreversible action is skipped, logged as blocked, and
   listed in the reply.
-- **No is an acceptable answer.** Asked whether to do something, or shown an
-  approach, give real judgment, and decline what does not earn its place.
+- **Disagreement is welcome.** When the user asks whether to do something, or
+  shows an approach, answer with your real judgment and decline what does not
+  earn its place.
 
 ## 5. Delegation
 
@@ -128,7 +129,7 @@ may start from the remote default branch instead of your `HEAD`, so commit what
 the delegate depends on and name that base commit in its brief.
 
 **The brief.** The first line of every kickoff is
-`Read <absolute path>/worker.md before anything else.`, with the path of this
+`Before anything else, read <absolute path>/worker.md.`, with the path of this
 skill's folder. Then the user's goal, the slice and its scope, the files it
 owns, the bar, how to verify, and the report shape, as file pointers rather
 than pasted content.
@@ -174,7 +175,8 @@ step when installed.
 - Lead with what changed for the user (behavior, files, state), not process.
 - Every claim carries its evidence (`file:line`, a command and the last line of
   its output, an artifact path) or a label.
-- Name each principle that shaped a decision and the choice it changed:
+- For every decision a principle drove, cite the principle and what it
+  changed:
   "subtract-before-you-add: deleted the unused cache before adding the index".
 - Never hand the user a check you could run. Run it and report the result.
 - When `unslop` is installed, pass the reply through it.
@@ -194,7 +196,7 @@ step when installed.
 - **autonomous-run**: unattended work driven to a checkable exit condition.
 - **shipping**: commit, push, deploy, merge, and clean up at the reach asked for.
 - **pause-and-pickup**: stopping safely, or resuming from a prior trail.
-- **docs**: one document that is true at the commit that lands it.
+- **docs**: one document whose every claim holds for the commit it ships in.
 - **authoring-a-skill**: writing or fixing a skill, or turning lessons into structure.
 
 **No playbook fits**: design one before any code and put its steps in the task

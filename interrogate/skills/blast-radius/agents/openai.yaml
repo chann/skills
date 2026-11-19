@@ -1,4 +1,4 @@
 interface:
   display_name: "Blast Radius"
-  short_description: "Find what a change could break outside the diff and prove its safety fact"
-  default_prompt: "Use $blast-radius to find what the current change could break outside the diff and prove the fact it is safe because of."
+  short_description: "Show what a change may break beyond its diff and prove its safety fact"
+  default_prompt: "Use $blast-radius to show what the current change may break beyond its diff and to prove the fact its safety rests on."

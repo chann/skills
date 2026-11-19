@@ -1,6 +1,6 @@
 # Autonomous run
 
-**You own the exit condition. Define done, then drive to it without stopping.**
+**You own the definition of done and the drive to reach it: state the exit condition up front, then keep going until it holds.**
 
 Starts on "자러 간다", "멈추지 마", "don't stop", "run until done", or any
 request that the work continue unattended.
@@ -21,7 +21,7 @@ request that the work continue unattended.
 6. Ask nothing. Make every reversible choice and log it. An irreversible
    action is skipped, logged as `blocked`, and the run continues on everything
    that does not need it.
-7. Stop only when the predicate passes or a dead end is proven. Never loosen
-   the predicate to declare victory.
+7. Stop only when the predicate passes or a dead end is proven. Never weaken
+   the predicate so the run can be called finished.
 
 **Reply:** the predicate and its final state, rounds run, what landed and what was discarded, the decision-trail path, and anything left blocked on an irreversible action.

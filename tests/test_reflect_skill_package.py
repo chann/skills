@@ -56,8 +56,8 @@ class ReflectSkillPackageTests(unittest.TestCase):
 
     def test_lessons_must_last_and_must_not_drift(self) -> None:
         text = body()
-        self.assertIn("still hold in six months", text)
-        self.assertIn("would change what a future agent does", text)
+        self.assertIn("six months from now", text)
+        self.assertIn("a future agent would act differently because of it", text)
         self.assertIn("hashes, versions, counts", text)
 
     def test_routing_prefers_structure_over_prose(self) -> None:

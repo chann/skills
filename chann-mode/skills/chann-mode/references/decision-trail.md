@@ -40,15 +40,16 @@ whose result did not change a decision.
 
 ## Rules
 
-- **Append-only.** A wrong call gets a new row whose `decision` starts with
-  `supersedes <ts>:`, naming the row it corrects. Never edit or delete a row.
+- **Append-only.** A call that turned out wrong is corrected by
+  adding a row whose `decision` starts with `supersedes <ts>:`, naming the row
+  it replaces. Existing rows are not edited or deleted.
 - **Plain cells.** Replace tabs and newlines inside a cell with spaces. Prefix a
   cell that starts with `=`, `+`, `-`, or `@` with `'` so a spreadsheet does
   not evaluate it.
 - **Local by default.** Write it to `.decisions/<YYYY-MM-DD>-<slug>.tsv` at the
   repository root and keep it out of Git; when the project does not ignore that
-  path, add it to `.git/info/exclude`. Commit the file only when a reviewer
-  needs the trail to trust the result.
+  path, add it to `.git/info/exclude`. Commit the file only when the person
+  reviewing the work could not judge the result without it.
 
 Appending a row from a shell:
 
@@ -64,9 +65,10 @@ printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
 
 Walk the rows against what actually happened in the session:
 
-1. Every row maps to a real decision or action.
+1. Each row corresponds to something that was really decided or done.
 2. Every evidence pointer resolves and shows what its row claims.
-3. Every fork, pivot, or abandoned approach that shaped the result has a row.
+3. Nothing that steered the result is missing: each branch point, change of
+   direction, and dropped approach has a row.
 
 Add the missing rows and supersede the wrong ones. The reply names the trail's
 path.

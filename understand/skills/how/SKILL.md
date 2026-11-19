@@ -32,9 +32,9 @@ which one you chose; the user can redirect. Do not stop to ask.
    senior engineer would say aloud.
 2. **Key concepts** — the few terms and types the rest depends on, each with a
    one-line meaning and a `file:line`.
-3. **How it works** — the runtime flow in order, one step per line, each step
+3. **Runtime flow** — what happens in order, one step per line, each step
    cited.
-4. **Where things live** — a map of responsibility to `file:line`.
+4. **Code map** — each responsibility with the `file:line` that holds it.
 5. **Gotchas** — surprising coupling, hidden state, ordering requirements, and
    things that look changeable but are not.
 

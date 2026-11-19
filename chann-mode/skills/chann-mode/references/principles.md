@@ -42,7 +42,7 @@ layer, or an abstraction.
 - Land the scaffold first: shared types, tests, and checks every later step
   leans on.
 - Before two actors share state, ask what happens when the other one writes
-  it. If the answer is not "nothing", isolate it.
+  it. Unless that write is harmless, give each actor its own copy.
 
 **Test:** can you state the core types before writing the first function body?
 
@@ -65,8 +65,8 @@ bolted on.
 a request rests on a claim nobody has checked.
 
 - Write the shared premise down as one sentence.
-- Find an observation that would come out differently if the premise were
-  false, and make it before writing the next fix.
+- Pick something you can observe whose result depends on whether the premise
+  holds, and observe it before writing the next fix.
 - When the user's question rests on a false premise, say so before answering
   it.
 
@@ -92,8 +92,10 @@ analysis, a check you will repeat.
 
 - Build the smallest script, codemod, or check that does or proves the work,
   and rerun it instead of repeating hand edits.
-- Do the first unit by hand, then make the tool reproduce it exactly.
-- The tool is evidence. Commit it when the work outlives the session.
+- Work one unit manually first, then make the tool reproduce that unit
+  exactly.
+- The tool is evidence. Commit it whenever the work will matter after this
+  session ends.
 
 **Test:** can a reviewer rerun one command and get your result?
 
@@ -137,8 +139,8 @@ assumption across files.
 
 ### boundary-discipline
 
-**Apply when:** wiring validation, error handling, or adapters to outside
-systems.
+**Apply when:** adding validation, handling errors, or writing an adapter to
+an outside system.
 
 - Parse and validate where data enters: user input, the network, disk, the
   environment.
@@ -174,8 +176,8 @@ callers.
 
 ### separate-before-serializing
 
-**Apply when:** two or more actors could write the same file, branch, key, or
-record.
+**Apply when:** two or more actors might both write to one file, branch, key,
+or record.
 
 - Remove the sharing first: give each actor its own files, worktree, branch,
   or key.
@@ -203,10 +205,10 @@ record.
 
 **Apply when:** debugging or patching anything.
 
-- Trace the symptom back to the first place the system went wrong and fix it
-  there.
-- A guard, retry, or catch is a fix only when the state it handles is
-  legitimate.
+- Follow the symptom upstream to the earliest wrong state and repair the code
+  that produced it.
+- A guard, retry, or catch counts as the fix only if the state it absorbs is
+  one the system is meant to reach.
 - Revert what a refuted hypothesis motivated.
 
 **Test:** can you name the first wrong state with its `file:line`?
@@ -216,8 +218,8 @@ record.
 **Apply when:** work has several steps: a sweep, a migration, a stack of
 commits.
 
-- Cut the work into units that each end in a check. Verify each before starting
-  the next, and commit it green.
+- Cut the work into units, each closed by its own check. Run that check before
+  starting the next unit, and commit the unit green.
 - Order the units so the series proves itself: the failing check before the
   fix, the scaffold before the features.
 - Never save every check for the end.
@@ -229,8 +231,8 @@ commits.
 **Apply when:** writing, changing, or deciding whether to keep a test.
 
 - Assert what a caller or user can observe: outputs, effects, errors.
-- A good test fails when behavior breaks and keeps passing when only internals
-  change.
+- A good test goes red when the behavior is broken and stays green through a
+  rewrite of the internals.
 - Delete tests that pin private structure and catch nothing.
 
 **Test:** would a pure refactor break this test? Then it tests the
@@ -243,11 +245,12 @@ a number you measured.
 
 - Decide beforehand which result would change your decision, and measure the
   noise floor.
-- Name what bounds the number from a profile or counters taken during the run,
-  not from reading code.
+- Say what limits the number, using a profile or counters captured while it
+  ran rather than a reading of the code.
 - Rule out that it measured something else: errors, cached or skipped work, a
   cold start, noise.
-- Keep the run count, the spread, and the limiter next to the number.
+- Report the number together with how many runs produced it, how far they
+  spread, and what limits it.
 
 **Test:** can you say why the number is not twice as good?
 
@@ -281,7 +284,8 @@ fan-out plan.
 
 **Apply when:** tempted to ask whether to do something reversible.
 
-- Do it, then say what you chose and why. The user corrects after the fact.
+- Act first, then report the option you took and your reason. The user
+  corrects after the fact.
 - Pause only for an irreversible action, and keep working on everything that
   does not depend on the answer.
 - Product direction and preference calls belong to the user. Execution does
@@ -305,8 +309,8 @@ not be a question.
 
 ### encode-lessons-in-structure
 
-**Apply when:** writing the same instruction a second time, or correcting the
-same mistake twice.
+**Apply when:** an instruction is about to be written again, or one mistake
+has been corrected twice.
 
 - Turn the lesson into something a machine runs: a test, a lint, an audit
   rule, a script.

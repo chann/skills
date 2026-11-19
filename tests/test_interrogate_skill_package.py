@@ -274,7 +274,7 @@ class InterrogateSkillPackageTests(unittest.TestCase):
 
         self.assertIn("When the `swarm` skill is installed", text)
         self.assertIn("Rerun each returned finding's command", text)
-        self.assertIn("Merge findings that share a root cause", text)
+        self.assertIn("Fold findings with the same root cause into one", text)
         self.assertIn("per adversary", text)
         self.assertIn("Without `swarm`, review in this session and say", text)
         self.assertIn("## Panel brief", PROOF_REFERENCE.read_text(encoding="utf-8"))

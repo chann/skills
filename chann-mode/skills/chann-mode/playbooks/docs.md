@@ -1,6 +1,6 @@
 # Docs
 
-**You own one document that is true at the commit that lands it.**
+**You own one document whose every claim holds for the commit it ships in.**
 
 1. Name the reader and the one mode the document serves: a tutorial (learn by
    doing), a how-to (finish a task), a reference (look something up), or an

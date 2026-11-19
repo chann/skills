@@ -45,14 +45,14 @@ class KetchupSkillPackageTests(unittest.TestCase):
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
 
         for contract in (
-            "last message the user wrote",
+            "user's most recent message",
             "Notifications, subagent results",
             "remember that last message and nothing after it",
             "The turn is read-only",
             "Check live state before reporting",
             "one opening sentence",
             "under about 100 words",
-            "done, still running, failed, or not checked",
+            "finished, in progress, failed, or unverified",
             "decidable from the reply alone",
             "what it changes for users",
             "the evidence behind the pick",
@@ -60,7 +60,7 @@ class KetchupSkillPackageTests(unittest.TestCase):
             "Never invent a call",
             "never shrink or drop items",
             "work you can still do yourself",
-            "No hashes, file paths, commands, build numbers, or test counts",
+            "no commit hashes, paths, shell commands, build numbers, or counts of tests",
             "Korean when they write Korean",
         ):
             with self.subTest(contract=contract):

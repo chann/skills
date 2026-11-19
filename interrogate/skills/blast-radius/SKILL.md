@@ -5,9 +5,9 @@ description: Use when the user wants to know what a change could break outside i
 
 # Blast radius
 
-Find what a change breaks somewhere else, before it ships. Listing callers is
-not the job; a symbol search does that in a second. The job is the breakage a
-symbol search never shows.
+Before a change ships, find the damage it does away from the lines it touches.
+A list of callers is not the answer, since any symbol search produces one
+instantly. The answer is the breakage no symbol search turns up.
 
 A convincing writeup proves nothing: it reads the same whether or not it is
 true. So the answer rests on one or two facts, and those facts are proven by
@@ -22,7 +22,7 @@ Grade each safety fact, weakest first, and say where it stopped:
 | `said` | Asserted. Worth nothing alone |
 | `cited` | A real `file:line`, or the line in the pinned library's source |
 | `traced` | The failure path walked step by step, and it does not reach |
-| `ran` | A script or test that calls the shipped code and fails loudly if the fact is false |
+| `ran` | An executed script or test that exercises the shipped code and fails loudly if the fact is false |
 | `reproduced` | Seen in the running product |
 
 `ran` is usually one small script, in a temporary directory outside the
@@ -33,18 +33,18 @@ function in question.
 
 Resolve the scope the user named; otherwise the current branch against its
 merge base with the default branch, plus uncommitted changes. Read the diff,
-the commit messages, and the PR text. List the symbols it adds, changes, and
-deletes. Then write down what it now does differently that the diff does not
+the commit messages, and the PR text. List every symbol the change introduces, alters, or
+removes. Then write down what it now does differently that the diff does not
 spell out: a changed default, a reordered side effect, a new exception, a
 different return shape, a removed guard.
 
 ## 2. Find the safety fact
 
-Most changes that look risky are safe because of a single fact, such as "this
-call only evicts entries that already expired" or "every writer of this column
-goes through the function that changed". Name the one or two facts that, if
-true, clear most of the risk at once. Spend the time there, not on a long list
-of maybes.
+A change that looks dangerous usually turns out safe for one specific reason,
+such as "this call only evicts entries that already expired" or "every writer
+of this column goes through the function that changed". Name the one or two
+facts that, if true, clear most of the risk at once. Put the effort into those
+facts rather than into an inventory of things that might go wrong.
 
 ## 3. Look where a symbol search stops
 

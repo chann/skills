@@ -1,5 +1,5 @@
 {
   "name": "recall",
-  "description": "Recall what happened in your coding-agent history, and catch up on this conversation. recall mines Claude Code, Codex, opencode, and agy sessions read-only into a date-ranged report or a topic brief for resuming work; ketchup tells you what changed in this chat since your last message.",
+  "description": "Recall what happened in your coding-agent history, and catch up on this conversation. recall mines Claude Code, Codex, opencode, and agy sessions read-only into a date-ranged report or a topic brief for resuming work; ketchup tells you what moved in this conversation after your last message.",
   "version": "1.0.0"
 }

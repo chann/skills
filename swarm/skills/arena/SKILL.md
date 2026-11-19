@@ -39,7 +39,7 @@ Refuse, say why, and do the task once instead when:
 
 ## 2. Fan out
 
-- Give each candidate its own output location: its own Git worktree when it
+- Every candidate writes to a location of its own: its own Git worktree when it
   edits a repository, otherwise its own temporary directory. Candidates never
   share a write target.
 - When the `swarm` skill is installed, seat the candidates through it as a
@@ -47,8 +47,8 @@ Refuse, say why, and do the task once instead when:
   leaves a call tree. Without it, use the host's subagent tool and say that
   the candidates share one vendor.
 - Launch every seat at once and wait for completion notices; do not poll.
-- Each candidate returns the artifact and a short rationale naming the
-  alternatives it considered and rejected.
+- Each candidate hands back its artifact plus a few lines on which other
+  approaches it weighed and why it turned them down.
 - A candidate that returns nothing is a dropout. Continue with the rest and
   say so. With fewer than two candidates left there is nothing to compare:
   report the dropout and treat the survivor as a single attempt.
@@ -62,23 +62,24 @@ score, and recommends a base.
 
 Take the judge from a different vendor than the session running the arena
 when one is available. When none is, or this session's vendor is unknown, run
-the judge anyway and say that the vendor check did not run. When no judge can
-run at all, say that judging was skipped.
+the judge anyway and report that the vendor check was not possible. When no
+judge can run at all, say that judging was skipped.
 
 ## 4. Pick a base
 
-Read every candidate end to end yourself, not its summary, and score it
+Go through each candidate in full yourself, not its summary, and score it
 criterion by criterion before reading the judge's scores.
 
 - Agreement with the judge confirms the pick.
-- Disagreement means one side is biased or the rubric is ambiguous. Read both
+- Disagreement means either one scorer is biased or the rubric can be read two
+  ways. Read both
   rationales, decide, and say which reading won and why.
 - Pick the base a later maintainer can extend without breaking its
   invariants. Between near ties, prefer the smaller interface.
 
 ## 5. Graft
 
-Walk each losing candidate once more for the one or two things worth
+Return to every candidate that lost and look for the one or two things worth
 keeping, usually not more. Fold each into the base by hand so the result
 still reads as one design; never paste a block across mechanically.
 
@@ -104,4 +105,4 @@ it right and the graft missed it (go back to Graft). Do not patch over it.
 - Do not average wildly divergent candidates into one artifact.
 - Do not claim cross-vendor judging when the vendor check did not run.
 
-**Reply:** the synthesized artifact; the base and why; the judge's verdict, or that judging was skipped or ran without the vendor check; each graft with its source candidate; what was rejected and why; convergence or dropouts; the verification verdict with its evidence.
+**Reply:** the synthesized artifact; the base and why; the judge's verdict, or that judging was skipped or ran without the vendor check; every graft and the candidate it came from; the parts turned down, with reasons; convergence or dropouts; the verification verdict with its evidence.

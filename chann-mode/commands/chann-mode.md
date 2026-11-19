@@ -10,7 +10,7 @@ Task:
 - Otherwise use the task already under discussion. With none, ask for the task
   and nothing else.
 
-Restate the goal and the smallest change that meets it, then proceed without a
+Restate the goal, name the least change that satisfies it, and proceed without a
 confirmation round for reversible work. Copy the chosen playbook's steps into
 the host's task list before the first edit. Pause only for an irreversible
 action, and keep working on everything that does not depend on it. The first

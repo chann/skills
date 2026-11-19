@@ -14,7 +14,8 @@
    - smallest safe decomposition: one owner or several, and why.
 3. With two or more workstreams, run the fan-out playbook (`swarm` when
    installed). Otherwise build it in the session.
-4. Build in small units that each end in a check and get committed when green.
+4. Build it as a series of small units, each closed by its own check and
+   committed once that check is green.
    Reuse what the codebase, the standard library, or an installed dependency
    already has. Finish every caller, test, fixture, and doc the change touches.
 5. Verify on the real surface by driving the feature the way a user would, not
