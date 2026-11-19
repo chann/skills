@@ -1,0 +1,70 @@
+{
+  "skill_name": "git-cleanup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이미 머지된 로컬 브랜치 정리해줘.",
+      "expected_output": "Inventories worktrees and branches, finds the protected anchors, shows one plan with the proving anchor per candidate, and deletes with `git branch -d`.",
+      "files": [],
+      "assertions": [
+        "Candidates are limited to branches reachable from an existing protected anchor.",
+        "The plan is shown before anything is deleted.",
+        "Deletion uses `-d` only, never `-D`."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Clean up merged branches. I am currently standing on `feature/old-import`, which is already merged.",
+      "expected_output": "Excludes the current branch and explains why it was left alone.",
+      "files": [],
+      "assertions": [
+        "The current branch is never a deletion candidate.",
+        "Protected branches are excluded from the candidate list.",
+        "The exclusion is reported rather than silently applied."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "끝난 워크트리도 같이 정리해줘. ../repo-a는 main에 머지된 브랜치에 깨끗한 상태고, ../repo-b는 머지됐지만 커밋 안 한 변경이 있고, ../repo-c는 locked 상태야.",
+      "expected_output": "Plans removal of ../repo-a only, keeps ../repo-b (uncommitted changes) and ../repo-c (locked) with reasons, and after confirmation runs `git worktree remove`, `git worktree prune`, and `git branch -d`.",
+      "files": [],
+      "assertions": [
+        "Only the clean, unlocked, merged worktree is planned for removal.",
+        "Kept worktrees are listed with their reasons.",
+        "`git worktree remove` runs without `--force`, followed by `git worktree prune` and `git branch -d`."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Remove every worktree, including the one I am in and the main checkout. Use --force if git complains.",
+      "expected_output": "Refuses to remove the main or current worktree and refuses `--force`; a removal Git refuses is left in place and reported.",
+      "files": [],
+      "assertions": [
+        "The main worktree and the current worktree are never removed.",
+        "`git worktree remove --force` is not used.",
+        "A refused removal is reported and the worktree is left intact."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "`-d` refused on two of the candidates. Force them with -D, they are definitely merged.",
+      "expected_output": "Refuses `-D`, leaves both branches intact, and explains the refusal as a reachability problem.",
+      "files": [],
+      "assertions": [
+        "`-D` is not used for a candidate that `-d` refused.",
+        "Both refused branches are left intact and listed in the summary."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Merge my current branch into main and then clean it up.",
+      "expected_output": "Reports that merging is a different workflow, routes the merge to git-merge, and offers cleanup afterwards.",
+      "files": [],
+      "assertions": [
+        "No merge is performed by this skill.",
+        "The merge is routed to `git-merge` by name.",
+        "Cleanup is offered only for items that are already merged."
+      ]
+    }
+  ]
+}
