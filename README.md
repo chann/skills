@@ -288,6 +288,34 @@ applies to the `$name` selectors in Codex.
 | `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff` | `handoff frontend`, `handoff backend`, `handoff session` |
 | `all-subagents` | `swarm` |
 | `work-summary` | `recall` |
+| `chann-mode`, `ketchup` (short-lived names) | `chann`, `catchup` |
+
+### Remove the retired skills
+
+Installing the new lineup does not remove the old names, so both sets stay
+installed side by side. Remove every retired name with one command, then run
+the install command again:
+
+```bash
+npx skills remove \
+  code-review code-review-md \
+  diff-summary-md diff-summary-quiz \
+  plan-summary-md plan-summary-quiz \
+  human-friendly-writing \
+  git-commit-push git-commit-realtime git-commit-push-realtime \
+  git-commit-push-deploy git-commit-rewrite \
+  git-merge-to-main git-merge-to-dev git-branch-cleanup \
+  gen-frontend-handoff gen-backend-handoff gen-session-handoff \
+  all-subagents work-summary \
+  chann-mode ketchup \
+  --global --yes
+```
+
+- A name that is not installed is skipped, so the full list is safe to run.
+- Without `--agent`, the command cleans the links of every agent. Drop
+  `--global` when the skills were installed into one project.
+- The command removes by name. If a skill with one of these names came from
+  another source, leave that name out.
 
 ## Documentation
 

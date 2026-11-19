@@ -288,6 +288,33 @@ selector에도 같은 대응이 적용됩니다.
 | `gen-frontend-handoff`, `gen-backend-handoff`, `gen-session-handoff` | `handoff frontend`, `handoff backend`, `handoff session` |
 | `all-subagents` | `swarm` |
 | `work-summary` | `recall` |
+| `chann-mode`, `ketchup` (잠시 쓰인 이름) | `chann`, `catchup` |
+
+### 예전 스킬 한 번에 지우기
+
+새 구성을 설치해도 예전 이름은 지워지지 않아, 두 세트가 함께 남습니다.
+아래 명령 하나로 없어진 이름을 모두 지운 뒤 설치 명령을 다시 실행하세요.
+
+```bash
+npx skills remove \
+  code-review code-review-md \
+  diff-summary-md diff-summary-quiz \
+  plan-summary-md plan-summary-quiz \
+  human-friendly-writing \
+  git-commit-push git-commit-realtime git-commit-push-realtime \
+  git-commit-push-deploy git-commit-rewrite \
+  git-merge-to-main git-merge-to-dev git-branch-cleanup \
+  gen-frontend-handoff gen-backend-handoff gen-session-handoff \
+  all-subagents work-summary \
+  chann-mode ketchup \
+  --global --yes
+```
+
+- 설치되어 있지 않은 이름은 건너뛰므로, 목록 전체를 그대로 실행해도 됩니다.
+- `--agent`를 주지 않으면 모든 에이전트의 연결을 함께 정리합니다. 프로젝트
+  안에 설치했다면 `--global`을 빼세요.
+- 이름으로만 지웁니다. 같은 이름의 스킬을 다른 곳에서 설치했다면 그 이름은
+  목록에서 빼세요.
 
 ## 문서
 

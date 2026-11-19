@@ -94,13 +94,34 @@ ROOT_PLAN_SUMMARY_DOCS = [
 ROOT_COUNT_DOCS = ROOT_PLAN_SUMMARY_DOCS
 
 # Names that no longer exist as selectors. Root docs may spell them only inside
-# a migration table row; `samples/code-review/` is a real directory.
+# a migration table row or the command that removes them;
+# `samples/code-review/` is a real directory.
 RETIRED_NAMES = re.compile(
     r"code-review|diff-summary-(?:md|quiz)|plan-summary-(?:md|quiz)"
     r"|human-friendly-writing|git-commit-(?:push|realtime|rewrite)"
     r"|git-merge-to-|git-branch-cleanup|gen-(?:frontend|backend|session)-handoff"
-    r"|all-subagents|work-summary"
+    r"|all-subagents|work-summary|ketchup"
 )
+REMOVE_COMMAND = "npx skills remove"
+# Every retired selector, so the documented removal command cannot miss one.
+# `chann-mode` is still the plugin directory, so it cannot be in the pattern above.
+RETIRED_SELECTORS = (
+    "code-review", "code-review-md", "diff-summary-md", "diff-summary-quiz",
+    "plan-summary-md", "plan-summary-quiz", "human-friendly-writing",
+    "git-commit-push", "git-commit-realtime", "git-commit-push-realtime",
+    "git-commit-push-deploy", "git-commit-rewrite", "git-merge-to-main",
+    "git-merge-to-dev", "git-branch-cleanup", "gen-frontend-handoff",
+    "gen-backend-handoff", "gen-session-handoff", "all-subagents",
+    "work-summary", "chann-mode", "ketchup",
+)
+
+
+def removal_command(text: str) -> str:
+    """The fenced block that starts with the removal command, or an empty string."""
+    for block in re.findall(r"```bash\n(.*?)```", text, re.DOTALL):
+        if block.lstrip().startswith(REMOVE_COMMAND):
+            return block
+    return ""
 
 
 def frontmatter_value(skill_path: Path, key: str) -> str:
@@ -240,15 +261,29 @@ class InstallationDocsTests(unittest.TestCase):
 
     def test_root_docs_name_retired_selectors_only_in_migration_tables(self) -> None:
         for path in ROOT_COUNT_DOCS:
-            lines = path.read_text(encoding="utf-8").splitlines()
+            text = path.read_text(encoding="utf-8")
+            removal_lines = set(removal_command(text).splitlines())
             with self.subTest(doc=path.relative_to(ROOT)):
-                for number, line in enumerate(lines, start=1):
+                for number, line in enumerate(text.splitlines(), start=1):
                     checked = line.replace("samples/code-review", "")
                     if RETIRED_NAMES.search(checked):
                         self.assertTrue(
-                            line.lstrip().startswith("|"),
-                            f"{path.name}:{number} names a retired selector outside a table: {line}",
+                            line.lstrip().startswith("|") or line in removal_lines,
+                            f"{path.name}:{number} names a retired selector outside "
+                            f"a table or the removal command: {line}",
                         )
+
+    def test_install_docs_remove_every_retired_selector_in_one_command(self) -> None:
+        for path in (ROOT / "README.md", ROOT / "README.ko.md", ROOT / "USAGE.md"):
+            command = removal_command(path.read_text(encoding="utf-8"))
+            with self.subTest(doc=path.relative_to(ROOT)):
+                self.assertTrue(command, "no removal command block")
+                self.assertIn("--global", command)
+                self.assertIn("--yes", command)
+                listed = set(command.replace("\\", " ").split())
+                self.assertEqual(set(), set(RETIRED_SELECTORS) - listed)
+                packaged = {skill.parent.name for skill in ROOT.glob("*/skills/*/SKILL.md")}
+                self.assertEqual(set(), listed & packaged, "the command would remove a current skill")
 
     def test_plan_summary_readmes_publish_exact_installs_and_boundaries(self) -> None:
         for path in PLAN_SUMMARY_READMES:
