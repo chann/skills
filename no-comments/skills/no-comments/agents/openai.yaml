@@ -1,0 +1,4 @@
+interface:
+  display_name: "No Comments"
+  short_description: "Strip narration comments and encode real constraints"
+  default_prompt: "Use $no-comments to strip narration comments from this diff and encode any real constraint."

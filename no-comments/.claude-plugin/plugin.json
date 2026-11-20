@@ -1,0 +1,5 @@
+{
+  "name": "no-comments",
+  "description": "Remove comments that only narrate the code. Keep a comment about an outside rule that cannot be checked, and encode a real constraint in a type, test, or lint.",
+  "version": "0.1.0"
+}

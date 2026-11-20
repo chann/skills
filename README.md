@@ -2,7 +2,7 @@
 
 [🇰🇷 Korean](README.ko.md)
 
-27 practical agent workflows and 30 installable Codex selectors, packaged across 17 plugins.
+29 practical agent workflows and 32 installable Codex selectors, packaged across 19 plugins.
 
 ## Website
 
@@ -52,6 +52,8 @@ Eight stages, one row per workflow. Each name links to its plugin README.
 | build | **[bug-hunt](bug-hunt/README.md)** | Diagnose a broken behavior by reproducing it, falsifying hypotheses in a ledger, and pinning the fix with a check that fails first |
 | build | **[gen-docs](doc-skill/README.md)** | Generate or update README, Korean README, architecture, and usage docs while preserving existing prose |
 | build | **[unslop](unslop/README.md)** | Rewrite AI-written Korean or English text so it reads like a person wrote it, without changing its meaning |
+| build | **[no-comments](no-comments/README.md)** | Remove comments that only narrate the code, keep an outside-rule comment that cannot be checked, and encode a real constraint in a type, test, or lint |
+| build | **[make-bot-ui](make-bot-ui/README.md)** | Build a page whose controls wake a bot through a webhook you supply, with the sender key kept in server-side config |
 | build | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the result with project-owned commands, and verify the installed copy |
 | verify | **[interrogate](interrogate/README.md)** | Try to break a diff and report severity-tagged findings, each with its proof level, as Markdown plus bilingual HTML |
 | verify | **[blast-radius](interrogate/README.md)** | Show what a change could break outside its own diff, and prove the fact its safety rests on |
@@ -106,6 +108,8 @@ exception and need `git-commit` beside them.
 - Subagents and competing attempts: `npx skills add chann/skills --skill swarm --skill arena`
 - Past work and catch-up: `npx skills add chann/skills --skill recall --skill catchup`
 - Natural prose: `npx skills add chann/skills --skill unslop`
+- Comment cleanup: `npx skills add chann/skills --skill no-comments`
+- A page that wakes a bot: `npx skills add chann/skills --skill make-bot-ui`
 - Skill authoring: `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect`
 
 To inspect the available names first, run `npx skills add chann/skills -l --full-depth`.
@@ -201,6 +205,22 @@ confirmed.
 | Claude Code | Codex | Action |
 | --- | --- | --- |
 | `/unslop [text-or-file]` | `$unslop [text-or-file]` | Rewrite AI-written Korean or English text into natural prose without changing meaning |
+
+### no-comments → [details](no-comments/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/no-comments [files or diff]` | `$no-comments [files or diff]` | Strip narration comments and encode a real constraint when you agree |
+
+The reviewer prompt reports. Accepted deletions are applied afterwards. A rejected review does not abort accepted findings. A comment about an outside rule that cannot be checked is kept and marked for review.
+
+### make-bot-ui → [details](make-bot-ui/README.md)
+
+| Claude Code | Codex | Action |
+| --- | --- | --- |
+| `/make-bot-ui [webhook url]` | `$make-bot-ui [webhook url]` | Build a page whose controls wake a bot through your webhook |
+
+The webhook URL comes from you. The sender key stays in server-side config. A key pasted in chat is refused. The local server, not the browser, sends the POST.
 
 ### build-reinstall → [details](build-reinstall/README.md)
 
@@ -345,7 +365,7 @@ What works across platforms and what is specific to Claude Code:
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
 - Git repository
 - Git 2.45+ for `diff-summary`
-- Python 3.10+ (for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, and `skill-audit`; standard library only)
+- Python 3.10+ (for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, `skill-audit`, and `make-bot-ui`; standard library only)
 
 ## License
 

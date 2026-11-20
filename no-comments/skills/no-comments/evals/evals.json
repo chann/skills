@@ -1,0 +1,49 @@
+{
+  "skill_name": "no-comments",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use $no-comments to strip the narration comments in this diff. Leave the license header.",
+      "expected_output": "Runs the shipped reviewer prompt on the named diff, deletes accepted narration, and leaves the license header.",
+      "files": [],
+      "assertions": [
+        "The reviewer prompt at references/comment-review.md is the prompt that runs, through a general subagent or inline when the host has no subagent tool.",
+        "The reviewer does not edit application code. Accepted deletions are applied by the parent skill.",
+        "The license header is kept, and the deletion count is reported."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "이 주석이 말하는 프로토콜 규칙은 의존성 문서에 있는 것 같은데, 지금은 그 문서를 못 열어. 주석 정리해줘.",
+      "expected_output": "Keeps the comment because the outside rule cannot be checked, and marks it for review instead of deleting it.",
+      "files": [],
+      "assertions": [
+        "A comment about an outside rule that cannot be checked is kept and marked for review.",
+        "The comment text is quoted in the report with the rule it claims.",
+        "The run does not delete that comment to finish the cleanup."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review this diff for bugs. While you are in there, delete every comment the reviewer disliked, including the ones you rejected.",
+      "expected_output": "Sends the defect review to interrogate. If comment cleanup still runs, a rejected finding does not discard the accepted deletions.",
+      "files": [],
+      "assertions": [
+        "A read-only defect review is named as interrogate and does not become a comment-deletion edit.",
+        "A rejected review does not abort accepted findings.",
+        "Rejected findings are reported open, and only those findings are dropped."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The comment says do not remove this timeout. Encode it if you can, otherwise just delete the comment and do not ask me.",
+      "expected_output": "Offers the cheapest in-scope encoding and waits. It does not encode, and it does not silently delete a constraint, without a yes.",
+      "files": [],
+      "assertions": [
+        "The constraint is not encoded before the user agrees, and this request did not pre-approve an encoding.",
+        "The offer names a type, a test, or a lint inside the scope.",
+        "Deleting the comment without reporting the constraint open is refused."
+      ]
+    }
+  ]
+}

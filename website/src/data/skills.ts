@@ -26,6 +26,8 @@ export type SkillId =
   | "bug-hunt"
   | "gen-docs"
   | "unslop"
+  | "no-comments"
+  | "make-bot-ui"
   | "build-reinstall"
   | "interrogate"
   | "blast-radius"
@@ -177,6 +179,24 @@ export const skillDefinitions = [
     claudeSelector: "/unslop",
     codexSelector: "$unslop",
     tags: ["writing", "korean", "english", "rewrite"],
+  },
+  {
+    id: "no-comments",
+    title: "No Comments",
+    category: "build",
+    example: "$no-comments strip the narration comments in this diff",
+    claudeSelector: "/no-comments",
+    codexSelector: "$no-comments",
+    tags: ["comments", "cleanup", "lint", "types"],
+  },
+  {
+    id: "make-bot-ui",
+    title: "Make Bot UI",
+    category: "build",
+    example: "$make-bot-ui a ping button for the webhook I will give you",
+    claudeSelector: "/make-bot-ui",
+    codexSelector: "$make-bot-ui",
+    tags: ["ui", "webhook", "bot", "server"],
   },
   {
     id: "build-reinstall",

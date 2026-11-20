@@ -45,6 +45,8 @@ next, when to pause, and the final reply.
 | Something is slower or heavier than it should be | `bug-hunt` | perf |
 | New or changed behavior | none, inline | feature |
 | Structure changes, behavior does not | none, inline | refactoring |
+| Comments that narrate the code, or a request to strip them | `no-comments` | refactoring |
+| A page whose controls wake a bot through a webhook | `make-bot-ui` | feature |
 | A fork an experiment can settle | none, inline | prototype |
 | Several competing attempts at one artifact | `arena` | prototype |
 | A plan or design with open decisions | `review-me`, `plan-summary` | plan |
@@ -75,6 +77,7 @@ The name and when it applies; the rule and its test are in `references/principle
 **Architecture**
 - **model-the-domain**: stateful logic, heavy branching, or a shape assumption repeated across files.
 - **boundary-discipline**: validation, error handling, or adapters to outside systems.
+- **type-system-discipline**: designing types, a function signature, or code a static checker can reject.
 - **make-operations-idempotent**: commands, setup steps, or loops that may crash and rerun.
 - **migrate-callers-then-delete**: replacing an internal API, name, or path that still has callers.
 - **separate-before-serializing**: two actors might both write to one file, branch, key, or record.
@@ -83,6 +86,7 @@ The name and when it applies; the rule and its test are in `references/principle
 - **prove-it-works**: before calling anything done.
 - **fix-root-causes**: debugging or patching.
 - **sequence-verifiable-units**: multi-step work and how commits stack.
+- **outcome-oriented-execution**: a planned rewrite or migration with named phase boundaries.
 - **test-behavior-not-implementation**: writing, changing, or keeping a test.
 - **explain-the-number**: before measuring, and before trusting or reporting a number.
 - **proven-vs-unproven**: writing any status, summary, or "done".

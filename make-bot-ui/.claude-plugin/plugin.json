@@ -1,0 +1,5 @@
+{
+  "name": "make-bot-ui",
+  "description": "Build a page whose controls wake a bot through a webhook the user supplies. The sender key stays in server-side config, and the local server sends the POST.",
+  "version": "0.1.0"
+}

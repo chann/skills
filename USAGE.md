@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 27 canonical workflows and 30 installable Codex selectors across 17 workflow plugins. The 30 selectors are the 27 workflows plus the three aliases `gcr`, `gcpr`, and `gcpd`.
+This repository exposes 29 canonical workflows and 32 installable Codex selectors across 19 workflow plugins. The 32 selectors are the 29 workflows plus the three aliases `gcr`, `gcpr`, and `gcpd`.
 
 ## Installation
 
@@ -22,7 +22,7 @@ adapter or fall back to copy mode during non-interactive global installs.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name. The 30 names are `chann`, `how`, `why`, `research-brief`, `recall`, `catchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
+Use `--skill <name>` with the actual skill name. The 32 names are `chann`, `how`, `why`, `research-brief`, `recall`, `catchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `no-comments`, `make-bot-ui`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
 
 Every skill works when installed alone. The three aliases are the one exception: each runs the installed `git-commit` with a fixed mode and refuses when `git-commit` is missing.
 
@@ -41,6 +41,8 @@ Every skill works when installed alone. The three aliases are the one exception:
 | Review-me only | `npx skills add chann/skills --skill review-me` |
 | Build-reinstall only | `npx skills add chann/skills --skill build-reinstall` |
 | Natural prose | `npx skills add chann/skills --skill unslop` |
+| Comment cleanup | `npx skills add chann/skills --skill no-comments` |
+| A page that wakes a bot | `npx skills add chann/skills --skill make-bot-ui` |
 | Bug hunting and research | `npx skills add chann/skills --skill bug-hunt --skill research-brief` |
 | Skill authoring | `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect` |
 
@@ -63,7 +65,7 @@ A skill directory is `<plugin>/skills/<name>/`, the folder that holds `SKILL.md`
 | **opencode** | Drop the skill directory into your opencode skills path |
 | **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
 
-For the deepest per-skill detail, see each plugin's own README: [chann-mode](chann-mode/README.md), [understand](understand/README.md), [research-brief](research-brief/README.md), [recall](recall/README.md), [diff-summary](diff-summary/README.md), [plan-summary](plan-summary/README.md), [review-me](review-me/README.md), [swarm](swarm/README.md), [bug-hunt](bug-hunt/README.md), [doc-skill](doc-skill/README.md), [unslop](unslop/README.md), [build-reinstall](build-reinstall/README.md), [interrogate](interrogate/README.md), [git-skill](git-skill/README.md), [long-task](long-task/README.md), [handoff](handoff/README.md), and [skill-forge](skill-forge/README.md).
+For the deepest per-skill detail, see each plugin's own README: [chann-mode](chann-mode/README.md), [understand](understand/README.md), [research-brief](research-brief/README.md), [recall](recall/README.md), [diff-summary](diff-summary/README.md), [plan-summary](plan-summary/README.md), [review-me](review-me/README.md), [swarm](swarm/README.md), [bug-hunt](bug-hunt/README.md), [doc-skill](doc-skill/README.md), [unslop](unslop/README.md), [no-comments](no-comments/README.md), [make-bot-ui](make-bot-ui/README.md), [build-reinstall](build-reinstall/README.md), [interrogate](interrogate/README.md), [git-skill](git-skill/README.md), [long-task](long-task/README.md), [handoff](handoff/README.md), and [skill-forge](skill-forge/README.md).
 
 ## Quick start
 
@@ -102,6 +104,8 @@ For the deepest per-skill detail, see each plugin's own README: [chann-mode](cha
 > /plan-summary docs/prd.md --md           # Korean + English Markdown only
 > /plan-summary docs/spec.md --quiz        # bilingual summary + aligned quiz
 > /unslop docs/note.ko.md                  # AI가 쓴 한국어를 사람 문장으로
+> /no-comments                             # strip narration comments in the current diff
+> /make-bot-ui https://hooks.example.test/wake  # a page that wakes a bot through your webhook
 > /bug-hunt the search endpoint got 10x slower   # reproduce, falsify, pin the fix
 > /research-brief does this client retry by default?  # cited brief from primary sources
 > /skill-forge add a CI triage skill       # author a package and publish every surface
@@ -131,6 +135,8 @@ command reference below.
 | Defect diagnosis | `/bug-hunt` | `$bug-hunt` |
 | Project docs | `/gen-docs` | `$gen-docs` |
 | Natural-prose rewrite | `/unslop` | `$unslop` |
+| Narration-comment cleanup | `/no-comments` | `$no-comments` |
+| Bot UI over a webhook | `/make-bot-ui` | `$make-bot-ui` |
 | Build and reinstall | `/build-reinstall` | `$build-reinstall` |
 | Adversarial code review | `/interrogate` | `$interrogate` |
 | Change blast radius | `/blast-radius` | `$blast-radius` |
@@ -383,6 +389,22 @@ Codex invokes the same contract as `$unslop [text-or-file]`. In Korean the skill
 
 `gen-docs`, `plan-summary`, `handoff`, and `recall` have a self-contained natural-Korean fallback. They may use `unslop` as an optional wording-only pass when the runtime already exposes it, but never install or require it. Missing optional support does not change their output or completion behavior.
 
+### no-comments
+
+| Command | Action |
+|---|---|
+| `/no-comments [files or diff]` | Remove comments that only narrate the code. Encode a real constraint in a type, test, or lint when you agree |
+
+Codex invokes the same workflow as `$no-comments [files or diff]`. With no argument the scope is the current diff against the default branch, including the working tree. The reviewer prompt in the skill reports through a general subagent, or inline when the host has no subagent tool. The reviewer does not edit application code. A rejected review does not abort accepted findings. A comment about an outside rule that cannot be checked is kept and marked for review. A read-only defect review stays with `interrogate`.
+
+### make-bot-ui
+
+| Command | Action |
+|---|---|
+| `/make-bot-ui [webhook url]` | Build a page whose controls wake a bot through the webhook you supply |
+
+Codex invokes the same workflow as `$make-bot-ui [webhook url]`. The webhook URL comes from you. The sender key stays in server-side config. A key pasted in chat is refused, and it is not placed in the page or the transcript. The local server, not the browser, sends the POST. `scripts/webhook_post.py` builds the page, rejects a page that contains the key or the webhook host, and builds that one POST.
+
 ### build-reinstall
 
 | Command | Action |
@@ -631,5 +653,5 @@ commands.
 - An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
 - A Git repository
 - Git 2.45+ for `diff-summary`
-- Python 3.10+ for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, and `skill-audit` (standard library only — nothing to install)
+- Python 3.10+ for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, `skill-audit`, and `make-bot-ui` (standard library only — nothing to install)
 - `gh` is optional; `why` reads pull-request and issue threads through it, and a `recall` brief uses it for PR state

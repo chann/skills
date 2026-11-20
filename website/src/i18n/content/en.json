@@ -317,6 +317,16 @@
       "whenToUse": "When text sounds machine-made: translation-ese, literal jargon, filler openers, or inflated vocabulary",
       "result": "The rewritten text and a short note on what kind of change was made. Text that is already fine is barely touched"
     },
+    "no-comments": {
+      "summary": "Removes comments that only narrate the code, and encodes a real constraint in a type, test, or lint.",
+      "whenToUse": "When comments restate the code, commented-out code is still in the file, or a comment is doing a job a type or test should do",
+      "result": "The comments deleted, any constraint encoded, and the outside-rule comments kept and marked for review"
+    },
+    "make-bot-ui": {
+      "summary": "Builds a page whose controls wake a bot through a webhook you supply. The sender key stays on the server.",
+      "whenToUse": "When you want buttons or a small page that wake a bot, and you already have a webhook URL",
+      "result": "A page that talks only to a local server, and a server that sends the webhook POST with the key kept out of the page and the chat"
+    },
     "build-reinstall": {
       "summary": "Build the current project, reinstall it with project-owned commands, and verify that the installed result matches the new build.",
       "whenToUse": "After code work is complete and a local app or CLI must be replaced with the new build",

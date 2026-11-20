@@ -93,6 +93,8 @@ the skill that owns that kind of work.
 | Something got measurably slower | `bug-hunt` | perf |
 | New or changed behavior | none, inline | feature |
 | Structure changes, behavior does not | none, inline | refactoring |
+| Comments that narrate the code, or a request to strip them | `no-comments` | refactoring |
+| A page whose controls wake a bot through a webhook | `make-bot-ui` | feature |
 | A fork an experiment can settle | none, inline | prototype |
 | Several competing attempts at one artifact | `arena` | prototype |
 | A plan or design with open decisions | `review-me`, `plan-summary` | plan |
@@ -115,7 +117,7 @@ chann-mode/
 │   ├── SKILL.md                     # first move, routing, principles index, autonomy, delegation, evidence, reply
 │   ├── worker.md                    # rules every delegate reads first
 │   ├── playbooks/<name>.md          # fourteen playbooks
-│   ├── references/principles.md     # twenty-five principles, each with a test
+│   ├── references/principles.md     # twenty-seven principles, each with a test
 │   ├── references/decision-trail.md # the log format for long or unattended runs
 │   ├── agents/openai.yaml
 │   └── evals/evals.json
