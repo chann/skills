@@ -68,14 +68,14 @@ $chann this endpoint got slow, find out why and fix it
 
 ## 설치 방법
 
-Claude Code, Codex, Antigravity CLI, Gemini CLI, GitHub Copilot CLI,
-OpenCode에 모든 스킬을 전역으로 설치하려면 다음 명령을 사용합니다. 설치 도구의
-기본 symlink 방식을 쓰는 권장 방법입니다.
+Claude Code, Codex, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub
+Copilot CLI, OpenCode에 모든 스킬을 전역으로 설치하려면 다음 명령을 사용합니다
+(권장).
 
 ```bash
 npx skills add chann/skills \
   --skill '*' \
-  --agent claude-code codex antigravity-cli gemini-cli \
+  --agent claude-code codex antigravity-cli grok pi gemini-cli \
     github-copilot opencode \
   --global \
   --yes
@@ -92,6 +92,26 @@ npx skills add chann/skills \
 바뀌지 않도록 `--agent` 뒤의 대상 목록은 계속 직접 적어야 합니다.
 [업스트림 수정](https://github.com/vercel-labs/skills/pull/1561)이 반영되기
 전까지 이 목록이 필요합니다.
+
+깨끗한 임시 `HOME`에서 `skills@1.9.0`으로 확인했습니다. 설치 도구는 사본을
+`~/.agents/skills/<이름>/`에 한 번만 쓰고, Codex, Pi, Gemini CLI, GitHub Copilot
+CLI, OpenCode는 이 경로를 직접 읽습니다. 자체 디렉토리를 쓰는 에이전트에는 이
+사본으로 symlink를 만듭니다.
+
+| 에이전트 | `--agent` ID | 전역 경로 |
+|---|---|---|
+| Claude Code | `claude-code` | `~/.claude/skills/<이름>` (symlink) |
+| Codex | `codex` | `~/.agents/skills/<이름>` |
+| Antigravity CLI | `antigravity-cli` | `~/.gemini/config/skills/<이름>` (symlink) |
+| Grok Build | `grok` | `~/.grok/skills/<이름>` (symlink) |
+| Pi | `pi` | `~/.agents/skills/<이름>` |
+| Gemini CLI | `gemini-cli` | `~/.agents/skills/<이름>` |
+| GitHub Copilot CLI | `github-copilot` | `~/.agents/skills/<이름>` |
+| OpenCode | `opencode` | `~/.agents/skills/<이름>` |
+
+`--global`을 빼면 현재 프로젝트에 설치합니다. 에이전트 ID와 경로는 설치 도구의
+[지원 에이전트 목록](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)을
+따르며 릴리스마다 바뀔 수 있습니다. 현재 목록은 `npx skills --help`로 확인하세요.
 
 필요한 것만 설치하려면 `--skill <이름>`을 씁니다. 모든 스킬은 혼자 설치해도
 작동합니다. 별칭 `gcr`, `gcpr`, `gcpd`만 예외로, 옆에 `git-commit`이 있어야
@@ -325,21 +345,20 @@ npx skills remove \
 
 이 저장소의 모든 `SKILL.md`는 표준 스킬 형식을 따르며 Claude Code 전용 도구를 참조하지 않습니다. 따라서 스킬을 지원하는 모든 에이전트 플랫폼에서 사용할 수 있습니다:
 
-| 플랫폼                                                  | 설치 방법                                                                                       |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **[Claude Code](https://code.claude.com)**              | `npx skills add chann/skills` — 스킬과 슬래시 커맨드 설치                                       |
-| **[Codex](https://github.com/openai/codex)**            | `<plugin>/skills/<name>/` 를 Codex 스킬 디렉토리(`~/.agents/skills/` 등)에 심볼릭 링크          |
-| **[opencode](https://github.com/sst/opencode)**         | 스킬 디렉토리를 opencode 의 스킬 경로에 배치                                                    |
-| **Copilot CLI / Gemini CLI / 기타**                     | 플랫폼별 스킬 로더가 `<plugin>/skills/<name>/SKILL.md` 를 가리키도록 설정 (각 플랫폼 문서 참조) |
+| 플랫폼 | 설치 방법 |
+|---|---|
+| **[Claude Code](https://code.claude.com)**, **[Codex](https://github.com/openai/codex)**, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, **[OpenCode](https://github.com/sst/opencode)** | [설치 방법](#설치-방법)의 `npx skills add` 명령. 에이전트별 전역 디렉토리는 설치 도구가 처리합니다 |
+| [설치 도구 목록](https://github.com/vercel-labs/skills/blob/main/docs/agents.md)의 다른 에이전트 | 위 명령에 해당 `--agent` ID를 추가 |
+| 설치 도구가 지원하지 않는 에이전트 | 각 플랫폼 문서에 따라 스킬 로더가 `<plugin>/skills/<name>/`(`SKILL.md`가 있는 폴더)을 가리키게 설정 |
 
 플랫폼 공통 요소와 Claude Code 전용 요소:
 
 - **플랫폼 공통** — 모든 `SKILL.md` 본문과 `references/`입니다. 자연어 문구만으로 어떤 플랫폼에서도 실행할 수 있습니다.
-- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼, `npx skills` 설치 도구, 슬래시 커맨드(`/interrogate`, `/git-commit`, `/long-task` 등)입니다. 다른 플랫폼에서는 자연어나 플랫폼 자체의 호출 방식으로 실행합니다.
+- **Claude Code 전용** — `.claude-plugin/plugin.json` 래퍼와 슬래시 커맨드(`/interrogate`, `/git-commit`, `/long-task` 등)입니다. Codex는 `$이름` selector를 쓰고, 다른 플랫폼에서는 자연어나 플랫폼 자체의 호출 방식으로 실행합니다. `npx skills` 설치 도구는 Claude 전용이 아닙니다.
 
 ## 요구 사항
 
-- 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI 등)
+- 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, OpenCode 등)
 - Git 저장소
 - `diff-summary` 사용 시 Git 2.45+
 - Python 3.10+ (`interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, `skill-audit` 사용 시 필요. 표준 라이브러리만 사용)

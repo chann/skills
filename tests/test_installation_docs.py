@@ -142,6 +142,23 @@ class InstallationDocsTests(unittest.TestCase):
             with self.subTest(doc=path.relative_to(ROOT)):
                 self.assertIsNone(invalid_selector.search(path.read_text(encoding="utf-8")))
 
+    def test_root_install_command_targets_every_supported_agent(self) -> None:
+        agents = (
+            "claude-code", "codex", "antigravity-cli", "grok", "pi",
+            "gemini-cli", "github-copilot", "opencode",
+        )
+        for path in ROOT_SELECTOR_DOCS:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(doc=path.relative_to(ROOT)):
+                command = re.search(
+                    r"npx skills add chann/skills \\\n.*?--yes", text, re.DOTALL
+                )
+                self.assertIsNotNone(command)
+                listed = command.group(0).replace("\\", " ").split()
+                for agent in agents:
+                    self.assertIn(agent, listed)
+                self.assertNotRegex(text, r"npx skills[^\n]* is Claude Code only")
+
     def test_plugin_readmes_install_every_packaged_skill_by_exact_selector(self) -> None:
         for plugin_readmes, plugin in (
             (INTERROGATE_READMES, "interrogate"),
