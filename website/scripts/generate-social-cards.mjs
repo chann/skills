@@ -11,28 +11,28 @@ const cards = [
     lang: "ko",
     font: "Apple SD Gothic Neo",
     lines: ["어제의 반복이,", "오늘의 스킬로."],
-    footer: "27개 스킬 · Claude Code + Codex · MIT",
+    footer: "27개 스킬 · 지원 에이전트 8종 · MIT",
   },
   {
     locale: "en",
     lang: "en",
     font: "Arial",
     lines: ["Yesterday’s repetition", "becomes today’s skill."],
-    footer: "27 packaged skills · Claude Code + Codex · MIT",
+    footer: "27 packaged skills · 8 supported agents · MIT",
   },
   {
     locale: "jp",
     lang: "ja",
     font: "Hiragino Sans",
     lines: ["昨日の繰り返しを、", "今日のスキルへ。"],
-    footer: "27個のスキル · Claude Code + Codex · MIT",
+    footer: "27個のスキル · 対応エージェント8種 · MIT",
   },
   {
     locale: "cn",
     lang: "zh-CN",
     font: "PingFang SC",
     lines: ["把昨天的重复，", "变成今天的技能。"],
-    footer: "27个技能 · Claude Code + Codex · MIT",
+    footer: "27个技能 · 支持 8 种智能体 · MIT",
   },
 ];
 

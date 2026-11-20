@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "chann/skills - 昨日の繰り返しを、今日のスキルへ。",
-    "description": "Claude CodeとCodexの繰り返し作業を、再利用できるスキルへ。キャッシュしやすい指示とスクリプト実行で、LLMを必要な判断に集中させます。",
+    "description": "8種類のコーディングエージェントの繰り返し作業を、再利用できるスキルへ。キャッシュしやすい指示とスクリプト実行で、LLMを必要な判断に集中させます。",
     "socialAlt": "chann/skillsウェブサイトでエージェントワークフローを実行している画面"
   },
   "nav": {
@@ -9,6 +9,7 @@
     "items": {
       "why": "スキルの価値",
       "explore": "スキルを探す",
+      "agents": "エージェント",
       "faq": "FAQ",
       "install": "インストール"
     }
@@ -16,9 +17,9 @@
   "hero": {
     "brand": "chann/skills",
     "headline": ["昨日の繰り返しを、", "今日のスキルへ。"],
-    "lede": "Claude CodeとCodexで繰り返していたソフトウェア作業を、検証可能な{count}個のワークフローにしました。指示はキャッシュしやすい安定した形で再利用し、結果が決まっている手順はスクリプトに任せて、LLMを必要な判断に集中させます。",
+    "lede": "8種類のコーディングエージェントで繰り返すソフトウェア作業を、検証可能な{count}個のワークフローにしました。指示はキャッシュしやすい安定した形で再利用し、結果が決まっている手順はスクリプトに任せて、LLMを必要な判断に集中させます。",
     "primaryAction": "{count}個のスキルを見る",
-    "proof": "{count}個の実用ワークフロー · {categories}カテゴリー · Claude Code + Codex · MIT"
+    "proof": "{count}個の実用ワークフロー · {categories}カテゴリー · 対応エージェント8種 · MIT"
   },
   "benefits": {
     "label": "スキルを使う理由",
@@ -51,7 +52,7 @@
     "stats": {
       "skills": "パッケージ済みスキル",
       "categories": "カテゴリー",
-      "platforms": "プラットフォーム"
+      "platforms": "エージェント"
     }
   },
   "workflow": {
@@ -103,13 +104,11 @@
     "showAll": "すべてのスキルを表示"
   },
   "platforms": {
-    "label": "ひとつのスキル、2つのコマンド",
-    "title": ["同じスキルを、", "異なる呼び出し方で。"],
-    "descriptionBeforeCodex": "2つのツールが同じSKILL.mdを読みます。Codexでは名前の前に",
-    "descriptionBetweenSelectors": "を、Claude Codeでは",
-    "descriptionAfterClaude": "を付けます。",
-    "sharedInstructions": "共通の指示",
-    "contractDescription": "原資料の根拠をもとに韓国語・英語のレポートを作成し、--quizを付けると理解度クイズまで作ります。"
+    "title": "対応エージェント",
+    "description": "エージェントを選ぶと、グローバルインストール用のコマンドをコピーし、スキルの保存先を確認できます。",
+    "directory": "スキルディレクトリ",
+    "install": "インストールコマンド",
+    "docs": "エージェントのドキュメント"
   },
   "faq": {
     "label": "FAQ",
@@ -134,7 +133,7 @@
       },
       {
         "question": "どのエージェントで使えますか？",
-        "answer": "Claude CodeとCodexを標準でサポートします。同じSKILL.mdをCodexは$name、Claude Codeは/nameで呼び出します。インストーラーはGemini CLIやGitHub Copilot CLIなどにも対応しています。"
+        "answer": "Claude Code、Codex、Antigravity CLI、Grok、Pi、Gemini CLI、GitHub Copilot CLI、OpenCodeに対応しています。同じSKILL.mdをCodexでは$name、Claude Codeでは/nameで呼び出します。"
       },
       {
         "question": "インストールすると、PCに何が追加されますか？",
@@ -161,14 +160,14 @@
   "install": {
     "label": "スキルを入手",
     "title": ["{count}個のスキルを、", "ひとつのコマンドで。"],
-    "description": "公式インストーラーが、Claude CodeとCodexですぐ使えるように接続します。",
-    "cardTitle": "2つのプラットフォームにインストール",
+    "description": "このコマンドは、対応する8種類すべてのエージェントにスキルをグローバルインストールします。",
+    "cardTitle": "8種類すべてにインストール",
     "cardDescription": "原本リポジトリを1か所に保ち、各エージェントのスキルフォルダーへリンクします。",
     "copyLabel": "コマンドをコピー",
     "resultsLabel": "インストール結果",
     "skillResult": "{count}個のスキル",
     "linkResult": "いつでも削除できるグローバルリンク",
-    "platformsResult": "Claude Code + Codex",
+    "platformsResult": "対応エージェント8種",
     "exploreAction": "{count}個のスキルを見る",
     "githubAction": "GitHubで見る",
     "license": "MIT License · open source"

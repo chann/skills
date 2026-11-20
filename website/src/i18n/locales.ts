@@ -42,6 +42,7 @@ export const supportedSectionHashes = new Set([
   "#why",
   "#usage",
   "#explore",
+  "#agents",
   "#faq",
   "#install",
 ]);

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "chann/skills - Yesterday’s repetition becomes today’s skill.",
-    "description": "Turn repetitive Claude Code and Codex work into reusable skills. Cache-friendly instructions and scripted steps keep the LLM focused on judgment.",
+    "description": "Turn repetitive work across eight coding agents into reusable skills. Cache-friendly instructions and scripted steps keep the LLM focused on judgment.",
     "socialAlt": "Agent workflow running on the chann/skills website"
   },
   "nav": {
@@ -9,6 +9,7 @@
     "items": {
       "why": "Why skills",
       "explore": "Explore",
+      "agents": "Agents",
       "faq": "FAQ",
       "install": "Install"
     }
@@ -16,9 +17,9 @@
   "hero": {
     "brand": "chann/skills",
     "headline": ["Yesterday’s repetition becomes", "today’s skill."],
-    "lede": "We turned recurring Claude Code and Codex software work into {count} workflows you can verify. Reuse the same instructions with prompt caching, and let scripts handle predictable steps so the LLM can focus on judgment.",
+    "lede": "We turned recurring software work across eight coding agents into {count} workflows you can verify. Reuse the same instructions with prompt caching, and let scripts handle predictable steps so the LLM can focus on judgment.",
     "primaryAction": "Explore {count} skills",
-    "proof": "{count} ready-to-use workflows · {categories} categories · Claude Code + Codex · MIT"
+    "proof": "{count} ready-to-use workflows · {categories} categories · 8 supported agents · MIT"
   },
   "benefits": {
     "label": "Why skills",
@@ -51,7 +52,7 @@
     "stats": {
       "skills": "Packaged skills",
       "categories": "Categories",
-      "platforms": "Platforms"
+      "platforms": "Agents"
     }
   },
   "workflow": {
@@ -103,13 +104,11 @@
     "showAll": "Show all skills"
   },
   "platforms": {
-    "label": "One skill, two commands",
-    "title": ["The same skill,", "a different way to call it."],
-    "descriptionBeforeCodex": "Both tools read the same SKILL.md. Prefix the name with ",
-    "descriptionBetweenSelectors": " in Codex and ",
-    "descriptionAfterClaude": " in Claude Code.",
-    "sharedInstructions": "Shared instructions",
-    "contractDescription": "Builds Korean and English reports from the source evidence, and adding --quiz also writes a comprehension quiz."
+    "title": "Support Agents",
+    "description": "Select an agent to copy its global install command and see its skills directory.",
+    "directory": "Skills directory",
+    "install": "Install command",
+    "docs": "Agent docs"
   },
   "faq": {
     "label": "FAQ",
@@ -134,7 +133,7 @@
       },
       {
         "question": "Which agents can use these skills?",
-        "answer": "Claude Code and Codex are supported by default. Codex calls the same SKILL.md with $name, while Claude Code uses /name. The installer also supports agents such as Gemini CLI and GitHub Copilot CLI."
+        "answer": "These skills support Claude Code, Codex, Antigravity CLI, Grok, Pi, Gemini CLI, GitHub Copilot CLI, and OpenCode. Codex calls the same SKILL.md with $name, while Claude Code uses /name."
       },
       {
         "question": "What gets added to my computer?",
@@ -161,14 +160,14 @@
   "install": {
     "label": "Get skills",
     "title": ["Install {count} skills", "with one command."],
-    "description": "The official installer connects the skills so they are ready in Claude Code and Codex.",
-    "cardTitle": "Install for both platforms",
+    "description": "This command installs the skills globally for all eight supported agents.",
+    "cardTitle": "Install for all eight agents",
     "cardDescription": "Keep one source repository and link it into each agent’s skill directory.",
     "copyLabel": "Copy command",
     "resultsLabel": "Installation results",
     "skillResult": "{count} skills",
     "linkResult": "Removable global links",
-    "platformsResult": "Claude Code + Codex",
+    "platformsResult": "8 supported agents",
     "exploreAction": "Explore {count} skills",
     "githubAction": "View on GitHub",
     "license": "MIT License · open source"
