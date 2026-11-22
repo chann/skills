@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 27개의 실용적인 에이전트 워크플로와 30개의 설치 가능한 Codex selector를 17개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 29개의 실용적인 에이전트 워크플로와 32개의 설치 가능한 Codex selector를 19개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -52,6 +52,8 @@ $chann this endpoint got slow, find out why and fix it
 | build | **[bug-hunt](bug-hunt/README.ko.md)** | 버그를 재현하고 가설을 반증하며 원인을 좁힌 뒤, 먼저 실패한 검사로 수정을 고정 |
 | build | **[gen-docs](doc-skill/README.ko.md)** | README, 한국어 README, 아키텍처, 사용법 문서를 기존 문체를 유지하며 생성하거나 갱신 |
 | build | **[unslop](unslop/README.ko.md)** | AI가 쓴 한국어·영어 글을 뜻은 그대로 두고 사람이 쓴 것처럼 고쳐 씀 |
+| build | **[no-comments](no-comments/README.ko.md)** | 코드를 다시 말하는 주석을 지우고, 확인해 볼 수 없는 바깥 규칙 주석은 남기며, 진짜 제약은 타입·테스트·린트로 옮김 |
+| build | **[make-bot-ui](make-bot-ui/README.ko.md)** | 사용자가 준 웹훅으로 봇을 깨우는 페이지를 만들고, 발신 키는 서버 설정에만 둠 |
 | build | **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인 |
 | verify | **[interrogate](interrogate/README.ko.md)** | diff를 깨뜨려 보고, 입증 수준을 붙인 심각도별 결과를 Markdown과 이중언어 HTML로 보고 |
 | verify | **[blast-radius](interrogate/README.ko.md)** | 변경이 diff 밖에서 무엇을 깨뜨릴 수 있는지 확인하고, 안전하다는 근거를 직접 실행해 입증 |
@@ -126,6 +128,8 @@ CLI, OpenCode는 이 경로를 직접 읽습니다. 자체 디렉토리를 쓰�
 - 서브에이전트와 시안 경쟁: `npx skills add chann/skills --skill swarm --skill arena`
 - 지난 작업 정리와 따라잡기: `npx skills add chann/skills --skill recall --skill catchup`
 - 자연스러운 문장: `npx skills add chann/skills --skill unslop`
+- 주석 정리: `npx skills add chann/skills --skill no-comments`
+- 봇을 깨우는 페이지: `npx skills add chann/skills --skill make-bot-ui`
 - 스킬 작성: `npx skills add chann/skills --skill skill-forge --skill skill-audit --skill reflect`
 
 설치 가능한 이름을 먼저 보려면 `npx skills add chann/skills -l --full-depth`를 실행하세요.
@@ -221,6 +225,22 @@ Pi에서는 `/skill:diff-summary --md`처럼 `/skill:이름`을 사용합니다.
 | Claude Code | Codex | 동작 |
 | --- | --- | --- |
 | `/unslop [텍스트-또는-파일]` | `$unslop [텍스트-또는-파일]` | AI가 쓴 한국어·영어 글을 뜻은 그대로 두고 자연스러운 문장으로 고쳐 씀 |
+
+### no-comments → [상세](no-comments/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/no-comments [파일 또는 diff]` | `$no-comments [파일 또는 diff]` | 설명용 주석을 지우고, 동의하면 제약을 코드로 옮김 |
+
+검토 프롬프트는 보고만 합니다. 받아들인 삭제만 적용합니다. 거절된 검토가 받아들인 항목을 버리지 않습니다. 확인해 볼 수 없는 바깥 규칙 주석은 남기고 검토로 표시합니다.
+
+### make-bot-ui → [상세](make-bot-ui/README.ko.md)
+
+| Claude Code | Codex | 동작 |
+| --- | --- | --- |
+| `/make-bot-ui [웹훅 URL]` | `$make-bot-ui [웹훅 URL]` | 웹훅으로 봇을 깨우는 페이지를 만듦 |
+
+웹훅 URL은 사용자가 줍니다. 발신 키는 서버 설정에만 있습니다. 대화에 붙여 넣은 키는 거절합니다. POST는 브라우저가 아니라 로컬 서버가 보냅니다.
 
 ### build-reinstall → [상세](build-reinstall/README.ko.md)
 
@@ -362,7 +382,7 @@ Antigravity CLI에서는 `/이름`, Pi에서는 `/skill:이름`을 씁니다.
 - 스킬을 지원하는 에이전트 플랫폼 (Claude Code, Codex, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, OpenCode 등)
 - Git 저장소
 - `diff-summary` 사용 시 Git 2.45+
-- Python 3.10+ (`interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, `skill-audit` 사용 시 필요. 표준 라이브러리만 사용)
+- Python 3.10+ (`interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, `skill-audit`, `make-bot-ui` 사용 시 필요. 표준 라이브러리만 사용)
 
 ## 라이선스
 

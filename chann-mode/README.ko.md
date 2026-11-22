@@ -93,6 +93,8 @@ $chann this endpoint got slow, find out why and fix it
 | 측정해 보니 느려짐 | `bug-hunt` | perf |
 | 새 동작이나 바뀐 동작 | 없음, 직접 진행 | feature |
 | 구조만 바꾸고 동작은 그대로 | 없음, 직접 진행 | refactoring |
+| 코드를 다시 말하는 주석, 또는 주석을 지워 달라는 요청 | `no-comments` | refactoring |
+| 웹훅으로 봇을 깨우는 페이지 | `make-bot-ui` | feature |
 | 실험으로 정할 수 있는 갈림길 | 없음, 직접 진행 | prototype |
 | 같은 결과물을 두고 경쟁하는 여러 시도 | `arena` | prototype |
 | 열린 결정이 남은 계획이나 설계 | `review-me`, `plan-summary` | plan |
@@ -115,7 +117,7 @@ chann-mode/
 │   ├── SKILL.md                     # 첫 동작, 라우팅, 원칙 목록, 자율성, 위임, 증거, 답변
 │   ├── worker.md                    # 모든 하위 에이전트가 먼저 읽는 규칙
 │   ├── playbooks/<name>.md          # 플레이북 14개
-│   ├── references/principles.md     # 원칙 25개와 각 원칙의 점검 질문
+│   ├── references/principles.md     # 원칙 27개와 각 원칙의 점검 질문
 │   ├── references/decision-trail.md # 길거나 무인으로 도는 작업의 결정 기록 형식
 │   ├── agents/openai.yaml
 │   └── evals/evals.json

@@ -150,6 +150,23 @@ an outside system.
 
 **Test:** is each outside input checked exactly once, where it enters?
 
+### type-system-discipline
+
+**Apply when:** designing types, a function signature, or code in a language
+with a static type checker.
+
+- Two values that share a primitive but mean different things get different
+  types. Check each one once, where it is created.
+- JSON, RPC payloads, CLI arguments, config, environment variables, and
+  database rows stay untyped until a parse at the boundary returns the model.
+- When a schema file owns a shape, derive the type from that file. Do not
+  hand-write a second copy beside it.
+- Handle every variant the compiler can see. A combination of fields that
+  cannot happen should not fit in the type.
+
+**Test:** can the type checker reject a swapped argument or a missing variant
+without a runtime check?
+
 ### make-operations-idempotent
 
 **Apply when:** designing commands, setup steps, migrations, or loops that may
@@ -225,6 +242,22 @@ commits.
 - Never save every check for the end.
 
 **Test:** does each commit in the series pass its own checks?
+
+### outcome-oriented-execution
+
+**Apply when:** a planned rewrite or migration has named phase boundaries.
+
+- Aim at the end state you can check, not at keeping every step in between
+  fully working.
+- Temporary breakage is allowed only where the plan names it, and only while
+  that phase is open.
+- Do not add compatibility code whose only job is to keep the old shape and
+  the new shape alive together. Remove it at the phase boundary.
+- Keep the checks for the code you are touching. At the last phase, run the
+  full static and runtime checks.
+
+**Test:** at the phase boundary, is the tree the target shape, with no
+throwaway compatibility left in it?
 
 ### test-behavior-not-implementation
 

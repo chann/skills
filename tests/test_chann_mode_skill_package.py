@@ -64,7 +64,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             (PACKAGE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual("chann-mode", metadata["name"])
-        self.assertEqual("0.2.0", metadata["version"])
+        self.assertEqual("0.3.0", metadata["version"])
         self.assertIn("playbooks", metadata["description"])
 
     def test_skill_is_explicit_only_on_both_selectors(self) -> None:
@@ -176,7 +176,12 @@ class ChannModeSkillPackageTests(unittest.TestCase):
         # Fails until the sibling revamp branches that add these skills are merged.
         packaged = {path.parent.name for path in ROOT.glob("*/skills/*/SKILL.md")}
         routed = {name for names, _ in routing_rows() for name in names}
-        self.assertEqual(26, len(routed))
+        self.assertEqual(28, len(routed))
+        self.assertTrue({"no-comments", "make-bot-ui"} <= routed)
+        for names, playbook in routing_rows():
+            if playbook == "review":
+                self.assertNotIn("no-comments", names)
+                self.assertNotIn("make-bot-ui", names)
         self.assertEqual(set(), routed - packaged)
 
     def test_every_packaged_workflow_is_routed(self) -> None:

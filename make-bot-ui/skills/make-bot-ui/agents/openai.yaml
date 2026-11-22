@@ -1,0 +1,4 @@
+interface:
+  display_name: "Make Bot UI"
+  short_description: "Build a page whose buttons wake a bot through your webhook"
+  default_prompt: "Use $make-bot-ui to build a page whose controls wake a bot through the webhook I supply."

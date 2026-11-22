@@ -38,6 +38,8 @@ PLUGIN_READMES = [
         "bug-hunt",
         "doc-skill",
         "unslop",
+        "no-comments",
+        "make-bot-ui",
         "build-reinstall",
         "interrogate",
         "git-skill",
