@@ -1,5 +1,9 @@
 import json
+import os
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -159,7 +163,7 @@ class GitCommitModeTests(unittest.TestCase):
                 "| `/git-commit realtime` |",
                 "| `/git-commit push realtime` |",
                 "| `/git-commit deploy` |",
-                "| `/git-commit rewrite [range] [force]` |",
+                "| `/git-commit rewrite [range]` |",
             ],
             rows,
         )
@@ -204,7 +208,7 @@ class GitCommitModeTests(unittest.TestCase):
 
     def test_command_takes_the_mode_as_an_argument(self) -> None:
         command = read(COMMANDS / "git-commit.md")
-        self.assertIn('argument-hint: "[push | deploy] [realtime] | rewrite [range] [force]"', command)
+        self.assertIn('argument-hint: "[push | deploy] [realtime] | rewrite [range]"', command)
         self.assertIn("**git-commit** skill", command)
         self.assertIn("$ARGUMENTS", command)
 
@@ -241,9 +245,9 @@ class GitCommitSafetyTests(unittest.TestCase):
     def test_push_step_never_forces_and_stops_on_rejection(self) -> None:
         text = flat(COMMIT_SKILL)
         for rule in (
-            'git push -u origin "$(git branch --show-current)"',
+            'git push --no-follow-tags --recurse-submodules=no "$remote" "$commit:$branch_ref"',
             "Do not retry through `pull`, merge, rebase, `--force`, or `--force-with-lease`",
-            "Bare `--force` exists only in rewrite force mode",
+            "Force-push in any mode.",
         ):
             with self.subTest(rule=rule):
                 self.assertIn(rule, text)
@@ -309,20 +313,18 @@ class GitCommitSafetyTests(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, text)
 
-    def test_rewrite_keeps_its_safety_checks_and_force_semantics(self) -> None:
+    def test_rewrite_checks_scope_and_keeps_changes_local(self) -> None:
         text = flat(REWRITE)
         for rule in (
-            "standalone token `force` or `--force` (case-insensitive)",
-            "The Korean word `강제로` alone does not trigger it.",
-            "This is the only place bare `--force` is allowed.",
+            "Require a clean working tree and attached HEAD.",
+            "A rewrite never pushes.",
             "Never use `--root`.",
-            "do not silently refuse",
-            "defaulting to Cancel",
-            "push with `git push --force-with-lease`, never bare `--force`",
+            "**Cancel** (default) or **Rewrite on a new local branch**",
+            "The original branch and the remote are untouched.",
             "git rev-list --no-merges",
             "preserve the original body verbatim",
             "`Refs:` footer instead of dropping it",
-            "never delete it automatically",
+            "Keep the backup until the user decides to remove it.",
             "Wait for explicit confirmation",
         ):
             with self.subTest(rule=rule):
@@ -334,7 +336,7 @@ class GitCommitSafetyTests(unittest.TestCase):
             "`git add .` or `git add -A`",
             "Do not split work by file count",
             "Never guess production versus staging",
-            "This is the only place bare `--force` is allowed.",
+            "Force-push in any mode.",
         ):
             with self.subTest(rule=rule):
                 self.assertEqual(1, sum(flat(p).count(rule) for p in files))
@@ -349,6 +351,42 @@ class GitCommitSafetyTests(unittest.TestCase):
         ):
             with self.subTest(scenario=scenario):
                 self.assertIn(scenario, prompts)
+
+
+class RewriteMessageTests(unittest.TestCase):
+    oid = "a" * 40
+    original = b"Original subject\n\nOriginal body\n"
+
+    def rewrite(self, path: Path, oid: str | None = None) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [sys.executable, str(COMMIT / "scripts" / "rewrite_msg.py"), str(path)],
+            input=self.original,
+            env={**os.environ, "GIT_COMMIT": oid or self.oid},
+            capture_output=True,
+            check=False,
+        )
+
+    def test_json_preserves_literal_backslashes_and_unchanged_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "messages.json"
+            message = "fix: keep message\n\nExample of a literal \\n marker.\n"
+            path.write_text(json.dumps({self.oid: message}), encoding="utf-8")
+            path.chmod(0o600)
+            output = self.rewrite(path)
+            self.assertEqual((output.returncode, output.stdout), (0, message.encode()))
+            unchanged = self.rewrite(path, "b" * 40)
+            self.assertEqual((unchanged.returncode, unchanged.stdout), (0, self.original))
+
+    def test_missing_invalid_and_public_maps_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "messages.json"
+            self.assertNotEqual(self.rewrite(path).returncode, 0)
+            path.write_text("[]", encoding="utf-8")
+            path.chmod(0o600)
+            self.assertNotEqual(self.rewrite(path).returncode, 0)
+            path.write_text(json.dumps({self.oid: "fix: example"}), encoding="utf-8")
+            path.chmod(0o644)
+            self.assertNotEqual(self.rewrite(path).returncode, 0)
 
 
 class AliasTests(unittest.TestCase):

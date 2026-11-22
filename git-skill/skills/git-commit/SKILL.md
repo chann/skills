@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use when the user wants changes committed as Conventional Commits, pushed, committed or pushed or deployed at verified checkpoints while work continues, or wants messy commit subjects rewritten, including "commit my changes", "커밋해줘", "커밋 분리해줘", "commit and push", "커밋하고 푸시해줘", "commit as you work", "commit and push as you work", "작업 중간중간 커밋 푸시", "commit push and deploy as you work", "의미 있는 단위마다 배포", "rewrite these commit messages", "커밋 메시지 다시 써줘", "/git-commit", or "$git-commit". The modes are none (commit once), push, realtime, push realtime, deploy, and rewrite [range] [force]. Produces verified Conventional Commits staged by explicit path, ordinary pushes, and deployments only through documented repository settings. The explicit-only aliases gcr, gcpr, and gcpd run the realtime, push realtime, and deploy modes. For merging a branch use git-merge; for a stopped merge or rebase use git-resolve-conflicts.
+description: Use when the user wants changes committed as Conventional Commits, pushed, committed or pushed or deployed at verified checkpoints while work continues, or wants messy commit subjects rewritten, including "commit my changes", "커밋해줘", "커밋 분리해줘", "commit and push", "커밋하고 푸시해줘", "commit as you work", "commit and push as you work", "작업 중간중간 커밋 푸시", "commit push and deploy as you work", "의미 있는 단위마다 배포", "rewrite these commit messages", "커밋 메시지 다시 써줘", "/git-commit", or "$git-commit". The modes are none (commit once), push, realtime, push realtime, deploy, and rewrite [range]. Produces verified Conventional Commits staged by explicit path, ordinary pushes, and deployments only through documented repository settings. The explicit-only aliases gcr, gcpr, and gcpd run the realtime, push realtime, and deploy modes. For merging a branch use git-merge; for a stopped merge or rebase use git-resolve-conflicts.
 ---
 
 # Git Commit
@@ -18,7 +18,7 @@ staged by explicit path; the modes differ only in how far the result travels.
 | `/git-commit realtime` | Verified, outcome-based checkpoint commits while the work continues; every checkpoint stays local | `references/checkpoints.md` |
 | `/git-commit push realtime` | Each checkpoint commit is pushed immediately and its upstream parity proven | `references/checkpoints.md` |
 | `/git-commit deploy` | Each checkpoint is committed, pushed, deployed through the repository's documented settings, and confirmed before the next one | `references/checkpoints.md`, `references/deploy.md` |
-| `/git-commit rewrite [range] [force]` | Rewrite recent non-Conventional commit subjects | `references/rewrite.md` |
+| `/git-commit rewrite [range]` | Rewrite recent non-Conventional commit subjects locally | `references/rewrite.md` |
 
 Read the mode from the first argument words (`push realtime` and
 `realtime push` are the same; `deploy` always implies push and realtime), or from
@@ -80,8 +80,8 @@ BREAKING CHANGE: email service is now required at boot
 1. **Inspect.** `git status --short`, `git diff`, `git diff --cached`,
    `git log -20 --oneline`. With no changes, say so, run the clean-tree check
    from step 1, and stop.
-2. **Group.** Ignore the current staging state; regroup staged and unstaged
-   changes by intent, one Conventional Commit per group. Keep `feat` and `fix`
+2. **Group.** Group staged and unstaged changes by intent, one Conventional
+   Commit per group. Preserve pre-existing staged changes. Keep `feat` and `fix`
    apart; keep `docs`, `build`, `ci`, and dependency updates apart from code;
    keep `refactor` apart from `feat`; split fixes in unrelated modules. Tests may
    travel with the change they cover. Do not over-split a one-line cleanup away
@@ -92,16 +92,33 @@ BREAKING CHANGE: email service is now required at boot
    is a public template, and every other secret-path rule still applies to it.
 4. **Plan.** Print the commit plan (subject plus paths for each commit) before
    the first commit so the user can object.
-5. **Commit one unit at a time.** `git add <explicit paths>`, then
-   `git commit` with a HEREDOC message, then `git status --short` to confirm only
-   the intended paths moved.
+5. **Commit one unit at a time.** Use `git --literal-pathspecs add -- <explicit paths>`.
+   Before staging, check for unrelated entries already in the index. Keep those
+   entries intact and stop if they would be committed with this unit. Before
+   committing, verify the complete staged diff and both paths of renames match
+   the plan. Review staged contents for credentials without printing suspected
+   values. Use `git commit` with a HEREDOC message, then `git status --short` to
+   confirm only the intended paths moved.
 6. **Summarize** with `git log --oneline -<N>`.
 
 ### Push step (mode `push`, and every push in the checkpoint modes)
 
-After the commits succeed, run `git push`. When the branch has no upstream,
-state that the first push configures one and run
-`git push -u origin "$(git branch --show-current)"`.
+After the commits succeed, resolve the single remote and full branch ref named
+by the upstream. For a new upstream, state the proposed remote and branch
+before its first push. Inspect effective push URLs without exposing embedded
+credentials. Stop if the push would go to multiple destinations or to an
+unexpected destination. Inspect the full outgoing commit range against the
+actual destination tip, including earlier local commits, and confirm it is in
+scope. When the destination ref is new, inspect the commits that would be newly
+published there. Push the reviewed commit to only that ref:
+
+```bash
+git push --no-follow-tags --recurse-submodules=no "$remote" "$commit:$branch_ref"
+```
+
+Set the upstream explicitly after the first successful push and verify the
+destination ref resolves to the reviewed commit. Never publish tags or
+submodules as a side effect of this command.
 
 If the push is rejected, fails for any other reason, or the upstream moved, stop
 and surface the exact error and the ahead/behind state. Do not retry through `pull`, merge, rebase, `--force`,
@@ -115,9 +132,7 @@ or `--force-with-lease`; ask the user how to reconcile the branch.
 - `--no-verify` or `--no-gpg-sign`. When a hook fails, fix the cause, re-run the
   verification, and create a fresh commit.
 - `--amend` unless the user asks for it.
-- A force push. Bare `--force` exists only in rewrite force mode, and
-  `--force-with-lease` only in rewrite after the user's explicit consent
-  (`references/rewrite.md`).
+- Force-push in any mode.
 - Commit a suspected secret file without the user's explicit override.
 - Combine `feat` and `fix` in one commit.
 - Add emoji or a co-author or tool-attribution trailer unless the user asks.
@@ -129,8 +144,8 @@ or `--force-with-lease`; ask the user how to reconcile the branch.
 - Refuse rather than bypass: when a safety check fails (dirty tree or detached
   HEAD where one is required, pushed commits without consent, a suspected
   secret, a moved upstream), report it and stop.
-- Trust an explicit user override ("include the .env this time", "yes, force
-  push"), but state its risk in one line first. Rewrite's `force` keyword is the
-  formal version of that override.
+- Honor an explicit request to stage a suspected secret only after verifying it
+  is safe to commit and state its risk in one line first. Keep real credentials
+  out of Git history.
 
 **Reply:** the resolved mode and why; each commit's short hash and subject; the checks run with their results; in push modes the push result and upstream parity (`0 0`); in deploy mode each checkpoint's target and deployment evidence with a `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE` verdict; any excluded secret paths or preserved pre-existing changes; and anything left unpushed or unverified.

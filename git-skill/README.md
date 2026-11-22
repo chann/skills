@@ -14,10 +14,10 @@ rebase; `git-cleanup` removes finished worktrees and merged branches.
 - **Commit modes** — `git-commit` groups staged and unstaged changes into one Conventional Commit per logical unit; `push` adds an ordinary push; `realtime` commits each verified outcome while work continues; `push realtime` pushes each one and proves upstream parity; `deploy` also deploys each checkpoint through the settings already documented in `AGENTS.md` and confirms it before the next one; `rewrite` fixes non-conformant subjects
 - Stages explicit paths only — never `git add .`
 - Excludes suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
-- Rewrites commit subjects with `git filter-branch`, keeping each original body; pushed commits get a three-option menu unless you opt in with the `force` keyword
+- Rewrites commit subjects with `git filter-branch`, keeping each original body; published history can be rewritten on a new local branch
 - **Merge** — merge the current branch into the resolved target, then `git branch -d` the source unless it is protected
 - **Cleanup** — remove clean, unlocked, merged linked worktrees and delete local branches already merged into a protected branch
-- Never force-pushes (except the explicit `rewrite force` opt-in), never bypasses hooks, never `git branch -D`, never `git worktree remove --force`
+- Never force-pushes, never bypasses hooks, never `git branch -D`, never `git worktree remove --force`
 
 ## Installation
 
@@ -73,7 +73,7 @@ invocation uses `/name` in Claude Code and `$name` in Codex.
 | `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | Commit each verified outcome while working; every checkpoint stays local |
 | `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | Commit and immediately push each verified outcome, proving upstream parity |
 | `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
-| `/git-commit rewrite [range] [force]` | `$git-commit rewrite [range] [force]` | Rewrite recent non-conformant commit subjects |
+| `/git-commit rewrite [range]` | `$git-commit rewrite [range]` | Rewrite recent non-conformant commit subjects |
 | `/git-merge [main \| dev \| <branch>]` | `$git-merge` | Merge the current branch into the target, then delete the source unless protected |
 | `/git-resolve-conflicts` | `$git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it |
 | `/git-cleanup` | `$git-cleanup` | Remove finished worktrees and delete local branches already merged into a protected branch |
@@ -129,12 +129,10 @@ before the first checkpoint, deploys the exact pushed revision, and does not
 start the next outcome until the deployment and required health checks are
 confirmed. Each run ends with a full-scope completion audit.
 
-**Rewrite** determines the range, checks for a clean tree, an attached HEAD,
-and pushed commits (Cancel / force-with-lease / new-branch menu, default
-Cancel), proposes subjects while keeping bodies and moving ticket prefixes to
-`Refs:` footers, and applies after confirmation. The `force` keyword skips the
-checks and the menu and finishes with a bare `git push --force` when pushed
-commits were rewritten.
+**Rewrite** checks the exact range, requires a clean tree and attached HEAD,
+and proposes subjects while preserving the bodies and ticket references.
+After confirmation it can rewrite a private branch in place or create a new
+local branch for published or protected history. All rewrites stay local.
 
 ### `git-merge`
 
@@ -168,11 +166,11 @@ The skills **never**:
 
 - Use `git add .` or `git add -A`
 - Bypass hooks with `--no-verify` or `--no-gpg-sign`
-- Force-push, except `rewrite force`; `--force-with-lease` only inside `rewrite` after explicit consent
+- Force-push in any mode
 - Commit suspected secret files (`.env*` except the exact basename `.env.example`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) without explicit override
 - Commit or push a knowingly broken, time-based, or placeholder checkpoint
 - Deploy to a target the repository does not document, or report a checkpoint deployed before its deployment is confirmed
-- Rewrite pushed commits without the three-option menu, use `git filter-branch --root`, or drop ticket references
+- Rewrite a published branch in place, use `git filter-branch --root`, or drop ticket references
 - Use `git branch -D` or `git worktree remove --force`
 - Auto-resolve conflicts, push after merging, or delete remote branches
 - Delete protected branches: `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`
@@ -189,7 +187,7 @@ git-skill/
     │   ├── references/
     │   │   ├── checkpoints.md   # realtime, push realtime, deploy cadence
     │   │   ├── deploy.md        # documented settings, deploy route, confirmation gate
-    │   │   └── rewrite.md       # history rewrite and force mode
+    │   │   └── rewrite.md       # local history rewrite
     │   └── scripts/rewrite_msg.py
     ├── gcr/ · gcpr/ · gcpd/     # explicit-only aliases with a fixed mode
     ├── git-merge/

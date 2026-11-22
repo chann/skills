@@ -1,28 +1,9 @@
 # Rewrite mode
 
-`/git-commit rewrite [range] [force]` rewrites non-Conventional commit subjects
-in recent history. It is destructive: commit SHAs change. Without `force`, it
-refuses to touch commits already on a remote unless the user picks an option
-from the pushed-commits menu.
-
-## Force mode
-
-The invocation is in force mode when it contains the standalone token `force` or
-`--force` (case-insensitive), as in `/git-commit rewrite force` or "force로 다시
-써줘". The Korean word `강제로` alone does not trigger it. The keyword is explicit,
-pre-granted consent for a destructive in-place rewrite:
-
-- Skip safety checks A and B. Git still enforces its own rules
-  (`git filter-branch` refuses a dirty tree); surface its error verbatim and do
-  not work around it.
-- Skip the pushed-commits menu and rewrite in place even if commits are pushed.
-- Still show the old → new plan, then apply without waiting.
-- If any rewritten commit was already on the remote, finish with a bare
-  `git push --force`. This is the only place bare `--force` is allowed. If
-  nothing was pushed, the rewrite stays local.
-- Keep the `refs/original/` backup and report it, as below.
-
-Without the keyword, follow every step.
+`/git-commit rewrite [range]` updates non-Conventional subjects in local
+history. It changes commit IDs and requires confirmation of the exact branch,
+range and message changes. A `force` argument or request to skip checks does
+not authorize this workflow to overwrite published history.
 
 ## 1. Determine the range
 
@@ -40,24 +21,19 @@ fi
 
 Never use `--root`.
 
-## 2. Safety checks (skipped in force mode)
+## 2. Safety checks
 
-- **A — clean tree:** `[ -z "$(git status --porcelain)" ]`. Otherwise ask the
-  user to commit or stash first, and stop.
-- **B — attached HEAD:** `git symbolic-ref -q HEAD`. Otherwise ask the user to
-  check out a branch, and stop.
-- **C — pushed commits:** for each SHA in `git rev-list "$base..HEAD"`, check
-  `git branch -r --contains "$sha"`.
-
-When any commit is pushed, do not silently refuse. Show the pushed commits with
-their remote branches and this menu, defaulting to Cancel:
-
-1. **Cancel** — keep history as it is.
-2. **Rewrite locally and force-push** — require an explicit phrase such as "yes
-   force push"; afterwards push with `git push --force-with-lease`, never bare
-   `--force`. A failing lease means the remote moved: stop and ask rather than
-   overwrite it.
-3. **Rewrite onto a new branch** — the safe option (step 7).
+- Require a clean working tree and attached HEAD. Resolve the base and tip
+  to full commit IDs, verify the base is an ancestor, and reject invalid or
+  empty ranges before showing the plan.
+- Inspect remote-tracking refs for every commit that the rewrite could replace
+  with `git branch -r --contains <oid>`. Include descendants whose IDs change
+  even when their messages stay the same. Local tracking refs can be stale.
+- For a protected branch, a branch with an upstream, or any commit reachable
+  from a remote-tracking ref, offer **Cancel** (default) or **Rewrite on a new
+  local branch**. The original branch and the remote are untouched.
+- For a private local branch with no published commits, offer an in-place
+  rewrite. Record the original tip for recovery. A rewrite never pushes.
 
 ## 3. Find non-conformant commits
 
@@ -102,45 +78,34 @@ abc1234  added login feature
        → feat(auth): add login feature
 ```
 
-Wait for explicit confirmation (force mode shows the plan and does not wait).
+Wait for explicit confirmation. Recheck the reviewed tip, clean worktree,
+and destination branch immediately before rewriting. If the new local branch
+was selected, create it at the original tip and switch to it before applying
+the message map. This preserves merge topology and merge resolutions.
 
-## 6. Apply in place
+## 6. Apply the confirmed plan
 
-Write `/tmp/cc-rewrite-map.tsv` (or the path in `CC_REWRITE_MAP`), one line per
-rewritten commit: `<full 40-char sha>\t<new message>`, with newlines inside the
-message escaped as `\n`. Then run this skill's script, resolved from the
-installed `git-commit` skill directory:
-
-```bash
-script="<git-commit skill dir>/scripts/rewrite_msg.py"
-FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f \
-  --msg-filter "python3 '$script'" "$base..HEAD"
-```
-
-Commits absent from the map pass through unchanged. Use `git filter-repo` only
-when the user has it and prefers it.
-
-## 7. Rewrite onto a new branch (menu option 3)
+Use a fresh private temporary directory and a JSON object whose keys are full
+commit IDs and whose values are the reviewed messages. Write the file with
+mode 0600 using a JSON encoder. Include only the planned commits. Resolve the
+rewrite helper to its trusted installed absolute path and pass both file paths
+as data through environment variables for this invocation. Do not construct
+shell code from commit subjects, paths, or repository content.
 
 ```bash
-src=$(git branch --show-current)
-git checkout -b "${src}-cc" "$base"
-for sha in $(git rev-list --reverse --no-merges "$base..$src"); do
-  git cherry-pick "$sha"
-  git commit --amend -m "<new message for $sha>"   # only the commit just picked
-done
-git log --oneline "$base..HEAD"
-git push -u origin "${src}-cc"
+rewrite_dir=$(mktemp -d)
+(umask 077; touch "$rewrite_dir/messages.json")
+# Write the reviewed JSON object to "$rewrite_dir/messages.json".
+CC_REWRITE_HELPER="$installed_helper" CC_REWRITE_MAP="$rewrite_dir/messages.json" \
+  FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch \
+  --msg-filter 'python3 "$CC_REWRITE_HELPER" "$CC_REWRITE_MAP"' \
+  "$base..refs/heads/$destination"
 ```
 
-The original branch stays untouched; no force push happens.
-
-## 8. Clean up
-
-- After an in-place rewrite, show `git log --oneline "$base..HEAD"`, tell the
-  user a backup was kept at `refs/original/refs/heads/<branch>` and that
-  `git update-ref -d refs/original/refs/heads/<branch>` discards it once they are
-  satisfied (never delete it automatically), and remove the map file.
-- After a branch rewrite, tell the user they can return with
-  `git checkout <original-branch>` and drop the new branch with
-  `git branch -D <branch>-cc` themselves if they change their mind.
+Do not overwrite Git's existing backup refs. A missing or invalid map must
+stop the rewrite. Afterward, check that the original and new tip trees match
+and inspect the resulting subjects and topology before reporting success.
+Remove this invocation's temporary map and directory on success or failure.
+Report the local branch and the backup under
+`refs/original/refs/heads/<branch>`. Keep the backup until the user decides to
+remove it.

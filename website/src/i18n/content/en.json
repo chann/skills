@@ -140,7 +140,7 @@
       },
       {
         "question": "Can a skill commit or push on its own?",
-        "answer": "Each skill states its safety rules explicitly. For example, git-commit stages only the files it names and makes only ordinary pushes. A force push is possible only in rewrite, which changes history, and only after you explicitly agree. If a push is rejected, it stops and reports what happened."
+        "answer": "Each skill states its safety rules. git-commit checks the staged change before committing and pushes only the selected branch. It keeps history rewrites local and stops if a push is rejected."
       },
       {
         "question": "Can I install only selected skills?",
@@ -343,7 +343,7 @@
     "git-commit": {
       "summary": "Splits changes into Conventional Commits. Arguments pick the mode: push, realtime, deploy, or rewrite.",
       "whenToUse": "When you want mixed changes turned into reviewable commits, or verified checkpoints committed, pushed, or deployed as you work. Also reachable as gcr, gcpr, and gcpd",
-      "result": "Commits staged by explicit path, ordinary pushes, and deploys only through documented repository settings. rewrite redoes commit messages"
+      "result": "Path-scoped commits, pushes to a single branch, and deploys through documented repository settings. Rewrite changes commit messages locally"
     },
     "git-merge": {
       "summary": "Merges the current branch into main, dev, or a local branch you name, and deletes the merged source branch unless it is protected.",

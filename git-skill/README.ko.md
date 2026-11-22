@@ -9,10 +9,10 @@
 - **커밋 모드** — `git-commit`은 스테이징 여부와 관계없이 변경을 의미 단위로 묶어 단위마다 Conventional Commit을 하나씩 만듭니다. `push`는 일반 푸시를 더하고, `realtime`은 작업하는 동안 검증된 결과마다 커밋하며, `push realtime`은 그때마다 푸시하고 upstream과 같은 상태인지 확인합니다. `deploy`는 `AGENTS.md`에 이미 적힌 배포 설정으로 체크포인트마다 배포하고, 배포가 확인된 뒤에 다음 단위로 넘어갑니다. `rewrite`는 형식에 맞지 않는 제목을 고칩니다
 - 스테이징은 항상 경로를 직접 지정합니다. `git add .`은 쓰지 않습니다
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 정보로 보이는 파일은 기본으로 제외하고 경고합니다. 정확한 파일명 `.env.example`은 예외입니다
-- `git filter-branch`로 커밋 제목만 다시 쓰고 본문은 그대로 둡니다. 이미 푸시된 커밋이 있으면 선택지 3개를 보여 주고, `force` 키워드로 직접 동의한 경우에만 바로 진행합니다
+- `git filter-branch`로 커밋 제목만 다시 쓰고 본문은 그대로 둡니다. 이미 푸시한 이력은 새 로컬 브랜치에서만 고칠 수 있습니다
 - **머지** — 현재 브랜치를 정해진 대상 브랜치에 머지한 뒤, 보호 브랜치가 아니면 소스 브랜치를 `git branch -d`로 삭제합니다
 - **정리** — 깨끗하고 잠기지 않았으며 머지가 끝난 연결 워크트리를 제거하고, 보호 브랜치에 이미 머지된 로컬 브랜치를 삭제합니다
-- 강제 푸시(`rewrite force`를 직접 지정한 경우 제외), hook 우회, `git branch -D`, `git worktree remove --force`는 쓰지 않습니다
+- 강제 푸시, hook 우회, `git branch -D`, `git worktree remove --force`는 쓰지 않습니다
 
 ## 설치 방법
 
@@ -66,7 +66,7 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 | `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | 작업하는 동안 검증된 결과마다 커밋하고 모두 로컬에 유지 |
 | `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | 검증된 결과마다 커밋하고 바로 푸시한 뒤 upstream과 같은지 확인 |
 | `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | 저장소에 적힌 설정으로 결과마다 커밋·푸시·배포하고 배포를 확인 |
-| `/git-commit rewrite [range] [force]` | `$git-commit rewrite [range] [force]` | 최근 커밋 중 형식에 맞지 않는 제목을 다시 작성 |
+| `/git-commit rewrite [range]` | `$git-commit rewrite [range]` | 최근 커밋 중 형식에 맞지 않는 제목을 다시 작성 |
 | `/git-merge [main \| dev \| <branch>]` | `$git-merge` | 현재 브랜치를 대상에 머지하고, 보호 브랜치가 아니면 소스 삭제 |
 | `/git-resolve-conflicts` | `$git-resolve-conflicts` | 충돌로 멈춘 merge, rebase, cherry-pick, revert를 중단하지 않고 마무리 |
 | `/git-cleanup` | `$git-cleanup` | 끝난 워크트리를 제거하고 보호 브랜치에 머지된 로컬 브랜치를 삭제 |
@@ -113,7 +113,7 @@ Codex의 `$name` selector도 같은 방식으로 바뀝니다.
 
 **체크포인트 모드**(`realtime`, `push realtime`, `deploy`)는 시간이나 파일 수가 아니라 완성된 결과를 기준으로 체크포인트를 나누고, 관련된 가장 좁은 검사와 `git diff --check`로 확인한 뒤 커밋합니다. `realtime`은 모든 체크포인트를 로컬에 둡니다. `push realtime`은 체크포인트마다 푸시하고 다음 단위로 가기 전에 `HEAD...@{u}`가 `0 0`인지 확인합니다. `deploy`는 첫 체크포인트 전에 저장소 문서에서 배포 대상, 경로, 소스, 확인 방법을 정하고, 푸시한 바로 그 리비전을 배포하며, 배포와 필수 health check가 확인될 때까지 다음 작업을 시작하지 않습니다. 끝나면 전체 범위를 다시 검증합니다.
 
-**rewrite**는 범위를 정하고 작업 트리가 깨끗한지, HEAD가 브랜치에 붙어 있는지, 이미 푸시된 커밋이 있는지 확인합니다(취소 / force-with-lease / 새 브랜치 선택지, 기본값은 취소). 본문은 그대로 두고 티켓 접두어는 `Refs:` footer로 옮긴 새 제목을 제안하며, 확인을 받은 뒤 적용합니다. `force` 키워드를 주면 확인 단계와 선택지를 건너뛰고, 푸시된 커밋을 다시 썼다면 마지막에 `git push --force`를 실행합니다.
+**rewrite**는 작업 트리와 대상 커밋을 확인하고 새 제목을 보여 줍니다. 확인을 받으면 제목만 바꾸고 본문을 보존합니다. 보호 브랜치나 이미 푸시한 이력은 새 로컬 브랜치에서만 고칠 수 있습니다.
 
 ### `git-merge`
 
@@ -147,7 +147,7 @@ Codex의 `$name` selector도 같은 방식으로 바뀝니다.
 
 - `git add .` 또는 `git add -A`
 - `--no-verify`, `--no-gpg-sign`으로 hook 우회
-- 강제 푸시(`rewrite force` 제외). `--force-with-lease`는 `rewrite`에서 사용자가 직접 동의한 경우에만 사용
+- 모든 모드에서 강제 푸시
 - 비밀 정보로 보이는 파일(`.env*`, 단 정확한 파일명 `.env.example`은 예외, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`)을 명시적 동의 없이 커밋
 - 깨진 상태나 시간 기준, 자리만 채운 체크포인트를 커밋하거나 푸시
 - 저장소 문서에 없는 대상에 배포하거나, 배포가 확인되기 전에 체크포인트를 배포 완료로 보고
@@ -168,7 +168,7 @@ git-skill/
     │   ├── references/
     │   │   ├── checkpoints.md   # realtime, push realtime, deploy 진행 방식
     │   │   ├── deploy.md        # 문서화된 설정, 배포 경로, 확인 단계
-    │   │   └── rewrite.md       # 커밋 기록 재작성과 force 모드
+    │   │   └── rewrite.md       # 로컬 커밋 기록 재작성
     │   └── scripts/rewrite_msg.py
     ├── gcr/ · gcpr/ · gcpd/     # 모드가 고정된 직접 호출 전용 별칭
     ├── git-merge/

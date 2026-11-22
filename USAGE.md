@@ -477,12 +477,12 @@ the templates, so the reports cannot drift apart.
 | `/git-commit realtime` · `/gcr` | During implementation, verify and commit each meaningful outcome locally — never push |
 | `/git-commit push realtime` · `/gcpr` | During implementation, verify, commit, and immediately push each meaningful outcome |
 | `/git-commit deploy` · `/gcpd` | Verify, commit, push, deploy, and confirm each outcome using documented repository settings |
-| `/git-commit rewrite [range] [force]` | Rewrite recent non-Conventional commit subjects |
+| `/git-commit rewrite [range]` | Rewrite recent non-Conventional commit subjects |
 | `/git-merge [main \| dev \| <branch>]` | Merge the current branch into the target, then `git branch -d` the source unless protected |
 | `/git-cleanup` | Remove finished worktrees and delete every local branch already merged into a protected branch |
 | `/git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert; classify every path, keep both intents where compatible, run the project's checks, and never abort |
 
-Codex invokes the same workflows as `$git-commit [push | deploy] [realtime]`, `$git-commit rewrite [range] [force]`, `$git-merge`, `$git-cleanup`, and `$git-resolve-conflicts`, plus the aliases `$gcr`, `$gcpr`, and `$gcpd`. `gcr`, `gcpr`, and `gcpd` are explicit-only: they never start from natural language, they run the installed `git-commit` with the mode fixed to `realtime`, `push realtime`, and `deploy`, and they refuse when `git-commit` is not installed. A natural-language request such as "commit and push as you work" goes to `git-commit` directly. An ambiguous request takes the less far-reaching mode; `push` and `deploy` are never inferred from silence.
+Codex invokes the same workflows as `$git-commit [push | deploy] [realtime]`, `$git-commit rewrite [range]`, `$git-merge`, `$git-cleanup`, and `$git-resolve-conflicts`, plus the aliases `$gcr`, `$gcpr`, and `$gcpd`. `gcr`, `gcpr`, and `gcpd` are explicit-only: they never start from natural language, they run the installed `git-commit` with the mode fixed to `realtime`, `push realtime`, and `deploy`, and they refuse when `git-commit` is not installed. A natural-language request such as "commit and push as you work" goes to `git-commit` directly. An ambiguous request takes the less far-reaching mode; `push` and `deploy` are never inferred from silence.
 
 Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the checkpoint modes pre-authorize their displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`.
 
@@ -501,7 +501,7 @@ authorized task use a new recovery checkpoint with the same verification and
 deployment gates. It preserves pushed history and follows only authorized
 provider recovery rules. Deployment inputs exclude unrelated worktree files.
 
-**Rewrite.** `rewrite` determines the range, checks for a clean tree, an attached HEAD, and pushed commits (a Cancel / force-with-lease / new-branch menu, default Cancel), proposes subjects while keeping bodies and moving ticket prefixes to `Refs:` footers, and applies after confirmation. A bare `--force` push happens only in its explicit `force` path.
+**Rewrite.** Review the exact range and message changes before confirming. The workflow preserves message bodies and can create a new local branch when the original branch is protected or published. Rewrites stay local.
 
 **Merge.** `git-merge` resolves the target (the argument wins, `dev` falls back to `develop`, and no argument means the default branch from `origin/HEAD`, otherwise `main`; the target must exist locally), refuses a detached HEAD, a dirty tree, or a source equal to the target, shows the plan, and waits for confirmation. It never pushes.
 
@@ -559,7 +559,6 @@ python3 skill-forge/skills/skill-audit/scripts/audit_skills.py --format markdown
 |---|---|---|---|
 | `LONG_TASK_MAX_STOP_CONTINUES` | `long-task` | `500` | Cap on automatic Stop-hook continuations (runaway guard) |
 | `CLAUDE_SETTINGS` | `long-task` | `~/.claude/settings.json` | Path to the settings file the Stop hook is written to |
-| `CC_REWRITE_MAP` | `git-commit rewrite` | `/tmp/cc-rewrite-map.tsv` | Temp old→new message map used during `git filter-branch` |
 | `XDG_CACHE_HOME` | `swarm` | `~/.cache` | Base directory for `swarm/runs/<run-id>/` |
 
 ### Generated paths
@@ -648,7 +647,7 @@ commands.
 | "Working tree has uncommitted changes" | merge/rewrite needs a clean tree | commit or `git stash` first |
 | `/git-merge main` aborts | `main` doesn't exist locally | create it, or merge into `dev` or another local branch |
 | Commit rejected by a hook | a pre-commit hook failed | fix the root cause — the skills won't `--no-verify` |
-| `/git-commit rewrite` stops on pushed commits | rewriting published history | pick the branch-based option, or pass `force` to accept the rewrite |
+| `/git-commit rewrite` stops on pushed commits | rewriting published history | confirm rewriting on a new local branch |
 | `/gcr`, `/gcpr`, or `/gcpd` refuses to run | `git-commit` is not installed beside the alias | `npx skills add chann/skills --skill git-commit` |
 | `/git-cleanup` leaves a worktree or branch | it has changes, is locked, or is not reachable from a protected branch | finish or merge it first; the skill never forces |
 | No HTML report generated | Python 3.10+ missing | install Python 3.10 or newer |

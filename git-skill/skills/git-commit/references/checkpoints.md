@@ -108,7 +108,7 @@ Checks: pnpm test pagination; pnpm typecheck
 ```
 
 ```bash
-git add path/one path/two
+git --literal-pathspecs add -- path/one path/two
 git diff --cached --check
 git commit -m "type(scope): description"
 git status --short
@@ -128,8 +128,8 @@ a broken or mislabeled checkpoint.
   `/gcpr`). If the upstream advances meanwhile, note the drift in the progress
   update; do not pull, merge, or rebase to chase it.
 - **`push realtime` and `deploy`:** After each checkpoint commit succeeds,
-  push it before starting the next unit, using the push step in `SKILL.md`. Then
-  prove the checkpoint reached the upstream:
+  push it before starting the next unit, using the push step in `SKILL.md`.
+  Verify the actual destination ref, then prove the checkpoint reached the upstream:
 
   ```bash
   git status --short --branch
