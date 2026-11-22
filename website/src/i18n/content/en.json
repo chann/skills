@@ -9,7 +9,6 @@
     "items": {
       "why": "Why skills",
       "explore": "Explore",
-      "agents": "Agents",
       "faq": "FAQ",
       "install": "Install"
     }
@@ -104,10 +103,10 @@
     "showAll": "Show all skills"
   },
   "platforms": {
-    "title": "Support Agents",
+    "title": "Supported agents",
     "description": "Select an agent to copy its global install command and see its skills directory.",
     "directory": "Skills directory",
-    "install": "Install command",
+    "all": "All eight agents",
     "docs": "Agent docs"
   },
   "faq": {

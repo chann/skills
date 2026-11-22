@@ -1,21 +1,19 @@
 import {
   ArrowRight,
   Brain,
-  CheckCircle,
   Plus,
   Repeat,
   TerminalWindow,
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
-import { CopyButton } from "./components/CopyButton";
 import { GitHubMark } from "./components/GitHubMark";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
 import { Lines, withFlags } from "./components/Text";
 import { TaglineReveal } from "./components/TaglineReveal";
-import { agents, installCommand } from "./data/agents";
+import { agents } from "./data/agents";
 import { SupportAgents } from "./components/SupportAgents";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { categoryOrder } from "./data/skills";
@@ -23,7 +21,6 @@ import { formatMessage, getContent, getLocalizedSkills } from "./i18n/content";
 import type { Locale, ProductPreviewContent } from "./i18n/types";
 
 const repositoryName = "chann/skills";
-const installAllCommand = installCommand(agents.map((agent) => agent.id).join(" "));
 const benefitIcons = [Repeat, TerminalWindow, Brain] as const;
 
 interface ProductPreviewProps {
@@ -95,7 +92,7 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
   );
 }
 
-const navItemIds = ["why", "explore", "agents", "faq", "install"] as const;
+const navItemIds = ["why", "explore", "faq", "install"] as const;
 
 interface AppProps {
   locale: Locale;
@@ -336,8 +333,6 @@ export function App({ locale }: AppProps) {
           </Reveal>
         </section>
 
-        <SupportAgents content={content.platforms} copy={content.copy} />
-
         <section className="faq section" id="faq" aria-labelledby="faq-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.faq.label}</span>
@@ -370,28 +365,13 @@ export function App({ locale }: AppProps) {
             <p>{content.install.description}</p>
           </Reveal>
 
-          <Reveal className="install-card" delay={0.06}>
-            <div className="install-card__heading">
-              <span className="install-badge">npm</span>
-              <div>
-                <h3>{content.install.cardTitle}</h3>
-                <p>{content.install.cardDescription}</p>
-              </div>
-            </div>
-            <div className="install-command">
-              <span aria-hidden="true">$</span>
-              <code tabIndex={0}>{installAllCommand}</code>
-              <CopyButton
-                value={installAllCommand}
-                content={content.copy}
-                label={content.install.copyLabel}
-              />
-            </div>
-            <ul className="install-notes" aria-label={content.install.resultsLabel}>
-              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {formatMessage(content.install.skillResult, { count: skills.length })}</li>
-              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {content.install.linkResult}</li>
-              <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {content.install.platformsResult}</li>
-            </ul>
+          <Reveal delay={0.06}>
+            <SupportAgents
+              content={content.platforms}
+              install={content.install}
+              copy={content.copy}
+              skillCount={skills.length}
+            />
           </Reveal>
 
           <Reveal className="install-actions" delay={0.08}>

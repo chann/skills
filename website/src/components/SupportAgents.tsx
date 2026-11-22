@@ -1,54 +1,82 @@
-import { ArrowUpRight } from "@phosphor-icons/react";
+import { ArrowUpRight, CheckCircle, TerminalWindow } from "@phosphor-icons/react";
 import { useState } from "react";
 import { agents, installCommand } from "../data/agents";
+import { formatMessage } from "../i18n/content";
 import type { SiteContent } from "../i18n/types";
 import { CopyButton } from "./CopyButton";
 
-export function SupportAgents({ content, copy }: {
+const allAgentIds = agents.map((agent) => agent.id).join(" ");
+
+export function SupportAgents({ content, install, copy, skillCount }: {
   content: SiteContent["platforms"];
+  install: SiteContent["install"];
   copy: SiteContent["copy"];
+  skillCount: number;
 }) {
-  const [selected, setSelected] = useState<(typeof agents)[number]>(agents[0]);
-  const command = installCommand(selected.id);
+  const [selected, setSelected] = useState<(typeof agents)[number] | null>(null);
+  const command = installCommand(selected?.id ?? allAgentIds);
 
   return (
-    <section className="section agents" id="agents" aria-labelledby="agents-title">
-      <div className="section-heading section-heading--center">
-        <h2 id="agents-title">{content.title}</h2>
+    <div className="agents__picker" id="agents">
+      <div className="install-card" id="agent-details">
+        <div aria-live="polite">
+          {selected ? (
+            <>
+              <div className="agents__heading">
+                <h3>{selected.name}</h3>
+                <a href={selected.docs}>{content.docs} <ArrowUpRight size={16} aria-hidden="true" /></a>
+              </div>
+              <p className="agents__directory">{content.directory} <code>{selected.directory}/</code></p>
+            </>
+          ) : (
+            <div className="install-card__heading">
+              <h3>{install.cardTitle}</h3>
+              <p>{install.cardDescription}</p>
+            </div>
+          )}
+        </div>
+        <div className="install-command">
+          <span aria-hidden="true">$</span>
+          <code tabIndex={0}>{command}</code>
+          <CopyButton key={command} value={command} content={copy} label={install.copyLabel} />
+        </div>
+        {!selected && (
+          <ul className="install-notes" aria-label={install.resultsLabel}>
+            <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {formatMessage(install.skillResult, { count: skillCount })}</li>
+            <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {install.linkResult}</li>
+            <li><CheckCircle size={17} weight="fill" aria-hidden="true" /> {install.platformsResult}</li>
+          </ul>
+        )}
+      </div>
+
+      <div className="agents__intro">
+        <h3 id="agents-title">{content.title}</h3>
         <p>{content.description}</p>
       </div>
-      <div className="agents__picker">
-        <div className="agents__choices" role="group" aria-labelledby="agents-title">
-          {agents.map((agent) => (
-            <button
-              key={agent.id}
-              type="button"
-              aria-pressed={selected.id === agent.id}
-              aria-controls="agent-details"
-              onClick={() => setSelected(agent)}
-            >
-              <img src={`/skills/agents/${agent.id}.${agent.id === "codex" ? "png" : "svg"}`} alt="" width="40" height="40" />
-              {agent.name}
-            </button>
-          ))}
-        </div>
-        <div className="agents__details" id="agent-details" aria-live="polite">
-          <div className="agents__heading">
-            <h3>{selected.name}</h3>
-            <a href={selected.docs}>{content.docs} <ArrowUpRight aria-hidden="true" /></a>
-          </div>
-          <dl>
-            <dt>{content.directory}</dt>
-            <dd><code>{selected.directory}/</code></dd>
-            <dt>{content.install}</dt>
-            <dd className="install-command">
-              <span aria-hidden="true">$</span>
-              <code tabIndex={0}>{command}</code>
-              <CopyButton key={command} value={command} content={copy} />
-            </dd>
-          </dl>
-        </div>
+      <div className="agents__choices" role="group" aria-labelledby="agents-title">
+        <button
+          className="agents__all"
+          type="button"
+          aria-pressed={selected === null}
+          aria-controls="agent-details"
+          onClick={() => setSelected(null)}
+        >
+          <TerminalWindow size={24} aria-hidden="true" />
+          {content.all}
+        </button>
+        {agents.map((agent) => (
+          <button
+            key={agent.id}
+            type="button"
+            aria-pressed={selected?.id === agent.id}
+            aria-controls="agent-details"
+            onClick={() => setSelected(agent)}
+          >
+            <img src={`/skills/agents/${agent.id}.${agent.id === "codex" ? "png" : "svg"}`} alt="" width="40" height="40" />
+            {agent.name}
+          </button>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }

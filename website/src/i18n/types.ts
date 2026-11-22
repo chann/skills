@@ -40,7 +40,7 @@ export interface PlatformContent {
   title: string;
   description: string;
   directory: string;
-  install: string;
+  all: string;
   docs: string;
 }
 
@@ -85,7 +85,7 @@ export interface SiteContent {
   meta: MetadataContent;
   nav: {
     label: string;
-    items: Record<"why" | "explore" | "agents" | "faq" | "install", string>;
+    items: Record<"why" | "explore" | "faq" | "install", string>;
   };
   hero: {
     brand: string;
