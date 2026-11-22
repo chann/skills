@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 
@@ -11,6 +12,39 @@ from generate_html_report import extract_findings, parse_markdown  # noqa: E402
 
 
 GENERATOR = SCRIPTS_DIR / "generate_html_report.py"
+
+
+def test_report_validates_locale_and_embeds_assets_offline(tmp_path: Path) -> None:
+    report = tmp_path / "review.md"
+    output = tmp_path / "review.html"
+    report.write_text(
+        "# Review\n\n**Language:** invalid locale\n\n## Evidence\n\n"
+        "Literal __REPORT_LANG__ and <section> text.\n",
+        encoding="utf-8",
+    )
+    subprocess.run(
+        [sys.executable, str(GENERATOR), str(report), "-o", str(output)], check=True
+    )
+    document = output.read_text(encoding="utf-8")
+
+    class Assets(HTMLParser):
+        scripts = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "script":
+                self.scripts.append(dict(attrs))
+
+    parser = Assets()
+    parser.feed(document)
+
+    assert '<html lang="en"' in document
+    assert "Literal __REPORT_LANG__ and &lt;section&gt;" in document
+    assert r"\u003csection>" in document
+    assert "https://cdnjs.cloudflare.com" not in document
+    assert all("src" not in script for script in parser.scripts)
+    nonces = {item["nonce"] for item in parser.scripts if "nonce" in item}
+    assert len(nonces) == 1
+    assert "script-src 'nonce-" + nonces.pop() + "'" in document
 
 
 def test_markdown_tables_render_in_named_focusable_scroll_regions() -> None:

@@ -333,7 +333,7 @@
     "interrogate": {
       "summary": "コードの変更を壊そうと試み、重大度と証明レベルを付けた不具合の一覧を報告します。修正は自分では適用しません。",
       "whenToUse": "PR、コミット、ブランチ、作業ツリーをマージ前にレビューするとき",
-      "result": "各指摘に証明レベル（cited、traced、ran、reproduced）と証拠を付けたMarkdownレビューと二言語HTMLレビュー。--mdはMarkdownのみ"
+      "result": "各指摘に証明レベル（cited、traced、ran、reproduced）と証拠を付けたMarkdownレビューとオフラインで開ける二言語HTMLレビュー。--mdはMarkdownのみ"
     },
     "blast-radius": {
       "summary": "変更がdiffの外で何を壊しうるかを調べ、安全だと言える根拠を一時ディレクトリで実際に実行して証明します。",

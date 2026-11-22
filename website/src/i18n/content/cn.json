@@ -333,7 +333,7 @@
     "interrogate": {
       "summary": "尝试破坏一次代码变更，并报告标有严重程度和证明级别的缺陷。不会自行修复。",
       "whenToUse": "在合并前审查PR、提交、分支或工作区时",
-      "result": "每条发现都带证明级别（cited、traced、ran、reproduced）和证据的Markdown审查与双语HTML审查。--md只生成Markdown"
+      "result": "每条发现都带证明级别（cited、traced、ran、reproduced）和证据的Markdown审查与可离线打开的双语HTML审查。--md只生成Markdown"
     },
     "blast-radius": {
       "summary": "找出一次变更在diff之外可能破坏什么，并在临时目录里实际运行代码，证明它之所以安全的依据。",

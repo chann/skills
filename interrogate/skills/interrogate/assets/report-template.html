@@ -6,9 +6,11 @@
       data-code-scheme="github">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'nonce-__REPORT_NONCE__'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>__REPORT_TITLE__</title>
-  <link id="hljs-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+  <style id="hljs-theme"></style>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
@@ -1007,8 +1009,8 @@
   <div id="report-status" class="status-region" role="status" aria-live="polite" aria-atomic="true"></div>
   <script type="application/json" id="findings-data">__FINDINGS_JSON__</script>
   <script type="application/json" id="raw-md-data">__RAW_MD_JSON__</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-  <script>
+  <script nonce="__REPORT_NONCE__">__HLJS_LIBRARY__</script>
+  <script nonce="__REPORT_NONCE__">
     const defaults = {
       lang: __DEFAULT_LANG__,
       langCodes: __LANG_CODES__,
@@ -1067,7 +1069,7 @@
     }
 
     /* ---------------- Code scheme + theme (diff-viewer parity) ---------------- */
-    const HLJS_BASE = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/";
+    const HLJS_STYLES = __HLJS_STYLES__;
     const CODE_SCHEMES = {
       github: {
         light: { css: "github.min.css",                      bg: "#ffffff", fg: "#1f2328", muted: "#8c959f", tone: "light" },
@@ -1111,8 +1113,8 @@
       const schemeName = document.documentElement.dataset.codeScheme || "github";
       const scheme = CODE_SCHEMES[schemeName] || CODE_SCHEMES.github;
       const variant = scheme[pageTheme] || scheme.light;
-      const link = document.getElementById("hljs-theme");
-      if (link) link.href = HLJS_BASE + variant.css;
+      const stylesheet = document.getElementById("hljs-theme");
+      if (stylesheet) stylesheet.textContent = HLJS_STYLES[variant.css];
       const root = document.documentElement.style;
       root.setProperty("--code-bg", variant.bg);
       root.setProperty("--code-fg", variant.fg);

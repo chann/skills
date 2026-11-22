@@ -135,6 +135,9 @@ self-contained HTML file with:
   browser and keyed by finding ID, so they survive a language switch.
 - **"Copy feedback"** — a payload to paste into a new `/interrogate` run.
 
+The report runs offline. It embeds the browser bundle and selected themes from
+`@highlightjs/cdn-assets@11.11.1` with their license and blocks external resources.
+
 ## Severity levels
 
 | Level    | Meaning                                                       |

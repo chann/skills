@@ -257,7 +257,7 @@ class InterrogateSkillPackageTests(unittest.TestCase):
 
         for rule in (
             "Proof commands are read-only with respect to the reviewed tree",
-            "a small repro script in a temporary directory outside the repository",
+            "in an isolated temporary environment without credentials or network access",
             "Never mutate the reviewed tree",
             "never run destructive commands",
             "never send repository content to the network",
@@ -266,14 +266,15 @@ class InterrogateSkillPackageTests(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, text)
         reference = normalized(PROOF_REFERENCE)
-        self.assertIn("outside the repository (`mktemp -d`)", reference)
+        self.assertIn("isolated temporary directory outside the repository", reference)
+        self.assertIn("Remove inherited credentials and block network access", reference)
         self.assertIn("call any network endpoint", reference)
 
     def test_optional_panel_uses_swarm_only_when_installed(self) -> None:
         text = normalized(MAIN_SKILL)
 
         self.assertIn("When the `swarm` skill is installed", text)
-        self.assertIn("Rerun each returned finding's command", text)
+        self.assertIn("Independently verify each returned finding", text)
         self.assertIn("Fold findings with the same root cause into one", text)
         self.assertIn("per adversary", text)
         self.assertIn("Without `swarm`, review in this session and say", text)

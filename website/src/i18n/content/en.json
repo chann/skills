@@ -333,7 +333,7 @@
     "interrogate": {
       "summary": "Tries to break a code change and reports defects tagged with severity and proof level. It never applies fixes.",
       "whenToUse": "When you review a PR, commit, branch, or working tree before merging",
-      "result": "A Markdown review and a bilingual HTML review, each finding carrying its proof level (cited, traced, ran, reproduced) and the proof. --md gives Markdown only"
+      "result": "A Markdown review and an offline bilingual HTML review, each finding carrying its proof level (cited, traced, ran, reproduced) and the proof. --md gives Markdown only"
     },
     "blast-radius": {
       "summary": "Finds what a change could break outside its diff and proves the fact it is safe because of, running real code in a temporary directory.",

@@ -18,12 +18,15 @@ import argparse
 import html
 import json
 import re
+import secrets
 import sys
 from pathlib import Path
 
 SEVERITY_LEVELS = ("CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO")
 SEVERITY_LOWER = {s: s.lower() for s in SEVERITY_LEVELS}
 LANG_TOKEN_RE = re.compile(r"[^\w.+-]")
+REPORT_LANG_RE = re.compile(r"[a-z]{2,8}(?:-[a-z0-9]{1,8})*")
+ASSETS = Path(__file__).resolve().parent.parent / "assets"
 FINDING_ID_RE = re.compile(r"\[([A-Za-z]+-\d+)\]")
 # Proof ladder, weakest first. The level word stays English in every language.
 PROOF_LEVELS = ("said", "cited", "traced", "ran", "reproduced")
@@ -708,6 +711,7 @@ def base_stem(path: Path) -> str:
 
 def render_document(md: str, lang: str) -> dict:
     """Parse one language's markdown into everything the template needs."""
+    lang = normalize_report_lang(lang)
     prefix = f"{lang}--"
     content_html, meta, sidebar = parse_markdown(md, prefix)
     findings = extract_findings(md)
@@ -725,8 +729,7 @@ def render_document(md: str, lang: str) -> dict:
 
 def load_template() -> str:
     """Load the HTML template from ../assets/report-template.html."""
-    script_dir = Path(__file__).resolve().parent
-    template_path = script_dir.parent / "assets" / "report-template.html"
+    template_path = ASSETS / "report-template.html"
     if not template_path.exists():
         print(f"Error: template not found at {template_path}", file=sys.stderr)
         sys.exit(1)
@@ -735,7 +738,13 @@ def load_template() -> str:
 
 def json_attr(value: object) -> str:
     """JSON for safe embedding inside an inline <script> block."""
-    return json.dumps(value, ensure_ascii=False).replace('</', '<\\/')
+    return json.dumps(value, ensure_ascii=False).replace("<", "\\u003c")
+
+
+def normalize_report_lang(value: str) -> str:
+    """Use a language tag safe for HTML attributes and report anchors."""
+    lang = value.strip().lower()
+    return lang if REPORT_LANG_RE.fullmatch(lang) else "en"
 
 
 def assemble(template: str, docs: list[dict], default_lang: str,
@@ -751,17 +760,17 @@ def assemble(template: str, docs: list[dict], default_lang: str,
     lang_codes = [d['lang'] for d in docs]
     for d in docs:
         bodies.append(
-            f'<div class="lang-body" data-lang="{escape(d["lang"])}">{d["content"]}</div>'
+            f'<div class="lang-body" data-lang="{html.escape(d["lang"], quote=True)}">{d["content"]}</div>'
         )
         navs.append(
-            f'<div class="nav-lang" data-lang="{escape(d["lang"])}">{d["sidebar_html"]}</div>'
+            f'<div class="nav-lang" data-lang="{html.escape(d["lang"], quote=True)}">{d["sidebar_html"]}</div>'
         )
         findings_map[d['lang']] = d['findings']
         raw_map[d['lang']] = d['raw']
 
     if multi:
         toggle_buttons = ''.join(
-            f'<button type="button" data-set-lang="{escape(d["lang"])}">'
+            f'<button type="button" data-set-lang="{html.escape(d["lang"], quote=True)}">'
             f'{escape(lang_label(d["lang"]))}</button>'
             for d in docs
         )
@@ -773,9 +782,13 @@ def assemble(template: str, docs: list[dict], default_lang: str,
     else:
         lang_control = ''
 
+    highlighter = ASSETS / "highlightjs"
+    library = (highlighter / "highlight.min.js").read_text(encoding="utf-8")
+    license_text = (highlighter / "LICENSE").read_text(encoding="utf-8")
+    themes = json.loads((highlighter / "themes.json").read_text(encoding="utf-8"))
     replacements = {
         "__REPORT_TITLE__": escape(primary.title),
-        "__REPORT_LANG__": escape(default_lang),
+        "__REPORT_LANG__": html.escape(default_lang, quote=True),
         "__REPO_PATH__": escape(primary.repository),
         "__REPORT_BODIES__": '\n'.join(bodies),
         "__SIDEBAR_NAVS__": '\n'.join(navs),
@@ -787,11 +800,11 @@ def assemble(template: str, docs: list[dict], default_lang: str,
         "__COMMENT_SCOPE__": json_attr(comment_scope),
         "__DEFAULT_THEME__": json_attr(default_theme),
         "__DEFAULT_CODE_SCHEME__": json_attr(default_scheme),
+        "__REPORT_NONCE__": secrets.token_urlsafe(18),
+        "__HLJS_LIBRARY__": f"/*\n{license_text}\n*/\n{library}",
+        "__HLJS_STYLES__": json_attr(themes),
     }
-    result = template
-    for key, value in replacements.items():
-        result = result.replace(key, value)
-    return result
+    return re.sub(r"__[A-Z][A-Z0-9_]*__", lambda match: replacements.get(match[0], match[0]), template)
 
 
 def main() -> None:
@@ -828,13 +841,13 @@ def main() -> None:
 
     primary_md = input_path.read_text(encoding="utf-8")
     _, primary_meta, _ = parse_markdown(primary_md)
-    primary_lang = (primary_meta.language or "en").strip().lower()
+    primary_lang = normalize_report_lang(primary_meta.language or "en")
 
     docs = [render_document(primary_md, primary_lang)]
     if alt_path:
         alt_md = alt_path.read_text(encoding="utf-8")
         _, alt_meta, _ = parse_markdown(alt_md)
-        alt_lang = (alt_meta.language or "en").strip().lower()
+        alt_lang = normalize_report_lang(alt_meta.language or "en")
         if alt_lang != primary_lang:
             docs.append(render_document(alt_md, alt_lang))
 

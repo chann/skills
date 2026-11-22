@@ -333,7 +333,7 @@
     "interrogate": {
       "summary": "코드 변경을 깨뜨리려 시도하고, 심각도와 증명 수준이 붙은 결함 목록을 보고합니다. 직접 고치지는 않습니다.",
       "whenToUse": "PR, 커밋, 브랜치, 작업 트리를 머지 전에 검토할 때",
-      "result": "결함마다 증명 수준(cited, traced, ran, reproduced)과 증거가 붙은 Markdown 리뷰와 이중언어 HTML 리뷰. --md는 Markdown만"
+      "result": "결함마다 증명 수준(cited, traced, ran, reproduced)과 증거가 붙은 Markdown 리뷰와 오프라인에서 열 수 있는 이중언어 HTML 리뷰. --md는 Markdown만"
     },
     "blast-radius": {
       "summary": "변경이 diff 밖에서 무엇을 깨뜨릴 수 있는지 찾고, 안전하다고 말할 수 있는 근거를 임시 디렉터리에서 실제로 실행해 증명합니다.",
