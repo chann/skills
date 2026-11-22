@@ -15,7 +15,7 @@ the push step plus `references/deploy.md`.
 | Mode | Authorizes | Does not authorize |
 |---|---|---|
 | `realtime` | Repeated local commits for the requested task | Pushes, history rewrites, unrelated changes, releases, new branches |
-| `push realtime` | Repeated commits and ordinary pushes | History rewrites, force pushes, unrelated changes, releases, new branches |
+| `push realtime` | Repeated commits and ordinary pushes to the same-named remote branch (create it on first push) | History rewrites, force pushes, unrelated changes, releases, local branch creation |
 | `deploy` | Repeated commits, ordinary pushes, and deployments to the documented target | All of the above, plus branch merges, release tags, or a different deployment target |
 
 Anything outside the authorized column needs its own explicit request.
@@ -41,7 +41,16 @@ git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true
   exception.
 - **`realtime`:** note whether an upstream exists so the final report can state
   what remains unpushed, but do not fetch, pull, or push to reconcile it.
-- **`push realtime` and `deploy`:** when an upstream exists, fetch and compare:
+- **`push realtime`:** record the attached branch name and the intended remote
+  before editing. Use the requested remote, otherwise the configured push
+  remote (branch.pushRemote, remote.pushDefault, then the branch remote), or
+  origin when unambiguous. Confirm the effective push URL is the intended
+  repository. Use `refs/heads/<recorded-branch>` even when the branch tracks
+  another ref. Fetch and compare that exact destination if it exists. Review
+  the outgoing range, including existing commits, before publishing. If the
+  branch is behind or diverged, stop. A missing same-name ref is created by
+  the first authorized push. A clean worktree can still have commits to push.
+- **`deploy`:** when an upstream exists, fetch and compare:
 
   ```bash
   git fetch
@@ -129,15 +138,21 @@ a broken or mislabeled checkpoint.
   update; do not pull, merge, or rebase to chase it.
 - **`push realtime` and `deploy`:** After each checkpoint commit succeeds,
   push it before starting the next unit, using the push step in `SKILL.md`.
-  Verify the actual destination ref, then prove the checkpoint reached the upstream:
+  For `push realtime`, execute the bundled helper after reviewing the outgoing
+  commits. Resolve its path from the installed git-commit skill directory:
 
-  ```bash
-  git status --short --branch
-  git rev-list --left-right --count HEAD...@{u}
+  ```sh
+  sh "$skill_dir/scripts/push-checkpoint.sh" "$remote" "$source_branch" "$commit"
   ```
 
-  The expected result is `0 0`. A rejected push or a moved upstream stops the
-  run before the next checkpoint.
+  Record its remote, full ref and verified SHA. A local commit, a push on
+  another branch, or a matching local tracking ref cannot finish a checkpoint.
+  If there was no upstream, configure the same-name tracking branch after
+  successful publication. Preserve an existing differently named upstream.
+  For parity, fetch the verified destination and compare HEAD with that tip.
+  Use `git rev-list --left-right --count HEAD...@{u}` only when the upstream
+  is that destination. The expected result is `0 0`. Stop on rejection or
+  failed verification before starting the next unit.
 - **`deploy`:** continue with `references/deploy.md` steps 3–4 for this
   checkpoint before moving on.
 
@@ -167,7 +182,7 @@ the `rewrite` mode's job.
    ```bash
    git log --oneline <starting-commit>..HEAD
    git status --short --branch
-   git rev-list --left-right --count HEAD...@{u}   # push modes only
+   git rev-list --left-right --count HEAD..."$verified_remote_tip"   # push modes only
    ```
 
 Report each commit hash with its verification evidence. In `realtime`, state that

@@ -104,7 +104,9 @@ BREAKING CHANGE: email service is now required at boot
 ### Push step (mode `push`, and every push in the checkpoint modes)
 
 After the commits succeed, resolve the single remote and full branch ref named
-by the upstream. For a new upstream, state the proposed remote and branch
+by the upstream. For `push realtime`, use the recorded source branch on the
+intended remote and execute the checkpoint helper in `references/checkpoints.md`.
+For a new upstream, state the proposed remote and branch
 before its first push. Inspect effective push URLs without exposing embedded
 credentials. Stop if the push would go to multiple destinations or to an
 unexpected destination. Inspect the full outgoing commit range against the
