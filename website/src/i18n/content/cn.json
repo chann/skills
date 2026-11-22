@@ -341,9 +341,9 @@
       "result": "安全依据及其证明级别、带file:line的风险、已检查并排除的项目，以及合并前成本最低的检查"
     },
     "git-commit": {
-      "summary": "把变更拆成Conventional Commit提交。通过参数选择push、realtime、deploy或rewrite模式。",
-      "whenToUse": "想把混杂的变更整理成便于审查的提交，或在工作过程中每完成一个已验证的单元就提交、推送或部署时。也可以用gcr、gcpr、gcpd调用",
-      "result": "仅提交指定文件，推送到单一分支，并按仓库文档部署。提交消息只在本地改写"
+      "summary": "将变更整理成符合 Conventional Commits 规范的提交。可以一次性提交、按已验证的检查点提交、部署，或在本地改写提交标题。",
+      "whenToUse": "用 gcpr 将每个通过验证的检查点推送到同名远程源分支。如果还要在工作完成后将源分支合入 main，请用 gcprm。",
+      "result": "gcprm 在合入后的 main 上运行检查，通过后推送 main，并保留源分支。gcr 将检查点留在本地，gcpd 按仓库文档中的配置部署每个检查点。"
     },
     "git-merge": {
       "summary": "把当前分支合并到main、dev或你指定的本地分支，并在源分支不是受保护分支时删除已合并的源分支。",

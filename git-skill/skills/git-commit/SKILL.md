@@ -1,11 +1,11 @@
 ---
 name: git-commit
-description: Use when the user wants changes committed as Conventional Commits, pushed, committed or pushed or deployed at verified checkpoints while work continues, or wants messy commit subjects rewritten, including "commit my changes", "커밋해줘", "커밋 분리해줘", "commit and push", "커밋하고 푸시해줘", "commit as you work", "commit and push as you work", "작업 중간중간 커밋 푸시", "commit push and deploy as you work", "의미 있는 단위마다 배포", "rewrite these commit messages", "커밋 메시지 다시 써줘", "/git-commit", or "$git-commit". The modes are none (commit once), push, realtime, push realtime, deploy, and rewrite [range]. Produces verified Conventional Commits staged by explicit path, ordinary pushes, and deployments only through documented repository settings. The explicit-only aliases gcr, gcpr, and gcpd run the realtime, push realtime, and deploy modes. For merging a branch use git-merge; for a stopped merge or rebase use git-resolve-conflicts.
+description: Use when the user wants changes committed as Conventional Commits, pushed, committed or pushed or deployed at verified checkpoints while work continues, or wants messy commit subjects rewritten, including "commit my changes", "커밋해줘", "커밋 분리해줘", "commit and push", "커밋하고 푸시해줘", "commit as you work", "commit and push as you work", "작업 중간중간 커밋 푸시", "commit push and deploy as you work", "의미 있는 단위마다 배포", "rewrite these commit messages", "커밋 메시지 다시 써줘", "/git-commit", or "$git-commit". Modes include push realtime merge-main for a final verified main merge. Produces verified Conventional Commits staged by explicit path, ordinary pushes, and deployments only through documented repository settings. The explicit-only aliases are gcr, gcpr, gcprm, and gcpd. For merging a branch use git-merge; for a stopped merge or rebase use git-resolve-conflicts.
 ---
 
 # Git Commit
 
-One commit workflow with six modes. Every mode turns changes into truthful
+One commit workflow with seven modes. Every mode turns changes into truthful
 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
 staged by explicit path; the modes differ only in how far the result travels.
 
@@ -17,6 +17,7 @@ staged by explicit path; the modes differ only in how far the result travels.
 | `/git-commit push` | The same, then an ordinary `git push` (never force) | this file |
 | `/git-commit realtime` | Verified, outcome-based checkpoint commits while the work continues; every checkpoint stays local | `references/checkpoints.md` |
 | `/git-commit push realtime` | Each checkpoint commit is pushed immediately and its upstream parity proven | `references/checkpoints.md` |
+| `/git-commit push realtime merge-main` | Push each checkpoint to the source branch, then merge, test and push main once at completion | `references/checkpoints.md`, `references/merge-main.md` |
 | `/git-commit deploy` | Each checkpoint is committed, pushed, deployed through the repository's documented settings, and confirmed before the next one | `references/checkpoints.md`, `references/deploy.md` |
 | `/git-commit rewrite [range]` | Rewrite recent non-Conventional commit subjects locally | `references/rewrite.md` |
 
@@ -26,6 +27,9 @@ the same intent in natural language: "push"/"푸시" adds push, "as you work",
 "중간중간", or "의미 있는 단위마다" adds realtime, "deploy"/"배포" selects deploy,
 and "rewrite"/"다시 써줘" about existing commit messages selects rewrite.
 
+- Select the final main integration only for the full mode, its `gcprm` alias,
+  or an explicit request to push checkpoints and finish by merging and pushing main.
+  `gcpr` fixes its mode to source-branch publication.
 - State the mode and the reason in one line before the first Git command:
   `mode: push realtime, because the request says "commit and push as you work"`.
 - When the request is ambiguous, take the less far-reaching mode
@@ -104,7 +108,9 @@ BREAKING CHANGE: email service is now required at boot
 ### Push step (mode `push`, and every push in the checkpoint modes)
 
 After the commits succeed, resolve the single remote and full branch ref named
-by the upstream. For a new upstream, state the proposed remote and branch
+by the upstream. For both `push realtime` modes, use the recorded source branch on the
+intended remote and execute the checkpoint helper in `references/checkpoints.md`.
+For a new upstream, state the proposed remote and branch
 before its first push. Inspect effective push URLs without exposing embedded
 credentials. Stop if the push would go to multiple destinations or to an
 unexpected destination. Inspect the full outgoing commit range against the
@@ -116,7 +122,7 @@ published there. Push the reviewed commit to only that ref:
 git push --no-follow-tags --recurse-submodules=no "$remote" "$commit:$branch_ref"
 ```
 
-Set the upstream explicitly after the first successful push and verify the
+If none was configured, set the upstream explicitly after the first successful push and verify the
 destination ref resolves to the reviewed commit. Never publish tags or
 submodules as a side effect of this command.
 
@@ -152,4 +158,4 @@ or `--force-with-lease`; ask the user how to reconcile the branch.
   is safe to commit and state its risk in one line first. Keep real credentials
   out of Git history.
 
-**Reply:** the resolved mode and why; each commit's short hash and subject; the checks run with their results; in push modes the push result and upstream parity (`0 0`); in deploy mode each checkpoint's target and deployment evidence with a `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE` verdict; any excluded secret paths or preserved pre-existing changes; and anything left unpushed or unverified.
+**Reply:** the resolved mode and why; each commit's short hash and subject; the checks run with their results; in push modes the push result and upstream parity (`0 0`); in merge-main mode the source and main refs, their remote SHAs and merged-tree checks; in deploy mode each checkpoint's target and deployment evidence with a `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE` verdict; any excluded secret paths or preserved pre-existing changes; and anything left unpushed or unverified.

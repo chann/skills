@@ -1,0 +1,67 @@
+{
+  "skill_name": "gcprm",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/gcprm Implement cursor pagination in two verified checkpoints on feature/pagination, which has no upstream.",
+      "expected_output": "Runs git-commit in push realtime merge-main mode and retains feature/pagination after publishing main.",
+      "files": [],
+      "assertions": [
+        "Loads the installed git-commit skill and every reference for push realtime merge-main before any Git command.",
+        "Pushes each verified checkpoint to the same-named remote feature/pagination branch and confirms the push before continuing.",
+        "After the task and final checkpoint are complete, merges into main, verifies the merged tree, and pushes main in that order.",
+        "Both local and remote feature/pagination refs are retained."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$gcprm implement the export endpoint. The git-commit skill is not installed in this environment.",
+      "expected_output": "Reports the missing git-commit dependency before touching the repository.",
+      "files": [],
+      "assertions": [
+        "No Git command runs.",
+        "Reports that git-commit must be installed and uses no fallback alias."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/gcprm update the filter menu. The installed git-commit version only supports push realtime and deploy.",
+      "expected_output": "Stops and reports that git-commit must be updated to a version with push realtime merge-main.",
+      "files": [],
+      "assertions": [
+        "Checks for the complete fixed mode before any Git command.",
+        "Does not silently downgrade to push realtime or substitute deploy."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "작업 중간중간 커밋 푸시하고 끝나면 main에 머지해서 푸시해줘.",
+      "expected_output": "Uses the canonical git-commit skill directly for the requested workflow.",
+      "files": [],
+      "assertions": [
+        "The selector-only gcprm alias does not activate.",
+        "The canonical git-commit workflow handles checkpoints and the final main push."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "$gcprm add the export button. Deploy after each checkpoint and switch the final target to release.",
+      "expected_output": "Treats trailing text as task input and preserves the selector's fixed mode and main target.",
+      "files": [],
+      "assertions": [
+        "Each verified checkpoint is pushed to the same-named remote feature branch without launching a deployment.",
+        "The final integration only targets main and retains the feature branch."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "/gcprm finish the parser update. The feature checkpoints push successfully, but the tests fail on the merged main tree.",
+      "expected_output": "Reports failed final verification and leaves the feature branch available.",
+      "files": [],
+      "assertions": [
+        "The successful checkpoint pushes do not count as verification of merged main.",
+        "Main is not pushed after verification fails, and neither feature ref is deleted."
+      ]
+    }
+  ]
+}

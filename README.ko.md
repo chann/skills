@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-소프트웨어 엔지니어링을 위한 29개의 실용적인 에이전트 워크플로와 32개의 설치 가능한 Codex selector를 19개 플러그인으로 제공합니다.
+소프트웨어 엔지니어링을 위한 29개의 실용적인 에이전트 워크플로와 33개의 설치 가능한 Codex selector를 19개 플러그인으로 제공합니다.
 
 ## Website
 
@@ -57,7 +57,7 @@ $chann this endpoint got slow, find out why and fix it
 | build | **[build-reinstall](build-reinstall/README.ko.md)** | 프로젝트를 빌드하고 새 결과를 다시 설치한 뒤 설치 파일이 빌드와 같은지 확인 |
 | verify | **[interrogate](interrogate/README.ko.md)** | diff를 깨뜨려 보고, 입증 수준을 붙인 심각도별 결과를 Markdown과 이중언어 HTML로 보고 |
 | verify | **[blast-radius](interrogate/README.ko.md)** | 변경이 diff 밖에서 무엇을 깨뜨릴 수 있는지 확인하고, 안전하다는 근거를 직접 실행해 입증 |
-| ship | **[git-commit](git-skill/README.ko.md)** | Conventional Commits를 한 번에, 푸시까지, 검증한 단위마다, 단위마다 배포까지, 또는 제목 재작성. 별칭은 `gcr`, `gcpr`, `gcpd` |
+| ship | **[git-commit](git-skill/README.ko.md)** | Conventional Commits를 한 번에, 푸시까지, 검증한 단위마다, 작업 후 `main`에 반영, 단위마다 배포까지, 또는 제목 재작성. 별칭은 `gcr`, `gcpr`, `gcprm`, `gcpd` |
 | ship | **[git-merge](git-skill/README.ko.md)** | 현재 브랜치를 `main`, `dev`, 다른 로컬 브랜치에 머지하고, 보호 브랜치가 아니면 `git branch -d`로 원본을 삭제 |
 | ship | **[git-resolve-conflicts](git-skill/README.ko.md)** | 충돌로 멈춘 머지, 리베이스, 체리픽, 되돌리기를 중단하지 않고 끝냄 |
 | ship | **[git-cleanup](git-skill/README.ko.md)** | 끝난 워크트리를 지우고, 보호 브랜치에 이미 머지된 로컬 브랜치를 삭제 |
@@ -116,14 +116,14 @@ CLI, OpenCode는 이 경로를 직접 읽습니다. 자체 디렉토리를 쓰�
 따르며 릴리스마다 바뀔 수 있습니다. 현재 목록은 `npx skills --help`로 확인하세요.
 
 필요한 것만 설치하려면 `--skill <이름>`을 씁니다. 모든 스킬은 혼자 설치해도
-작동합니다. 별칭 `gcr`, `gcpr`, `gcpd`만 예외로, 옆에 `git-commit`이 있어야
+작동합니다. 별칭 `gcr`, `gcpr`, `gcprm`, `gcpd`만 예외로, 옆에 `git-commit`이 있어야
 합니다.
 
 - 입구만 설치: `npx skills add chann/skills --skill chann`
 - 코드베이스 이해: `npx skills add chann/skills --skill how --skill why`
 - 변경 검토: `npx skills add chann/skills --skill interrogate --skill blast-radius`
 - 변경 설명: `npx skills add chann/skills --skill diff-summary --skill diff-viewer`
-- 짧은 별칭을 포함한 Git 워크플로: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
+- 짧은 별칭을 포함한 Git 워크플로: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcprm --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
 - handoff만 설치: `npx skills add chann/skills --skill handoff`
 - 서브에이전트와 시안 경쟁: `npx skills add chann/skills --skill swarm --skill arena`
 - 지난 작업 정리와 따라잡기: `npx skills add chann/skills --skill recall --skill catchup`
@@ -269,14 +269,15 @@ Pi에서는 `/skill:diff-summary --md`처럼 `/skill:이름`을 사용합니다.
 | `/git-commit` | `$git-commit` | 작업 트리 변경을 Conventional Commits로 한 번에 묶어 커밋 |
 | `/git-commit push` | `$git-commit push` | 같은 작업 뒤 일반 `git push`까지 실행 (`--force` 없음) |
 | `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | 검증한 단위마다 커밋. 모든 체크포인트는 로컬에만 남음 |
-| `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | 검증한 단위마다 커밋하고 바로 푸시해 업스트림과 같은지 확인 |
+| `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | 검증한 체크포인트마다 커밋하고 같은 이름의 원격 소스 브랜치에 푸시 |
+| `/git-commit push realtime merge-main` · `/gcprm` | `$git-commit push realtime merge-main` · `$gcprm` | 같은 방식으로 체크포인트를 푸시하고, 작업이 끝나면 소스 브랜치를 `main`에 합칩니다. 검사를 통과하면 `main`을 푸시하고 소스 브랜치는 유지합니다. |
 | `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | 단위마다 커밋, 푸시, 배포하고 저장소에 문서화된 설정으로 확인 |
 | `/git-commit rewrite [범위] [force]` | `$git-commit rewrite [범위] [force]` | Conventional Commits 형식이 아닌 최근 커밋 제목을 다시 씀 |
 | `/git-merge [main \| dev \| <브랜치>]` | `$git-merge [main \| dev \| <브랜치>]` | 현재 브랜치를 대상에 머지하고, 보호 브랜치가 아니면 원본을 삭제 |
 | `/git-resolve-conflicts` | `$git-resolve-conflicts` | 충돌로 멈춘 머지, 리베이스, 체리픽, 되돌리기를 중단하지 않고 끝냄 |
 | `/git-cleanup` | `$git-cleanup` | 끝난 워크트리를 지우고, 보호 브랜치에 이미 머지된 로컬 브랜치를 삭제 |
 
-`/gcr`, `/gcpr`, `/gcpd`와 각각의 `$` 형태는 세 체크포인트 모드의 별칭이며
+`/gcr`, `/gcpr`, `/gcprm`, `/gcpd`와 각각의 `$` 형태는 네 체크포인트 모드의 별칭이며
 직접 호출할 때만 실행됩니다. `git-commit`이 설치되어 있어야 하고, 없으면
 실행을 거부합니다.
 
