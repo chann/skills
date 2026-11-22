@@ -37,13 +37,11 @@ export interface CatalogContent {
 }
 
 export interface PlatformContent {
-  label: string;
-  title: string[];
-  descriptionBeforeCodex: string;
-  descriptionBetweenSelectors: string;
-  descriptionAfterClaude: string;
-  sharedInstructions: string;
-  contractDescription: string;
+  title: string;
+  description: string;
+  directory: string;
+  install: string;
+  docs: string;
 }
 
 export interface InstallContent {
@@ -87,7 +85,7 @@ export interface SiteContent {
   meta: MetadataContent;
   nav: {
     label: string;
-    items: Record<"why" | "explore" | "faq" | "install", string>;
+    items: Record<"why" | "explore" | "agents" | "faq" | "install", string>;
   };
   hero: {
     brand: string;

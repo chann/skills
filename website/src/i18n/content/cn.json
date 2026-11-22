@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "chann/skills - 把昨天的重复，变成今天的技能。",
-    "description": "把Claude Code和Codex中的重复工作变成可复用的技能。用缓存友好的指令和脚本化步骤，让LLM专注于真正需要判断的部分。",
+    "description": "把8 种编程智能体中的重复工作变成可复用的技能。用缓存友好的指令和脚本化步骤，让LLM专注于真正需要判断的部分。",
     "socialAlt": "chann/skills网站中的智能体工作流运行界面"
   },
   "nav": {
@@ -9,6 +9,7 @@
     "items": {
       "why": "为什么用技能",
       "explore": "查找技能",
+      "agents": "智能体",
       "faq": "常见问题",
       "install": "安装"
     }
@@ -16,9 +17,9 @@
   "hero": {
     "brand": "chann/skills",
     "headline": ["把昨天的重复，", "变成今天的技能。"],
-    "lede": "我们把Claude Code和Codex中反复进行的软件工作，整理成{count}个可验证的工作流。稳定的指令以更适合提示词缓存的形式复用，结果明确的步骤交给脚本执行，让LLM专注于真正需要判断的部分。",
+    "lede": "我们把8 种编程智能体中反复进行的软件工作，整理成{count}个可验证的工作流。稳定的指令以更适合提示词缓存的形式复用，结果明确的步骤交给脚本执行，让LLM专注于真正需要判断的部分。",
     "primaryAction": "查看{count}个技能",
-    "proof": "{count}个正式工作流 · {categories}个分类 · Claude Code + Codex · MIT"
+    "proof": "{count}个正式工作流 · {categories}个分类 · 支持 8 种智能体 · MIT"
   },
   "benefits": {
     "label": "为什么用技能",
@@ -51,7 +52,7 @@
     "stats": {
       "skills": "已打包技能",
       "categories": "分类",
-      "platforms": "平台"
+      "platforms": "智能体"
     }
   },
   "workflow": {
@@ -103,13 +104,11 @@
     "showAll": "查看全部技能"
   },
   "platforms": {
-    "label": "一个技能，两种命令",
-    "title": ["同一个技能，", "只需换一种调用方式。"],
-    "descriptionBeforeCodex": "两个工具读取同一份SKILL.md。在Codex中，名称前加",
-    "descriptionBetweenSelectors": "；在Claude Code中，名称前加",
-    "descriptionAfterClaude": "。",
-    "sharedInstructions": "共享指令",
-    "contractDescription": "根据原始依据生成韩文和英文报告，加上--quiz还会生成理解测验。"
+    "title": "支持的智能体",
+    "description": "选择智能体，即可复制全局安装命令并查看技能目录。",
+    "directory": "技能目录",
+    "install": "安装命令",
+    "docs": "智能体文档"
   },
   "faq": {
     "label": "常见问题",
@@ -134,11 +133,11 @@
       },
       {
         "question": "哪些智能体可以使用这些技能？",
-        "answer": "默认支持Claude Code和Codex。同一份SKILL.md在Codex中通过$name调用，在Claude Code中通过/name调用。安装工具也支持Gemini CLI、GitHub Copilot CLI等其他智能体。"
+        "answer": "支持Claude Code、Codex、Antigravity CLI、Grok Build、Pi、Gemini CLI、GitHub Copilot CLI和 OpenCode。同一份 SKILL.md 在 Codex 中通过 $name 调用，在 Claude Code 中通过 /name 调用。"
       },
       {
         "question": "安装后，电脑里会新增什么？",
-        "answer": "npx skills add会下载仓库，并让每个智能体链接到同一份源文件。源文件只保留一份，删除这些链接即可完成卸载。"
+        "answer": "技能文件保存在 ~/.agents/skills 中。安装程序会在 Claude Code、Antigravity CLI 和 Grok Build 的技能目录中创建指向这些文件的链接。"
       },
       {
         "question": "技能会自行提交或推送吗？",
@@ -161,14 +160,14 @@
   "install": {
     "label": "获取技能",
     "title": ["一个命令，", "安装{count}个技能。"],
-    "description": "官方安装工具会完成连接，让这些技能可直接用于Claude Code和Codex。",
-    "cardTitle": "同时安装到两个平台",
-    "cardDescription": "保留一份源仓库，并将它链接到每个智能体的技能目录。",
+    "description": "此命令会为全部 8 种受支持的智能体全局安装技能。",
+    "cardTitle": "为全部 8 种智能体安装技能",
+    "cardDescription": "各智能体共用同一份技能文件。",
     "copyLabel": "复制命令",
     "resultsLabel": "安装结果",
     "skillResult": "{count}个技能",
     "linkResult": "可随时删除的全局链接",
-    "platformsResult": "Claude Code + Codex",
+    "platformsResult": "支持 8 种智能体",
     "exploreAction": "查看{count}个技能",
     "githubAction": "在GitHub中查看",
     "license": "MIT License · open source"

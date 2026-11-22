@@ -15,14 +15,15 @@ import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
 import { Lines, withFlags } from "./components/Text";
 import { TaglineReveal } from "./components/TaglineReveal";
+import { agents, installCommand } from "./data/agents";
+import { SupportAgents } from "./components/SupportAgents";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { categoryOrder } from "./data/skills";
 import { formatMessage, getContent, getLocalizedSkills } from "./i18n/content";
 import type { Locale, ProductPreviewContent } from "./i18n/types";
 
 const repositoryName = "chann/skills";
-const installCommand =
-  "npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes";
+const installAllCommand = installCommand(agents.map((agent) => agent.id).join(" "));
 const benefitIcons = [Repeat, TerminalWindow, Brain] as const;
 
 interface ProductPreviewProps {
@@ -94,7 +95,7 @@ function ProductPreview({ content, skillCount }: ProductPreviewProps) {
   );
 }
 
-const navItemIds = ["why", "explore", "faq", "install"] as const;
+const navItemIds = ["why", "explore", "agents", "faq", "install"] as const;
 
 interface AppProps {
   locale: Locale;
@@ -276,7 +277,7 @@ export function App({ locale }: AppProps) {
                 </div>
                 <div>
                   <dt>{content.tagline.stats.platforms}</dt>
-                  <dd>2</dd>
+                  <dd>{agents.length}</dd>
                 </div>
               </dl>
             </Reveal>
@@ -335,47 +336,7 @@ export function App({ locale }: AppProps) {
           </Reveal>
         </section>
 
-        <section className="platforms section" aria-labelledby="platforms-title">
-          <Reveal className="platforms__copy">
-            <span className="section-label">{content.platforms.label}</span>
-            <h2 id="platforms-title"><Lines lines={content.platforms.title} /></h2>
-            <p>
-              {content.platforms.descriptionBeforeCodex}
-              <code>$</code>
-              {content.platforms.descriptionBetweenSelectors}
-              <code>/</code>
-              {content.platforms.descriptionAfterClaude}
-            </p>
-          </Reveal>
-
-          <Reveal className="platform-window" delay={0.08}>
-            <div className="platform-window__chrome">
-              <span>diff-summary</span>
-              <code>SKILL.md</code>
-            </div>
-            <div className="platform-contract">
-              <span>{content.platforms.sharedInstructions}</span>
-              <strong>diff-summary</strong>
-              <p>{withFlags(content.platforms.contractDescription)}</p>
-            </div>
-            <div className="platform-targets">
-              <div className="platform-node">
-                <div>
-                  <span>Codex</span>
-                  <code>$diff-summary</code>
-                </div>
-                <CopyButton value="$diff-summary" content={content.copy} compact />
-              </div>
-              <div className="platform-node">
-                <div>
-                  <span>Claude Code</span>
-                  <code>/diff-summary</code>
-                </div>
-                <CopyButton value="/diff-summary" content={content.copy} compact />
-              </div>
-            </div>
-          </Reveal>
-        </section>
+        <SupportAgents content={content.platforms} copy={content.copy} />
 
         <section className="faq section" id="faq" aria-labelledby="faq-title">
           <Reveal className="section-heading section-heading--center">
@@ -419,9 +380,9 @@ export function App({ locale }: AppProps) {
             </div>
             <div className="install-command">
               <span aria-hidden="true">$</span>
-              <code tabIndex={0}>{installCommand}</code>
+              <code tabIndex={0}>{installAllCommand}</code>
               <CopyButton
-                value={installCommand}
+                value={installAllCommand}
                 content={content.copy}
                 label={content.install.copyLabel}
               />
