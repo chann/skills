@@ -6,7 +6,7 @@ const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const repositoryRoot = path.resolve(websiteRoot, "..");
 const catalogPath = path.join(websiteRoot, "src", "data", "skills.ts");
 const expectedWorkflowCount = 29;
-const expectedSelectorCount = 32;
+const expectedSelectorCount = 33;
 const requiredPlanSummaryIds = ["plan-summary"];
 
 async function exists(target) {
