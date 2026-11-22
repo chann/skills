@@ -68,14 +68,13 @@ Eight stages, one row per workflow. Each name links to its plugin README.
 
 ## Installation
 
-Install all skills globally for Claude Code, Codex, Antigravity CLI, Gemini
-CLI, GitHub Copilot CLI, and OpenCode with the installer's symlink mode
-(recommended):
+Install all skills globally for Claude Code, Codex, Antigravity CLI, Grok
+Build, Pi, Gemini CLI, GitHub Copilot CLI, and OpenCode (recommended):
 
 ```bash
 npx skills add chann/skills \
   --skill '*' \
-  --agent claude-code codex antigravity-cli gemini-cli \
+  --agent claude-code codex antigravity-cli grok pi gemini-cli \
     github-copilot opencode \
   --global \
   --yes
@@ -92,6 +91,27 @@ that support global installation if needed, but continue to list the targets
 explicitly until
 [the upstream fix](https://github.com/vercel-labs/skills/pull/1561) lands. This
 prevents this CLI version from falling back to copy mode.
+
+Verified with `skills@1.9.0` in a clean temporary `HOME`. The installer writes
+one copy to `~/.agents/skills/<name>/`, which Codex, Pi, Gemini CLI, GitHub
+Copilot CLI, and OpenCode read from directly. It then symlinks that copy into
+the agents that use their own directory:
+
+| Agent | `--agent` ID | Global path |
+|---|---|---|
+| Claude Code | `claude-code` | `~/.claude/skills/<name>` (symlink) |
+| Codex | `codex` | `~/.agents/skills/<name>` |
+| Antigravity CLI | `antigravity-cli` | `~/.gemini/config/skills/<name>` (symlink) |
+| Grok Build | `grok` | `~/.grok/skills/<name>` (symlink) |
+| Pi | `pi` | `~/.agents/skills/<name>` |
+| Gemini CLI | `gemini-cli` | `~/.agents/skills/<name>` |
+| GitHub Copilot CLI | `github-copilot` | `~/.agents/skills/<name>` |
+| OpenCode | `opencode` | `~/.agents/skills/<name>` |
+
+Drop `--global` to install into the current project instead. The agent IDs and
+paths come from the installer's
+[supported-agents list](https://github.com/vercel-labs/skills/blob/main/docs/agents.md),
+which can change between releases; `npx skills --help` shows the current set.
 
 Install only what you need with `--skill <name>`. Every skill works when
 installed alone; the thin aliases `gcr`, `gcpr`, and `gcpd` are the one
@@ -113,7 +133,7 @@ Each plugin README documents its own global and project-local install.
 
 ## Quick reference
 
-Use `/skill-name` in Claude Code and `$skill-name` in Codex. Every row below
+Use `/skill-name` in Claude Code and `$skill-name` in Codex. In Pi, use `/skill:skill-name`, for example `/skill:diff-summary --md`. Every row below
 spells out both explicit selectors with their arguments. Former variant
 commands are arguments now: `/diff-summary --md`, `/git-commit push realtime`,
 `/handoff session`.
@@ -327,22 +347,21 @@ npx skills remove \
 All `SKILL.md` files in this repo follow the standard skill format and reference no Claude-Code-only tools, so they run on any agent platform that supports skills:
 
 
-| Platform                                        | How to install                                                                                |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **[Claude Code](https://code.claude.com)**      | `npx skills add chann/skills` — installs the skills and their slash commands                  |
-| **[Codex](https://github.com/openai/codex)**    | Symlink `<plugin>/skills/<name>/` into your Codex skills directory (e.g. `~/.agents/skills/`) |
-| **[opencode](https://github.com/sst/opencode)** | Drop the skill directory into your opencode skills path                                       |
-| **Copilot CLI / Gemini CLI / others**           | Point your platform's skill loader at `<plugin>/skills/<name>/SKILL.md` per its docs          |
+| Platform | How to install |
+|---|---|
+| **[Claude Code](https://code.claude.com)**, **[Codex](https://github.com/openai/codex)**, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, **[OpenCode](https://github.com/sst/opencode)** | The `npx skills add` command in [Installation](#installation); it handles each agent's global directory |
+| Any other agent in the [installer's list](https://github.com/vercel-labs/skills/blob/main/docs/agents.md) | Add its `--agent` ID to that command |
+| An agent the installer does not list | Point its skill loader at `<plugin>/skills/<name>/` (the folder that holds `SKILL.md`) per its docs |
 
-
-What works across platforms and what is specific to Claude Code:
-
-- **Portable** — every `SKILL.md` body and its `references/`. The skills trigger on natural-language phrases on any platform.
-- **Claude Code only** — the `.claude-plugin/plugin.json` wrapper, the `npx skills` installer, and the slash commands (`/interrogate`, `/git-commit`, `/long-task`, ...). Other platforms invoke the skill with natural language or their own calling convention.
+The agents share the same `SKILL.md` files and bundled resources. Each host
+provides its own discovery and invocation UI. For example, Antigravity CLI
+exposes skills as `/name`, while Pi uses `/skill:name`. Use an explicit
+command for workflows marked `disable-model-invocation: true`.
+[Antigravity skills](https://antigravity.google/docs/skills) · [Pi skills](https://docs.pi.dev/latest/skills)
 
 ## Requirements
 
-- An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, etc.)
+- An agent platform that supports skills (Claude Code, Codex, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, OpenCode, etc.)
 - Git repository
 - Git 2.45+ for `diff-summary`
 - Python 3.10+ (for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, and `skill-audit`; standard library only)

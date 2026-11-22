@@ -7,14 +7,24 @@ This repository exposes 27 canonical workflows and 30 installable Codex selector
 ### All skills at once (recommended)
 
 ```bash
-npx skills add chann/skills --skill '*' --agent claude-code codex --global --yes
+npx skills add chann/skills \
+  --skill '*' \
+  --agent claude-code codex antigravity-cli grok pi gemini-cli \
+    github-copilot opencode \
+  --global \
+  --yes
 ```
 
 `--global` installs for your user, `--yes` skips prompts, and omitting `--copy`
 keeps the installer's default symlink mode. The explicit agent list avoids the
 `skills@1.5.19` bugs that can implicitly target the project-only PromptScript
 adapter or fall back to copy mode during non-interactive global installs.
-[README.md](README.md#installation) lists the longer agent set.
+Verified with `skills@1.9.0` in a clean temporary `HOME`: one copy lands in
+`~/.agents/skills/<name>/`, read directly by Codex, Pi, Gemini CLI, GitHub
+Copilot CLI, and OpenCode, with symlinks at `~/.claude/skills/` (Claude Code),
+`~/.gemini/config/skills/` (Antigravity CLI), and `~/.grok/skills/` (Grok
+Build). Drop `--global` to install into the current project.
+[README.md](README.md#installation) has the per-agent table.
 
 ### A single skill
 
@@ -48,20 +58,24 @@ To inspect the available names first, run `npx skills add chann/skills -l --full
 
 ### Manual / other platforms
 
+Any agent the installer lists works by adding its `--agent` ID to the command above. For an agent it does not list, clone the repo and point the agent's skill loader at the skill folder:
+
 ```bash
 git clone https://github.com/chann/skills.git
-# Claude Code: symlink one skill directory into your skills dir
-ln -s "$(pwd)/skills/understand/skills/how" ~/.claude/skills/how
+cd skills
+mkdir -p ~/.agents/skills
+# Example: symlink one skill directory into a skills dir
+ln -s "$(pwd)/understand/skills/how" ~/.agents/skills/how
 ```
 
 A skill directory is `<plugin>/skills/<name>/`, the folder that holds `SKILL.md`; the plugin directory itself is not a skill.
 
 | Platform | How to install |
 |---|---|
-| **Claude Code** | `npx skills add chann/skills` — installs the skills and their slash commands |
-| **Codex** | Symlink `<plugin>/skills/<name>/` into your Codex skills dir (e.g. `~/.agents/skills/`) |
-| **opencode** | Drop the skill directory into your opencode skills path |
-| **Copilot CLI / Gemini CLI / others** | Point the platform's skill loader at `<plugin>/skills/<name>/SKILL.md` |
+| **Claude Code**, **Codex**, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, **OpenCode** | `npx skills add` as above, with that platform's `--agent` ID |
+| Other agents | Point the platform's skill loader at `<plugin>/skills/<name>/` |
+
+For example, invoke the same skill with `/diff-summary --md` in Claude Code or Antigravity CLI, `$diff-summary --md` in Codex, or `/skill:diff-summary --md` in Pi.
 
 For the deepest per-skill detail, see each plugin's own README: [chann-mode](chann-mode/README.md), [understand](understand/README.md), [research-brief](research-brief/README.md), [recall](recall/README.md), [diff-summary](diff-summary/README.md), [plan-summary](plan-summary/README.md), [review-me](review-me/README.md), [swarm](swarm/README.md), [bug-hunt](bug-hunt/README.md), [doc-skill](doc-skill/README.md), [unslop](unslop/README.md), [build-reinstall](build-reinstall/README.md), [interrogate](interrogate/README.md), [git-skill](git-skill/README.md), [long-task](long-task/README.md), [handoff](handoff/README.md), and [skill-forge](skill-forge/README.md).
 
@@ -628,7 +642,7 @@ commands.
 
 ## Requirements
 
-- An agent platform that supports skills (Claude Code, Codex, opencode, Copilot CLI, Gemini CLI, …)
+- An agent platform that supports skills (Claude Code, Codex, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, OpenCode, …)
 - A Git repository
 - Git 2.45+ for `diff-summary`
 - Python 3.10+ for `interrogate`, `diff-summary`, `diff-viewer`, `plan-summary`, `git-commit rewrite`, `swarm`, `long-task`, and `skill-audit` (standard library only — nothing to install)
