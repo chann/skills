@@ -8,6 +8,7 @@ import difflib
 import html
 import json
 import re
+import secrets
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -17,7 +18,9 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-TEMPLATE_PATH = SCRIPT_DIR.parent / "assets" / "diff-template.html"
+ASSETS = SCRIPT_DIR.parent / "assets"
+TEMPLATE_PATH = ASSETS / "diff-template.html"
+HIGHLIGHTER = ASSETS / "highlightjs"
 
 LANGUAGES = ("en", "ko")
 LANGUAGE_LABELS = {"en": "English", "ko": "한국어"}
@@ -616,6 +619,15 @@ def build_comment_storage_scope(root: Path, report_path: Optional[Path], created
     return "{}::{}::{}".format(root, report, created_at.isoformat(timespec="microseconds"))
 
 
+def render_highlighter_library() -> str:
+    library = (HIGHLIGHTER / "highlight.min.js").read_text(encoding="utf-8")
+    license_text = (HIGHLIGHTER / "LICENSE").read_text(encoding="utf-8")
+    bundle = "/*\n{}\n*/\n{}".format(license_text, library)
+    if "</script" in bundle.lower():
+        raise ValueError("vendored highlight.js must not contain a closing script tag")
+    return bundle
+
+
 def fill_template(template: str, replacements: Dict[str, str]) -> str:
     pattern = re.compile("|".join(re.escape(key) for key in replacements))
     return pattern.sub(lambda match: replacements[match.group(0)], template)
@@ -765,6 +777,11 @@ def assemble_html(
         "__LANG_CODES__": json_for_script(list(LANGUAGES)),
         "__COMMENT_STORAGE_SCOPE__": json_for_script(
             build_comment_storage_scope(root, report_path, created_at)
+        ),
+        "__REPORT_NONCE__": secrets.token_urlsafe(18),
+        "__HLJS_LIBRARY__": render_highlighter_library(),
+        "__HLJS_STYLES__": json_for_script(
+            json.loads((HIGHLIGHTER / "themes.json").read_text(encoding="utf-8"))
         ),
     }
     template = TEMPLATE_PATH.read_text(encoding="utf-8")

@@ -1,4 +1,5 @@
 import sys
+from html.parser import HTMLParser
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -161,6 +162,33 @@ def test_assemble_html_embeds_highlight_seeds(load_fixture, tmp_path):
     assert "function applyInlineDiff" in html
     assert ".inline-diff-add" in html
     assert ".inline-diff-del" in html
+
+
+def test_assemble_html_embeds_highlighter_offline_under_a_nonce_policy(load_fixture, tmp_path):
+    files = parse_git_diff(load_fixture("simple.diff"))
+    html = assemble_html(files, tmp_path)
+
+    class Scripts(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.scripts = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "script":
+                self.scripts.append(dict(attrs))
+
+    parser = Scripts()
+    parser.feed(html)
+
+    assert "https://" not in html.split("<body", 1)[0]
+    assert "cdnjs.cloudflare.com" not in html
+    assert all("src" not in script for script in parser.scripts)
+    executable = [item for item in parser.scripts if item.get("type") != "application/json"]
+    nonces = {item.get("nonce") for item in executable}
+    assert len(nonces) == 1 and None not in nonces
+    assert "script-src 'nonce-" + nonces.pop() + "'" in html
+    assert "Highlight.js v11.11.1" in html
+    assert '"github-dark.min.css":' in html
 
 
 def test_assemble_html_scopes_comments_to_generated_report(load_fixture, tmp_path):
