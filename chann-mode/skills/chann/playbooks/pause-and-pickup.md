@@ -18,8 +18,9 @@ Pausing:
 Picking up:
 
 5. Find the prior trail (the resume note, the decision trail, the branch, a
-   routed skill's record) and treat it as authoritative. Use `recall` or
-   `catchup` when installed to rebuild what happened before this session.
+   routed skill's record). Use `recall` or `catchup` when installed to rebuild
+   what happened before this session. If you need a transcript, open only
+   the relevant session in the current workspace.
 6. Reconstruct the state (branch, worktree, what landed, what is pending) and
    name the resume point. Do not redo finished work.
 7. Check each inherited claim the next step depends on against the real

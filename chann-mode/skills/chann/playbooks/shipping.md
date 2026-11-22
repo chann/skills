@@ -7,8 +7,9 @@
 2. Commit with `git-commit` when installed. Otherwise stage explicit paths,
    never everything at once, and write one Conventional Commit per verified
    unit.
-3. Go only as far as the user asked: commit, push, or deploy. For pushing or
-   deploying at each checkpoint, use `git-commit` with `push realtime` or
+3. Go only as far as the user asked. For a requested PR, use the
+   opening-a-pr playbook. For a PR queue or stack, use autopilot. For pushing
+   or deploying at each checkpoint, use `git-commit` with `push realtime` or
    `deploy` when installed.
 4. Take the deployment command, target, branch, and confirmation method from
    the repository's own instructions. When they are missing or ambiguous, stop
@@ -19,9 +20,13 @@
    `git-resolve-conflicts` when installed; otherwise merge without rewriting
    published history, and stop on a conflict that neither side's intent
    settles.
-7. When the work is finished, remove this session's merged worktrees and
-   branches (`git-cleanup` when installed) with `git worktree remove` without
-   `--force` and `git branch -d`. When Git refuses, leave it and report it.
+7. For worktree cleanup, take candidate paths from `git worktree list` and
+   check usage, lock state, tracked and untracked changes, and whether commits
+   reached the intended target. Leave active or uncertain checkouts alone.
+   Clean up this session's finished worktrees or the set the user authorized
+   with `git-cleanup` when installed. Otherwise use `git worktree remove`
+   without `--force` and `git branch -d` on clean, merged candidates. When
+   Git refuses, leave the worktree or branch and report it.
 8. Rebuild and reinstall a local app or CLI only when the user asked, with
    `build-reinstall` when installed.
 

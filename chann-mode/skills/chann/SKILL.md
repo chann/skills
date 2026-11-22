@@ -1,6 +1,6 @@
 ---
 name: chann
-description: Use only when the user explicitly invokes "/chann <task>" in Claude Code or "$chann <task>" in Codex to run a non-trivial task in the owner's working style, as in "/chann 로그인하면 가끔 500 에러 나, 원인 찾아서 고쳐줘", "$chann 자러 간다, 이 마이그레이션 끝까지 해줘", or "/chann this endpoint got slow, find out why and fix it". Restates the goal and the smallest change, matches one of fourteen playbooks, routes each step to the catalog skill that owns it when that skill is installed, names the principles that shaped each decision, and replies with labelled evidence. Without the selector, call the owning skill directly - bug-hunt for a defect, interrogate for a diff review, swarm for parallel slices, long-task for a multi-milestone build.
+description: Use only when the user explicitly invokes "/chann <task>" in Claude Code or "$chann <task>" in Codex, as in "/chann 로그인 500 에러 잡아줘", "$chann analyze this saved trace", or "/chann babysit PR 42 until merge-ready". Chooses a playbook for the task, uses installed skills or inline steps, and reports the result with evidence. Without the selector use the owning skill directly, such as bug-hunt for a defect or interrogate for a diff review.
 disable-model-invocation: true
 ---
 
@@ -13,10 +13,11 @@ absolute path.
 
 1. Restate the user's goal in one sentence, then the smallest change that fully
    meets it. Proceed: reversible work gets no confirmation round.
-2. Match the task to one playbook (section 8) and read `playbooks/<name>.md`.
-   When a task spans two, take the one that owns the deliverable and run the
-   other as a step. When the user asked only to understand, even a bug or a
-   slowdown, take investigation.
+2. Use the routing table to choose the playbook that owns the deliverable and
+   read `playbooks/<name>.md`. Honor a named playbook when it fits the task.
+   Use a second playbook only for the step it owns. A read-only question
+   about code or history goes to investigation. A request to analyze a
+   capture or diagnose a running process goes to its forensics playbook.
 3. Open the host's task list and copy the playbook's numbered steps into it
    verbatim as the first items. Task-specific items go after them. A host with
    no task list gets the same list as a checklist in your first message.
@@ -26,11 +27,10 @@ absolute path.
 
 ## 2. Routing
 
-Each playbook step names the skill that owns it. A skill counts as installed
-when the host lists it among its available skills. Load it with the host's
-skill tool; when the host keeps it selector-only, read the `SKILL.md` the host
-lists for it and follow that. When it is not installed, follow the playbook's
-inline steps and never stop to ask for an install.
+Use the host's available-skill list to locate a routed skill. Use its skill
+loader when available or read its listed `SKILL.md` and resolve its references
+from there. Follow the inline steps when the skill is unavailable or its own
+instructions reserve execution for a separate explicit invocation.
 
 A routed skill owns how its step is done: its gates, records, and refusals
 stand, and of two safety rules the stricter wins. This file owns what comes
@@ -43,21 +43,35 @@ next, when to pause, and the final reply.
 | An outside library, API, or spec question | `research-brief` | investigation |
 | Something is broken, throwing, or flaky | `bug-hunt` | bug-fix |
 | Something is slower or heavier than it should be | `bug-hunt` | perf |
+| Improve one metric over repeated, measured attempts | none, inline | hillclimb |
+| Diagnose a live symptom by capturing a profile or trace | none, inline | runtime-forensics |
+| Diagnose from a saved profile, trace, or heap snapshot | none, inline | trace-forensics |
 | New or changed behavior | none, inline | feature |
+| Match an authorized visual baseline across a migration | none, inline | visual-parity |
 | Structure changes, behavior does not | none, inline | refactoring |
 | Comments that narrate the code, or a request to strip them | `no-comments` | refactoring |
 | A page whose controls wake a bot through a webhook | `make-bot-ui` | feature |
 | A fork an experiment can settle | none, inline | prototype |
 | Several competing attempts at one artifact | `arena` | prototype |
+| Measure the behavior of a skill, prompt, model, or agent setup | none, inline | eval |
 | A plan or design with open decisions | `review-me`, `plan-summary` | plan |
 | Review a change for defects and reach | `interrogate`, `blast-radius` | review |
 | Explain a change or a plan document | `diff-summary`, `plan-summary`, `diff-viewer` | review |
 | Independent slices to run in parallel | `swarm` | fan-out |
 | Multi-milestone or unattended work | `long-task` | autonomous-run |
+| Run a queue or stack of PRs through independent verification | none, inline | autopilot |
+| Open a pull request for verified work | none, inline | opening-a-pr |
+| Check or drive an existing PR to merge-ready | none, inline | babysit |
 | Commit, push, deploy, merge, conflicts, cleanup, reinstall | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
 | Stopping, resuming, catching up | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | Docs and prose | `gen-docs`, `unslop` | docs |
 | Writing or fixing a skill, capturing lessons | `skill-forge`, `skill-audit`, `reflect` | authoring-a-skill |
+
+Use the project or host tools for the surface being verified. A project
+screenshot harness or host browser driver can prove UI behavior, and a real
+command or PTY can prove CLI behavior. If the matching surface is
+unavailable, report what was checked and mark the missing proof
+`INCONCLUSIVE`.
 
 ## 3. Principles
 
@@ -108,12 +122,13 @@ The name and when it applies; the rule and its test are in `references/principle
   repository's documented settings, deleting data (uncommitted work and
   unmerged branches included), a message to anyone outside the session. Finish
   everything that does not depend on it, then ask once, with a recommendation.
-- **Reach is the user's call.** Push, open a pull request, or deploy only as far
-  as the user asked in this session. "Fix it" is not "ship it".
+- **Reach is the user's call.** Push, open or merge a pull request, post a
+  comment, or deploy only as far as the user authorized in this session.
 - **Session overrides.** "자러 간다", "멈추지 마", "don't stop", "run until
-  done", or "going to bed" switch to the autonomous-run playbook. From then on
-  nothing is asked: an irreversible action is skipped, logged as blocked, and
-  listed in the reply.
+  done", or "going to bed" use autonomous-run to drive the work and keep
+  the task's specialized playbook for its verification and stop conditions.
+  Log actions that still need authorization as blocked and continue on
+  independent work.
 - **Disagreement is welcome.** When the user asks whether to do something, or
   shows an approach, answer with your real judgment and decline what does not
   earn its place.
@@ -124,7 +139,8 @@ The name and when it applies; the rule and its test are in `references/principle
 are planned, split, dispatched in parallel, merged, and verified. A lookup, a
 one-file edit, or strictly sequential work stays in the session. Only a
 top-level session on a top-tier model at extra-high effort or above
-orchestrates; otherwise say so in one line and work alone.
+orchestrates. If delegation is unavailable, disallowed, or the session is
+ineligible, say so in one line and run the work in sequence.
 
 **Isolation.** Every delegate that edits files gets its own git worktree and
 branch (the host's worktree isolation, or `git worktree add`) and a write set
@@ -141,8 +157,9 @@ than pasted content.
 **Model and effort.** Per role, the cheapest that still meets the bar: the
 lowest tier for mechanical edits and lookups, a middle tier for scoped
 implementation, the top tier for design, architecture, diagnosis, and security.
-Check the host's current model list and set both model and effort on every
-dispatch; an unset delegate can inherit yours. A model the user named wins.
+Check the host's current model list and set the model and effort when the
+tool accepts them. Record inherited settings instead of guessing IDs or
+parameters. A model the user named wins when available.
 
 **After.** A report is not evidence: merge the branch, read the diff, and run
 the project's checks on the merged tree. A fix round, retry, or follow-up goes
@@ -191,13 +208,21 @@ step when installed.
 - **investigation**: a question about code, history, or an outside API; read-only.
 - **bug-fix**: something is broken, throwing, or flaky.
 - **perf**: something is slower or heavier than it should be.
+- **hillclimb**: sustained improvement against a fixed metric and regression gate.
+- **runtime-forensics**: capture a live signal and diagnose its source.
+- **trace-forensics**: analyze a capture that already exists.
 - **feature**: new or changed behavior a user can see.
+- **visual-parity**: measure a migration against a frozen visual baseline.
 - **refactoring**: structure changes while behavior is pinned.
 - **prototype**: a fork that a cheap experiment can settle.
+- **eval**: measure agent or skill behavior with a blinded comparison.
 - **plan**: a multi-unit change whose plan is the deliverable.
 - **review**: judging or explaining a change without editing it.
 - **fan-out**: independent slices run in parallel and merged into one result.
 - **autonomous-run**: unattended work driven to a checkable exit condition.
+- **autopilot**: drive a queue or stack of PRs with a verdict per item.
+- **opening-a-pr**: publish a reviewable pull request when asked.
+- **babysit**: check, triage, or drive an existing pull request to merge-ready.
 - **shipping**: commit, push, deploy, merge, and clean up at the reach asked for.
 - **pause-and-pickup**: stopping safely, or resuming from a prior trail.
 - **docs**: one document whose every claim holds for the commit it ships in.

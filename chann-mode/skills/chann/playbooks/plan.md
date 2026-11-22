@@ -13,7 +13,9 @@
 4. Give each unit its own section: its prerequisites, the files it may touch,
    the one change it makes, the result a user sees, and its verification (the
    command, the surface, the pass condition). A unit without verification is
-   not ready.
+   not ready. For user-visible changes write a scenario on the real surface.
+   For performance-sensitive changes specify the baseline, workload, metric,
+   and regression threshold. Record any review required before landing.
 5. Name what stays unproven, and order the unit with the riskiest unknown
    first.
 6. When `plan-summary` is installed, use it to explain the plan file to the

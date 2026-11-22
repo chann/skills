@@ -58,10 +58,10 @@ export const skillDefinitions = [
     id: "chann",
     title: "Chann Mode",
     category: "mode",
-    example: "$chann this endpoint got slow, find out why and fix it",
+    example: "$chann diagnose the slowdown from captures/startup.cpuprofile",
     claudeSelector: "/chann",
     codexSelector: "$chann",
-    tags: ["router", "playbook", "entry-point", "evidence", "principles"],
+    tags: ["router", "playbook", "evidence", "trace", "benchmark", "visual parity", "eval", "pull request"],
   },
   {
     id: "how",

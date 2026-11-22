@@ -10,7 +10,10 @@ request that the work continue unattended.
    under 200 ms across 20 runs". For a multi-milestone build, run `long-task`
    when installed; it owns milestones and resumption.
 2. Open the decision trail (`references/decision-trail.md`) and log the
-   predicate as its first row.
+   predicate as its first row. For remote checks use a host-supported
+   event watcher when available. Otherwise use bounded waits between status
+   reads while the session is active. Checkpoint the resume point if the
+   host cannot wait or wake again. Use a scheduler only when requested.
 3. Each round, make the smallest change the evidence justifies and check it
    against the predicate. Commit it if it advanced; discard it if it did not.
    Log the round either way.
@@ -18,8 +21,8 @@ request that the work continue unattended.
    premise, combine near-misses, try the bolder variant.
 5. Fix what blocks the goal yourself (a flaky check, a broken script, a missing
    fixture) in its own commit, then return to the predicate.
-6. Ask nothing. Make every reversible choice and log it. An irreversible
-   action is skipped, logged as `blocked`, and the run continues on everything
+6. Make reversible choices and log them. When an action needs authorization
+   the user has not granted, log it as `blocked` and continue on everything
    that does not need it.
 7. Stop only when the predicate passes or a dead end is proven. Never weaken
    the predicate so the run can be called finished.

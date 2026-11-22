@@ -64,7 +64,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             (PACKAGE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual("chann-mode", metadata["name"])
-        self.assertEqual("0.3.0", metadata["version"])
+        self.assertEqual("0.4.0", metadata["version"])
         self.assertIn("playbooks", metadata["description"])
 
     def test_skill_is_explicit_only_on_both_selectors(self) -> None:
@@ -79,6 +79,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
         self.assertIn("/chann ", description)
         self.assertIn("$chann ", description)
         self.assertIn("$chann ", openai)
+        self.assertRegex(openai, r"(?m)^policy:\n  allow_implicit_invocation: false$")
         self.assertIn("Use the **chann** skill", command)
         self.assertIn("$ARGUMENTS", command)
         self.assertIn('argument-hint: "<task>"', command)
@@ -86,7 +87,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
     def test_every_playbook_is_listed_and_every_listed_playbook_exists(self) -> None:
         listed = set(bold_bullets(section(skill_text(), "Playbooks")))
         on_disk = {path.stem for path in PLAYBOOKS.glob("*.md")}
-        self.assertEqual(14, len(on_disk))
+        self.assertEqual(22, len(on_disk))
         self.assertEqual(on_disk, listed)
 
     def test_routing_table_points_at_real_playbooks_and_covers_all_of_them(self) -> None:
@@ -147,7 +148,8 @@ class ChannModeSkillPackageTests(unittest.TestCase):
         # Host tool names and model ids would tie the router to one agent platform.
         forbidden = re.compile(
             r"\b(?:claude-|opus|sonnet|haiku|fable|gpt-|gemini|TodoWrite|AskUserQuestion"
-            r"|spawn_agent|subagent_type|run_in_background)",
+            r"|spawn_agent|subagent_type|run_in_background|cursor-team-kit|poteto-agent)"
+            r"|/loop\b",
             re.IGNORECASE,
         )
         body = skill_text().split("---\n", 2)[2]
@@ -158,6 +160,8 @@ class ChannModeSkillPackageTests(unittest.TestCase):
         for name, text in files.items():
             with self.subTest(file=name):
                 self.assertIsNone(forbidden.search(text))
+                for target in re.findall(r"\]\(([^):#]+\.md)(?:#[^)]*)?\)", text):
+                    self.assertTrue((SKILL / name).parent.joinpath(target).is_file(), target)
 
     def test_evals_cover_the_routing_gates(self) -> None:
         payload = json.loads((SKILL / "evals" / "evals.json").read_text(encoding="utf-8"))

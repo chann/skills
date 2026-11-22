@@ -11,9 +11,10 @@ Task:
   and nothing else.
 
 Restate the goal, name the least change that satisfies it, and proceed without a
-confirmation round for reversible work. Copy the chosen playbook's steps into
-the host's task list before the first edit. Pause only for an irreversible
-action, and keep working on everything that does not depend on it. The first
-line of every delegate's kickoff points at `worker.md`. A delegate's report is
+confirmation round for reversible work. Read the chosen playbook from the
+installed skill directory. Copy its steps into the host's task list or use a
+chat checklist before the first edit. Keep push, PR, and deploy actions within
+the user's authorization. The first line of every delegate's kickoff points
+at `worker.md`. A delegate's report is
 not evidence until its branch is merged and the project's checks pass on the
 merged tree.

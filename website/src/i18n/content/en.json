@@ -247,9 +247,9 @@
   },
   "skills": {
     "chann": {
-      "summary": "Give it one task and it restates the goal in a sentence, picks one of 14 playbooks, and routes each step to the skill that owns it.",
-      "whenToUse": "When you want a whole task handled, such as a bug fix, a feature, or an investigation, without choosing the skills yourself. Runs only when you type it",
-      "result": "The goal and the smallest change, the playbook chosen, the skill used at each step, the principles applied, and a final report with labelled evidence"
+      "summary": "Chooses from 22 playbooks shared by Claude Code and Codex, then uses installed skills or follows the playbook directly.",
+      "whenToUse": "Invoke it for a feature, trace analysis, repeatable benchmark, visual comparison, agent evaluation, or pull request monitoring",
+      "result": "The task outcome and evidence from the selected playbook, such as a trace diagnosis, benchmark results, image diffs, or PR status"
     },
     "how": {
       "summary": "Reads the code and explains how a part of the codebase works and where new code belongs.",

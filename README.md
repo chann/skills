@@ -38,7 +38,7 @@ Eight stages, one row per workflow. Each name links to its plugin README.
 
 | Stage | Skill | What it does |
 | --- | --- | --- |
-| mode | **[chann](chann-mode/README.md)** | Explicit-only entry point: restate the goal, match one of fourteen playbooks, route each step to the skill that owns it, and reply with labelled evidence |
+| mode | **[chann](chann-mode/README.md)** | Explicit-only entry point: restate the goal, match one of 22 playbooks, route each step to the skill that owns it, and reply with labelled evidence |
 | understand | **[how](understand/README.md)** | Explain how part of the codebase works from the code, with `file:line` citations and no edits |
 | understand | **[why](understand/README.md)** | Explain why code is built this way from commits, blame, pull-request and issue threads, and design notes, quoting the authors |
 | understand | **[research-brief](research-brief/README.md)** | Answer a technical question from primary sources and leave a cited brief with tiered, version-pinned claims |

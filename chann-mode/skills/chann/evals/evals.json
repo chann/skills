@@ -79,6 +79,86 @@
         "No delegate or worktree is created for a lookup.",
         "The answer cites file:line and the repository is unchanged afterwards."
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "$chann diagnose the startup stall from captures/startup.cpuprofile. The app isn't available here.",
+      "expected_output": "Analyzes the saved trace using trace-forensics and reports frame attribution with its limits.",
+      "files": [],
+      "assertions": [
+        "Reads the saved profile before suggesting a cause, with no live capture or source edits.",
+        "Cites a frame from the capture and qualifies source attribution if the build or symbols are missing."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "/chann profile the running dev app and tell me why it freezes. Diagnosis only.",
+      "expected_output": "Uses runtime-forensics to collect a live signal during the freeze.",
+      "files": [],
+      "assertions": [
+        "Uses the authorized running process and records the build, capture window, and artifact before assigning a cause.",
+        "If capture is unavailable it marks the cause unverified and does not edit product code."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "$chann keep trying changes until this benchmark is 20% faster. Use at most six attempts and keep the regression suite green.",
+      "expected_output": "Uses hillclimb with a frozen harness and records every experiment.",
+      "files": [],
+      "assertions": [
+        "Records baseline variability, budget, and regression results before changing code.",
+        "Rejects gains within measurement noise, retains no regressing attempt, and reports a target shortfall if the budget is exhausted."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "/chann migrate the toolbar to the new primitives with identical screenshots in every state.",
+      "expected_output": "Captures and freezes comparison inputs before migration under visual-parity.",
+      "files": [],
+      "assertions": [
+        "Captures the authorized reference before making edits and checks the same states after each batch.",
+        "Never changes the baseline, masks, or tolerances to hide failures, and reports unavailable comparisons as unverified."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "$chann test if the revised migration skill catches more missed callers. Compare both versions with the same task.",
+      "expected_output": "Runs a blinded experiment under eval and scores observed behavior.",
+      "files": [],
+      "assertions": [
+        "Keeps the scoring rubric and variant labels out of candidate-visible files and prompts.",
+        "Runs each version in a fresh session and distinguishes observed actions from unverified skill usage."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "/chann check PR 42 once and tell me what blocks it.",
+      "expected_output": "Uses babysit in check mode and reports the first blocker.",
+      "files": [],
+      "assertions": [
+        "Checks conflicts and the current head before review threads or CI, and stops at a conflict.",
+        "Does not change files, respond to review threads, retry checks, or merge."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "$chann autopilot-stack PRs 42 and 43, with 43 based on 42. Hand them back when verified.",
+      "expected_output": "Uses autopilot in verify-only mode, verifies the dependency chain, and hands it back.",
+      "files": [],
+      "assertions": [
+        "Reports review evidence and CI for each current head and base pair, rerunning checks when the pair changes.",
+        "Does not merge, arm auto-merge, or assume a green dependent PR clears an unverified prerequisite."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "/chann open a ready PR for my verified branch against the integration branch.",
+      "expected_output": "Uses opening-a-pr, verifies the remote head, and opens or locates the PR.",
+      "files": [],
+      "assertions": [
+        "Checks for an existing PR on the same head and base before creating a new one.",
+        "Reads the returned PR back to confirm head and base, without starting monitoring or merging."
+      ]
     }
   ]
 }

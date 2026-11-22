@@ -1,6 +1,6 @@
 # skills website
 
-`chann/skills`의 에이전트 워크플로 27개를 검색하고 비교하고 설치하는 다국어
+`chann/skills`의 워크플로 29개와 설치 셀렉터 32개를 소개하는 다국어
 정적 웹사이트입니다. Claude Code, Codex, Antigravity CLI, Grok, Pi, Gemini CLI,
 GitHub Copilot CLI, OpenCode를 지원합니다. 에이전트별 전역 설치 명령과 스킬
 폴더 경로를 확인할 수 있으며, 설치 섹션의 명령은 8종 모두에 설치합니다.

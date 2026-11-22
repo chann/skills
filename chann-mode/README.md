@@ -43,8 +43,9 @@ Project-local:
 npx skills add chann/skills --skill chann
 ```
 
-`chann` works when installed alone: each playbook carries inline steps.
-Install more of the catalog and each step routes to the skill that owns it.
+`chann` installs all 22 playbooks with the skill. Claude Code and Codex
+use the same playbook files. Steps can use installed skills, read their
+listed files when a loader is unavailable, or run directly from the playbook.
 
 ## Usage
 
@@ -58,6 +59,8 @@ Examples:
 /chann 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
 $chann this endpoint got slow, find out why and fix it
 /chann 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+$chann diagnose the slowdown from captures/startup.cpuprofile
+/chann babysit PR 42 until merge-ready
 ```
 
 It runs only on its selector. A request phrased without it goes straight to
@@ -77,10 +80,28 @@ the skill that owns that kind of work.
 | review | Judging or explaining a change | The findings and their proof |
 | fan-out | Independent slices run in parallel | The done check and the merged result |
 | autonomous-run | Unattended work | The exit condition |
+| hillclimb | Repeated experiments against one metric | A fixed benchmark and a record of each attempt |
+| runtime-forensics | A symptom on a running process | A live capture and cited diagnosis |
+| trace-forensics | A saved trace, profile, or heap snapshot | A diagnosis grounded in the capture |
+| visual-parity | Preserve an authorized visual baseline | A reproducible image diff |
+| eval | Measure skill or agent behavior | Blinded scores and observable evidence |
+| autopilot | Drive a PR queue or dependency stack | A verified verdict for each PR |
+| opening-a-pr | Open a requested PR | A reviewable pull request |
+| babysit | Check or drive a PR to merge-ready | Current conflicts, review, and CI status |
 | shipping | Commit, push, deploy, merge, cleanup | What lands and how far it reaches |
 | pause-and-pickup | Stopping safely or resuming | The resume point |
 | docs | One document | Every claim holding for the commit it ships in |
 | authoring-a-skill | Writing or fixing a skill | Every sentence an agent reads |
+
+For PRs, `babysit` can do a read-only check, handle review threads, or
+drive to merge-ready. `autopilot-stack` verifies each PR and hands it
+back. To land a queue, include the PRs and permission to merge in the
+request. The playbook checks that the current head and base are covered
+by the evidence before landing each PR.
+
+Based on the [22 pstack playbooks at c3464c11](https://github.com/backnotprop/pstack/tree/c3464c11c60b1352d5e8f5f0428a3a6943837568/skills/poteto-mode/playbooks)
+by Lauren Tan (MIT). [The upstream mapping](../tests/test_upstream_skill_disposition.py)
+shows where each workflow lives in this package.
 
 ## Routing
 
@@ -102,7 +123,31 @@ the skill that owns that kind of work.
 | Explain a change or a plan document | `diff-summary`, `plan-summary`, `diff-viewer` | review |
 | Independent slices to run in parallel | `swarm` | fan-out |
 | Multi-milestone or unattended work | `long-task` | autonomous-run |
-| Commit, push, deploy, merge, conflicts, cleanup, reinstall | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
+| Commit, push, deploy, merge, conflicts, cleanup, reinstall | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | hillclimb | Repeated experiments against one metric | A fixed benchmark and a record of each attempt |
+| Improve one metric over repeated, measured attempts | none, inline | hillclimb |
+| runtime-forensics | A symptom on a running process | A live capture and cited diagnosis |
+| Diagnose a live symptom by capturing a profile or trace | none, inline | runtime-forensics |
+| trace-forensics | A saved trace, profile, or heap snapshot | A diagnosis grounded in the capture |
+| Diagnose from a saved profile, trace, or heap snapshot | none, inline | trace-forensics |
+| visual-parity | Preserve an authorized visual baseline | A reproducible image diff |
+| Match an authorized visual baseline across a migration | none, inline | visual-parity |
+| eval | Measure skill or agent behavior | Blinded scores and observable evidence |
+| Measure the behavior of a skill, prompt, model, or agent setup | none, inline | eval |
+| autopilot | Drive a PR queue or dependency stack | A verified verdict for each PR |
+| Run a queue or stack of PRs through independent verification | none, inline | autopilot |
+| opening-a-pr | Open a requested PR | A reviewable pull request |
+| Open a pull request for verified work | none, inline | opening-a-pr |
+| babysit | Check or drive a PR to merge-ready | Current conflicts, review, and CI status |
+| Check or drive an existing PR to merge-ready | none, inline | babysit |
+| Improve one metric over repeated, measured attempts | none, inline | hillclimb |
+| Diagnose a live symptom by capturing a profile or trace | none, inline | runtime-forensics |
+| Diagnose from a saved profile, trace, or heap snapshot | none, inline | trace-forensics |
+| Match an authorized visual baseline across a migration | none, inline | visual-parity |
+| Measure the behavior of a skill, prompt, model, or agent setup | none, inline | eval |
+| Run a queue or stack of PRs through independent verification | none, inline | autopilot |
+| Open a pull request for verified work | none, inline | opening-a-pr |
+| Check or drive an existing PR to merge-ready | none, inline | babysit |
+| shipping |
 | Stopping, resuming, catching up | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | Docs and prose | `gen-docs`, `unslop` | docs |
 | Writing or fixing a skill, capturing lessons | `skill-forge`, `skill-audit`, `reflect` | authoring-a-skill |
@@ -116,7 +161,7 @@ chann-mode/
 ├── skills/chann/
 │   ├── SKILL.md                     # first move, routing, principles index, autonomy, delegation, evidence, reply
 │   ├── worker.md                    # rules every delegate reads first
-│   ├── playbooks/<name>.md          # fourteen playbooks
+│   ├── playbooks/<name>.md          # 22 playbooks
 │   ├── references/principles.md     # twenty-seven principles, each with a test
 │   ├── references/decision-trail.md # the log format for long or unattended runs
 │   ├── agents/openai.yaml

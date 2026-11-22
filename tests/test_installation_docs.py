@@ -223,6 +223,8 @@ class InstallationDocsTests(unittest.TestCase):
                 self.assertEqual("interface:", interface_lines[0])
                 fields = set()
                 for line in interface_lines[1:]:
+                    if re.fullmatch(r"[a-z_]+:", line):
+                        break
                     match = re.fullmatch(r'  ([a-z_]+): ".+"', line)
                     self.assertIsNotNone(
                         match,

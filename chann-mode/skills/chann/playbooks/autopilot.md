@@ -3,10 +3,11 @@
 **You own the queue and the verification for each PR. Give each PR one owner and carry only authorized actions through to completion.**
 
 1. Declare the mode before work starts. Default to `verify-only` and finish
-   with a verdict for each PR. Use `merge` only when the user explicitly
-   grants merging for the named queue. Record which PRs and actions the grant
-   covers. Confirm separate authorization for pushes, PR creation, external
-   comments, and approval actions. Leave required approvals to eligible
+   with a verdict for each PR. Treat `autopilot-stack` as `verify-only`.
+   Use `merge` only when the user grants merging for the named queue,
+   including when they ask for `autopilot-full` and specify what may land.
+   Record the PRs and actions the grant covers, including pushes, PR
+   creation, and external comments. Leave required approvals to eligible
    reviewers.
 2. Use [autonomous run](autonomous-run.md) for the exit condition and decision
    trail. Put independent PRs on the integration branch and stack only actual
@@ -14,14 +15,16 @@
    writers when delegation is allowed. Otherwise process PRs sequentially in
    dependency order. Record the PR, owner, dependency, head SHA, base branch
    and SHA, and evidence after each round.
-3. Use [shipping](shipping.md) for verified commits and authorized pushes, and
+3. Route unbuilt items through the playbook for their implementation up to
+   a verified local change. Use
+   [shipping](shipping.md) for verified commits and authorized pushes, and
    [opening a PR](opening-a-pr.md) for authorized creation. Use
    [babysit](babysit.md) within the grant to clear conflicts, threads, and CI
    in that order. Return branch conflicts to the owner. The owner can update
    an authorized branch by preserving its published history. Use host PR
    tools first, with `gh` only for a GitHub repository it resolves. When a
-   watcher is unavailable or disallowed, bound status checks and record the
-   next gate when a run is still pending.
+   watcher is unavailable, use the watch and resume procedure in
+   [autonomous run](autonomous-run.md).
 4. Verify each PR on its exact head and base. Have a verifier who did not
    write the change inspect the diff, run the relevant gates, and exercise
    the changed behavior live on the real surface of the candidate that

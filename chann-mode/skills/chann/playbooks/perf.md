@@ -18,7 +18,7 @@
    it otherwise. Run the regression tests either way.
 5. Report the final number against the baseline with the run count and the
    spread. A gain inside the spread is `INCONCLUSIVE`.
-6. Ship with the shipping playbook. For a long climb against one metric, switch
-   to the autonomous-run playbook with the target as its exit condition.
+6. Ship with the shipping playbook. For repeated experiments against one
+   metric, use the hillclimb playbook.
 
 **Reply:** baseline and final numbers with run count and spread, the limiter and how it was found, each kept and reverted change, and the command that reproduces the numbers.

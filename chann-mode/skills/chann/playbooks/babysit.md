@@ -25,9 +25,9 @@
    report base or infrastructure failures and any outstanding approvals.
    Leave approval to eligible reviewers. In `drive`, fix failures caused
    by the PR and retry a proven flake once if permitted. For pending CI
-   in `drive`, use a watcher only when the host allows it. Otherwise make
-   one follow-up status read and report outstanding checks. In `drive`,
-   return to step 2 when the head or base changes. Leave merging and
-   bypassing gates outside babysit.
+   in `drive`, use the watch and resume procedure in
+   [autonomous run](autonomous-run.md). Return to step 2
+   when the head or base changes. Leave merging and bypassing gates outside
+   babysit.
 
 **Reply:** the mode, PR URL, head and base, first blocker, work done, and check or approval still pending.

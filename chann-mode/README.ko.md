@@ -42,9 +42,9 @@ npx skills add -y -g chann/skills --skill chann
 npx skills add chann/skills --skill chann
 ```
 
-`chann`만 설치해도 동작합니다. 플레이북마다 직접 따라 할 단계가 들어
-있습니다. 카탈로그의 다른 스킬을 함께 설치하면 각 단계가 그 일을 맡은
-스킬로 넘어갑니다.
+`chann`을 설치하면 플레이북 22개가 함께 설치됩니다. Claude Code와 Codex에서
+같은 파일을 사용합니다. 각 단계는 설치된 스킬을 불러오거나, 필요하면 스킬 파일을
+직접 읽습니다. 해당 스킬을 쓸 수 없으면 플레이북에 적힌 단계대로 진행합니다.
 
 ## 사용법
 
@@ -58,6 +58,8 @@ npx skills add chann/skills --skill chann
 /chann 로그인하면 가끔 500 에러가 나, 원인 찾아서 고쳐줘
 $chann this endpoint got slow, find out why and fix it
 /chann 자러 간다, 이 마이그레이션 테스트 전부 통과할 때까지 해줘
+$chann captures/startup.cpuprofile에서 시작 지연 원인 찾아줘
+/chann PR 42 머지할 수 있을 때까지 봐줘
 ```
 
 선택자를 입력했을 때만 실행됩니다. 선택자 없이 요청하면 그 일을 맡은 스킬이
@@ -77,10 +79,27 @@ $chann this endpoint got slow, find out why and fix it
 | review | 변경을 판정하거나 설명하기 | 발견 사항과 그 근거 |
 | fan-out | 서로 독립적인 조각을 병렬로 | 완료 조건과 합쳐진 결과 |
 | autonomous-run | 사람 없이 끝까지 돌리는 작업 | 종료 조건 |
+| hillclimb | 한 지표를 반복 실험으로 개선 | 고정된 측정 조건과 시도별 기록 |
+| runtime-forensics | 실행 중인 프로세스 진단 | 직접 수집한 프로파일과 근거 |
+| trace-forensics | 저장된 트레이스나 프로파일 분석 | 캡처에 근거한 진단 |
+| visual-parity | 승인된 기준 화면을 마이그레이션 뒤에도 유지 | 재현 가능한 이미지 비교 |
+| eval | 스킬이나 에이전트 동작 평가 | 블라인드 채점과 관찰 근거 |
+| autopilot | PR 대기열이나 의존 스택 운영 | 각 PR의 검증 결과 |
+| opening-a-pr | 요청받은 PR 열기 | 검토 가능한 PR |
+| babysit | PR 상태 확인 또는 머지 준비 | 충돌, 리뷰, CI 상태 |
 | shipping | 커밋, 푸시, 배포, 병합, 정리 | 무엇이 어디까지 반영되는지 |
 | pause-and-pickup | 안전하게 멈추기, 이어서 하기 | 재개 지점 |
 | docs | 문서 하나 | 반영되는 커밋 시점에 사실인 내용 |
 | authoring-a-skill | 스킬 작성과 수정 | 에이전트가 읽는 모든 문장 |
+
+`babysit`은 PR 상태 조회, 리뷰 스레드 대응, 머지 준비 중 요청받은
+범위를 맡습니다. `autopilot-stack`은 PR을 각각 검증한 뒤 돌려줍니다.
+실제 머지까지 맡길 때는 대상 PR과 머지 권한을 요청에 포함하면 됩니다.
+머지 직전에는 검증 당시의 head와 base가 그대로인지 확인합니다.
+
+Lauren Tan의 [pstack 플레이북 22개(c3464c11)](https://github.com/backnotprop/pstack/tree/c3464c11c60b1352d5e8f5f0428a3a6943837568/skills/poteto-mode/playbooks)를
+바탕으로 작성했습니다(MIT). 각 플레이북이 이 패키지 어디에 반영됐는지는
+[대응표 테스트](../tests/test_upstream_skill_disposition.py)에서 확인할 수 있습니다.
 
 ## 라우팅
 
@@ -102,7 +121,31 @@ $chann this endpoint got slow, find out why and fix it
 | 변경이나 계획 문서 설명 | `diff-summary`, `plan-summary`, `diff-viewer` | review |
 | 병렬로 돌릴 독립 조각 | `swarm` | fan-out |
 | 여러 마일스톤이나 무인 작업 | `long-task` | autonomous-run |
-| 커밋, 푸시, 배포, 병합, 충돌, 정리, 재설치 | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
+| 커밋, 푸시, 배포, 병합, 충돌, 정리, 재설치 | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | hillclimb | 한 지표를 반복 실험으로 개선 | 고정된 측정 조건과 시도별 기록 |
+| 한 지표를 여러 번 측정하며 개선 | 없음, 직접 진행 | hillclimb |
+| runtime-forensics | 실행 중인 프로세스 진단 | 직접 수집한 프로파일과 근거 |
+| 프로파일이나 트레이스를 수집해 실행 중인 문제 진단 | 없음, 직접 진행 | runtime-forensics |
+| trace-forensics | 저장된 트레이스나 프로파일 분석 | 캡처에 근거한 진단 |
+| 저장된 프로파일, 트레이스, 힙 스냅샷 진단 | 없음, 직접 진행 | trace-forensics |
+| visual-parity | 승인된 기준 화면을 마이그레이션 뒤에도 유지 | 재현 가능한 이미지 비교 |
+| 마이그레이션 전후 화면 일치 검증 | 없음, 직접 진행 | visual-parity |
+| eval | 스킬이나 에이전트 동작 평가 | 블라인드 채점과 관찰 근거 |
+| 스킬, 프롬프트, 모델, 에이전트 구성 평가 | 없음, 직접 진행 | eval |
+| autopilot | PR 대기열이나 의존 스택 운영 | 각 PR의 검증 결과 |
+| PR 대기열이나 스택의 독립 검증 | 없음, 직접 진행 | autopilot |
+| opening-a-pr | 요청받은 PR 열기 | 검토 가능한 PR |
+| 검증한 변경으로 PR 열기 | 없음, 직접 진행 | opening-a-pr |
+| babysit | PR 상태 확인 또는 머지 준비 | 충돌, 리뷰, CI 상태 |
+| 기존 PR 상태 확인 또는 머지 준비 | 없음, 직접 진행 | babysit |
+| 한 지표를 여러 번 측정하며 개선 | 없음, 직접 진행 | hillclimb |
+| 프로파일이나 트레이스를 수집해 실행 중인 문제 진단 | 없음, 직접 진행 | runtime-forensics |
+| 저장된 프로파일, 트레이스, 힙 스냅샷 진단 | 없음, 직접 진행 | trace-forensics |
+| 마이그레이션 전후 화면 일치 검증 | 없음, 직접 진행 | visual-parity |
+| 스킬, 프롬프트, 모델, 에이전트 구성 평가 | 없음, 직접 진행 | eval |
+| PR 대기열이나 스택의 독립 검증 | 없음, 직접 진행 | autopilot |
+| 검증한 변경으로 PR 열기 | 없음, 직접 진행 | opening-a-pr |
+| 기존 PR 상태 확인 또는 머지 준비 | 없음, 직접 진행 | babysit |
+| shipping |
 | 멈추기, 이어 하기, 따라잡기 | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | 문서와 글 | `gen-docs`, `unslop` | docs |
 | 스킬 작성, 수정, 교훈 정리 | `skill-forge`, `skill-audit`, `reflect` | authoring-a-skill |
@@ -116,7 +159,7 @@ chann-mode/
 ├── skills/chann/
 │   ├── SKILL.md                     # 첫 동작, 라우팅, 원칙 목록, 자율성, 위임, 증거, 답변
 │   ├── worker.md                    # 모든 하위 에이전트가 먼저 읽는 규칙
-│   ├── playbooks/<name>.md          # 플레이북 14개
+│   ├── playbooks/<name>.md          # 플레이북 22개
 │   ├── references/principles.md     # 원칙 27개와 각 원칙의 점검 질문
 │   ├── references/decision-trail.md # 길거나 무인으로 도는 작업의 결정 기록 형식
 │   ├── agents/openai.yaml

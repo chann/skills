@@ -11,6 +11,33 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PRINCIPLES = ROOT / "chann-mode" / "skills" / "chann" / "references" / "principles.md"
+PLAYBOOKS = PRINCIPLES.parent.parent / "playbooks"
+
+# Snapshot of skills/poteto-mode/playbooks at pstack c3464c11.
+UPSTREAM_PLAYBOOKS = {
+    "authoring-a-skill": "authoring-a-skill",
+    "autonomous-run": "autonomous-run",
+    "autopilot-full": "autopilot",
+    "autopilot-stack": "autopilot",
+    "babysit": "babysit",
+    "bug-fix": "bug-fix",
+    "eval": "eval",
+    "feature": "feature",
+    "hillclimb": "hillclimb",
+    "investigation": "investigation",
+    "multi-phase-plan": "plan",
+    "opening-a-pr": "opening-a-pr",
+    "pause-safely": "pause-and-pickup",
+    "perf-issue": "perf",
+    "prototype": "prototype",
+    "refactoring": "refactoring",
+    "runtime-forensics": "runtime-forensics",
+    "session-pickup": "pause-and-pickup",
+    "shipping": "shipping",
+    "trace-forensics": "trace-forensics",
+    "visual-parity": "visual-parity",
+    "worktree-cleanup": "shipping",
+}
 
 UPSTREAM = (
     "architect",
@@ -140,6 +167,11 @@ def principle_section(name: str) -> str:
 
 
 class UpstreamSkillDispositionTests(unittest.TestCase):
+    def test_every_upstream_playbook_maps_to_a_shipped_playbook(self) -> None:
+        self.assertEqual(22, len(UPSTREAM_PLAYBOOKS))
+        shipped = {path.stem for path in PLAYBOOKS.glob("*.md")}
+        self.assertEqual(set(), set(UPSTREAM_PLAYBOOKS.values()) - shipped)
+
     def test_the_pinned_list_has_58_names_and_one_disposition_each(self) -> None:
         self.assertEqual(58, len(UPSTREAM))
         self.assertEqual(len(UPSTREAM), len(set(UPSTREAM)))
