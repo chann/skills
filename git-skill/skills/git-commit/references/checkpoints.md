@@ -18,6 +18,9 @@ the push step plus `references/deploy.md`.
 | `push realtime` | Repeated commits and ordinary pushes to the same-named remote branch (create it on first push) | History rewrites, force pushes, unrelated changes, releases, local branch creation |
 | `deploy` | Repeated commits, ordinary pushes, and deployments to the documented target | All of the above, plus branch merges, release tags, or a different deployment target |
 
+`push realtime merge-main` runs every `push realtime` step, then
+`references/merge-main.md` once after the completion audit.
+
 Anything outside the authorized column needs its own explicit request.
 
 ## 1. Establish a safe baseline
@@ -43,7 +46,7 @@ git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true
   what remains unpushed, but do not fetch, pull, or push to reconcile it.
 - **`push realtime`:** record the attached branch name and the intended remote
   before editing. Use the requested remote, otherwise the configured push
-  remote (branch.pushRemote, remote.pushDefault, then the branch remote), or
+  remote (`branch.<name>.pushRemote`, `remote.pushDefault`, then the branch remote), or
   origin when unambiguous. Confirm the effective push URL is the intended
   repository. Use `refs/heads/<recorded-branch>` even when the branch tracks
   another ref. Fetch and compare that exact destination if it exists. Review

@@ -1,5 +1,5 @@
 {
   "name": "git-skill",
-  "description": "Git workflow skills — one git-commit workflow with commit, push, realtime checkpoint, per-checkpoint deployment, and history rewrite modes (aliases gcr, gcpr, gcpd), guarded merges into main, dev, or any branch, conflict resolution, and cleanup of merged branches and finished worktrees.",
-  "version": "1.0.0"
+  "description": "Git workflow skills — one git-commit workflow with commit, push, realtime checkpoint, final merge and push to main, per-checkpoint deployment, and history rewrite modes (aliases gcr, gcpr, gcprm, gcpd), guarded merges into main, dev, or any branch, conflict resolution, and cleanup of merged branches and finished worktrees.",
+  "version": "1.1.0"
 }

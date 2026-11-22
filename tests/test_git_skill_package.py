@@ -27,12 +27,13 @@ SELECTORS = (
     "git-commit",
     "gcr",
     "gcpr",
+    "gcprm",
     "gcpd",
     "git-merge",
     "git-resolve-conflicts",
     "git-cleanup",
 )
-ALIASES = {"gcr": "realtime", "gcpr": "push realtime", "gcpd": "deploy"}
+ALIASES = {"gcr": "realtime", "gcpr": "push realtime", "gcprm": "push realtime merge-main", "gcpd": "deploy"}
 REMOVED = (
     "git-commit-push",
     "git-commit-realtime",
@@ -134,7 +135,7 @@ class PackageShapeTests(unittest.TestCase):
     def test_plugin_manifest_is_the_next_major_version(self) -> None:
         metadata = json.loads(read(GIT_SKILL / ".claude-plugin" / "plugin.json"))
         self.assertEqual("git-skill", metadata["name"])
-        self.assertEqual("1.0.0", metadata["version"])
+        self.assertEqual("1.1.0", metadata["version"])
         for phrase in ("git-commit", "deployment", "conflict resolution", "worktrees"):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, metadata["description"])
@@ -153,7 +154,7 @@ class PackageShapeTests(unittest.TestCase):
 
 
 class GitCommitModeTests(unittest.TestCase):
-    def test_skill_publishes_the_six_row_mode_table(self) -> None:
+    def test_skill_publishes_the_seven_row_mode_table(self) -> None:
         text = read(COMMIT_SKILL)
         rows = re.findall(r"^\| `/git-commit[^`]*` \|", text, re.MULTILINE)
         self.assertEqual(
@@ -162,12 +163,13 @@ class GitCommitModeTests(unittest.TestCase):
                 "| `/git-commit push` |",
                 "| `/git-commit realtime` |",
                 "| `/git-commit push realtime` |",
+                "| `/git-commit push realtime merge-main` |",
                 "| `/git-commit deploy` |",
                 "| `/git-commit rewrite [range]` |",
             ],
             rows,
         )
-        for reference in ("references/checkpoints.md", "references/deploy.md", "references/rewrite.md"):
+        for reference in ("references/checkpoints.md", "references/merge-main.md", "references/deploy.md", "references/rewrite.md"):
             with self.subTest(reference=reference):
                 self.assertIn(reference, text)
                 self.assertTrue((COMMIT / reference).is_file())
@@ -208,7 +210,7 @@ class GitCommitModeTests(unittest.TestCase):
 
     def test_command_takes_the_mode_as_an_argument(self) -> None:
         command = read(COMMANDS / "git-commit.md")
-        self.assertIn('argument-hint: "[push | deploy] [realtime] | rewrite [range]"', command)
+        self.assertIn('argument-hint: "[push | deploy] [realtime] [merge-main] | rewrite [range]"', command)
         self.assertIn("**git-commit** skill", command)
         self.assertIn("$ARGUMENTS", command)
 
@@ -624,12 +626,12 @@ class RootDocsTests(unittest.TestCase):
                     self.assertIn(mode, text)
 
     def test_published_skill_count_matches_packaged_skills(self) -> None:
-        self.assertEqual(32, len(list(ROOT.glob("*/skills/*/SKILL.md"))))
+        self.assertEqual(33, len(list(ROOT.glob("*/skills/*/SKILL.md"))))
         expected_counts = {
-            ROOT / "README.md": "29 practical agent workflows and 32 installable Codex selectors",
-            ROOT / "README.ko.md": "29개의 실용적인 에이전트 워크플로와 32개의 설치 가능한 Codex selector",
-            ROOT / "USAGE.md": "29 canonical workflows and 32 installable Codex selectors",
-            ROOT / "ARCHITECTURE.md": "expose 29 canonical workflows through 32 installable Codex selectors",
+            ROOT / "README.md": "29 practical agent workflows and 33 installable Codex selectors",
+            ROOT / "README.ko.md": "29개의 실용적인 에이전트 워크플로와 33개의 설치 가능한 Codex selector",
+            ROOT / "USAGE.md": "29 canonical workflows and 33 installable Codex selectors",
+            ROOT / "ARCHITECTURE.md": "expose 29 canonical workflows through 33 installable Codex selectors",
         }
         for path, phrase in expected_counts.items():
             with self.subTest(path=path.relative_to(ROOT)):

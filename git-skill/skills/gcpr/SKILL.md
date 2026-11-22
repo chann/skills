@@ -11,6 +11,8 @@ A selector alias for `git-commit` with the mode fixed to `push realtime`.
 1. Before inspecting or changing any Git repository, locate
    the installed `git-commit` skill and read its `SKILL.md` completely, together
    with every reference file its `push realtime` mode loads.
+   Check that the installed version ships `scripts/push-checkpoint.sh`. If it
+   does not, report that `git-commit` needs updating before you start.
 2. Run `git-commit` in mode `push realtime`. Treat the rest of the user's text as the
    task description for that run. Mode words in that text never move the run to
    a farther-reaching mode; say so and name the selector that would.

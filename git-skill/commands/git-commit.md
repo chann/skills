@@ -1,10 +1,10 @@
 ---
 description: Commit changes as Conventional Commits — once, with push, as verified checkpoints while working, with per-checkpoint deployment, or rewrite messy commit subjects
-argument-hint: "[push | deploy] [realtime] | rewrite [range]"
+argument-hint: "[push | deploy] [realtime] [merge-main] | rewrite [range]"
 ---
 
 Use the **git-commit** skill. `$ARGUMENTS` selects the mode: none, `push`,
-`realtime`, `push realtime`, `deploy`, or `rewrite [range]`.
+`realtime`, `push realtime`, `push realtime merge-main`, `deploy`, or `rewrite [range]`.
 
 Resolve and state the mode before any Git command, taking the less far-reaching
 mode when the request is ambiguous; never infer `push` or `deploy` from silence.

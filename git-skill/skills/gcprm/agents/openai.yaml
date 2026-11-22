@@ -1,0 +1,4 @@
+interface:
+  display_name: "GCPRM"
+  short_description: "Push verified checkpoints, then merge into main, verify, and push main"
+  default_prompt: "Use $gcprm to push verified feature checkpoints, then merge into main, verify, and push main while keeping the feature branch."

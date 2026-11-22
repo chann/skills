@@ -41,6 +41,17 @@
         "The upstream parity proof still runs after each push.",
         "The next checkpoint does not begin before the previous push is confirmed."
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "$gcpr finish on feature/export. Its upstream is origin/main.",
+      "expected_output": "Commits on feature/export and verifies the same commit on remote feature/export before proceeding.",
+      "files": [],
+      "assertions": [
+        "The source name is captured before work starts.",
+        "An explicit refspec publishes the reviewed SHA on refs/heads/feature/export.",
+        "origin/main stays unchanged. A local commit or a matching stale tracking ref is insufficient."
+      ]
     }
   ]
 }
