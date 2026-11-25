@@ -67,12 +67,20 @@ npm --prefix website run build
 ## GitHub Pages
 
 ```bash
-npm --prefix website run build
+npm --prefix website run deploy
 ```
 
-`main` 브랜치에 푸시하면
-[`pages.yml`](../.github/workflows/pages.yml)이 카탈로그 일치 여부와 TypeScript를
-검사하고 `website/dist/`을 빌드한 뒤 GitHub Pages에 배포합니다.
+GitHub Actions 없이 로컬에서 배포합니다. `main`을 푸시한 깨끗한 작업 트리에서
+위 명령을 실행하면 [`deploy.sh`](scripts/deploy.sh)가 의존성을 새로 설치하고
+검사와 빌드를 거친 뒤, `website/dist/` 내용을 `gh-pages` 브랜치의 다음 커밋으로
+푸시합니다. GitHub Pages는 그 브랜치를 그대로 제공합니다. 커밋하지 않은 변경이
+있거나 `HEAD`가 `origin/main`과 다르면 배포하지 않고 멈춥니다.
+
+반영 여부는 다음 명령으로 확인합니다.
+
+```bash
+gh api repos/chann/skills/pages/builds/latest --jq '{status, commit}'
+```
 
 이 저장소는 프로젝트 사이트이므로 Vite 기본 경로를 `/skills/`로 설정합니다.
 다른 경로에 배포하려면 [`vite.config.ts`](vite.config.ts)의 `base`도 함께

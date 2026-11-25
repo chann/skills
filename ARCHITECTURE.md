@@ -79,7 +79,7 @@ Every plugin shares the same layout:
 
 ### Supporting files
 
-- **`website/`** — the interactive catalog. `website/src/data/skills.ts` and four locale files under `website/src/i18n/content/` carry every workflow; `.github/workflows/pages.yml` deploys the built bundle to GitHub Pages on a push to `main`.
+- **`website/`** — the interactive catalog. `website/src/data/skills.ts` and four locale files under `website/src/i18n/content/` carry every workflow; `website/scripts/deploy.sh` builds the bundle locally and pushes it to the `gh-pages` branch that GitHub Pages serves.
 - **`samples/code-review/`** — intentionally vulnerable fixtures (`go-api`, `python-auth`, `react-dashboard`) used to demo the reviewer. Kept outside the plugin folders so they never ship in a published plugin.
 - **`tests/`** — unittest/pytest suite: per-plugin package tests plus parser, renderer, CLI, interaction-contract, and diff-viewer fixture tests.
 - **`docs/`** — design and planning notes under `docs/superpowers/`.
@@ -382,7 +382,6 @@ skills/
 ├── samples/code-review/                  # intentionally vulnerable demo fixtures (outside plugin artifacts)
 ├── tests/                                # pytest: package tests + diff_viewer/, diff_summary/, plan_summary/, swarm/ unit tests
 ├── docs/                                 # design / planning notes
-├── .github/workflows/pages.yml           # GitHub Pages deploy
 ├── AGENTS.md
 ├── CLAUDE.md
 ├── VERSION                               # head.yymmdd.patch
