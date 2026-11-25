@@ -343,7 +343,7 @@
     "git-commit": {
       "summary": "将变更整理成符合 Conventional Commits 规范的提交。可以一次性提交、按已验证的检查点提交、部署，或在本地改写提交标题。",
       "whenToUse": "用 gcpr 将每个通过验证的检查点推送到同名远程源分支。如果还要在工作完成后将源分支合入 main，请用 gcprm。",
-      "result": "gcprm 在合入后的 main 上运行检查，通过后推送 main，并保留源分支。gcr 将检查点留在本地，gcpd 按仓库文档中的配置部署每个检查点。"
+      "result": "gcprm 在合入后的 main 上运行检查，通过后推送 main，并保留源分支。gcr 将检查点留在本地，gcprd 在推送 main 之后按仓库文档中的配置部署一次。"
     },
     "git-merge": {
       "summary": "把当前分支合并到main、dev或你指定的本地分支，并在源分支不是受保护分支时删除已合并的源分支。",

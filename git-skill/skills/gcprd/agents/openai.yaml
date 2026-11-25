@@ -1,0 +1,4 @@
+interface:
+  display_name: "GCPRD"
+  short_description: "Push verified checkpoints, merge into main, push, and deploy"
+  default_prompt: "Use $gcprd to push verified checkpoints to the working branch, then merge into main, verify, push, and deploy it using the repository's documented deployment settings."

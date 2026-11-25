@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use when the user wants changes committed as Conventional Commits, pushed, committed or pushed or deployed at verified checkpoints while work continues, or wants messy commit subjects rewritten, including "commit my changes", "커밋해줘", "커밋 분리해줘", "commit and push", "커밋하고 푸시해줘", "commit as you work", "commit and push as you work", "작업 중간중간 커밋 푸시", "commit push and deploy as you work", "의미 있는 단위마다 배포", "rewrite these commit messages", "커밋 메시지 다시 써줘", "/git-commit", or "$git-commit". Modes include push realtime merge-main for a final verified main merge. Produces verified Conventional Commits staged by explicit path, ordinary pushes, and deployments only through documented repository settings. The explicit-only aliases are gcr, gcpr, gcprm, and gcpd. For merging a branch use git-merge; for a stopped merge or rebase use git-resolve-conflicts.
+description: Use when the user wants changes committed as Conventional Commits, pushed, committed or pushed at verified checkpoints while work continues and optionally merged into main and deployed at the end, or wants messy commit subjects rewritten, including "commit my changes", "커밋해줘", "커밋 분리해줘", "commit and push", "커밋하고 푸시해줘", "commit as you work", "commit and push as you work", "작업 중간중간 커밋 푸시", "commit push and deploy as you work", "끝나면 main에 머지하고 배포", "rewrite these commit messages", "커밋 메시지 다시 써줘", "/git-commit", or "$git-commit". Modes include push realtime merge-main for a final verified merge into main or master, and deploy, which adds one deployment of that pushed branch. Produces verified Conventional Commits staged by explicit path, ordinary pushes, and deployments only through documented repository settings. The explicit-only aliases are gcr, gcpr, gcprm, and gcprd. For merging a branch use git-merge; for a stopped merge or rebase use git-resolve-conflicts.
 ---
 
 # Git Commit
@@ -17,23 +17,27 @@ staged by explicit path; the modes differ only in how far the result travels.
 | `/git-commit push` | The same, then an ordinary `git push` (never force) | this file |
 | `/git-commit realtime` | Verified, outcome-based checkpoint commits while the work continues; every checkpoint stays local | `references/checkpoints.md` |
 | `/git-commit push realtime` | Each checkpoint commit is pushed immediately and its upstream parity proven | `references/checkpoints.md` |
-| `/git-commit push realtime merge-main` | Push each checkpoint to the source branch, then merge, test and push main once at completion | `references/checkpoints.md`, `references/merge-main.md` |
-| `/git-commit deploy` | Each checkpoint is committed, pushed, deployed through the repository's documented settings, and confirmed before the next one | `references/checkpoints.md`, `references/deploy.md` |
+| `/git-commit push realtime merge-main` | Push each checkpoint to the source branch, then merge, test and push the default branch (`main` or `master`) once at completion | `references/checkpoints.md`, `references/merge-main.md` |
+| `/git-commit deploy` | Everything `push realtime merge-main` does, then deploy the pushed default branch once through the repository's documented settings and confirm it | `references/checkpoints.md`, `references/merge-main.md`, `references/deploy.md` |
 | `/git-commit rewrite [range]` | Rewrite recent non-Conventional commit subjects locally | `references/rewrite.md` |
 
 Read the mode from the first argument words (`push realtime` and
-`realtime push` are the same; `deploy` always implies push and realtime), or from
+`realtime push` are the same; `deploy` always implies push, realtime, and
+merge-main), or from
 the same intent in natural language: "push"/"푸시" adds push, "as you work",
-"중간중간", or "의미 있는 단위마다" adds realtime, "deploy"/"배포" selects deploy,
+"중간중간", or "의미 있는 단위마다" adds realtime, "merge into main"/"main에 머지"
+adds merge-main, "deploy"/"배포" selects deploy,
 and "rewrite"/"다시 써줘" about existing commit messages selects rewrite.
 
-- Select the final main integration only for the full mode, its `gcprm` alias,
-  or an explicit request to push checkpoints and finish by merging and pushing main.
-  `gcpr` fixes its mode to source-branch publication.
+- Select the final main integration only for `push realtime merge-main`, its
+  `gcprm` alias, `deploy`, its `gcprd` alias, or an explicit request to push
+  checkpoints and finish by merging and pushing main. `gcpr` fixes its mode to
+  source-branch publication. `deploy` never deploys a checkpoint; it deploys the
+  pushed default branch once, after the merge.
 - State the mode and the reason in one line before the first Git command:
   `mode: push realtime, because the request says "commit and push as you work"`.
 - When the request is ambiguous, take the less far-reaching mode
-  (commit < push < deploy; once < realtime) and say which one you took.
+  (commit < push < merge-main < deploy; once < realtime) and say which one you took.
 - `push` and `deploy` are never inferred from silence. A repository that
   deploys automatically on push does not turn a push request into `deploy`, and
   `gcpr` is never a deployment request.
@@ -108,7 +112,7 @@ BREAKING CHANGE: email service is now required at boot
 ### Push step (mode `push`, and every push in the checkpoint modes)
 
 After the commits succeed, resolve the single remote and full branch ref named
-by the upstream. For both `push realtime` modes, use the recorded source branch on the
+by the upstream. For `push realtime`, `push realtime merge-main`, and `deploy`, use the recorded source branch on the
 intended remote and execute the checkpoint helper in `references/checkpoints.md`.
 For a new upstream, state the proposed remote and branch
 before its first push. Inspect effective push URLs without exposing embedded
@@ -158,4 +162,4 @@ or `--force-with-lease`; ask the user how to reconcile the branch.
   is safe to commit and state its risk in one line first. Keep real credentials
   out of Git history.
 
-**Reply:** the resolved mode and why; each commit's short hash and subject; the checks run with their results; in push modes the push result and upstream parity (`0 0`); in merge-main mode the source and main refs, their remote SHAs and merged-tree checks; in deploy mode each checkpoint's target and deployment evidence with a `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE` verdict; any excluded secret paths or preserved pre-existing changes; and anything left unpushed or unverified.
+**Reply:** the resolved mode and why; each commit's short hash and subject; the checks run with their results; in push modes the push result and upstream parity (`0 0`); in merge-main and deploy modes the source and default-branch refs, their remote SHAs and merged-tree checks; in deploy mode the target and deployment evidence for the pushed default-branch SHA with a `VERIFIED`, `NOT VERIFIED`, or `INCONCLUSIVE` verdict; any excluded secret paths or preserved pre-existing changes; and anything left unpushed or unverified.

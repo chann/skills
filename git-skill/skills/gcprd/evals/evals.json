@@ -1,0 +1,68 @@
+{
+  "skill_name": "gcprd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/gcprd implement cursor pagination on feature/pagination. AGENTS.md says pushes to main deploy through the pages workflow and names the health check.",
+      "expected_output": "Reads the installed git-commit skill completely and runs it in mode deploy: checkpoints go to feature/pagination, then main is merged, verified, pushed, and its deployment confirmed.",
+      "files": [],
+      "assertions": [
+        "The installed git-commit skill is read completely, including references/checkpoints.md, references/merge-main.md, and references/deploy.md, before any Git command or deployment.",
+        "The documented target and route are resolved before the first checkpoint is pushed.",
+        "No checkpoint pushed to feature/pagination is deployed on its own.",
+        "The deployment is tied to the pushed main SHA, after the merged-tree checks pass."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$gcprd on this refactor. The git-commit skill is not installed in this environment.",
+      "expected_output": "Stops before any Git command and reports that git-commit must also be installed.",
+      "files": [],
+      "assertions": [
+        "No Git repository is inspected or changed once git-commit is found to be missing.",
+        "The report names git-commit as the missing dependency.",
+        "The workflow is not rebuilt from memory and no other alias is used instead."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "중간중간 커밋 푸시하고 끝나면 main에 머지해서 배포해줘.",
+      "expected_output": "Recognizes a natural-language request rather than the alias selector and uses git-commit directly in the mode the words select.",
+      "files": [],
+      "assertions": [
+        "The selector-only gcprd alias is not chosen from phrasing alone.",
+        "git-commit states the resolved mode before its first Git command."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "$gcprd the merged main was pushed and the deployment is still queued. Can the task be reported complete now?",
+      "expected_output": "Keeps the deploy confirmation gate: a queued deployment is INCONCLUSIVE, so the task is not complete.",
+      "files": [],
+      "assertions": [
+        "Push success alone does not complete the run.",
+        "The report labels the deployment INCONCLUSIVE until a terminal status and the health check confirm it."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/gcprd fix the login redirect. The repository's default branch is master, and there is no main.",
+      "expected_output": "Resolves master as the default branch, merges the verified source into master, pushes it, and deploys that commit.",
+      "files": [],
+      "assertions": [
+        "The final integration targets master; the run does not stop for a missing main.",
+        "The deployment evidence names the pushed master SHA."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "$gcprd add the export button. AGENTS.md says only the release branch deploys.",
+      "expected_output": "Stops before the first checkpoint and asks, because the documented route deploys from a branch other than the default branch.",
+      "files": [],
+      "assertions": [
+        "No merge into release is attempted.",
+        "The question names the documented deploy branch and the resolved default branch."
+      ]
+    }
+  ]
+}

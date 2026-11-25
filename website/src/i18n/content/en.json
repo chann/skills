@@ -343,7 +343,7 @@
     "git-commit": {
       "summary": "Groups changes into Conventional Commits. Choose a one-time commit, verified checkpoints, deployment, or a local subject rewrite.",
       "whenToUse": "Use gcpr to push each verified checkpoint to the same-name remote source branch. Use gcprm to also integrate the source into main when the work is complete.",
-      "result": "gcprm runs checks on the integrated main, pushes main if they pass, and keeps the source branch. Use gcr for local checkpoints or gcpd to deploy each checkpoint through documented repository settings."
+      "result": "gcprm runs checks on the integrated main, pushes main if they pass, and keeps the source branch. Use gcr for local checkpoints or gcprd to also deploy the pushed main once through documented repository settings."
     },
     "git-merge": {
       "summary": "Merges the current branch into main, dev, or a local branch you name, and deletes the merged source branch unless it is protected.",

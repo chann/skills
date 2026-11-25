@@ -57,7 +57,7 @@ Eight stages, one row per workflow. Each name links to its plugin README.
 | build | **[build-reinstall](build-reinstall/README.md)** | Build a local project, reinstall the result with project-owned commands, and verify the installed copy |
 | verify | **[interrogate](interrogate/README.md)** | Try to break a diff and report severity-tagged findings, each with its proof level, as Markdown plus bilingual HTML |
 | verify | **[blast-radius](interrogate/README.md)** | Show what a change could break outside its own diff, and prove the fact its safety rests on |
-| ship | **[git-commit](git-skill/README.md)** | Conventional Commits once, with a push, as verified checkpoints, with final integration into `main`, with per-checkpoint deploys, or a subject rewrite; aliases `gcr`, `gcpr`, `gcprm`, `gcpd` |
+| ship | **[git-commit](git-skill/README.md)** | Conventional Commits once, with a push, as verified checkpoints, with final integration into `main`, with that integration plus one deployment, or a subject rewrite; aliases `gcr`, `gcpr`, `gcprm`, `gcprd` |
 | ship | **[git-merge](git-skill/README.md)** | Merge the current branch into `main`, `dev`, or another local branch, then delete the source with `git branch -d` unless it is protected |
 | ship | **[git-resolve-conflicts](git-skill/README.md)** | Finish a stopped merge, rebase, cherry-pick, or revert without aborting it |
 | ship | **[git-cleanup](git-skill/README.md)** | Remove finished worktrees and delete local branches already merged into a protected branch |
@@ -116,14 +116,14 @@ paths come from the installer's
 which can change between releases; `npx skills --help` shows the current set.
 
 Install only what you need with `--skill <name>`. Every skill works when
-installed alone; the thin aliases `gcr`, `gcpr`, `gcprm`, and `gcpd` are the one
+installed alone; the thin aliases `gcr`, `gcpr`, `gcprm`, and `gcprd` are the one
 exception and need `git-commit` beside them.
 
 - Entry point only: `npx skills add chann/skills --skill chann`
 - Understand a codebase: `npx skills add chann/skills --skill how --skill why`
 - Review a change: `npx skills add chann/skills --skill interrogate --skill blast-radius`
 - Explain a change: `npx skills add chann/skills --skill diff-summary --skill diff-viewer`
-- Git workflow with the short aliases: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcprm --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
+- Git workflow with the short aliases: `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcprm --skill gcprd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup`
 - Handoff only: `npx skills add chann/skills --skill handoff`
 - Subagents and competing attempts: `npx skills add chann/skills --skill swarm --skill arena`
 - Past work and catch-up: `npx skills add chann/skills --skill recall --skill catchup`
@@ -271,13 +271,13 @@ and counted. The review reports; it never applies fixes.
 | `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | Commit each verified outcome while working; every checkpoint stays local |
 | `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | Commit each verified checkpoint and push it to the same-name remote source branch |
 | `/git-commit push realtime merge-main` · `/gcprm` | `$git-commit push realtime merge-main` · `$gcprm` | Push checkpoints the same way. At completion, integrate the source into `main`, run checks, and push `main`. Keep the source branch. |
-| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
+| `/git-commit deploy` · `/gcprd` | `$git-commit deploy` · `$gcprd` | Push checkpoints the same way, merge into `main` (or `master`), verify and push it, then deploy that commit once and confirm it using documented repository settings |
 | `/git-commit rewrite [range] [force]` | `$git-commit rewrite [range] [force]` | Rewrite recent non-conformant commit subjects |
 | `/git-merge [main \| dev \| <branch>]` | `$git-merge [main \| dev \| <branch>]` | Merge the current branch into the target, then delete the source unless protected |
 | `/git-resolve-conflicts` | `$git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it |
 | `/git-cleanup` | `$git-cleanup` | Remove finished worktrees and delete local branches already merged into a protected branch |
 
-`/gcr`, `/gcpr`, `/gcprm`, `/gcpd` and their `$` forms are explicit-only aliases of the
+`/gcr`, `/gcpr`, `/gcprm`, `/gcprd` and their `$` forms are explicit-only aliases of the
 four checkpoint modes. They need `git-commit` installed and refuse without it.
 
 ### long-task → [details](long-task/README.md)
@@ -322,7 +322,8 @@ applies to the `$name` selectors in Codex.
 | `git-commit-push` | `git-commit push` |
 | `git-commit-realtime` (`gcr`) | `git-commit realtime` (`gcr`) |
 | `git-commit-push-realtime` (`gcpr`) | `git-commit push realtime` (`gcpr`) |
-| `git-commit-push-deploy` (`gcpd`) | `git-commit deploy` (`gcpd`) |
+| `git-commit-push-deploy` (`gcpd`) | `git-commit deploy` (`gcprd`) |
+| `gcpd` | `gcprd` (deploys once, after the final merge into `main`) |
 | `git-commit-rewrite` | `git-commit rewrite` |
 | `git-merge-to-main`, `git-merge-to-dev` | `git-merge main`, `git-merge dev` |
 | `git-branch-cleanup` | `git-cleanup` |
@@ -344,7 +345,7 @@ npx skills remove \
   plan-summary-md plan-summary-quiz \
   human-friendly-writing \
   git-commit-push git-commit-realtime git-commit-push-realtime \
-  git-commit-push-deploy git-commit-rewrite \
+  git-commit-push-deploy git-commit-rewrite gcpd \
   git-merge-to-main git-merge-to-dev git-branch-cleanup \
   gen-frontend-handoff gen-backend-handoff gen-session-handoff \
   all-subagents work-summary \

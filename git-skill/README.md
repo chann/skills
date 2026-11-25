@@ -4,14 +4,14 @@
 
 Git workflow skills with conservative safety rules. One `git-commit` workflow
 turns changes into [Conventional Commits](https://www.conventionalcommits.org/)
-once, with a push, as verified checkpoints while you work (local, pushed, or
-deployed), or rewrites messy commit subjects. `git-merge` merges into `main`,
+once, with a push, as verified checkpoints while you work (local, pushed,
+merged into `main`, or merged and deployed), or rewrites messy commit subjects. `git-merge` merges into `main`,
 `dev`, or any local branch; `git-resolve-conflicts` finishes a stopped merge or
 rebase; `git-cleanup` removes finished worktrees and merged branches.
 
 ## What it does
 
-- **Commit modes** — `git-commit` groups staged and unstaged changes into one Conventional Commit per logical unit; `push` adds an ordinary push; `realtime` commits each verified outcome while work continues; `push realtime` pushes each checkpoint to the same-name remote source branch; `push realtime merge-main` also integrates the source into `main` at completion, checks the result, and pushes `main`; `deploy` also deploys each checkpoint through the settings already documented in `AGENTS.md` and confirms it before the next one; `rewrite` fixes non-conformant subjects
+- **Commit modes** — `git-commit` groups staged and unstaged changes into one Conventional Commit per logical unit; `push` adds an ordinary push; `realtime` commits each verified outcome while work continues; `push realtime` pushes each checkpoint to the same-name remote source branch; `push realtime merge-main` also integrates the source into `main` (or `master`) at completion, checks the result, and pushes it; `deploy` does all of that, then deploys the pushed default branch once through the settings already documented in `AGENTS.md` and confirms it; `rewrite` fixes non-conformant subjects
 - Stages explicit paths only — never `git add .`
 - Excludes suspected secret files (`.env*`, `*_rsa`, `*.pem`, ...), except the exact basename `.env.example`
 - Rewrites commit subjects with `git filter-branch`, keeping each original body; published history can be rewritten on a new local branch
@@ -29,7 +29,7 @@ npx skills add -y -g chann/skills \
   --skill gcr \
   --skill gcpr \
   --skill gcprm \
-  --skill gcpd \
+  --skill gcprd \
   --skill git-merge \
   --skill git-resolve-conflicts \
   --skill git-cleanup
@@ -43,7 +43,7 @@ npx skills add chann/skills \
   --skill gcr \
   --skill gcpr \
   --skill gcprm \
-  --skill gcpd \
+  --skill gcprd \
   --skill git-merge \
   --skill git-resolve-conflicts \
   --skill git-cleanup
@@ -75,13 +75,13 @@ invocation uses `/name` in Claude Code and `$name` in Codex.
 | `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | Commit each verified outcome while working; every checkpoint stays local |
 | `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | Commit each verified checkpoint and push it to the same-name remote source branch |
 | `/git-commit push realtime merge-main` · `/gcprm` | `$git-commit push realtime merge-main` · `$gcprm` | Push checkpoints the same way. At completion, integrate the source into `main`, run checks, and push `main`. Keep the source branch. |
-| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | Commit, push, deploy, and confirm each outcome using documented repository settings |
+| `/git-commit deploy` · `/gcprd` | `$git-commit deploy` · `$gcprd` | Push checkpoints the same way, merge into `main` (or `master`), verify and push it, then deploy that commit once and confirm it using documented repository settings |
 | `/git-commit rewrite [range]` | `$git-commit rewrite [range]` | Rewrite recent non-conformant commit subjects |
 | `/git-merge [main \| dev \| <branch>]` | `$git-merge` | Merge the current branch into the target, then delete the source unless protected |
 | `/git-resolve-conflicts` | `$git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert without aborting it |
 | `/git-cleanup` | `$git-cleanup` | Remove finished worktrees and delete local branches already merged into a protected branch |
 
-`gcr`, `gcpr`, `gcprm`, and `gcpd` are explicit-only aliases: they never start from
+`gcr`, `gcpr`, `gcprm`, and `gcprd` are explicit-only aliases: they never start from
 natural language, and they run the installed `git-commit` with a fixed mode.
 
 **Examples:**
@@ -93,7 +93,7 @@ natural language, and they run the installed `git-commit` with a fixed mode.
 > keep committing and pushing meaningful checkpoints as you work
 > $gcpr
 > $gcprm
-> 의미 있는 단위마다 배포해줘
+> 끝나면 main에 머지하고 배포해줘
 > /git-commit rewrite HEAD~5
 > dev에 머지해줘
 > 머지된 브랜치랑 끝난 워크트리 정리해줘
@@ -106,7 +106,8 @@ natural language, and they run the installed `git-commit` with a fixed mode.
 | `/git-commit-push` | `/git-commit push` |
 | `/git-commit-realtime` | `/git-commit realtime` or `/gcr` |
 | `/git-commit-push-realtime` | `/git-commit push realtime` or `/gcpr` |
-| `/git-commit-push-deploy` | `/git-commit deploy` or `/gcpd` |
+| `/git-commit-push-deploy` | `/git-commit deploy` or `/gcprd` |
+| `/gcpd` | `/gcprd` (deploys once, after the final merge into `main`) |
 | `/git-commit-rewrite` | `/git-commit rewrite` |
 | `/git-merge-to-main` | `/git-merge main` |
 | `/git-merge-to-dev` | `/git-merge dev` |
@@ -128,12 +129,13 @@ checkpoints, never time- or file-count-based ones, verify each with the
 narrowest relevant checks plus `git diff --check`, and commit it.
 `realtime` keeps every checkpoint local. `push realtime` pushes each checkpoint
 to the same-name remote source branch and verifies the remote tip.
-`push realtime merge-main` adds a final integration into `main`, verifies the
-result, pushes `main`, and retains the source branch. `deploy` resolves the target,
-route, source, and confirmation method from the repository's documented settings
-before the first checkpoint, deploys the exact pushed revision, and does not
-start the next outcome until the deployment and required health checks are
-confirmed. Each run ends with a full-scope completion audit.
+`push realtime merge-main` adds a final integration into the default branch
+(`main` or `master`), verifies the result, pushes it, and retains the source
+branch. `deploy` resolves the target, route, source, and confirmation method
+from the repository's documented settings before the first checkpoint, runs
+every `push realtime merge-main` step, then deploys the pushed default-branch
+commit once and confirms the deployment and required health checks.
+Checkpoints are never deployed on their own. Each run ends with a full-scope completion audit.
 
 **Rewrite** checks the exact range, requires a clean tree and attached HEAD,
 and proposes subjects while preserving the bodies and ticket references.
@@ -175,7 +177,7 @@ The skills **never**:
 - Force-push in any mode
 - Commit suspected secret files (`.env*` except the exact basename `.env.example`, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`) without explicit override
 - Commit or push a knowingly broken, time-based, or placeholder checkpoint
-- Deploy to a target the repository does not document, or report a checkpoint deployed before its deployment is confirmed
+- Deploy to a target the repository does not document, deploy a checkpoint before the final merge, or report a deployment before it is confirmed
 - Rewrite a published branch in place, use `git filter-branch --root`, or drop ticket references
 - Use `git branch -D` or `git worktree remove --force`
 - Auto-resolve conflicts or delete remote branches
@@ -195,7 +197,7 @@ git-skill/
     │   │   ├── deploy.md        # documented settings, deploy route, confirmation gate
     │   │   └── rewrite.md       # local history rewrite
     │   └── scripts/rewrite_msg.py
-    ├── gcr/ · gcpr/ · gcprm/ · gcpd/     # explicit-only aliases with a fixed mode
+    ├── gcr/ · gcpr/ · gcprm/ · gcprd/     # explicit-only aliases with a fixed mode
     ├── git-merge/
     ├── git-resolve-conflicts/
     └── git-cleanup/

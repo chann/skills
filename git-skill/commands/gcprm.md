@@ -11,5 +11,6 @@ report the required installation or update. Keep the mode fixed and follow
 every Git and verification rule in the canonical workflow.
 
 Push each verified checkpoint to the same-named remote feature branch.
-After the task finishes, merge into `main`, verify the merged tree, and push
-`main`. Retain the feature branch.
+After the task finishes, merge into the default branch (`main` or `master`),
+verify the merged tree, and push it. Retain the feature branch. Never deploy;
+`/gcprd` adds the deployment.

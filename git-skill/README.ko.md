@@ -2,11 +2,11 @@
 
 [English](README.md) · [← 메인으로](../README.ko.md)
 
-보수적인 안전 규칙을 지키는 Git 작업 스킬 모음입니다. `git-commit` 하나로 변경 사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 한 번에 커밋하거나, 커밋 후 푸시하거나, 작업하는 동안 검증한 단위마다 커밋(로컬 유지, 푸시, 작업 후 main 반영, 배포까지)하거나, 형식에 맞지 않는 커밋 제목을 다시 씁니다. `git-merge`는 `main`, `dev` 또는 원하는 로컬 브랜치로 머지하고, `git-resolve-conflicts`는 멈춘 머지나 rebase를 마무리하며, `git-cleanup`은 끝난 워크트리와 머지된 브랜치를 정리합니다.
+보수적인 안전 규칙을 지키는 Git 작업 스킬 모음입니다. `git-commit` 하나로 변경 사항을 [Conventional Commits](https://www.conventionalcommits.org/) 단위로 한 번에 커밋하거나, 커밋 후 푸시하거나, 작업하는 동안 검증한 단위마다 커밋(로컬 유지, 푸시, 작업 후 main 반영, main 반영 후 배포까지)하거나, 형식에 맞지 않는 커밋 제목을 다시 씁니다. `git-merge`는 `main`, `dev` 또는 원하는 로컬 브랜치로 머지하고, `git-resolve-conflicts`는 멈춘 머지나 rebase를 마무리하며, `git-cleanup`은 끝난 워크트리와 머지된 브랜치를 정리합니다.
 
 ## 주요 기능
 
-- **커밋 모드** — `git-commit`은 스테이징 여부와 관계없이 변경을 의미 단위로 묶어 단위마다 Conventional Commit을 하나씩 만듭니다. `push`는 일반 푸시를 더하고, `realtime`은 작업하는 동안 검증된 결과마다 커밋하며, `push realtime`은 체크포인트마다 같은 이름의 원격 소스 브랜치에 푸시합니다. `push realtime merge-main`은 작업이 끝나면 소스를 `main`에 합치고 검사한 뒤 `main`을 푸시합니다. `deploy`는 `AGENTS.md`에 이미 적힌 배포 설정으로 체크포인트마다 배포하고, 배포가 확인된 뒤에 다음 단위로 넘어갑니다. `rewrite`는 형식에 맞지 않는 제목을 고칩니다
+- **커밋 모드** — `git-commit`은 스테이징 여부와 관계없이 변경을 의미 단위로 묶어 단위마다 Conventional Commit을 하나씩 만듭니다. `push`는 일반 푸시를 더하고, `realtime`은 작업하는 동안 검증된 결과마다 커밋하며, `push realtime`은 체크포인트마다 같은 이름의 원격 소스 브랜치에 푸시합니다. `push realtime merge-main`은 작업이 끝나면 소스를 `main`에 합치고 검사한 뒤 `main`을 푸시합니다. `deploy`는 여기까지 모두 한 뒤, `AGENTS.md`에 이미 적힌 배포 설정으로 푸시한 기본 브랜치(`main` 또는 `master`)를 한 번 배포하고 확인합니다. `rewrite`는 형식에 맞지 않는 제목을 고칩니다
 - 스테이징은 항상 경로를 직접 지정합니다. `git add .`은 쓰지 않습니다
 - `.env*`, `*_rsa`, `*.pem` 등 비밀 정보로 보이는 파일은 기본으로 제외하고 경고합니다. 정확한 파일명 `.env.example`은 예외입니다
 - `git filter-branch`로 커밋 제목만 다시 쓰고 본문은 그대로 둡니다. 이미 푸시한 이력은 새 로컬 브랜치에서만 고칠 수 있습니다
@@ -24,7 +24,7 @@ npx skills add -y -g chann/skills \
   --skill gcr \
   --skill gcpr \
   --skill gcprm \
-  --skill gcpd \
+  --skill gcprd \
   --skill git-merge \
   --skill git-resolve-conflicts \
   --skill git-cleanup
@@ -38,7 +38,7 @@ npx skills add chann/skills \
   --skill gcr \
   --skill gcpr \
   --skill gcprm \
-  --skill gcpd \
+  --skill gcprd \
   --skill git-merge \
   --skill git-resolve-conflicts \
   --skill git-cleanup
@@ -68,13 +68,13 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 | `/git-commit realtime` · `/gcr` | `$git-commit realtime` · `$gcr` | 작업하는 동안 검증된 결과마다 커밋하고 모두 로컬에 유지 |
 | `/git-commit push realtime` · `/gcpr` | `$git-commit push realtime` · `$gcpr` | 검증한 체크포인트마다 커밋하고 같은 이름의 원격 소스 브랜치에 푸시 |
 | `/git-commit push realtime merge-main` · `/gcprm` | `$git-commit push realtime merge-main` · `$gcprm` | 같은 방식으로 체크포인트를 푸시하고, 작업이 끝나면 소스 브랜치를 `main`에 합칩니다. 검사를 통과하면 `main`을 푸시하고 소스 브랜치는 유지합니다. |
-| `/git-commit deploy` · `/gcpd` | `$git-commit deploy` · `$gcpd` | 저장소에 적힌 설정으로 결과마다 커밋·푸시·배포하고 배포를 확인 |
+| `/git-commit deploy` · `/gcprd` | `$git-commit deploy` · `$gcprd` | 같은 방식으로 체크포인트를 푸시하고 `main`(또는 `master`)에 머지·검사·푸시한 뒤, 저장소에 적힌 설정으로 그 커밋을 한 번 배포하고 확인 |
 | `/git-commit rewrite [range]` | `$git-commit rewrite [range]` | 최근 커밋 중 형식에 맞지 않는 제목을 다시 작성 |
 | `/git-merge [main \| dev \| <branch>]` | `$git-merge` | 현재 브랜치를 대상에 머지하고, 보호 브랜치가 아니면 소스 삭제 |
 | `/git-resolve-conflicts` | `$git-resolve-conflicts` | 충돌로 멈춘 merge, rebase, cherry-pick, revert를 중단하지 않고 마무리 |
 | `/git-cleanup` | `$git-cleanup` | 끝난 워크트리를 제거하고 보호 브랜치에 머지된 로컬 브랜치를 삭제 |
 
-`gcr`, `gcpr`, `gcprm`, `gcpd`는 직접 호출할 때만 동작하는 별칭입니다. 자연어 요청으로는 시작되지 않고, 설치된 `git-commit`을 정해진 모드로 실행합니다.
+`gcr`, `gcpr`, `gcprm`, `gcprd`는 직접 호출할 때만 동작하는 별칭입니다. 자연어 요청으로는 시작되지 않고, 설치된 `git-commit`을 정해진 모드로 실행합니다.
 
 **예시:**
 
@@ -85,7 +85,7 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 > 작업 중간중간 커밋 푸시해줘
 > $gcpr
 > $gcprm
-> 의미 있는 단위마다 배포해줘
+> 끝나면 main에 머지하고 배포해줘
 > /git-commit rewrite HEAD~5
 > dev에 머지해줘
 > 머지된 브랜치랑 끝난 워크트리 정리해줘
@@ -98,7 +98,8 @@ ln -s "$(pwd)/skills/git-skill" ~/.claude/skills/git-skill
 | `/git-commit-push` | `/git-commit push` |
 | `/git-commit-realtime` | `/git-commit realtime` 또는 `/gcr` |
 | `/git-commit-push-realtime` | `/git-commit push realtime` 또는 `/gcpr` |
-| `/git-commit-push-deploy` | `/git-commit deploy` 또는 `/gcpd` |
+| `/git-commit-push-deploy` | `/git-commit deploy` 또는 `/gcprd` |
+| `/gcpd` | `/gcprd` (마지막 `main` 머지 후 한 번 배포) |
 | `/git-commit-rewrite` | `/git-commit rewrite` |
 | `/git-merge-to-main` | `/git-merge main` |
 | `/git-merge-to-dev` | `/git-merge dev` |
@@ -115,7 +116,7 @@ Codex의 `$name` selector도 같은 방식으로 바뀝니다.
 3. 경로를 직접 지정해 스테이징하고 단위마다 Conventional Commit을 만듭니다. hook이 실패하면 우회하지 않고 원인을 고칩니다
 4. `push`: `git push`를 실행합니다(upstream이 없으면 `-u`). 거부되면 멈추고 어떻게 맞출지 묻습니다
 
-**체크포인트 모드**(`realtime`, `push realtime`, `push realtime merge-main`, `deploy`)는 시간이나 파일 수가 아니라 완성된 결과를 기준으로 체크포인트를 나누고, 관련된 가장 좁은 검사와 `git diff --check`로 확인한 뒤 커밋합니다. `realtime`은 모든 체크포인트를 로컬에 둡니다. `push realtime`은 체크포인트마다 같은 이름의 원격 소스 브랜치에 푸시하고 다음 작업 전에 원격 브랜치의 커밋을 확인합니다. `push realtime merge-main`은 작업이 끝나면 소스를 `main`에 합치고 검사한 뒤 `main`을 푸시합니다. 소스 브랜치는 유지합니다. `deploy`는 첫 체크포인트 전에 저장소 문서에서 배포 대상, 경로, 소스, 확인 방법을 정하고, 푸시한 바로 그 리비전을 배포하며, 배포와 필수 health check가 확인될 때까지 다음 작업을 시작하지 않습니다. 끝나면 전체 범위를 다시 검증합니다.
+**체크포인트 모드**(`realtime`, `push realtime`, `push realtime merge-main`, `deploy`)는 시간이나 파일 수가 아니라 완성된 결과를 기준으로 체크포인트를 나누고, 관련된 가장 좁은 검사와 `git diff --check`로 확인한 뒤 커밋합니다. `realtime`은 모든 체크포인트를 로컬에 둡니다. `push realtime`은 체크포인트마다 같은 이름의 원격 소스 브랜치에 푸시하고 다음 작업 전에 원격 브랜치의 커밋을 확인합니다. `push realtime merge-main`은 작업이 끝나면 소스를 `main`에 합치고 검사한 뒤 `main`을 푸시합니다. 소스 브랜치는 유지합니다. `deploy`는 첫 체크포인트 전에 저장소 문서에서 배포 대상, 경로, 소스, 확인 방법을 정하고, `push realtime merge-main`의 모든 단계를 거친 뒤 푸시한 기본 브랜치 커밋을 한 번 배포하고 배포와 필수 health check를 확인합니다. 체크포인트는 따로 배포하지 않습니다. 끝나면 전체 범위를 다시 검증합니다.
 
 **rewrite**는 작업 트리와 대상 커밋을 확인하고 새 제목을 보여 줍니다. 확인을 받으면 제목만 바꾸고 본문을 보존합니다. 보호 브랜치나 이미 푸시한 이력은 새 로컬 브랜치에서만 고칠 수 있습니다.
 
@@ -154,7 +155,7 @@ Codex의 `$name` selector도 같은 방식으로 바뀝니다.
 - 모든 모드에서 강제 푸시
 - 비밀 정보로 보이는 파일(`.env*`, 단 정확한 파일명 `.env.example`은 예외, `credentials.*`, `*_rsa`, `*.pem`, `*.key`, `*.p12`)을 명시적 동의 없이 커밋
 - 깨진 상태나 시간 기준, 자리만 채운 체크포인트를 커밋하거나 푸시
-- 저장소 문서에 없는 대상에 배포하거나, 배포가 확인되기 전에 체크포인트를 배포 완료로 보고
+- 저장소 문서에 없는 대상에 배포하거나, 마지막 머지 전에 체크포인트를 배포하거나, 확인되기 전에 배포 완료로 보고
 - 선택지 없이 푸시된 커밋을 다시 쓰기, `git filter-branch --root` 사용, 티켓 참조 삭제
 - `git branch -D` 또는 `git worktree remove --force`
 - 충돌 자동 해결 또는 원격 브랜치 삭제
@@ -174,7 +175,7 @@ git-skill/
     │   │   ├── deploy.md        # 문서화된 설정, 배포 경로, 확인 단계
     │   │   └── rewrite.md       # 로컬 커밋 기록 재작성
     │   └── scripts/rewrite_msg.py
-    ├── gcr/ · gcpr/ · gcprm/ · gcpd/     # 모드가 고정된 직접 호출 전용 별칭
+    ├── gcr/ · gcpr/ · gcprm/ · gcprd/     # 모드가 고정된 직접 호출 전용 별칭
     ├── git-merge/
     ├── git-resolve-conflicts/
     └── git-cleanup/

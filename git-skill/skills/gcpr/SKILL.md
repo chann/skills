@@ -1,6 +1,6 @@
 ---
 name: gcpr
-description: Use only when the user explicitly invokes "/gcpr" or "$gcpr", the short alias for "/git-commit push realtime" and "$git-commit push realtime". Runs the installed git-commit skill with its mode fixed to push realtime and passes the rest of the request through; refuses when git-commit is not installed. For a request in natural language, such as "commit and push as you work" or "작업 중간중간 커밋 푸시해줘", use git-commit directly.
+description: Use only when the user explicitly invokes "/gcpr" or "$gcpr", the short alias for "/git-commit push realtime" and "$git-commit push realtime". Runs the installed git-commit skill with its mode fixed to push realtime, pushing each verified checkpoint to the working branch without merging or deploying, and passes the rest of the request through; refuses when git-commit is not installed. For a request in natural language, such as "commit and push as you work" or "작업 중간중간 커밋 푸시해줘", use git-commit directly.
 disable-model-invocation: true
 ---
 

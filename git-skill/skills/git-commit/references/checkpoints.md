@@ -1,4 +1,4 @@
-# Checkpoint cadence (`realtime`, `push realtime`, `deploy`)
+# Checkpoint cadence (`realtime`, `push realtime`, `push realtime merge-main`, `deploy`)
 
 The checkpoint modes turn a longer implementation into a sequence of reviewable,
 working commits. Each checkpoint is one coherent outcome that passes the checks
@@ -7,8 +7,9 @@ which groups changes that already exist, a checkpoint mode stays active while th
 requested work is performed.
 
 Everything in `SKILL.md` still applies. This file adds when a unit is ready and
-what happens after each commit. `push realtime` adds the push step; `deploy` adds
-the push step plus `references/deploy.md`.
+what happens after each commit. `push realtime` adds the push step;
+`push realtime merge-main` adds the final merge in `references/merge-main.md`;
+`deploy` adds that merge plus `references/deploy.md`.
 
 ## What the invocation authorizes
 
@@ -16,10 +17,12 @@ the push step plus `references/deploy.md`.
 |---|---|---|
 | `realtime` | Repeated local commits for the requested task | Pushes, history rewrites, unrelated changes, releases, new branches |
 | `push realtime` | Repeated commits and ordinary pushes to the same-named remote branch (create it on first push) | History rewrites, force pushes, unrelated changes, releases, local branch creation |
-| `deploy` | Repeated commits, ordinary pushes, and deployments to the documented target | All of the above, plus branch merges, release tags, or a different deployment target |
+| `deploy` | Everything `push realtime merge-main` authorizes, then one deployment of the pushed default branch to the documented target | Per-checkpoint deployments, merges into any other branch, release tags, or a different deployment target |
 
 `push realtime merge-main` runs every `push realtime` step, then
-`references/merge-main.md` once after the completion audit.
+`references/merge-main.md` once after the completion audit. `deploy` runs the
+same steps and then deploys the pushed default branch once through
+`references/deploy.md`.
 
 Anything outside the authorized column needs its own explicit request.
 
@@ -44,27 +47,20 @@ git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true
   exception.
 - **`realtime`:** note whether an upstream exists so the final report can state
   what remains unpushed, but do not fetch, pull, or push to reconcile it.
-- **`push realtime`:** record the attached branch name and the intended remote
-  before editing. Use the requested remote, otherwise the configured push
-  remote (`branch.<name>.pushRemote`, `remote.pushDefault`, then the branch remote), or
+- **`push realtime`, `push realtime merge-main`, and `deploy`:** record the
+  attached branch name and the intended remote before editing. Use the
+  requested remote, otherwise the configured push remote
+  (`branch.<name>.pushRemote`, `remote.pushDefault`, then the branch remote), or
   origin when unambiguous. Confirm the effective push URL is the intended
   repository. Use `refs/heads/<recorded-branch>` even when the branch tracks
   another ref. Fetch and compare that exact destination if it exists. Review
   the outgoing range, including existing commits, before publishing. If the
-  branch is behind or diverged, stop. A missing same-name ref is created by
-  the first authorized push. A clean worktree can still have commits to push.
-- **`deploy`:** when an upstream exists, fetch and compare:
-
-  ```bash
-  git fetch
-  git status --short --branch
-  git rev-list --left-right --count HEAD...@{u}
-  ```
-
-  If the branch is behind or diverged, surface the exact state and stop; do not
-  pull, merge, rebase, or force-push. If local commits are already ahead,
-  explain that the first push publishes them and confirm they belong in scope.
-  If no upstream exists, state that the first push will configure one.
+  branch is behind or diverged, surface the exact state and stop; do not pull,
+  merge, rebase, or force-push. A missing same-name ref is created by the first
+  authorized push. A clean worktree can still have commits to push.
+- **`push realtime merge-main` and `deploy`:** also resolve the default branch
+  as `references/merge-main.md` describes. **`deploy`:** also resolve the
+  deployment settings in `references/deploy.md` step 1 before editing.
 
 ## 2. Plan outcome-based checkpoints
 
@@ -139,10 +135,10 @@ a broken or mislabeled checkpoint.
   Publication stays a separate, explicit user request (`/git-commit push` or
   `/gcpr`). If the upstream advances meanwhile, note the drift in the progress
   update; do not pull, merge, or rebase to chase it.
-- **`push realtime` and `deploy`:** After each checkpoint commit succeeds,
+- **Every push mode** (`push realtime`, `push realtime merge-main`, `deploy`):
+  After each checkpoint commit succeeds,
   push it before starting the next unit, using the push step in `SKILL.md`.
-  For `push realtime`, execute the bundled helper after reviewing the outgoing
-  commits. Resolve its path from the installed git-commit skill directory:
+  Execute the bundled helper after reviewing the outgoing commits. Resolve its path from the installed git-commit skill directory:
 
   ```sh
   sh "$skill_dir/scripts/push-checkpoint.sh" "$remote" "$source_branch" "$commit"
@@ -156,14 +152,14 @@ a broken or mislabeled checkpoint.
   Use `git rev-list --left-right --count HEAD...@{u}` only when the upstream
   is that destination. The expected result is `0 0`. Stop on rejection or
   failed verification before starting the next unit.
-- **`deploy`:** continue with `references/deploy.md` steps 3–4 for this
-  checkpoint before moving on.
+- **`deploy`:** checkpoints are never deployed. The one deployment happens
+  after the completion audit and the final merge (`references/deploy.md`).
 
 Keep the exact commit hash and check results in every progress update.
 
 ## 6. Repeat from the new baseline
 
-The recorded (and, where applicable, pushed and deployed) commit is the baseline
+The recorded (and, where applicable, pushed) commit is the baseline
 for the next checkpoint. Re-check the working tree, continue the next outcome,
 and repeat steps 3–5.
 
@@ -178,7 +174,7 @@ the `rewrite` mode's job.
 1. Re-read the full request and verify every requirement.
 2. Run the full test, lint, type, build, or package gates for the completed scope.
 3. A fix found here becomes a new meaningful checkpoint through the same mode
-   (committed, and pushed and deployed where the mode does that).
+   (committed, and pushed where the mode does that).
 4. Confirm the worktree holds only known pre-existing changes, if any.
 5. Show the history and state:
 
@@ -187,6 +183,9 @@ the `rewrite` mode's job.
    git status --short --branch
    git rev-list --left-right --count HEAD..."$verified_remote_tip"   # push modes only
    ```
+
+6. In `push realtime merge-main` and `deploy`, continue with
+   `references/merge-main.md`; in `deploy`, finish with `references/deploy.md`.
 
 Report each commit hash with its verification evidence. In `realtime`, state that
 no checkpoint was pushed and, when an upstream exists, how many commits are ahead

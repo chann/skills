@@ -113,30 +113,30 @@
     },
     {
       "id": 11,
-      "prompt": "/git-commit deploy build the feature. AGENTS.md says pushes to main trigger the CI deployment workflow, names the deploy job and the /health check, and sets a ten-minute timeout. The first push succeeds, but CI is still queued.",
-      "expected_output": "Tracks the deployment run for the first checkpoint SHA and waits for its deploy job and health check before starting the second checkpoint.",
+      "prompt": "/git-commit deploy build the feature on feature/search. AGENTS.md says pushes to main trigger the CI deployment workflow, names the deploy job and the /health check, and sets a ten-minute timeout. The checkpoints are pushed, main is merged and pushed, but CI is still queued.",
+      "expected_output": "Deploys nothing per checkpoint, tracks the deployment run for the pushed main SHA, and waits for its deploy job and health check before reporting the task complete.",
       "files": [],
       "assertions": [
         "No duplicate deployment command or dispatch is started when the push already triggered CI.",
-        "The run is matched to the checkpoint SHA, branch, workflow, and environment.",
-        "A queued or build-only result is not reported as a successful deployment, and the next checkpoint does not start."
+        "The run is matched to the pushed main SHA, branch, workflow, and environment.",
+        "A queued or build-only result is not reported as a successful deployment, and the task is not reported complete."
       ]
     },
     {
       "id": 12,
-      "prompt": "$gcpd refactor the parser. The checkpoint is committed and pushed with parity 0 0, and the documented deployment command exits zero, but the required /health check returns 503. AGENTS.md documents no rollback.",
-      "expected_output": "Reports the pushed commit and the failed smoke check as NOT VERIFIED, keeps the commit, and stops before the next checkpoint pending recovery guidance.",
+      "prompt": "$gcprd refactor the parser. The merged main is pushed with parity 0 0, and the documented deployment command exits zero, but the required /health check returns 503. AGENTS.md documents no rollback.",
+      "expected_output": "Reports the pushed main commit and the failed smoke check as NOT VERIFIED, keeps the commit, and stops pending recovery guidance.",
       "files": [],
       "assertions": [
         "Exit zero is not accepted as deployment confirmation when the required check returns 503.",
-        "No next checkpoint, undocumented retry, rollback, revert, target switch, or force push happens.",
-        "The report separates the successful commit and push from the failed deployment."
+        "No undocumented retry, rollback, revert, target switch, or force push happens.",
+        "The report separates the successful merge and push from the failed deployment."
       ]
     },
     {
       "id": 13,
       "prompt": "/git-commit deploy add a feature. AGENTS.md uses a direct deployment command that packages the current directory. An unrelated untracked config and user-owned edits are present in the worktree.",
-      "expected_output": "Preserves user files and deploys an artifact or clean checkout built from the pushed checkpoint SHA, with the same documented target.",
+      "expected_output": "Preserves user files and deploys an artifact or clean checkout built from the pushed main SHA, with the same documented target.",
       "files": [],
       "assertions": [
         "Unrelated uncommitted or untracked content is neither staged nor deployed.",
@@ -145,12 +145,12 @@
     },
     {
       "id": 14,
-      "prompt": "/git-commit deploy implement the API. AGENTS.md says only main deploys, but the attached branch is feature/api. Merge to main to make deployment happen.",
-      "expected_output": "Identifies the branch mismatch during preflight and asks for an eligible route or a separately requested merge before the first checkpoint.",
+      "prompt": "/git-commit deploy implement the API on feature/api. AGENTS.md says only the production branch deploys, and the repository's default branch is main.",
+      "expected_output": "Identifies that the documented route deploys from a branch other than the default branch during preflight and asks before the first checkpoint.",
       "files": [],
       "assertions": [
-        "Branch eligibility is checked before the first push.",
-        "The deploy request does not authorize a merge, checkout, or tag."
+        "The route's deploy branch is checked against the resolved default branch before the first push.",
+        "The deploy request authorizes one merge into main, never a merge into production, a checkout, or a tag."
       ]
     },
     {

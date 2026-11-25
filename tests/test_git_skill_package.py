@@ -17,6 +17,7 @@ COMMIT = SKILLS / "git-commit"
 COMMIT_SKILL = COMMIT / "SKILL.md"
 CHECKPOINTS = COMMIT / "references" / "checkpoints.md"
 DEPLOY = COMMIT / "references" / "deploy.md"
+MERGE_MAIN = COMMIT / "references" / "merge-main.md"
 REWRITE = COMMIT / "references" / "rewrite.md"
 MERGE = SKILLS / "git-merge" / "SKILL.md"
 CLEANUP = SKILLS / "git-cleanup" / "SKILL.md"
@@ -28,12 +29,12 @@ SELECTORS = (
     "gcr",
     "gcpr",
     "gcprm",
-    "gcpd",
+    "gcprd",
     "git-merge",
     "git-resolve-conflicts",
     "git-cleanup",
 )
-ALIASES = {"gcr": "realtime", "gcpr": "push realtime", "gcprm": "push realtime merge-main", "gcpd": "deploy"}
+ALIASES = {"gcr": "realtime", "gcpr": "push realtime", "gcprm": "push realtime merge-main", "gcprd": "deploy"}
 REMOVED = (
     "git-commit-push",
     "git-commit-realtime",
@@ -43,6 +44,7 @@ REMOVED = (
     "git-merge-to-main",
     "git-merge-to-dev",
     "git-branch-cleanup",
+    "gcpd",
 )
 
 PROTECTED_BRANCH_LIST = (
@@ -180,7 +182,7 @@ class GitCommitModeTests(unittest.TestCase):
         for rule in (
             "Resolve the mode before any Git command",
             "take the less far-reaching mode",
-            "(commit < push < deploy; once < realtime)",
+            "(commit < push < merge-main < deploy; once < realtime)",
             "`push` and `deploy` are never inferred from silence",
             "`gcpr` is never a deployment request",
             "Never run it as a step of another skill",
@@ -194,8 +196,8 @@ class GitCommitModeTests(unittest.TestCase):
         for token in (
             '"commit my changes"', '"커밋해줘"', '"커밋하고 푸시해줘"',
             '"commit and push as you work"', '"작업 중간중간 커밋 푸시"',
-            '"의미 있는 단위마다 배포"', '"커밋 메시지 다시 써줘"',
-            '"/git-commit"', '"$git-commit"', "gcr", "gcpr", "gcpd",
+            '"끝나면 main에 머지하고 배포"', '"커밋 메시지 다시 써줘"',
+            '"/git-commit"', '"$git-commit"', "gcr", "gcpr", "gcprm", "gcprd",
             "git-merge", "git-resolve-conflicts",
         ):
             with self.subTest(token=token):
@@ -296,25 +298,43 @@ class GitCommitSafetyTests(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, text)
 
-    def test_deploy_uses_only_documented_settings_and_confirms_each_checkpoint(self) -> None:
+    def test_deploy_merges_then_deploys_the_default_branch_once(self) -> None:
         text = flat(DEPLOY)
         for rule in (
             "AGENTS.md",
             "Never guess production versus staging",
             "silently fall back to push-only",
-            "Confirm the current branch is eligible for the route before the first checkpoint",
-            "Never deploy a checkpoint whose push and parity are unconfirmed.",
+            "Confirm the route deploys from the default branch",
+            "Checkpoints themselves are never deployed.",
+            "Never deploy a default-branch commit whose push and parity are unconfirmed",
             "observe that run instead of launching a duplicate command or dispatch",
             "Never include uncommitted or untracked content",
-            "Never substitute the latest run on a branch for this checkpoint's evidence.",
+            "Never substitute the latest run on a branch for this commit's evidence.",
             "inconclusive is never a pass",
-            "Push success alone never completes a deploy checkpoint.",
-            "Do not begin the next outcome, including local implementation work",
+            "Push success alone never completes a deploy run.",
             "Keep the pushed commit when a deployment fails.",
             "never relabel the failed deployment as successful",
         ):
             with self.subTest(rule=rule):
                 self.assertIn(rule, text)
+
+    def test_merge_main_targets_main_or_master_and_deploy_reuses_it(self) -> None:
+        merge = flat(MERGE_MAIN)
+        for rule in (
+            "`push realtime merge-main` and `deploy` add this final step.",
+            "`refs/heads/main` and `refs/heads/master`",
+            "When the source is the default branch itself",
+            "In `deploy`, continue with `references/deploy.md` steps 4–5",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, merge)
+        skill = flat(COMMIT_SKILL)
+        self.assertIn(
+            "| `/git-commit deploy` | Everything `push realtime merge-main` does, then deploy the pushed default branch once",
+            skill,
+        )
+        self.assertIn("`deploy` never deploys a checkpoint", skill)
+        self.assertIn("checkpoints are never deployed.", flat(CHECKPOINTS))
 
     def test_rewrite_checks_scope_and_keeps_changes_local(self) -> None:
         text = flat(REWRITE)

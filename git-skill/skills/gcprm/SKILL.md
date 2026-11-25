@@ -1,6 +1,6 @@
 ---
 name: gcprm
-description: Use only when the user explicitly invokes "/gcprm" or "$gcprm", the short alias for "/git-commit push realtime merge-main" and "$git-commit push realtime merge-main". Pushes verified checkpoints to the same-named remote feature branch, then merges into main, verifies the merged tree, and pushes main after the task finishes. Keeps the feature branch. For natural-language requests such as "commit and push as you work, then merge into main" or "중간중간 커밋 푸시하고 끝나면 main에 머지해줘", use git-commit directly.
+description: Use only when the user explicitly invokes "/gcprm" or "$gcprm", the short alias for "/git-commit push realtime merge-main" and "$git-commit push realtime merge-main". Pushes verified checkpoints to the same-named remote feature branch, then merges into main (or master when that is the default branch), verifies the merged tree, and pushes it after the task finishes. Keeps the feature branch and never deploys. For natural-language requests such as "commit and push as you work, then merge into main" or "중간중간 커밋 푸시하고 끝나면 main에 머지해줘", use git-commit directly.
 disable-model-invocation: true
 ---
 

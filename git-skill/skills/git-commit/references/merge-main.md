@@ -1,10 +1,17 @@
-# Finish on main
+# Finish on the default branch
 
-Only `push realtime merge-main` adds this final step. At entry, record the
-source branch and remote as in checkpoints.md. Require a source other than
-`main` and an existing `refs/heads/main` on that remote. If either is missing,
-stop before editing. The invocation authorizes the source pushes, one final
-integration into main, and publication of the tested main commit.
+`push realtime merge-main` and `deploy` add this final step. At entry, record
+the source branch and remote as in checkpoints.md, then resolve the default
+branch on that remote: the branch `refs/remotes/<remote>/HEAD` points to when
+it is `main` or `master`, otherwise whichever one of `refs/heads/main` and
+`refs/heads/master` exists there. Stop before editing when neither exists, or when
+both exist and the remote HEAD does not pick one. Every later `main` in this file means that resolved branch.
+The invocation authorizes the source pushes, one final integration into it,
+and publication of the tested commit.
+
+When the source is the default branch itself, the checkpoint pushes already
+publish it: skip steps 2, 3, and 5, run step 4's checks on the final pushed
+tip, and report that no merge was needed.
 
 1. Complete the task and its checks on the source. Publish each checkpoint
    as in checkpoints.md. Before touching main, confirm the remote source tip
@@ -32,3 +39,5 @@ integration into main, and publication of the tested main commit.
    push is rejected by branch protection or a concurrent update, preserve the
    published source and report the rejection. Never force, disable protection,
    delete the source branch, or count a source-only push as a completed merge.
+6. In `deploy`, continue with `references/deploy.md` steps 4–5 for the pushed
+   default-branch SHA.

@@ -232,7 +232,7 @@ export const skillDefinitions = [
     example: "$git-commit push realtime merge-main",
     claudeSelector: "/git-commit",
     codexSelector: "$git-commit",
-    aliases: ["/gcr", "$gcr", "/gcpr", "$gcpr", "/gcprm", "$gcprm", "/gcpd", "$gcpd"],
+    aliases: ["/gcr", "$gcr", "/gcpr", "$gcpr", "/gcprm", "$gcprm", "/gcprd", "$gcprd"],
     tags: ["git", "commit", "push", "merge", "deploy", "rewrite"],
   },
   {

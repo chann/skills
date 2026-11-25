@@ -1,5 +1,5 @@
 ---
-description: Commit changes as Conventional Commits — once, with push, as verified checkpoints while working, with per-checkpoint deployment, or rewrite messy commit subjects
+description: Commit changes as Conventional Commits — once, with push, as verified checkpoints while working, with a final merge into main and one deployment, or rewrite messy commit subjects
 argument-hint: "[push | deploy] [realtime] [merge-main] | rewrite [range]"
 ---
 
@@ -13,5 +13,5 @@ Load the reference files that mode needs. Stage explicit paths only, never
 `.env.example` is a public template), and show the plan before the first commit.
 Never force-push. Stop on a rejected push or a moved
 upstream. Checkpoint modes commit only verified, outcome-based units; `deploy`
-uses only documented repository deployment settings and confirms each deployment
-before the next checkpoint.
+merges into the default branch at the end, pushes it, and deploys that commit once
+using only documented repository deployment settings, then confirms it.

@@ -1,6 +1,6 @@
 # skills — Usage
 
-This repository exposes 29 canonical workflows and 33 installable Codex selectors across 19 workflow plugins. The 33 selectors are the 29 workflows plus the four aliases `gcr`, `gcpr`, `gcprm`, and `gcpd`.
+This repository exposes 29 canonical workflows and 33 installable Codex selectors across 19 workflow plugins. The 33 selectors are the 29 workflows plus the four aliases `gcr`, `gcpr`, `gcprm`, and `gcprd`.
 
 ## Installation
 
@@ -32,7 +32,7 @@ Build). Drop `--global` to install into the current project.
 npx skills add -y -g chann/skills --skill gen-docs
 ```
 
-Use `--skill <name>` with the actual skill name. The 33 names are `chann`, `how`, `why`, `research-brief`, `recall`, `catchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `no-comments`, `make-bot-ui`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcprm`, `gcpd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
+Use `--skill <name>` with the actual skill name. The 33 names are `chann`, `how`, `why`, `research-brief`, `recall`, `catchup`, `diff-summary`, `diff-viewer`, `plan-summary`, `review-me`, `arena`, `bug-hunt`, `gen-docs`, `unslop`, `no-comments`, `make-bot-ui`, `build-reinstall`, `interrogate`, `blast-radius`, `git-commit`, `gcr`, `gcpr`, `gcprm`, `gcprd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `swarm`, `long-task`, `handoff`, `skill-forge`, `skill-audit`, and `reflect`. Plugin directories such as `git-skill` and `understand` are not names; pass the skill inside them.
 
 Every skill works when installed alone. The four aliases are the one exception: each runs the installed `git-commit` with a fixed mode and refuses when `git-commit` is missing.
 
@@ -42,7 +42,7 @@ Every skill works when installed alone. The four aliases are the one exception: 
 | Understand a codebase | `npx skills add chann/skills --skill how --skill why` |
 | Review a change | `npx skills add chann/skills --skill interrogate --skill blast-radius` |
 | Explain a change | `npx skills add chann/skills --skill diff-summary --skill diff-viewer` |
-| Git workflow with the short aliases | `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcprm --skill gcpd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup` |
+| Git workflow with the short aliases | `npx skills add chann/skills --skill git-commit --skill gcr --skill gcpr --skill gcprm --skill gcprd --skill git-merge --skill git-resolve-conflicts --skill git-cleanup` |
 | Codex `$gcpr` and its canonical workflow | `npx skills add chann/skills --skill gcpr --skill git-commit` |
 | Handoff only | `npx skills add chann/skills --skill handoff` |
 | Subagents and competing attempts | `npx skills add chann/skills --skill swarm --skill arena` |
@@ -96,8 +96,8 @@ For the deepest per-skill detail, see each plugin's own README: [chann-mode](cha
 > /git-commit                              # group changes into Conventional Commits
 > /git-commit push realtime                # push each verified outcome while working
 > /gcpr                                    # same workflow, short alias
-> /git-commit deploy                       # commit, push, deploy, and confirm each outcome
-> /gcpd                                    # same deployment workflow, short alias
+> /git-commit deploy                       # push checkpoints, merge into main, push, deploy once
+> /gcprd                                    # same deployment workflow, short alias
 > /git-commit realtime                     # commit each verified outcome locally, no push
 > /gcr                                     # same local workflow, short alias
 > /git-merge dev                           # merge this branch into dev
@@ -158,7 +158,7 @@ command reference below.
 | Alias: local checkpoint commits | `/gcr` | `$gcr` |
 | Alias: checkpoint commit and push | `/gcpr` | `$gcpr` |
 | Alias: checkpoint commit and push, then integrate into main | `/gcprm` | `$gcprm` |
-| Alias: checkpoint commit, push, and deploy | `/gcpd` | `$gcpd` |
+| Alias: checkpoint push, then merge into main, push, and deploy | `/gcprd` | `$gcprd` |
 | Merge | `/git-merge` | `$git-merge` |
 | Conflict resolution | `/git-resolve-conflicts` | `$git-resolve-conflicts` |
 | Worktree and branch cleanup | `/git-cleanup` | `$git-cleanup` |
@@ -182,7 +182,8 @@ Variant selectors became arguments of one canonical skill. The same mapping appl
 | `git-commit-push` | `git-commit push` |
 | `git-commit-realtime` (`gcr`) | `git-commit realtime` (`gcr`) |
 | `git-commit-push-realtime` (`gcpr`) | `git-commit push realtime` (`gcpr`) |
-| `git-commit-push-deploy` (`gcpd`) | `git-commit deploy` (`gcpd`) |
+| `git-commit-push-deploy` (`gcpd`) | `git-commit deploy` (`gcprd`) |
+| `gcpd` | `gcprd` (deploys once, after the final merge into `main`) |
 | `git-commit-rewrite` | `git-commit rewrite` |
 | `git-merge-to-main`, `git-merge-to-dev` | `git-merge main`, `git-merge dev` |
 | `git-branch-cleanup` | `git-cleanup` |
@@ -206,7 +207,7 @@ npx skills remove \
   plan-summary-md plan-summary-quiz \
   human-friendly-writing \
   git-commit-push git-commit-realtime git-commit-push-realtime \
-  git-commit-push-deploy git-commit-rewrite \
+  git-commit-push-deploy git-commit-rewrite gcpd \
   git-merge-to-main git-merge-to-dev git-branch-cleanup \
   gen-frontend-handoff gen-backend-handoff gen-session-handoff \
   all-subagents work-summary \
@@ -478,30 +479,33 @@ the templates, so the reports cannot drift apart.
 | `/git-commit realtime` · `/gcr` | During implementation, verify and commit each meaningful outcome locally — never push |
 | `/git-commit push realtime` · `/gcpr` | Commit each verified checkpoint and push it to the same-name remote source branch |
 | `/git-commit push realtime merge-main` · `/gcprm` | Push checkpoints the same way. At completion, integrate the source into `main`, run checks, and push `main`. Keep the source branch. |
-| `/git-commit deploy` · `/gcpd` | Verify, commit, push, deploy, and confirm each outcome using documented repository settings |
+| `/git-commit deploy` · `/gcprd` | Push checkpoints the same way, merge into `main` (or `master`), verify and push it, then deploy that commit once and confirm it using documented repository settings |
 | `/git-commit rewrite [range]` | Rewrite recent non-Conventional commit subjects |
 | `/git-merge [main \| dev \| <branch>]` | Merge the current branch into the target, then `git branch -d` the source unless protected |
 | `/git-cleanup` | Remove finished worktrees and delete every local branch already merged into a protected branch |
 | `/git-resolve-conflicts` | Finish a conflicted merge, rebase, cherry-pick, or revert; classify every path, keep both intents where compatible, run the project's checks, and never abort |
 
-Codex invokes the same workflows as `$git-commit [push | realtime | push realtime | push realtime merge-main | deploy]`, `$git-commit rewrite [range]`, `$git-merge`, `$git-cleanup`, and `$git-resolve-conflicts`, plus the aliases `$gcr`, `$gcpr`, `$gcprm`, and `$gcpd`. `gcr`, `gcpr`, `gcprm`, and `gcpd` are explicit-only: they never start from natural language, they run the installed `git-commit` with the mode fixed to `realtime`, `push realtime`, `push realtime merge-main`, and `deploy`, and they refuse when `git-commit` is not installed. A natural-language request such as "commit and push as you work" goes to `git-commit` directly. An ambiguous request takes the less far-reaching mode; `push` and `deploy` are never inferred from silence.
+Codex invokes the same workflows as `$git-commit [push | realtime | push realtime | push realtime merge-main | deploy]`, `$git-commit rewrite [range]`, `$git-merge`, `$git-cleanup`, and `$git-resolve-conflicts`, plus the aliases `$gcr`, `$gcpr`, `$gcprm`, and `$gcprd`. `gcr`, `gcpr`, `gcprm`, and `gcprd` are explicit-only: they never start from natural language, they run the installed `git-commit` with the mode fixed to `realtime`, `push realtime`, `push realtime merge-main`, and `deploy`, and they refuse when `git-commit` is not installed. A natural-language request such as "commit and push as you work" goes to `git-commit` directly. An ambiguous request takes the less far-reaching mode; `push` and `deploy` are never inferred from silence.
 
 Protected branches — never deleted, never force-anything — are `main`, `master`, `dev`, `develop`, `development`, `stg`, `stage`, `staging`, `root`. Every workflow shows a plan before any commit, merge, or delete; the checkpoint modes pre-authorize their displayed checkpoint sequence while the other mutating workflows wait for confirmation. None run `git add .`, `--no-verify`, or `git branch -D`.
 
-**Checkpoint modes.** `realtime`, `push realtime`, `push realtime merge-main`, and `deploy` plan outcome-based checkpoints, never time- or file-count-based ones, and commit only green checkpoints verified with the narrowest relevant checks plus `git diff --check`. `realtime` keeps every checkpoint local; publication stays a separate, explicit request. `push realtime` pushes each checkpoint to the same-name remote source branch and verifies that branch tip before starting the next checkpoint. `push realtime merge-main` follows the same checkpoint loop. After the work is complete, it integrates the source into `main`, runs the project checks, and pushes `main` if the checks pass. The source branch is retained.
+**Checkpoint modes.** `realtime`, `push realtime`, `push realtime merge-main`, and `deploy` plan outcome-based checkpoints, never time- or file-count-based ones, and commit only green checkpoints verified with the narrowest relevant checks plus `git diff --check`. `realtime` keeps every checkpoint local; publication stays a separate, explicit request. `push realtime` pushes each checkpoint to the same-name remote source branch and verifies that branch tip before starting the next checkpoint. `push realtime merge-main` follows the same checkpoint loop. After the work is complete, it integrates the source into the default branch (`main`, or `master` when that is the default), runs the project checks, and pushes it if the checks pass. The source branch is retained.
 
-`deploy` (aliases `/gcpd` and `$gcpd`) adds deployment confirmation to every push realtime checkpoint. It reads the
-existing target, command or CI trigger, eligible branch, working directory,
-source selection, and checks from `AGENTS.md` or referenced deployment documents
-before editing or pushing. Its invocation authorizes repeated deployments to that
-target without repeated confirmation, subject to mandatory approval gates. It
-observes push-triggered CI once, verifies the exact checkpoint SHA or artifact,
-and waits for successful deployment and required smoke checks before starting the
-next outcome. Missing or ambiguous settings, failed deployment, timeout, or a
-revision mismatch stop the next planned outcome. Source corrections within the
-authorized task use a new recovery checkpoint with the same verification and
-deployment gates. It preserves pushed history and follows only authorized
-provider recovery rules. Deployment inputs exclude unrelated worktree files.
+`deploy` (aliases `/gcprd` and `$gcprd`) runs every `push realtime merge-main`
+step and then deploys the pushed default branch once. It reads the existing
+target, command or CI trigger, deploy branch, working directory, source
+selection, and checks from `AGENTS.md` or referenced deployment documents before
+editing or pushing, and stops when the route deploys from a branch other than
+the default branch. Checkpoints are pushed to the working branch and never
+deployed on their own. After the merged tree passes its checks and the default
+branch is pushed, it observes push-triggered CI once or runs the documented
+command, verifies the exact pushed SHA or artifact, and waits for successful
+deployment and required smoke checks. Missing or ambiguous settings, failed
+deployment, timeout, or a revision mismatch stop the run. A source correction
+within the authorized task becomes a new recovery checkpoint that is merged,
+pushed, and deployed through the same gates. It preserves pushed history and
+follows only authorized provider recovery rules. Deployment inputs exclude
+unrelated worktree files.
 
 **Rewrite.** Review the exact range and message changes before confirming. The workflow preserves message bodies and can create a new local branch when the original branch is protected or published. Rewrites stay local.
 
@@ -611,7 +615,7 @@ commands.
 > /git-commit push realtime
 
 # Deploy each completed outcome using the repository's documented settings
-> $gcpd
+> $gcprd
 
 # Rebuild a finished local project, reinstall it, and verify the installed copy
 > /build-reinstall
@@ -650,7 +654,7 @@ commands.
 | `/git-merge main` aborts | `main` doesn't exist locally | create it, or merge into `dev` or another local branch |
 | Commit rejected by a hook | a pre-commit hook failed | fix the root cause — the skills won't `--no-verify` |
 | `/git-commit rewrite` stops on pushed commits | rewriting published history | confirm rewriting on a new local branch |
-| `/gcr`, `/gcpr`, `/gcprm`, or `/gcpd` refuses to run | `git-commit` is not installed beside the alias | `npx skills add chann/skills --skill git-commit` |
+| `/gcr`, `/gcpr`, `/gcprm`, or `/gcprd` refuses to run | `git-commit` is not installed beside the alias | `npx skills add chann/skills --skill git-commit` |
 | `/git-cleanup` leaves a worktree or branch | it has changes, is locked, or is not reachable from a protected branch | finish or merge it first; the skill never forces |
 | No HTML report generated | Python 3.10+ missing | install Python 3.10 or newer |
 | `/diff-summary` reports an invalid or empty scope | The requested ref/range is unresolved or contains no changes | Correct the exact scope; the skill will not silently fall back to the working tree |
