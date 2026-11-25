@@ -8,9 +8,10 @@
    never everything at once, and write one Conventional Commit per verified
    unit.
 3. Go only as far as the user asked. For a requested PR, use the
-   opening-a-pr playbook. For a PR queue or stack, use autopilot. For pushing
-   or deploying at each checkpoint, use `git-commit` with `push realtime` or
-   `deploy` when installed.
+   opening-a-pr playbook. For a PR queue or stack, use autopilot. When
+   `git-commit` is installed, use `push realtime` to push each checkpoint to
+   the working branch, `push realtime merge-main` to also merge and push the
+   default branch at the end, and `deploy` to also deploy that pushed branch.
 4. Take the deployment command, target, branch, and confirmation method from
    the repository's own instructions. When they are missing or ambiguous, stop
    the deploy and say what is missing; never guess a provider or a target.
