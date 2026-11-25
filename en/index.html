@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" data-locale="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Turn repetitive work across eight coding agents into reusable skills. Cache-friendly instructions and scripted steps keep the LLM focused on judgment." />
+    <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href="https://chann.github.io/skills/en/" />
+    <link rel="alternate" hreflang="ko" href="https://chann.github.io/skills/" />
+    <link rel="alternate" hreflang="en" href="https://chann.github.io/skills/en/" />
+    <link rel="alternate" hreflang="ja" href="https://chann.github.io/skills/jp/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://chann.github.io/skills/cn/" />
+    <link rel="alternate" hreflang="x-default" href="https://chann.github.io/skills/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="chann/skills" />
+    <meta property="og:title" content="chann/skills - Yesterday’s repetition becomes today’s skill." />
+    <meta property="og:description" content="Turn repetitive work across eight coding agents into reusable skills. Cache-friendly instructions and scripted steps keep the LLM focused on judgment." />
+    <meta property="og:url" content="https://chann.github.io/skills/en/" />
+    <meta property="og:image" content="https://chann.github.io/skills/assets/skills-social-card-en.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Agent workflow running on the chann/skills website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="chann/skills - Yesterday’s repetition becomes today’s skill." />
+    <meta name="twitter:description" content="Turn repetitive work across eight coding agents into reusable skills. Cache-friendly instructions and scripted steps keep the LLM focused on judgment." />
+    <meta name="twitter:image" content="https://chann.github.io/skills/assets/skills-social-card-en.png" />
+    <link rel="icon" href="/skills/favicon.svg" type="image/svg+xml" />
+    <script>
+      let savedTheme = null;
+      try {
+        savedTheme = localStorage.getItem("skills-theme");
+        if (savedTheme !== "light" && savedTheme !== "dark" && savedTheme !== null) {
+          localStorage.removeItem("skills-theme");
+          savedTheme = null;
+        }
+      } catch {
+        // Storage can be unavailable; the system preference remains usable.
+      }
+      const theme =
+        savedTheme === "light" || savedTheme === "dark"
+          ? savedTheme
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      document.documentElement.dataset.theme = theme;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#000000" : "#f5f7fc");
+    </script>
+    <title>chann/skills - Yesterday’s repetition becomes today’s skill.</title>
+    <script type="application/ld+json" id="faq-schema">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What exactly is a skill?","acceptedAnswer":{"@type":"Answer","text":"A skill is a SKILL.md document that defines how an agent should perform a specific task. It includes the execution sequence, safety rules, and output format so repeated requests follow the same standard."}},{"@type":"Question","name":"How is it different from a regular prompt?","acceptedAnswer":{"@type":"Answer","text":"A prompt disappears when the conversation ends, but a skill remains as a file. You can version it, share it with a team, and call it again by name, such as $review-me."}},{"@type":"Question","name":"Do skills always reduce token usage?","acceptedAnswer":{"@type":"Answer","text":"No—savings are not guaranteed. Prompt caching depends on the model, instruction length, and whether the same prefix is preserved. Skills are designed to reuse stable instructions and separate scripted steps, which can reduce unnecessary LLM work."}},{"@type":"Question","name":"Which tasks should scripts handle?","acceptedAnswer":{"@type":"Answer","text":"Tasks whose inputs and outputs can be checked by rules. Scripts handle file discovery, format validation, catalog synchronization, and test execution; the LLM handles interpretation and review."}},{"@type":"Question","name":"Which agents can use these skills?","acceptedAnswer":{"@type":"Answer","text":"These skills support Claude Code, Codex, Antigravity CLI, Grok Build, Pi, Gemini CLI, GitHub Copilot CLI, and OpenCode. Codex calls the same SKILL.md with $name, while Claude Code uses /name."}},{"@type":"Question","name":"What gets added to my computer?","acceptedAnswer":{"@type":"Answer","text":"Most agents read the shared copy in ~/.agents/skills. The installer adds links for Claude Code, Antigravity CLI, and Grok Build."}},{"@type":"Question","name":"Can a skill commit or push on its own?","acceptedAnswer":{"@type":"Answer","text":"Each skill states its safety rules. git-commit checks the staged change before committing and pushes only the selected branch. It keeps history rewrites local and stops if a push is rejected."}},{"@type":"Question","name":"Can I install only selected skills?","acceptedAnswer":{"@type":"Answer","text":"Yes. Replace --skill '*' in the install command with the name of the skill you want. Each skill README also includes its individual install command."}},{"@type":"Question","name":"How do I update installed skills?","acceptedAnswer":{"@type":"Answer","text":"Run npx skills update chann/skills to update installed skills to the latest version."}},{"@type":"Question","name":"Are there fees or license restrictions?","acceptedAnswer":{"@type":"Answer","text":"No. The entire repository is open source under the MIT License. You can fork it and adapt the skills to your team’s rules."}}]}</script>
+    <script type="module" crossorigin src="/skills/assets/index-Dzkc_TUf.js"></script>
+    <link rel="stylesheet" crossorigin href="/skills/assets/index-s1JrpYGM.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN" data-locale="cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="把8 种编程智能体中的重复工作变成可复用的技能。用缓存友好的指令和脚本化步骤，让LLM专注于真正需要判断的部分。" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href="https://chann.github.io/skills/cn/" />
+    <link rel="alternate" hreflang="ko" href="https://chann.github.io/skills/" />
+    <link rel="alternate" hreflang="en" href="https://chann.github.io/skills/en/" />
+    <link rel="alternate" hreflang="ja" href="https://chann.github.io/skills/jp/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://chann.github.io/skills/cn/" />
+    <link rel="alternate" hreflang="x-default" href="https://chann.github.io/skills/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="chann/skills" />
+    <meta property="og:title" content="chann/skills - 把昨天的重复，变成今天的技能。" />
+    <meta property="og:description" content="把8 种编程智能体中的重复工作变成可复用的技能。用缓存友好的指令和脚本化步骤，让LLM专注于真正需要判断的部分。" />
+    <meta property="og:url" content="https://chann.github.io/skills/cn/" />
+    <meta property="og:image" content="https://chann.github.io/skills/assets/skills-social-card-cn.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="chann/skills网站中的智能体工作流运行界面" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="chann/skills - 把昨天的重复，变成今天的技能。" />
+    <meta name="twitter:description" content="把8 种编程智能体中的重复工作变成可复用的技能。用缓存友好的指令和脚本化步骤，让LLM专注于真正需要判断的部分。" />
+    <meta name="twitter:image" content="https://chann.github.io/skills/assets/skills-social-card-cn.png" />
+    <link rel="icon" href="/skills/favicon.svg" type="image/svg+xml" />
+    <script>
+      let savedTheme = null;
+      try {
+        savedTheme = localStorage.getItem("skills-theme");
+        if (savedTheme !== "light" && savedTheme !== "dark" && savedTheme !== null) {
+          localStorage.removeItem("skills-theme");
+          savedTheme = null;
+        }
+      } catch {
+        // Storage can be unavailable; the system preference remains usable.
+      }
+      const theme =
+        savedTheme === "light" || savedTheme === "dark"
+          ? savedTheme
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      document.documentElement.dataset.theme = theme;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#000000" : "#f5f7fc");
+    </script>
+    <title>chann/skills - 把昨天的重复，变成今天的技能。</title>
+    <script type="application/ld+json" id="faq-schema">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"技能到底是什么？","acceptedAnswer":{"@type":"Answer","text":"技能是一份SKILL.md文档，用来定义智能体应如何完成特定任务。它包含执行顺序、安全规则和输出格式，让相同请求始终按同一标准处理。"}},{"@type":"Question","name":"它和普通提示词有什么不同？","acceptedAnswer":{"@type":"Answer","text":"提示词会随着对话结束而消失，技能则会作为文件保留下来。你可以对它进行版本管理、与团队共享，并通过名称反复调用，例如$review-me。"}},{"@type":"Question","name":"使用技能一定能减少令牌用量吗？","acceptedAnswer":{"@type":"Answer","text":"不一定，也不保证节省。提示词缓存取决于模型、指令长度以及相同前缀是否得以保留。技能通过复用稳定指令并分离可脚本化步骤，来减少不必要的LLM工作。"}},{"@type":"Question","name":"哪些工作适合交给脚本？","acceptedAnswer":{"@type":"Answer","text":"输入和结果可以按规则验证的工作。文件查找、格式检查、目录同步和测试执行交给脚本；解释与审查交给LLM。"}},{"@type":"Question","name":"哪些智能体可以使用这些技能？","acceptedAnswer":{"@type":"Answer","text":"支持Claude Code、Codex、Antigravity CLI、Grok Build、Pi、Gemini CLI、GitHub Copilot CLI和 OpenCode。同一份 SKILL.md 在 Codex 中通过 $name 调用，在 Claude Code 中通过 /name 调用。"}},{"@type":"Question","name":"安装后，电脑里会新增什么？","acceptedAnswer":{"@type":"Answer","text":"技能文件保存在 ~/.agents/skills 中。安装程序会在 Claude Code、Antigravity CLI 和 Grok Build 的技能目录中创建指向这些文件的链接。"}},{"@type":"Question","name":"技能会自行提交或推送吗？","acceptedAnswer":{"@type":"Answer","text":"每个技能都列出了安全规则。git-commit 会先检查提交内容，再推送到指定分支。历史改写仅在本地执行。推送被拒绝时会停止并说明原因。"}},{"@type":"Question","name":"可以只安装部分技能吗？","acceptedAnswer":{"@type":"Answer","text":"可以。把安装命令中的--skill '*'替换为所需的技能名称即可。每个技能的README也提供单独安装方式。"}},{"@type":"Question","name":"如何更新已安装的技能？","acceptedAnswer":{"@type":"Answer","text":"运行npx skills update chann/skills，即可把已安装的技能更新到最新版本。"}},{"@type":"Question","name":"是否收费或有许可证限制？","acceptedAnswer":{"@type":"Answer","text":"没有。整个仓库都以MIT License开源。你可以复刻仓库，并按团队规则调整这些技能。"}}]}</script>
+    <script type="module" crossorigin src="/skills/assets/index-Dzkc_TUf.js"></script>
+    <link rel="stylesheet" crossorigin href="/skills/assets/index-s1JrpYGM.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

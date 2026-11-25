@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko" data-locale="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>404 - chann/skills</title>
+    <link rel="icon" href="/skills/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --canvas: #000000;
+        --ink: #f7f8ff;
+        --ink-soft: #b4bad0;
+        --ink-muted: #8f97ad;
+        --accent: #0044ff;
+        --accent-text: #85a2ff;
+        --accent-ink: #ffffff;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          color-scheme: light;
+          --canvas: #f5f7fc;
+          --ink: #111827;
+          --ink-soft: #515b70;
+          --ink-muted: #626c82;
+          --accent: #0044ff;
+          --accent-text: #0044ff;
+          --accent-ink: #ffffff;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
+        margin: 0;
+        overflow-x: hidden;
+        overflow-wrap: break-word;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.6;
+        word-break: keep-all;
+      }
+      html[data-locale="jp"] body,
+      html[data-locale="cn"] body {
+        overflow-wrap: anywhere;
+      }
+      main {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 96px 24px 48px;
+        text-align: center;
+      }
+      .kicker {
+        color: var(--accent-text);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 16px 0 0;
+        font-size: clamp(2.25rem, 6vw, 3.75rem);
+        font-weight: 700;
+        letter-spacing: -0.05em;
+        line-height: 1.05;
+        text-wrap: balance;
+      }
+      p {
+        max-width: 420px;
+        margin: 16px 0 0;
+        color: var(--ink-soft);
+      }
+      a.button {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        margin-top: 32px;
+        padding: 8px 24px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 690;
+        text-decoration: none;
+        transition: filter 160ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      a.button:hover {
+        filter: brightness(1.12);
+      }
+      a.button:active {
+        transform: translateY(1px);
+      }
+      a.button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      .locale-nav {
+        margin-top: 22px;
+      }
+      .locale-nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 14px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .locale-nav a {
+        color: var(--ink-muted);
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .locale-nav a[aria-current="page"] {
+        color: var(--accent-text);
+        font-weight: 700;
+      }
+      .locale-nav a:hover {
+        color: var(--ink);
+      }
+      .locale-nav a:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      .word {
+        height: 0.72em;
+        margin: 0;
+        overflow: hidden;
+        color: var(--accent);
+        font-size: clamp(9rem, 24vw, 22rem);
+        font-weight: 730;
+        letter-spacing: -0.06em;
+        line-height: 0.84;
+        text-align: center;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="kicker">chann/skills · 404</span>
+      <h1 data-i18n="heading">페이지를 찾을 수 없습니다</h1>
+      <p data-i18n="description">요청한 페이지가 없거나 이동되었습니다.</p>
+      <a class="button" href="/skills/" data-i18n="home">홈으로 돌아가기</a>
+      <nav class="locale-nav" aria-label="언어별 홈" data-i18n-aria="navigation">
+        <ul>
+          <li><a href="/skills/" hreflang="ko" data-locale-link="ko">한국어 (KO)</a></li>
+          <li><a href="/skills/en/" hreflang="en" data-locale-link="en">English (EN)</a></li>
+          <li><a href="/skills/jp/" hreflang="ja" data-locale-link="jp">日本語 (JP)</a></li>
+          <li><a href="/skills/cn/" hreflang="zh-CN" data-locale-link="cn">简体中文 (CN)</a></li>
+        </ul>
+      </nav>
+    </main>
+    <div class="word" aria-hidden="true">404</div>
+    <script>
+      const dictionaries = {
+        ko: {
+          lang: "ko",
+          title: "페이지를 찾을 수 없습니다 - chann/skills",
+          heading: "페이지를 찾을 수 없습니다",
+          description: "요청한 페이지가 없거나 이동되었습니다.",
+          home: "홈으로 돌아가기",
+          navigation: "언어별 홈",
+        },
+        en: {
+          lang: "en",
+          title: "Page not found - chann/skills",
+          heading: "Page not found",
+          description: "The page you requested does not exist or has moved.",
+          home: "Return home",
+          navigation: "Localized home pages",
+        },
+        jp: {
+          lang: "ja",
+          title: "ページが見つかりません - chann/skills",
+          heading: "ページが見つかりません",
+          description: "指定されたページは存在しないか、移動しました。",
+          home: "ホームへ戻る",
+          navigation: "言語別ホーム",
+        },
+        cn: {
+          lang: "zh-CN",
+          title: "找不到页面 - chann/skills",
+          heading: "找不到页面",
+          description: "你请求的页面不存在或已移动。",
+          home: "返回首页",
+          navigation: "各语言首页",
+        },
+      };
+      const routes = {
+        ko: "/skills/",
+        en: "/skills/en/",
+        jp: "/skills/jp/",
+        cn: "/skills/cn/",
+      };
+      const locale = location.pathname.split("/").filter(Boolean)[1];
+      const active = ["en", "jp", "cn"].includes(locale) ? locale : "ko";
+      const dictionary = dictionaries[active];
+      document.documentElement.lang = dictionary.lang;
+      document.documentElement.dataset.locale = active;
+      document.title = dictionary.title;
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.textContent = dictionary[element.dataset.i18n];
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+        element.setAttribute("aria-label", dictionary[element.dataset.i18nAria]);
+      });
+      document.querySelector("a.button").setAttribute("href", routes[active]);
+      document.querySelector(`[data-locale-link="${active}"]`).setAttribute("aria-current", "page");
+    </script>
+  </body>
+</html>
