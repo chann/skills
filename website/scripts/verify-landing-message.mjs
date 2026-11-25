@@ -84,4 +84,16 @@ for (const locale of ["ko", "en", "jp", "cn"]) {
   }
 }
 
+// Every section a locale switch can land on must also offer its heading as a link.
+const locales = await readFile(path.join(root, "src", "i18n", "locales.ts"), "utf8");
+const tagline = await readFile(path.join(root, "src", "components", "TaglineReveal.tsx"), "utf8");
+const hashes = [...locales.match(/supportedSectionHashes = new Set\(\[([\s\S]*?)\]\)/)[1].matchAll(/"(#[a-z]+)"/g)]
+  .map((match) => match[1])
+  .filter((hash) => hash !== "#main" && hash !== "#agents");
+for (const hash of hashes) {
+  if (!`${app}${tagline}`.includes(`<HeadingLink hash="${hash}"`)) {
+    throw new Error(`The ${hash} section heading is not a shareable link.`);
+  }
+}
+
 console.log("Approved landing message verified.");

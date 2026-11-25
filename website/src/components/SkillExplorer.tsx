@@ -4,11 +4,12 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { categoryOrder, type SkillCategory } from "../data/skills";
 import { formatMessage, type LocalizedSkill } from "../i18n/content";
 import type { CatalogContent, SiteContent } from "../i18n/types";
 import { CopyButton } from "./CopyButton";
+import { HeadingLink } from "./HeadingLink";
 import { withFlags } from "./Text";
 
 type Filter = "all" | SkillCategory;
@@ -56,8 +57,28 @@ export function SkillExplorer({
   const selected =
     filtered.find((skill) => skill.id === selectedId) ?? filtered[0] ?? null;
 
+  useEffect(() => {
+    const openFromHash = () => {
+      const linked = skills.find((skill) => `#skill-${skill.id}` === window.location.hash);
+      if (!linked) return;
+      setFilter("all");
+      setQuery("");
+      setSelectedId(linked.id);
+      window.requestAnimationFrame(() => {
+        detailRef.current?.scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          block: "center",
+        });
+      });
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
+
   const selectSkill = (id: LocalizedSkill["id"]) => {
     setSelectedId(id);
+    window.history.replaceState(null, "", `#skill-${id}`);
     if (!window.matchMedia("(max-width: 767px)").matches) return;
 
     window.requestAnimationFrame(() => {
@@ -200,7 +221,11 @@ export function SkillExplorer({
                 <span className="skill-detail__package">
                   {categories[selected.category].label}
                 </span>
-                <h3>{selected.title}</h3>
+                <h3>
+                  <HeadingLink hash={`#skill-${selected.id}`} content={copyContent}>
+                    {selected.title}
+                  </HeadingLink>
+                </h3>
                 <p>{withFlags(selected.summary)}</p>
               </div>
 

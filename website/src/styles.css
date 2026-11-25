@@ -144,6 +144,7 @@ code {
 #usage,
 #explore,
 #faq,
+#tagline,
 #lifecycle,
 #router,
 #install {
@@ -390,6 +391,33 @@ code {
 
 .flag {
   white-space: nowrap;
+}
+
+.heading-link {
+  display: block;
+}
+
+.heading-link__status {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  box-shadow: 0 12px 30px var(--accent-shadow);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.heading-link__status:empty {
+  display: none;
 }
 
 .hero__lede {
@@ -1907,6 +1935,13 @@ code {
 
   .site-footer a:hover {
     color: var(--ink);
+  }
+
+  .heading-link:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent-line);
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.14em;
   }
 }
 

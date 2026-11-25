@@ -40,6 +40,7 @@ export const localeRegistry = {
 export const supportedSectionHashes = new Set([
   "#main",
   "#why",
+  "#tagline",
   "#usage",
   "#explore",
   "#agents",
@@ -50,7 +51,8 @@ export const supportedSectionHashes = new Set([
 ]);
 
 export function localeHref(locale: Locale, hash: string): string {
-  return `${localeRegistry[locale].path}${supportedSectionHashes.has(hash) ? hash : ""}`;
+  const shareable = supportedSectionHashes.has(hash) || /^#skill-[a-z-]+$/.test(hash);
+  return `${localeRegistry[locale].path}${shareable ? hash : ""}`;
 }
 
 export function isLocale(value: string | undefined): value is Locale {

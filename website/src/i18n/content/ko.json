@@ -249,7 +249,9 @@
   "copy": {
     "idle": "복사",
     "copied": "복사됨",
-    "error": "복사 실패"
+    "error": "복사 실패",
+    "link": "링크 복사",
+    "linkCopied": "링크를 복사했습니다"
   },
   "theme": {
     "light": "라이트",

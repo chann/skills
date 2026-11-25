@@ -6,10 +6,13 @@ import {
   type MotionValue,
 } from "motion/react";
 import { Fragment, useRef } from "react";
+import type { SiteContent } from "../i18n/types";
+import { HeadingLink } from "./HeadingLink";
 
 interface TaglineRevealProps {
   id?: string;
   lines: string[];
+  copy: SiteContent["copy"];
 }
 
 function Word({
@@ -31,7 +34,7 @@ function Word({
   );
 }
 
-export function TaglineReveal({ id, lines }: TaglineRevealProps) {
+export function TaglineReveal({ id, lines, copy }: TaglineRevealProps) {
   const ref = useRef<HTMLHeadingElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -45,6 +48,7 @@ export function TaglineReveal({ id, lines }: TaglineRevealProps) {
 
   return (
     <h2 id={id} ref={ref} className="tagline__text">
+      <HeadingLink hash="#tagline" content={copy}>
       {lineWords.map((words, lineIndex) => (
         <span className="tagline__line" key={lines[lineIndex]}>
           {words.map((word) => {
@@ -60,6 +64,7 @@ export function TaglineReveal({ id, lines }: TaglineRevealProps) {
           })}
         </span>
       ))}
+      </HeadingLink>
     </h2>
   );
 }

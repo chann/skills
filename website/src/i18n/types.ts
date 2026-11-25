@@ -153,7 +153,7 @@ export interface SiteContent {
   footer: { tagline: string; license: string; github: string };
   landing: LandingContent;
   productPreview: ProductPreviewContent;
-  copy: { idle: string; copied: string; error: string };
+  copy: { idle: string; copied: string; error: string; link: string; linkCopied: string };
   theme: { light: string; dark: string; change: string; title: string };
   language: { trigger: string; navigation: string };
   accessibility: AccessibilityContent;

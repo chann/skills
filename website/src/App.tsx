@@ -12,6 +12,7 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { GitHubMark } from "./components/GitHubMark";
+import { HeadingLink } from "./components/HeadingLink";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { Reveal } from "./components/Reveal";
 import { SkillExplorer } from "./components/SkillExplorer";
@@ -251,7 +252,7 @@ export function App({ locale }: AppProps) {
             <Reveal className="efficiency-intro">
               <span className="section-label">{content.benefits.label}</span>
               <h2 id="efficiency-title">
-                <Lines lines={content.benefits.title} />
+                <HeadingLink hash="#why" content={content.copy}><Lines lines={content.benefits.title} /></HeadingLink>
               </h2>
               <p>{content.benefits.description}</p>
             </Reveal>
@@ -280,7 +281,7 @@ export function App({ locale }: AppProps) {
           </div>
         </section>
 
-        <section className="tagline section" aria-labelledby="tagline-title">
+        <section className="tagline section" id="tagline" aria-labelledby="tagline-title">
           <div className="tagline__inner">
             <Reveal>
               <span className="section-label">{content.tagline.label}</span>
@@ -288,6 +289,7 @@ export function App({ locale }: AppProps) {
             <TaglineReveal
               id="tagline-title"
               lines={content.tagline.lines}
+              copy={content.copy}
             />
             <Reveal delay={0.05}>
               <dl
@@ -314,7 +316,7 @@ export function App({ locale }: AppProps) {
         <section className="workflow section" id="usage" aria-labelledby="workflow-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.workflow.label}</span>
-            <h2 id="workflow-title"><Lines lines={content.workflow.title} /></h2>
+            <h2 id="workflow-title"><HeadingLink hash="#usage" content={content.copy}><Lines lines={content.workflow.title} /></HeadingLink></h2>
             <p>{content.workflow.description}</p>
           </Reveal>
 
@@ -350,7 +352,7 @@ export function App({ locale }: AppProps) {
         <section className="lifecycle section" id="lifecycle" aria-labelledby="lifecycle-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{landing.lifecycle.label}</span>
-            <h2 id="lifecycle-title"><Lines lines={landing.lifecycle.title} /></h2>
+            <h2 id="lifecycle-title"><HeadingLink hash="#lifecycle" content={content.copy}><Lines lines={landing.lifecycle.title} /></HeadingLink></h2>
             <p>{landing.lifecycle.description}</p>
           </Reveal>
 
@@ -382,7 +384,7 @@ export function App({ locale }: AppProps) {
         <section className="explore-section section" id="explore" aria-labelledby="explore-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.catalog.label}</span>
-            <h2 id="explore-title"><Lines lines={content.catalog.title} /></h2>
+            <h2 id="explore-title"><HeadingLink hash="#explore" content={content.copy}><Lines lines={content.catalog.title} /></HeadingLink></h2>
             <p>{withFlags(content.catalog.description)}</p>
           </Reveal>
           <Reveal delay={0.06}>
@@ -400,7 +402,7 @@ export function App({ locale }: AppProps) {
             <Reveal className="efficiency-intro">
               <span className="section-label">{landing.router.label}</span>
               <h2 id="router-title">
-                <Lines lines={landing.router.title} />
+                <HeadingLink hash="#router" content={content.copy}><Lines lines={landing.router.title} /></HeadingLink>
               </h2>
               <p>{formatMessage(landing.router.description, { playbooks: playbookCount })}</p>
               <div className="run-card">
@@ -447,7 +449,7 @@ export function App({ locale }: AppProps) {
         <section className="faq section" id="faq" aria-labelledby="faq-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.faq.label}</span>
-            <h2 id="faq-title">{content.faq.title}</h2>
+            <h2 id="faq-title"><HeadingLink hash="#faq" content={content.copy}>{content.faq.title}</HeadingLink></h2>
             <p>{content.faq.description}</p>
           </Reveal>
           <Reveal className="faq-list" delay={0.06}>
@@ -467,11 +469,13 @@ export function App({ locale }: AppProps) {
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.install.label}</span>
             <h2 id="install-title">
-              <Lines
-                lines={content.install.title.map((line) =>
-                  formatMessage(line, { count: skills.length }),
-                )}
-              />
+              <HeadingLink hash="#install" content={content.copy}>
+                <Lines
+                  lines={content.install.title.map((line) =>
+                    formatMessage(line, { count: skills.length }),
+                  )}
+                />
+              </HeadingLink>
             </h2>
             <p>{content.install.description}</p>
           </Reveal>

@@ -249,7 +249,9 @@
   "copy": {
     "idle": "Copy",
     "copied": "Copied",
-    "error": "Copy failed"
+    "error": "Copy failed",
+    "link": "Copy link",
+    "linkCopied": "Link copied"
   },
   "theme": {
     "light": "light",
