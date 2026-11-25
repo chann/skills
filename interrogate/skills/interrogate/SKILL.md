@@ -74,6 +74,15 @@ Consistency**, **Maintainability**, and **Best Practices** from the loaded
 references. Prefer inputs the author did not picture: empty, huge, concurrent,
 repeated, malformed, a dependency that fails.
 
+**Weakened checks.** Read the diff for a bar that moved, whatever the change
+says it is for: a new suppression comment (`@ts-ignore`, `eslint-disable`,
+`# noqa`, `# type: ignore`), a skipped or deleted test, an assertion removed
+from a test that stayed, a stub that throws or an empty `catch`, a threshold
+lowered in a config, or a CI step allowed to fail. Each one is a finding
+`cited` at its `file:line`: HIGH when it hides a check this change would
+fail, MEDIUM otherwise, and INFO only when the change itself records the
+reason and an expiry.
+
 | Severity | Meaning | Action required |
 |----------|---------|-----------------|
 | **CRITICAL** | Data loss, security breach, or crash in production | Must fix before merge |

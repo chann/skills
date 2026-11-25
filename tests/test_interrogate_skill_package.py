@@ -62,7 +62,7 @@ class InterrogateSkillPackageTests(unittest.TestCase):
         )
 
         self.assertEqual("interrogate", metadata["name"])
-        self.assertEqual("3.0.0", metadata["version"])
+        self.assertEqual("3.1.0", metadata["version"])
         self.assertIn("blast-radius", metadata["description"])
         self.assertIn("proof", metadata["description"])
 
@@ -230,6 +230,17 @@ class InterrogateSkillPackageTests(unittest.TestCase):
             text,
         )
         self.assertIn("`cited, not traced`", text)
+
+    def test_weakened_checks_are_findings(self) -> None:
+        text = MAIN_SKILL.read_text(encoding="utf-8")
+        body = text.split("**Weakened checks.**", 1)[1].split("\n\n", 1)[0]
+        for fragment in ("@ts-ignore", "eslint-disable", "# noqa", "skipped or deleted test",
+                         "assertion removed", "empty `catch`", "threshold", "CI step allowed to fail",
+                         "`file:line`", "HIGH", "MEDIUM", "INFO only when"):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, " ".join(body.split()))
+        evals = (SKILL_DIR / "evals" / "evals.json").read_text(encoding="utf-8")
+        self.assertIn("lowers the coverage threshold", evals)
 
     def test_markdown_only_mode_replaces_the_old_variant(self) -> None:
         text = normalized(MAIN_SKILL)

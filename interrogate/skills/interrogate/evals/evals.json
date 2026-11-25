@@ -72,6 +72,17 @@
         "Code outside the diff is not reviewed, and the out-of-scope request is named and declined.",
         "The question about breakage outside the diff is routed to `blast-radius` by name."
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "Review my staged changes. The diff adds `// @ts-ignore` above a failing call, changes `it(` to `it.skip(` in one test, and lowers the coverage threshold from 80 to 60 in the config.",
+      "expected_output": "Reports each weakened check as its own finding cited at its file:line, HIGH where it hides a check the change would fail, and applies no fix.",
+      "files": [],
+      "assertions": [
+        "The suppression comment, the skipped test, and the lowered threshold are each reported as a separate finding with a stable ID and a `file:line`.",
+        "A weakened check that hides a failure of this change is rated HIGH, and none is rated INFO without a recorded reason and expiry in the change.",
+        "No suppression is removed and no test is re-enabled; the review only reports."
+      ]
     }
   ]
 }

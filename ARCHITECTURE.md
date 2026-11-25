@@ -33,7 +33,7 @@ The catalog is organized in eight stages, the same grouping the website uses: mo
 | `no-comments` | 0.1.0 | `no-comments` | Remove comments that only narrate the code. A general subagent runs the shipped reviewer prompt, accepted findings are applied, and a comment about an outside rule that cannot be checked is kept and marked for review |
 | `make-bot-ui` | 0.1.0 | `make-bot-ui` | Build a page whose controls wake a bot through a webhook the user supplies. The sender key stays in server-side config, and the local server sends the POST |
 | `build-reinstall` | 0.1.0 | `build-reinstall` | Build a project with project-owned commands, reinstall its local result, and verify the installed copy with smoke checks and artifact digests |
-| `interrogate` | 3.0.0 | `interrogate`, `blast-radius` | Adversarial review that grades every finding on a proof ladder and writes Markdown plus bilingual HTML under `.reviews/`, and a blast-radius check that proves what a change could break outside the diff |
+| `interrogate` | 3.1.0 | `interrogate`, `blast-radius` | Adversarial review that grades every finding on a proof ladder and writes Markdown plus bilingual HTML under `.reviews/`, and a blast-radius check that proves what a change could break outside the diff |
 | `git-skill` | 1.1.0 | `git-commit`, `gcr`, `gcpr`, `gcprm`, `gcprd`, `git-merge`, `git-resolve-conflicts`, `git-cleanup` | One commit workflow with once, push, realtime, push realtime, push realtime merge-main, deploy, and rewrite modes; guarded merges into `main`, `dev`, or any local branch; conflict resolution; cleanup of merged branches and finished worktrees |
 | `long-task` | 0.3.0 | `long-task` | Autonomously orchestrate multi-milestone projects with parallel worktree subagents, milestone reviews, and a Stop-hook auto-continue loop |
 | `handoff` | 1.0.0 | `handoff` | One handoff skill with an audience argument: frontend/client and backend/server handoffs from diffs, ranges, and branch comparisons, plus session-to-session handoffs that separate proven state from unproven |
@@ -306,7 +306,7 @@ skills/
 │   ├── skills/build-reinstall/references/build-reinstall.example.yaml
 │   ├── README.md
 │   └── README.ko.md
-├── interrogate/                          # plugin (v3.0.0)
+├── interrogate/                          # plugin (v3.1.0)
 │   ├── .claude-plugin/plugin.json
 │   ├── commands/interrogate.md
 │   ├── commands/blast-radius.md

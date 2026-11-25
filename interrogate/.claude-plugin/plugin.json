@@ -1,5 +1,5 @@
 {
   "name": "interrogate",
   "description": "Adversarial, proof-carrying code review (interrogate) that grades every finding on a proof ladder and writes Markdown plus bilingual HTML under .reviews/, and a blast-radius check (blast-radius) that proves what a change could break outside the diff.",
-  "version": "3.0.0"
+  "version": "3.1.0"
 }
