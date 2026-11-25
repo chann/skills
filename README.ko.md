@@ -38,7 +38,7 @@ $chann this endpoint got slow, find out why and fix it
 
 | 단계 | 스킬 | 설명 |
 | --- | --- | --- |
-| mode | **[chann](chann-mode/README.ko.md)** | 직접 호출할 때만 실행되는 입구. 목표를 정리하고 22개 플레이북 중 하나를 고른 뒤, 단계마다 맡은 스킬로 넘기고 근거를 표시해 답함 |
+| mode | **[chann](chann-mode/README.ko.md)** | 직접 호출할 때만 실행되는 입구. 목표를 정리하고 30개 플레이북 중 하나를 고른 뒤, 단계마다 맡은 스킬로 넘기고 근거를 표시해 답함 |
 | understand | **[how](understand/README.ko.md)** | 코드가 어떻게 동작하는지 코드를 읽고 설명. 모든 주장에 `file:line`을 달고 파일은 고치지 않음 |
 | understand | **[why](understand/README.ko.md)** | 코드가 왜 이렇게 만들어졌는지 커밋, blame, PR·이슈 논의, 설계 노트에서 찾아 작성자의 말을 인용해 설명 |
 | understand | **[research-brief](research-brief/README.ko.md)** | 기술 질문을 1차 출처로 확인하고 출처 등급과 확인 버전을 붙인 조사 문서를 남김 |

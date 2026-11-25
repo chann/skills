@@ -46,22 +46,30 @@ next, when to pause, and the final reply.
 | Improve one metric over repeated, measured attempts | none, inline | hillclimb |
 | Diagnose a live symptom by capturing a profile or trace | none, inline | runtime-forensics |
 | Diagnose from a saved profile, trace, or heap snapshot | none, inline | trace-forensics |
+| Add logs, metrics, traces, or alerts | none, inline | instrumentation |
 | New or changed behavior | none, inline | feature |
+| Design an API, a module boundary, or a public interface | none, inline | api-design |
+| Build or change an interface a person operates | none, inline | ui |
 | Match an authorized visual baseline across a migration | none, inline | visual-parity |
 | Structure changes, behavior does not | none, inline | refactoring |
 | Comments that narrate the code, or a request to strip them | `no-comments` | refactoring |
+| Retire or replace an API, a system, or a stored-data shape | none, inline | migration |
 | A page whose controls wake a bot through a webhook | `make-bot-ui` | feature |
 | A fork an experiment can settle | none, inline | prototype |
 | Several competing attempts at one artifact | `arena` | prototype |
 | Measure the behavior of a skill, prompt, model, or agent setup | none, inline | eval |
+| An ask still too vague to plan, or a spec to write first | `review-me` | spec |
 | A plan or design with open decisions | `review-me`, `plan-summary` | plan |
 | Review a change for defects and reach | `interrogate`, `blast-radius` | review |
 | Explain a change or a plan document | `diff-summary`, `plan-summary`, `diff-viewer` | review |
+| Harden code that handles untrusted input, auth, secrets, or dependencies | `interrogate` | security |
 | Independent slices to run in parallel | `swarm` | fan-out |
 | Multi-milestone or unattended work | `long-task` | autonomous-run |
 | Run a queue or stack of PRs through independent verification | none, inline | autopilot |
 | Open a pull request for verified work | none, inline | opening-a-pr |
 | Check or drive an existing PR to merge-ready | none, inline | babysit |
+| Set up or change a build, test, or deploy pipeline | none, inline | ci |
+| Prepare a production launch, a staged rollout, or a rollback | none, inline | launch |
 | Commit, push, deploy, merge, conflicts, cleanup, reinstall | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
 | Stopping, resuming, catching up | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | Docs and prose | `gen-docs`, `unslop` | docs |
@@ -76,6 +84,8 @@ unavailable, report what was checked and mark the missing proof
 ## 3. Principles
 
 The name and when it applies; the rule and its test are in `references/principles.md`.
+When a thought argues for skipping a step, look it up in
+`references/rationalizations.md` before acting on it.
 
 **Core**
 - **laziness-protocol**: sizing any change, or tempted to add an option, layer, or abstraction.
@@ -94,6 +104,7 @@ The name and when it applies; the rule and its test are in `references/principle
 - **type-system-discipline**: designing types, a function signature, or code a static checker can reject.
 - **make-operations-idempotent**: commands, setup steps, or loops that may crash and rerun.
 - **migrate-callers-then-delete**: replacing an internal API, name, or path that still has callers.
+- **design-the-contract-first**: an API, module boundary, or interface another party will call.
 - **separate-before-serializing**: two actors might both write to one file, branch, key, or record.
 
 **Verification**
@@ -101,6 +112,7 @@ The name and when it applies; the rule and its test are in `references/principle
 - **fix-root-causes**: debugging or patching.
 - **sequence-verifiable-units**: multi-step work and how commits stack.
 - **outcome-oriented-execution**: a planned rewrite or migration with named phase boundaries.
+- **hold-the-quality-bar**: a failing check, test, or threshold stands between the change and green.
 - **test-behavior-not-implementation**: writing, changing, or keeping a test.
 - **explain-the-number**: before measuring, and before trusting or reporting a number.
 - **proven-vs-unproven**: writing any status, summary, or "done".
@@ -211,18 +223,26 @@ step when installed.
 - **hillclimb**: sustained improvement against a fixed metric and regression gate.
 - **runtime-forensics**: capture a live signal and diagnose its source.
 - **trace-forensics**: analyze a capture that already exists.
+- **instrumentation**: logs, metrics, traces, and alerts that answer on-call questions.
 - **feature**: new or changed behavior a user can see.
+- **api-design**: a contract other code will call.
+- **ui**: an interface a person sees and operates.
 - **visual-parity**: measure a migration against a frozen visual baseline.
 - **refactoring**: structure changes while behavior is pinned.
+- **migration**: retiring or replacing something that still has consumers.
 - **prototype**: a fork that a cheap experiment can settle.
 - **eval**: measure agent or skill behavior with a blinded comparison.
+- **spec**: an ask too vague to plan, turned into a statement someone can check.
 - **plan**: a multi-unit change whose plan is the deliverable.
 - **review**: judging or explaining a change without editing it.
+- **security**: trust boundaries and the controls on them.
 - **fan-out**: independent slices run in parallel and merged into one result.
 - **autonomous-run**: unattended work driven to a checkable exit condition.
 - **autopilot**: drive a queue or stack of PRs with a verdict per item.
 - **opening-a-pr**: publish a reviewable pull request when asked.
 - **babysit**: check, triage, or drive an existing pull request to merge-ready.
+- **ci**: the gates a change passes before it lands.
+- **launch**: staged exposure to users with a written way back.
 - **shipping**: commit, push, deploy, merge, and clean up at the reach asked for.
 - **pause-and-pickup**: stopping safely, or resuming from a prior trail.
 - **docs**: one document whose every claim holds for the commit it ships in.

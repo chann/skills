@@ -42,7 +42,7 @@ npx skills add -y -g chann/skills --skill chann
 npx skills add chann/skills --skill chann
 ```
 
-`chann`을 설치하면 플레이북 22개가 함께 설치됩니다. Claude Code와 Codex에서
+`chann`을 설치하면 플레이북 30개가 함께 설치됩니다. Claude Code와 Codex에서
 같은 파일을 사용합니다. 각 단계는 설치된 스킬을 불러오거나, 필요하면 스킬 파일을
 직접 읽습니다. 해당 스킬을 쓸 수 없으면 플레이북에 적힌 단계대로 진행합니다.
 
@@ -91,6 +91,14 @@ $chann captures/startup.cpuprofile에서 시작 지연 원인 찾아줘
 | pause-and-pickup | 안전하게 멈추기, 이어서 하기 | 재개 지점 |
 | docs | 문서 하나 | 반영되는 커밋 시점에 사실인 내용 |
 | authoring-a-skill | 스킬 작성과 수정 | 에이전트가 읽는 모든 문장 |
+| spec | 아직 계획하기엔 모호한 요청 | 무엇을 만들고 완료를 어떻게 확인하는지 적은 문서 |
+| api-design | API, 모듈 경계, 공개 인터페이스 설계 | 호출하는 쪽이 보는 계약 |
+| ui | 사람이 조작하는 화면 | 사람이 보고 듣고 조작하는 것 전부 |
+| security | 신뢰할 수 없는 입력, 인증, 비밀 값, 의존성 | 신뢰 경계와 그 위의 통제 |
+| instrumentation | 로그, 메트릭, 트레이스, 알림 | 실행 중인 시스템이 스스로 답할 수 있는 질문 |
+| migration | 사용처가 남아 있는 것을 없애거나 바꾸기 | 새 형태로 가는 경로와 옛 형태의 제거 |
+| ci | 빌드, 테스트, 배포 파이프라인 | 모든 변경이 통과하는 관문 |
+| launch | 프로덕션 출시와 단계적 공개 | 공개 결정과 되돌리는 방법 |
 
 `babysit`은 PR 상태 조회, 리뷰 스레드 대응, 머지 준비 중 요청받은
 범위를 맡습니다. `autopilot-stack`은 PR을 각각 검증한 뒤 돌려줍니다.
@@ -101,6 +109,14 @@ Lauren Tan의 [pstack 플레이북 22개(c3464c11)](https://github.com/backnotpr
 바탕으로 작성했습니다(MIT). 각 플레이북이 이 패키지 어디에 반영됐는지는
 [대응표 테스트](../tests/test_upstream_skill_disposition.py)에서 확인할 수 있습니다.
 
+spec, api-design, ui, security, instrumentation, migration, ci, launch
+플레이북과 `design-the-contract-first`, `hold-the-quality-bar` 원칙,
+`references/rationalizations.md`는 Addy Osmani의
+[agent-skills(e997ac5b)](https://github.com/addyosmani/agent-skills/tree/e997ac5b9a74eab332d5e9793bb38a38c8cfdd74/skills)를
+바탕으로 작성했습니다(MIT). 그 스킬 26개가 각각 여기 어느 파일에 반영됐는지,
+또는 이미 어느 스킬이 맡고 있었는지는
+[대응표 테스트](../tests/test_agent_skills_disposition.py)에 있습니다.
+
 ## 라우팅
 
 | 상황 | 스킬 (설치된 경우) | 플레이북 |
@@ -109,43 +125,35 @@ Lauren Tan의 [pstack 플레이북 22개(c3464c11)](https://github.com/backnotpr
 | 왜 이렇게 만들었는지 | `why` | investigation |
 | 외부 라이브러리, API, 명세 질문 | `research-brief` | investigation |
 | 고장, 예외, 간헐적 실패 | `bug-hunt` | bug-fix |
-| 측정해 보니 느려짐 | `bug-hunt` | perf |
+| 기대보다 느리거나 무거움 | `bug-hunt` | perf |
+| 한 지표를 여러 번 측정하며 개선 | 없음, 직접 진행 | hillclimb |
+| 프로파일이나 트레이스를 수집해 실행 중인 문제 진단 | 없음, 직접 진행 | runtime-forensics |
+| 저장된 프로파일, 트레이스, 힙 스냅샷 진단 | 없음, 직접 진행 | trace-forensics |
+| 로그, 메트릭, 트레이스, 알림 추가 | 없음, 직접 진행 | instrumentation |
 | 새 동작이나 바뀐 동작 | 없음, 직접 진행 | feature |
+| API, 모듈 경계, 공개 인터페이스 설계 | 없음, 직접 진행 | api-design |
+| 사람이 조작하는 화면을 만들거나 바꾸기 | 없음, 직접 진행 | ui |
+| 마이그레이션 전후 화면 일치 검증 | 없음, 직접 진행 | visual-parity |
 | 구조만 바꾸고 동작은 그대로 | 없음, 직접 진행 | refactoring |
 | 코드를 다시 말하는 주석, 또는 주석을 지워 달라는 요청 | `no-comments` | refactoring |
+| API, 시스템, 저장 데이터 형태를 없애거나 교체 | 없음, 직접 진행 | migration |
 | 웹훅으로 봇을 깨우는 페이지 | `make-bot-ui` | feature |
 | 실험으로 정할 수 있는 갈림길 | 없음, 직접 진행 | prototype |
 | 같은 결과물을 두고 경쟁하는 여러 시도 | `arena` | prototype |
+| 스킬, 프롬프트, 모델, 에이전트 구성 평가 | 없음, 직접 진행 | eval |
+| 계획하기엔 아직 모호한 요청, 또는 먼저 써야 하는 스펙 | `review-me` | spec |
 | 열린 결정이 남은 계획이나 설계 | `review-me`, `plan-summary` | plan |
 | 변경의 결함과 영향 범위 리뷰 | `interrogate`, `blast-radius` | review |
 | 변경이나 계획 문서 설명 | `diff-summary`, `plan-summary`, `diff-viewer` | review |
+| 신뢰할 수 없는 입력, 인증, 비밀 값, 의존성을 다루는 코드 보강 | `interrogate` | security |
 | 병렬로 돌릴 독립 조각 | `swarm` | fan-out |
 | 여러 마일스톤이나 무인 작업 | `long-task` | autonomous-run |
-| 커밋, 푸시, 배포, 병합, 충돌, 정리, 재설치 | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | hillclimb | 한 지표를 반복 실험으로 개선 | 고정된 측정 조건과 시도별 기록 |
-| 한 지표를 여러 번 측정하며 개선 | 없음, 직접 진행 | hillclimb |
-| runtime-forensics | 실행 중인 프로세스 진단 | 직접 수집한 프로파일과 근거 |
-| 프로파일이나 트레이스를 수집해 실행 중인 문제 진단 | 없음, 직접 진행 | runtime-forensics |
-| trace-forensics | 저장된 트레이스나 프로파일 분석 | 캡처에 근거한 진단 |
-| 저장된 프로파일, 트레이스, 힙 스냅샷 진단 | 없음, 직접 진행 | trace-forensics |
-| visual-parity | 승인된 기준 화면을 마이그레이션 뒤에도 유지 | 재현 가능한 이미지 비교 |
-| 마이그레이션 전후 화면 일치 검증 | 없음, 직접 진행 | visual-parity |
-| eval | 스킬이나 에이전트 동작 평가 | 블라인드 채점과 관찰 근거 |
-| 스킬, 프롬프트, 모델, 에이전트 구성 평가 | 없음, 직접 진행 | eval |
-| autopilot | PR 대기열이나 의존 스택 운영 | 각 PR의 검증 결과 |
-| PR 대기열이나 스택의 독립 검증 | 없음, 직접 진행 | autopilot |
-| opening-a-pr | 요청받은 PR 열기 | 검토 가능한 PR |
-| 검증한 변경으로 PR 열기 | 없음, 직접 진행 | opening-a-pr |
-| babysit | PR 상태 확인 또는 머지 준비 | 충돌, 리뷰, CI 상태 |
-| 기존 PR 상태 확인 또는 머지 준비 | 없음, 직접 진행 | babysit |
-| 한 지표를 여러 번 측정하며 개선 | 없음, 직접 진행 | hillclimb |
-| 프로파일이나 트레이스를 수집해 실행 중인 문제 진단 | 없음, 직접 진행 | runtime-forensics |
-| 저장된 프로파일, 트레이스, 힙 스냅샷 진단 | 없음, 직접 진행 | trace-forensics |
-| 마이그레이션 전후 화면 일치 검증 | 없음, 직접 진행 | visual-parity |
-| 스킬, 프롬프트, 모델, 에이전트 구성 평가 | 없음, 직접 진행 | eval |
 | PR 대기열이나 스택의 독립 검증 | 없음, 직접 진행 | autopilot |
 | 검증한 변경으로 PR 열기 | 없음, 직접 진행 | opening-a-pr |
 | 기존 PR 상태 확인 또는 머지 준비 | 없음, 직접 진행 | babysit |
-| shipping |
+| 빌드, 테스트, 배포 파이프라인 구성과 변경 | 없음, 직접 진행 | ci |
+| 프로덕션 출시, 단계적 공개, 롤백 준비 | 없음, 직접 진행 | launch |
+| 커밋, 푸시, 배포, 병합, 충돌, 정리, 재설치 | `git-commit`, `git-merge`, `git-resolve-conflicts`, `git-cleanup`, `build-reinstall` | shipping |
 | 멈추기, 이어 하기, 따라잡기 | `handoff`, `recall`, `catchup` | pause-and-pickup |
 | 문서와 글 | `gen-docs`, `unslop` | docs |
 | 스킬 작성, 수정, 교훈 정리 | `skill-forge`, `skill-audit`, `reflect` | authoring-a-skill |
@@ -159,8 +167,9 @@ chann-mode/
 ├── skills/chann/
 │   ├── SKILL.md                     # 첫 동작, 라우팅, 원칙 목록, 자율성, 위임, 증거, 답변
 │   ├── worker.md                    # 모든 하위 에이전트가 먼저 읽는 규칙
-│   ├── playbooks/<name>.md          # 플레이북 22개
-│   ├── references/principles.md     # 원칙 27개와 각 원칙의 점검 질문
+│   ├── playbooks/<name>.md          # 플레이북 30개
+│   ├── references/principles.md     # 원칙 29개와 각 원칙의 점검 질문
+│   ├── references/rationalizations.md # 단계를 건너뛰려는 핑계와 그에 답하는 원칙
 │   ├── references/decision-trail.md # 길거나 무인으로 도는 작업의 결정 기록 형식
 │   ├── agents/openai.yaml
 │   └── evals/evals.json

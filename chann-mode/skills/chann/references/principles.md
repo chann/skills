@@ -191,6 +191,21 @@ callers.
 
 **Test:** after the change, does a search for the old name come back empty?
 
+### design-the-contract-first
+
+**Apply when:** designing an API, a module boundary, or any interface another
+party will call.
+
+- Write the contract before the implementation: the operations, the types,
+  the errors, and what a caller may rely on.
+- Whatever a caller can observe, some caller will depend on. Promise it or
+  hide it.
+- Extend by adding. Changing or removing something published is a migration,
+  announced and staged.
+
+**Test:** could a caller be written from the contract alone, before the
+implementation exists?
+
 ### separate-before-serializing
 
 **Apply when:** two or more actors might both write to one file, branch, key,
@@ -258,6 +273,22 @@ commits.
 
 **Test:** at the phase boundary, is the tree the target shape, with no
 throwaway compatibility left in it?
+
+### hold-the-quality-bar
+
+**Apply when:** a failing check, test, type error, or threshold stands between
+the change and green.
+
+- Fix the code, not the check. A new suppression comment, a skipped or deleted
+  test, a removed assertion, a stub that throws, an empty catch, or a lowered
+  threshold moves the bar.
+- Moving the bar is the user's decision. Put the rule, the reason, and an
+  expiry in the reply, and wait for the answer.
+- With no number to hold, hold today's: record the current value and refuse
+  to get worse.
+
+**Test:** does the diff add a suppression, a skip, or a lower threshold the
+user did not approve?
 
 ### test-behavior-not-implementation
 

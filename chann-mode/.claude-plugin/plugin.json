@@ -1,5 +1,5 @@
 {
   "name": "chann-mode",
-  "description": "One entry point for non-trivial work with 22 playbooks for building, diagnosis, measurement, evaluation, and shipping.",
-  "version": "0.4.0"
+  "description": "One entry point for non-trivial work with 30 playbooks for specifying, building, hardening, diagnosis, measurement, evaluation, and shipping.",
+  "version": "0.5.0"
 }

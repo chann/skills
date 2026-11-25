@@ -227,11 +227,11 @@ npx skills remove \
 
 | Command | Action |
 |---|---|
-| `/chann <task>` | Run a non-trivial task in the owner's working style: restate the goal and the smallest change, match one of 22 playbooks, route each step to the skill that owns it, and reply with labelled evidence |
+| `/chann <task>` | Run a non-trivial task in the owner's working style: restate the goal and the smallest change, match one of 30 playbooks, route each step to the skill that owns it, and reply with labelled evidence |
 
 Codex invokes the same workflow as `$chann <task>`. It runs only on its own selector. Without it, call the owning skill directly: `bug-hunt` for a defect, `interrogate` for a diff review, `swarm` for parallel slices, `long-task` for a multi-milestone build.
 
-See the [22 playbooks and their triggers](chann-mode/README.md#playbooks). The same playbook files ship with Claude Code and Codex. Steps use installed skills when available and permitted, with inline steps for a standalone installation.
+See the [30 playbooks and their triggers](chann-mode/README.md#playbooks). The same playbook files ship with Claude Code and Codex. Steps use installed skills when available and permitted, with inline steps for a standalone installation.
 
 Reversible work proceeds without asking. A force-push, a deploy outside the repository's documented settings, deleting data, or a message to anyone outside the session pauses. "자러 간다" or "don't stop" runs the chosen playbook unattended, records decisions, and skips actions that still need authorization. Work with two or more separable parts is split across delegates, each writer in its own worktree and branch; their branches are merged and the project's checks run on the merged tree.
 

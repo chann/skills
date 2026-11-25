@@ -53,6 +53,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             SKILL / "agents" / "openai.yaml",
             SKILL / "evals" / "evals.json",
             SKILL / "references" / "principles.md",
+            SKILL / "references" / "rationalizations.md",
             SKILL / "references" / "decision-trail.md",
         )
         for path in expected:
@@ -64,7 +65,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             (PACKAGE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
         self.assertEqual("chann-mode", metadata["name"])
-        self.assertEqual("0.4.0", metadata["version"])
+        self.assertEqual("0.5.0", metadata["version"])
         self.assertIn("playbooks", metadata["description"])
 
     def test_skill_is_explicit_only_on_both_selectors(self) -> None:
@@ -87,7 +88,7 @@ class ChannModeSkillPackageTests(unittest.TestCase):
     def test_every_playbook_is_listed_and_every_listed_playbook_exists(self) -> None:
         listed = set(bold_bullets(section(skill_text(), "Playbooks")))
         on_disk = {path.stem for path in PLAYBOOKS.glob("*.md")}
-        self.assertEqual(22, len(on_disk))
+        self.assertEqual(30, len(on_disk))
         self.assertEqual(on_disk, listed)
 
     def test_routing_table_points_at_real_playbooks_and_covers_all_of_them(self) -> None:
@@ -124,6 +125,28 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             with self.subTest(principle=name):
                 self.assertIn("**Apply when:**", body)
                 self.assertIn("**Test:**", body)
+
+    def test_every_rationalization_names_a_documented_principle(self) -> None:
+        text = (SKILL / "references" / "rationalizations.md").read_text(encoding="utf-8")
+        reference = (SKILL / "references" / "principles.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r"^### ([a-z][a-z-]*)$", reference, re.M))
+        rows = [
+            [cell.strip() for cell in line.strip().strip("|").split("|")]
+            for line in text.splitlines()
+            if line.startswith('| "')
+        ]
+        self.assertGreaterEqual(len(rows), 12)
+        self.assertIn("`references/rationalizations.md`", skill_text())
+        for thought, answer, principle in rows:
+            with self.subTest(thought=thought):
+                self.assertIn(principle, documented)
+                self.assertTrue(answer)
+
+    def test_agent_skills_principles_are_present(self) -> None:
+        indexed = set(bold_bullets(section(skill_text(), "Principles")))
+        for name in ("design-the-contract-first", "hold-the-quality-bar"):
+            with self.subTest(principle=name):
+                self.assertIn(name, indexed)
 
     def test_catalog_owned_principles_are_present(self) -> None:
         indexed = set(bold_bullets(section(skill_text(), "Principles")))
@@ -172,7 +195,8 @@ class ChannModeSkillPackageTests(unittest.TestCase):
             with self.subTest(eval=item["id"]):
                 self.assertGreaterEqual(len(item["assertions"]), 2)
         joined = json.dumps(evals, ensure_ascii=False)
-        for gate in ("bug-hunt", "interrogate", "worker.md", "worktree", "blocked"):
+        for gate in ("bug-hunt", "interrogate", "worker.md", "worktree", "blocked",
+                     "security playbook", "hold-the-quality-bar", "spec playbook"):
             with self.subTest(gate=gate):
                 self.assertIn(gate, joined)
 

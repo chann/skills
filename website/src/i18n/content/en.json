@@ -246,7 +246,7 @@
   },
   "skills": {
     "chann": {
-      "summary": "Chooses from 22 playbooks shared by Claude Code and Codex, then uses installed skills or follows the playbook directly.",
+      "summary": "Chooses from 30 playbooks shared by Claude Code and Codex, then uses installed skills or follows the playbook directly.",
       "whenToUse": "Invoke it for a feature, trace analysis, repeatable benchmark, visual comparison, agent evaluation, or pull request monitoring",
       "result": "The task outcome and evidence from the selected playbook, such as a trace diagnosis, benchmark results, image diffs, or PR status"
     },
