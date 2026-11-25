@@ -45,10 +45,19 @@ export const supportedSectionHashes = new Set([
   "#agents",
   "#faq",
   "#install",
+  "#lifecycle",
+  "#catalog",
+  "#router",
 ]);
 
 export function localeHref(locale: Locale, hash: string): string {
   return `${localeRegistry[locale].path}${supportedSectionHashes.has(hash) ? hash : ""}`;
+}
+
+/** The redesigned landing page is published beside the current one, under `new/`. */
+export function previewLocaleHref(locale: Locale, hash: string): string {
+  const suffix = locale === defaultLocale ? "" : `${locale}/`;
+  return `${localeRegistry[defaultLocale].path}new/${suffix}${supportedSectionHashes.has(hash) ? hash : ""}`;
 }
 
 export function isLocale(value: string | undefined): value is Locale {

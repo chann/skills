@@ -81,6 +81,38 @@ export interface AccessibilityContent {
   installResults: string;
 }
 
+export interface LandingContent {
+  nav: Record<"lifecycle" | "catalog" | "why" | "router" | "faq" | "cta", string>;
+  hero: Record<"badge" | "primaryAction" | "agentsLabel" | "commandLabel", string>;
+  lifecycle: {
+    label: string;
+    title: string[];
+    description: string;
+    flowLabel: string;
+    commandsLabel: string;
+    commands: string[];
+  };
+  catalog: { showLess: string; selectors: string };
+  why: {
+    label: string;
+    title: string[];
+    description: string;
+    items: Array<{ label: string; title: string; description: string }>;
+  };
+  router: {
+    label: string;
+    title: string[];
+    description: string;
+    action: string;
+    groups: Array<{ tag: string; description: string }>;
+  };
+  cta: { title: string[]; description: string };
+  footer: Record<
+    "product" | "setup" | "resources" | "usage" | "architecture" | "contract" | "copyright",
+    string
+  >;
+}
+
 export interface SiteContent {
   meta: MetadataContent;
   nav: {
@@ -128,6 +160,7 @@ export interface SiteContent {
   };
   install: InstallContent;
   footer: { tagline: string; license: string; github: string };
+  landing: LandingContent;
   productPreview: ProductPreviewContent;
   copy: { idle: string; copied: string; error: string };
   theme: { light: string; dark: string; change: string; title: string };

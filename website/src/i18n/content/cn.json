@@ -176,6 +176,119 @@
     "license": "MIT License",
     "github": "GitHub"
   },
+  "landing": {
+    "nav": {
+      "lifecycle": "工作流程",
+      "catalog": "技能",
+      "why": "工作原理",
+      "router": "chann",
+      "faq": "常见问题",
+      "cta": "开始使用"
+    },
+    "hero": {
+      "badge": "{count}个工作流 · MIT 许可",
+      "primaryAction": "开始使用",
+      "agentsLabel": "支持{agents}种编码智能体",
+      "commandLabel": "安装命令"
+    },
+    "lifecycle": {
+      "label": "工作流程",
+      "title": [
+        "每个阶段一个技能。",
+        "需要时按名称调用。"
+      ],
+      "description": "从读懂代码到发布和交接，软件工作的每个阶段都有负责它的技能。在 Claude Code 中用 /名称，在 Codex 中用 $名称 调用。",
+      "flowLabel": "工作阶段与代表技能",
+      "commandsLabel": "最常用的技能",
+      "commands": [
+        "交给它一项任务，它来选择工作流程",
+        "说明代码是如何运行的",
+        "逐项追问计划中的决定",
+        "先复现，再找原因",
+        "尝试破坏变更，并给出证据",
+        "只提交并推送已验证的单元",
+        "把多个里程碑推进到完成",
+        "写下供下一个人接手的文档"
+      ]
+    },
+    "catalog": {
+      "showLess": "收起",
+      "selectors": "{count}个工作流 · {selectors}个选择器"
+    },
+    "why": {
+      "label": "工作原理",
+      "title": [
+        "智能体会走捷径。",
+        "技能把捷径堵上。"
+      ],
+      "description": "放任不管时，智能体会跳过复现、验证和评审。四种机制守住这些环节。",
+      "items": [
+        {
+          "label": "证据标注",
+          "title": "用证据回答，而不是“看起来可以”",
+          "description": "每个发现和每次修复都会标明验证到了哪一步。只是口头的说法不会被报告，同时附上执行的命令、输出和 file:line。未能确认的内容标为 INCONCLUSIVE。"
+        },
+        {
+          "label": "堵住借口",
+          "title": "每个跳过步骤的借口都有回应",
+          "description": "“测试以后再补”“先把这个检查关掉”这类想法，都配有必须遵守的原则。削弱检查的变更会在评审中作为问题报告。"
+        },
+        {
+          "label": "授权范围",
+          "title": "只做到你要求的范围",
+          "description": "提交、推送、合并和部署都停在你要求的范围内。不会强制推送，推送被拒绝时会停下并说明原因。"
+        },
+        {
+          "label": "契约检查",
+          "title": "技能本身也要通过检查",
+          "description": "每个技能包都遵循同样的九条规则，由 skill-audit 和测试来确认。目录与技能包不一致时，网站构建会失败。"
+        }
+      ]
+    },
+    "router": {
+      "label": "入口",
+      "title": [
+        "不确定该调用哪个技能？",
+        "从 chann 开始。"
+      ],
+      "description": "它用一句话整理目标，从{playbooks}个工作流程中选出一个，再把每个步骤交给负责它的技能。最终回答中的每个结论都附有依据。",
+      "action": "查看{playbooks}个工作流程",
+      "groups": [
+        {
+          "tag": "构建",
+          "description": "把模糊的需求整理成规格，先设计契约和界面状态。"
+        },
+        {
+          "tag": "诊断",
+          "description": "从复现和测量开始，用 file:line 指出原因。"
+        },
+        {
+          "tag": "验证",
+          "description": "尝试破坏变更，检查信任边界和智能体行为。"
+        },
+        {
+          "tag": "发布",
+          "description": "只放行通过关卡的变更，并先写好回滚方法。"
+        }
+      ]
+    },
+    "cta": {
+      "title": [
+        "同样的工作，",
+        "每次都按同一标准。"
+      ],
+      "description": "一个命令，把{count}个技能安装到{agents}种智能体。"
+    },
+    "footer": {
+      "product": "浏览",
+      "setup": "智能体",
+      "resources": "资料",
+      "usage": "使用指南",
+      "architecture": "架构",
+      "contract": "技能契约",
+      "copyright": "© {year} chann/skills · MIT 许可"
+    }
+  },
   "productPreview": {
     "sidebarLabel": "技能示例列表",
     "packagedSkills": "已打包技能",

@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const targets = [
   path.join(websiteRoot, "src", "styles.css"),
+  path.join(websiteRoot, "src", "new", "new.css"),
   path.join(websiteRoot, "public", "404.html"),
 ];
 
