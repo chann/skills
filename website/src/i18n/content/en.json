@@ -177,22 +177,9 @@
     "github": "GitHub"
   },
   "landing": {
-    "nav": {
-      "lifecycle": "Lifecycle",
-      "catalog": "Skills",
-      "why": "Why it works",
-      "router": "chann",
-      "faq": "FAQ",
-      "cta": "Get started"
-    },
-    "hero": {
-      "badge": "{count} workflows · MIT licensed",
-      "primaryAction": "Get started",
-      "agentsLabel": "Works with {agents} coding agents",
-      "commandLabel": "Install command"
-    },
+    "agentsLabel": "Works with {agents}+ coding agents",
     "lifecycle": {
-      "label": "The lifecycle",
+      "label": "Lifecycle",
       "title": [
         "One skill per phase.",
         "Call it by name when you need it."
@@ -209,40 +196,6 @@
         "Commits and pushes only verified units",
         "Drives a multi-milestone build to the end",
         "Writes the document the next person resumes from"
-      ]
-    },
-    "catalog": {
-      "showLess": "Show fewer",
-      "selectors": "{count} workflows · {selectors} selectors"
-    },
-    "why": {
-      "label": "Why it works",
-      "title": [
-        "Agents take the shortest path.",
-        "Skills close the shortcut."
-      ],
-      "description": "Left alone, an agent skips the reproduction, the verification, and the review. Four mechanisms hold the line.",
-      "items": [
-        {
-          "label": "Proof levels",
-          "title": "Evidence, not “seems right”",
-          "description": "Every finding and every fix says how far it was checked. A claim that was only said is not reported; the command, its output, and the file:line travel with it. Anything unchecked is marked INCONCLUSIVE."
-        },
-        {
-          "label": "Rationalizations",
-          "title": "Every excuse already has an answer",
-          "description": "“I will add the test later” and “let me silence this check for now” are each paired with the principle that answers them. A change that weakens a check is reported as a finding in review."
-        },
-        {
-          "label": "Authorized reach",
-          "title": "It goes only as far as you asked",
-          "description": "Commits, pushes, merges, and deploys stop at the reach you requested. Nothing is force-pushed, and a rejected push stops the run and reports why."
-        },
-        {
-          "label": "Contract audit",
-          "title": "The skills are checked too",
-          "description": "Every skill package follows the same nine rules, and skill-audit and the test suite enforce them. When the catalog and the packages disagree, the site build fails."
-        }
       ]
     },
     "router": {
@@ -271,13 +224,6 @@
           "description": "Lets only gated changes out, and writes the way back before the rollout."
         }
       ]
-    },
-    "cta": {
-      "title": [
-        "The same work,",
-        "to the same standard every time."
-      ],
-      "description": "One command installs {count} skills into {agents} agents."
     },
     "footer": {
       "product": "Explore",

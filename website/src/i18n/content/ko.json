@@ -177,22 +177,9 @@
     "github": "GitHub"
   },
   "landing": {
-    "nav": {
-      "lifecycle": "작업 흐름",
-      "catalog": "스킬",
-      "why": "작동 원리",
-      "router": "chann",
-      "faq": "FAQ",
-      "cta": "시작하기"
-    },
-    "hero": {
-      "badge": "워크플로 {count}개 · MIT 라이선스",
-      "primaryAction": "시작하기",
-      "agentsLabel": "코딩 에이전트 {agents}종 지원",
-      "commandLabel": "설치 명령"
-    },
+    "agentsLabel": "코딩 에이전트 {agents}종 이상 지원",
     "lifecycle": {
-      "label": "작업 흐름",
+      "label": "Lifecycle",
       "title": [
         "단계마다 스킬 하나.",
         "필요할 때 이름으로 부릅니다."
@@ -211,42 +198,8 @@
         "다음 사람이 이어받을 문서를 씁니다"
       ]
     },
-    "catalog": {
-      "showLess": "접기",
-      "selectors": "워크플로 {count}개 · 셀렉터 {selectors}개"
-    },
-    "why": {
-      "label": "작동 원리",
-      "title": [
-        "에이전트는 지름길을 고릅니다.",
-        "스킬은 그 길을 막습니다."
-      ],
-      "description": "그냥 두면 에이전트는 재현, 검증, 리뷰를 건너뜁니다. 네 가지 장치가 그 자리를 지킵니다.",
-      "items": [
-        {
-          "label": "증거 표기",
-          "title": "“된 것 같다” 대신 증거로 답합니다",
-          "description": "발견과 수정마다 어디까지 확인했는지 표시합니다. 말로만 한 주장은 보고하지 않고, 실행한 명령과 출력, file:line을 함께 남깁니다. 확인하지 못한 것은 INCONCLUSIVE로 적습니다."
-        },
-        {
-          "label": "핑계 차단",
-          "title": "건너뛰려는 핑계마다 답이 있습니다",
-          "description": "“테스트는 나중에”, “이 검사는 일단 끄자” 같은 생각마다 지켜야 할 원칙을 짝지어 뒀습니다. 검사를 약하게 만든 변경은 리뷰에서 발견 사항으로 올라옵니다."
-        },
-        {
-          "label": "권한 범위",
-          "title": "요청한 만큼만 반영합니다",
-          "description": "커밋, 푸시, 머지, 배포는 요청한 범위까지만 진행합니다. 강제 푸시는 하지 않고, 푸시가 거부되면 멈춰서 이유를 알립니다."
-        },
-        {
-          "label": "계약 검사",
-          "title": "스킬도 검사를 통과해야 합니다",
-          "description": "모든 스킬 패키지는 같은 아홉 가지 규칙을 따르고, skill-audit과 테스트가 이를 확인합니다. 카탈로그와 스킬이 어긋나면 사이트 빌드가 실패합니다."
-        }
-      ]
-    },
     "router": {
-      "label": "진입점",
+      "label": "Entry point",
       "title": [
         "무엇을 부를지 모르겠다면,",
         "chann 하나로."
@@ -271,13 +224,6 @@
           "description": "관문을 통과한 변경만 내보내고, 되돌리는 방법을 먼저 적습니다."
         }
       ]
-    },
-    "cta": {
-      "title": [
-        "같은 작업을,",
-        "매번 같은 기준으로."
-      ],
-      "description": "명령 하나로 스킬 {count}개를 에이전트 {agents}종에 설치합니다."
     },
     "footer": {
       "product": "둘러보기",

@@ -1,11 +1,9 @@
-import type { SkillCategory, SkillId } from "../data/skills";
+import type { SkillCategory, SkillId } from "./skills";
 
-/** Number of files in chann-mode/skills/chann/playbooks; verify:new-landing checks it. */
+/** Number of files in chann-mode/skills/chann/playbooks; verify:landing checks it. */
 export const playbookCount = 30;
 
 export const shortInstallCommand = "npx skills add chann/skills";
-
-export const repositoryUrl = "https://github.com/chann/skills";
 
 /** One node per phase of the flow diagram: the category and the two skills shown in it. */
 export const lifecyclePhases: ReadonlyArray<{
@@ -31,19 +29,6 @@ export const lifecycleCommands: readonly SkillId[] = [
   "git-commit",
   "long-task",
   "handoff",
-];
-
-/** Cards shown before the catalog is expanded. */
-export const featuredSkills: readonly SkillId[] = [
-  "chann",
-  "how",
-  "review-me",
-  "bug-hunt",
-  "interrogate",
-  "blast-radius",
-  "git-commit",
-  "swarm",
-  "long-task",
 ];
 
 /** Playbook names per router card, in the order of `landing.router.groups`. */

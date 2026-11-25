@@ -82,8 +82,7 @@ export interface AccessibilityContent {
 }
 
 export interface LandingContent {
-  nav: Record<"lifecycle" | "catalog" | "why" | "router" | "faq" | "cta", string>;
-  hero: Record<"badge" | "primaryAction" | "agentsLabel" | "commandLabel", string>;
+  agentsLabel: string;
   lifecycle: {
     label: string;
     title: string[];
@@ -92,13 +91,6 @@ export interface LandingContent {
     commandsLabel: string;
     commands: string[];
   };
-  catalog: { showLess: string; selectors: string };
-  why: {
-    label: string;
-    title: string[];
-    description: string;
-    items: Array<{ label: string; title: string; description: string }>;
-  };
   router: {
     label: string;
     title: string[];
@@ -106,7 +98,6 @@ export interface LandingContent {
     action: string;
     groups: Array<{ tag: string; description: string }>;
   };
-  cta: { title: string[]; description: string };
   footer: Record<
     "product" | "setup" | "resources" | "usage" | "architecture" | "contract" | "copyright",
     string

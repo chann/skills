@@ -14,15 +14,6 @@ GitHub Copilot CLI, OpenCode를 지원합니다. 에이전트별 전역 설치 �
 
 루트 경로는 브라우저 언어와 관계없이 항상 한국어를 표시합니다.
 
-새 랜딩 페이지 미리보기는 같은 언어 구성으로 `new/` 아래에 함께 배포됩니다.
-현재 페이지를 대체하기 전까지 검색 결과에서 제외(`noindex`)하고, canonical은
-현재 페이지를 가리킵니다.
-
-- 한국어: <https://chann.github.io/skills/new/>
-- English: <https://chann.github.io/skills/new/en/>
-- 日本語: <https://chann.github.io/skills/new/jp/>
-- 简体中文: <https://chann.github.io/skills/new/cn/>
-
 ## 로컬 개발
 
 저장소 루트에서 실행:
@@ -39,7 +30,6 @@ Vite가 출력한 로컬 URL을 브라우저에서 엽니다.
 ```bash
 npm --prefix website run verify:catalog
 npm --prefix website run verify:landing
-npm --prefix website run verify:new-landing
 npm --prefix website run verify:locales
 npm --prefix website run verify:social-cards
 npm --prefix website run typecheck
@@ -66,13 +56,8 @@ npm --prefix website run build
 | `src/components/CopyButton.tsx` | 클립보드 복사 성공·실패 안내 |
 | `src/components/ThemeToggle.tsx` | OS 설정 기반 초기 테마와 light/dark 선택 저장 |
 | `src/styles.css` | 반응형 화면, 테마 값과 모션 줄이기 규칙 |
-| `new/index.html` | 새 랜딩 페이지 진입 HTML. `index.html`과 `noindex`, 진입 스크립트만 다름 |
-| `src/new/NewApp.tsx` | 새 랜딩 페이지 화면. 기존 데이터, 번역, 설치 선택기를 그대로 사용 |
-| `src/new/data.ts` | 작업 흐름, 대표 스킬, 플레이북 묶음과 플레이북 개수 |
-| `src/new/new.css` | 새 랜딩 페이지 전용 스타일과 테마 값 |
 | `public/assets/` | 언어별 1200×630 PNG 소셜 카드 |
 | `scripts/verify-catalog.mjs` | 패키지와 카탈로그 일치 검사 |
-| `scripts/verify-new-landing.mjs` | 새 랜딩 페이지의 플레이북 개수, 스킬·플레이북 이름, 번역 배열 길이 검사 |
 | `scripts/generate-localized-pages.mjs` | 언어별 정적 HTML과 메타데이터 생성 |
 | `scripts/verify-built-locales.mjs` | 최종 HTML 경로, 메타데이터와 FAQ 검사 |
 

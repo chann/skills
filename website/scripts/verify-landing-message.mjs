@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -41,6 +41,47 @@ if ((hero.match(/button--primary/g) ?? []).length !== 1) {
 
 if (!html.includes(content.meta.title)) {
   throw new Error("Korean metadata title is stale.");
+}
+
+// The page prints the playbook count and names skills and playbooks, so they must exist.
+const data = await readFile(path.join(root, "src", "data", "landing.ts"), "utf8");
+const skillsSource = await readFile(path.join(root, "src", "data", "skills.ts"), "utf8");
+const playbooks = (
+  await readdir(path.join(root, "..", "chann-mode", "skills", "chann", "playbooks"))
+)
+  .filter((name) => name.endsWith(".md"))
+  .map((name) => name.replace(/\.md$/, ""));
+const declared = Number(data.match(/export const playbookCount = (\d+);/)?.[1]);
+if (declared !== playbooks.length) {
+  throw new Error(`playbookCount is ${declared}, but ${playbooks.length} playbooks ship.`);
+}
+const known = new Set([
+  ...[...skillsSource.matchAll(/^\s+id: "([^"]+)",$/gm)].map((match) => match[1]),
+  ...[...skillsSource.match(/export const categoryOrder = \[([\s\S]*?)\]/)[1].matchAll(/"([a-z-]+)"/g)].map((match) => match[1]),
+]);
+const named = (name) =>
+  [...(data.match(new RegExp(`export const ${name}[^=]*=\\s*\\[([\\s\\S]*?)\\n\\];`))?.[1] ?? "").matchAll(/"([a-z][a-z-]*)"/g)].map((match) => match[1]);
+for (const [list, allowed] of [
+  ["lifecyclePhases", known],
+  ["lifecycleCommands", known],
+  ["routerGroups", new Set(playbooks)],
+]) {
+  const names = named(list);
+  if (names.length === 0) throw new Error(`${list} is empty.`);
+  for (const name of names) {
+    if (!allowed.has(name)) throw new Error(`${list} names something that does not exist: ${name}`);
+  }
+}
+for (const locale of ["ko", "en", "jp", "cn"]) {
+  const { landing } = JSON.parse(
+    await readFile(path.join(root, "src", "i18n", "content", `${locale}.json`), "utf8"),
+  );
+  if (landing.lifecycle.commands.length !== named("lifecycleCommands").length) {
+    throw new Error(`${locale}: landing.lifecycle.commands must match lifecycleCommands.`);
+  }
+  if (landing.router.groups.length !== 4) {
+    throw new Error(`${locale}: landing.router.groups must contain exactly 4 items.`);
+  }
 }
 
 console.log("Approved landing message verified.");

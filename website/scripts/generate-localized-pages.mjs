@@ -64,14 +64,7 @@ function replaceExactlyOnce(source, pattern, replacement, label) {
   return source.replace(pattern, replacement);
 }
 
-// The redesigned landing page is built as a second entry and published under new/.
-const sites = [
-  { shell: "index.html", prefix: "" },
-  { shell: "new/index.html", prefix: "new" },
-];
-
-for (const site of sites) {
-const shell = await readFile(path.join(dist, site.shell), "utf8");
+const shell = await readFile(path.join(dist, "index.html"), "utf8");
 
 for (const [locale, descriptor] of Object.entries(locales)) {
   const content = JSON.parse(
@@ -102,10 +95,9 @@ for (const [locale, descriptor] of Object.entries(locales)) {
     html = replaceExactlyOnce(html, pattern, replacement, `${locale} ${label}`);
   }
 
-  const output = path.join(dist, site.prefix, descriptor.output);
+  const output = path.join(dist, descriptor.output);
   await mkdir(path.dirname(output), { recursive: true });
   await writeFile(output, html);
 }
-}
 
-console.log("Generated localized pages for ko, en, jp, cn, and their new/ previews.");
+console.log("Generated localized pages for ko, en, jp, cn.");

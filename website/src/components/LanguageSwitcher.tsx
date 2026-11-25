@@ -1,16 +1,15 @@
 import { CaretDown } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { formatMessage } from "../i18n/content";
-import { localeHref, localeRegistry, previewLocaleHref } from "../i18n/locales";
+import { localeHref, localeRegistry } from "../i18n/locales";
 import type { Locale, SiteContent } from "../i18n/types";
 
 interface LanguageSwitcherProps {
   locale: Locale;
   labels: SiteContent["language"];
-  preview?: boolean;
 }
 
-export function LanguageSwitcher({ locale, labels, preview = false }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ locale, labels }: LanguageSwitcherProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -67,7 +66,7 @@ export function LanguageSwitcher({ locale, labels, preview = false }: LanguageSw
             {entries.map(([targetLocale, target]) => (
               <li key={targetLocale}>
                 <a
-                  href={preview ? previewLocaleHref(targetLocale, hash) : localeHref(targetLocale, hash)}
+                  href={localeHref(targetLocale, hash)}
                   aria-current={targetLocale === locale ? "page" : undefined}
                   onClick={() => setOpen(false)}
                 >

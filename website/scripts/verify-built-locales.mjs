@@ -20,14 +20,8 @@ const alternates = [
   ["x-default", `${origin}/skills/`],
 ];
 
-// "new" holds the redesigned landing page, published beside the current one.
-for (const prefix of ["", "new"]) {
 for (const [locale, descriptor] of Object.entries(locales)) {
-  const html = await readFile(path.join(dist, prefix, descriptor.output), "utf8");
-  const noindex = html.includes('<meta name="robots" content="noindex" />');
-  if (noindex !== (prefix === "new")) {
-    throw new Error(`${prefix || "main"}/${locale}: only the new/ preview may be noindex.`);
-  }
+  const html = await readFile(path.join(dist, descriptor.output), "utf8");
   const content = JSON.parse(
     await readFile(path.join(root, "src", "i18n", "content", `${locale}.json`), "utf8"),
   );
@@ -71,7 +65,6 @@ for (const [locale, descriptor] of Object.entries(locales)) {
     throw new Error(`${locale}: built social card differs from its source asset.`);
   }
 }
-}
 
 const notFound = await readFile(path.join(dist, "404.html"), "utf8");
 for (const snippet of [
@@ -88,4 +81,4 @@ for (const forbidden of ["location.replace", "location.assign", "location.href =
   if (notFound.includes(forbidden)) throw new Error(`404 output redirects with ${forbidden}`);
 }
 
-console.log("Built locale pages verified for ko, en, jp, cn, and their new/ previews.");
+console.log("Built locale pages verified for ko, en, jp, cn.");

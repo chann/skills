@@ -177,20 +177,7 @@
     "github": "GitHub"
   },
   "landing": {
-    "nav": {
-      "lifecycle": "工作流程",
-      "catalog": "技能",
-      "why": "工作原理",
-      "router": "chann",
-      "faq": "常见问题",
-      "cta": "开始使用"
-    },
-    "hero": {
-      "badge": "{count}个工作流 · MIT 许可",
-      "primaryAction": "开始使用",
-      "agentsLabel": "支持{agents}种编码智能体",
-      "commandLabel": "安装命令"
-    },
+    "agentsLabel": "支持{agents}种以上的编码智能体",
     "lifecycle": {
       "label": "工作流程",
       "title": [
@@ -209,40 +196,6 @@
         "只提交并推送已验证的单元",
         "把多个里程碑推进到完成",
         "写下供下一个人接手的文档"
-      ]
-    },
-    "catalog": {
-      "showLess": "收起",
-      "selectors": "{count}个工作流 · {selectors}个选择器"
-    },
-    "why": {
-      "label": "工作原理",
-      "title": [
-        "智能体会走捷径。",
-        "技能把捷径堵上。"
-      ],
-      "description": "放任不管时，智能体会跳过复现、验证和评审。四种机制守住这些环节。",
-      "items": [
-        {
-          "label": "证据标注",
-          "title": "用证据回答，而不是“看起来可以”",
-          "description": "每个发现和每次修复都会标明验证到了哪一步。只是口头的说法不会被报告，同时附上执行的命令、输出和 file:line。未能确认的内容标为 INCONCLUSIVE。"
-        },
-        {
-          "label": "堵住借口",
-          "title": "每个跳过步骤的借口都有回应",
-          "description": "“测试以后再补”“先把这个检查关掉”这类想法，都配有必须遵守的原则。削弱检查的变更会在评审中作为问题报告。"
-        },
-        {
-          "label": "授权范围",
-          "title": "只做到你要求的范围",
-          "description": "提交、推送、合并和部署都停在你要求的范围内。不会强制推送，推送被拒绝时会停下并说明原因。"
-        },
-        {
-          "label": "契约检查",
-          "title": "技能本身也要通过检查",
-          "description": "每个技能包都遵循同样的九条规则，由 skill-audit 和测试来确认。目录与技能包不一致时，网站构建会失败。"
-        }
       ]
     },
     "router": {
@@ -271,13 +224,6 @@
           "description": "只放行通过关卡的变更，并先写好回滚方法。"
         }
       ]
-    },
-    "cta": {
-      "title": [
-        "同样的工作，",
-        "每次都按同一标准。"
-      ],
-      "description": "一个命令，把{count}个技能安装到{agents}种智能体。"
     },
     "footer": {
       "product": "浏览",

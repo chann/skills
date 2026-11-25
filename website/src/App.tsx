@@ -1,8 +1,12 @@
 import {
   ArrowRight,
   Brain,
+  Bug,
+  Code,
   Plus,
   Repeat,
+  RocketLaunch,
+  ShieldCheck,
   TerminalWindow,
 } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
@@ -16,12 +20,20 @@ import { TaglineReveal } from "./components/TaglineReveal";
 import { agents } from "./data/agents";
 import { SupportAgents } from "./components/SupportAgents";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { categoryOrder } from "./data/skills";
+import {
+  lifecycleCommands,
+  lifecyclePhases,
+  playbookCount,
+  routerGroups,
+  shortInstallCommand,
+} from "./data/landing";
+import { categoryOrder, type SkillId } from "./data/skills";
 import { formatMessage, getContent, getLocalizedSkills } from "./i18n/content";
 import type { Locale, ProductPreviewContent } from "./i18n/types";
 
 const repositoryName = "chann/skills";
 const benefitIcons = [Repeat, TerminalWindow, Brain] as const;
+const routerIcons = [Code, Bug, ShieldCheck, RocketLaunch] as const;
 
 interface ProductPreviewProps {
   content: ProductPreviewContent;
@@ -101,6 +113,8 @@ interface AppProps {
 export function App({ locale }: AppProps) {
   const content = getContent(locale);
   const skills = getLocalizedSkills(locale);
+  const skill = (id: SkillId) => skills.find((item) => item.id === id)!;
+  const landing = content.landing;
   const navItems = navItemIds.map((id) => ({ id, label: content.nav.items[id] }));
   const reduceMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -200,6 +214,22 @@ export function App({ locale }: AppProps) {
                 categories: categoryOrder.length,
               })}
             </p>
+            <div className="hero-agents">
+              <p>{formatMessage(landing.agentsLabel, { agents: agents.length })}</p>
+              <ul>
+                {agents.map((agent) => (
+                  <li key={agent.id}>
+                    <img
+                      src={`/skills/agents/${agent.id}.${agent.id === "codex" ? "png" : "svg"}`}
+                      alt=""
+                      width="24"
+                      height="24"
+                    />
+                    {agent.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </motion.div>
 
           <motion.div
@@ -317,6 +347,38 @@ export function App({ locale }: AppProps) {
           </Reveal>
         </section>
 
+        <section className="lifecycle section" id="lifecycle" aria-labelledby="lifecycle-title">
+          <Reveal className="section-heading section-heading--center">
+            <span className="section-label">{landing.lifecycle.label}</span>
+            <h2 id="lifecycle-title"><Lines lines={landing.lifecycle.title} /></h2>
+            <p>{landing.lifecycle.description}</p>
+          </Reveal>
+
+          <Reveal className="workflow-window" delay={0.06}>
+            <ol className="lifecycle-flow" aria-label={landing.lifecycle.flowLabel}>
+              {lifecyclePhases.map((phase) => (
+                <li key={phase.category}>
+                  <span>{content.categories[phase.category].label}</span>
+                  <div>
+                    <strong>{skill(phase.lead).title}</strong>
+                    <small>{skill(phase.second).title}</small>
+                  </div>
+                  <code>{skill(phase.lead).codexSelector}</code>
+                </li>
+              ))}
+            </ol>
+            <ul className="lifecycle-commands" aria-label={landing.lifecycle.commandsLabel}>
+              {lifecycleCommands.map((id, index) => (
+                <li key={id}>
+                  <code>{skill(id).codexSelector}</code>
+                  <span>{landing.lifecycle.commands[index]}</span>
+                  <small>{content.categories[skill(id).category].label}</small>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </section>
+
         <section className="explore-section section" id="explore" aria-labelledby="explore-title">
           <Reveal className="section-heading section-heading--center">
             <span className="section-label">{content.catalog.label}</span>
@@ -331,6 +393,55 @@ export function App({ locale }: AppProps) {
               copyContent={content.copy}
             />
           </Reveal>
+        </section>
+
+        <section className="router section" id="router" aria-labelledby="router-title">
+          <div className="efficiency-layout">
+            <Reveal className="efficiency-intro">
+              <span className="section-label">{landing.router.label}</span>
+              <h2 id="router-title">
+                <Lines lines={landing.router.title} />
+              </h2>
+              <p>{formatMessage(landing.router.description, { playbooks: playbookCount })}</p>
+              <div className="run-card">
+                <span className="run-card__prompt">›</span>
+                <code>{skill("chann").example}</code>
+              </div>
+              <a
+                className="button button--quiet"
+                href={`https://github.com/chann/skills/blob/main/chann-mode/${
+                  locale === "ko" ? "README.ko.md#플레이북" : "README.md#playbooks"
+                }`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {formatMessage(landing.router.action, { playbooks: playbookCount })}
+                <ArrowRight size={17} weight="bold" aria-hidden="true" />
+              </a>
+            </Reveal>
+
+            <div className="efficiency-list">
+              {landing.router.groups.map((group, index) => {
+                const Icon = routerIcons[index];
+                return (
+                  <Reveal key={group.tag}>
+                    <article className="efficiency-item">
+                      <header>
+                        <span className="efficiency-item__icon">
+                          <Icon size={20} weight="regular" aria-hidden="true" />
+                        </span>
+                        <span className="efficiency-item__label">
+                          {String(index + 1).padStart(2, "0")} · {group.tag}
+                        </span>
+                      </header>
+                      <h3>{routerGroups[index].join(" · ")}</h3>
+                      <p>{group.description}</p>
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
         <section className="faq section" id="faq" aria-labelledby="faq-title">
@@ -395,32 +506,68 @@ export function App({ locale }: AppProps) {
       </main>
 
       <footer className="site-footer">
-        <div className="site-footer__top">
-          <a
-            className="brand"
-            href="#main"
-            aria-label={formatMessage(content.accessibility.home, { repository: repositoryName })}
-          >
-            <span>{repositoryName}</span>
-          </a>
-          <p>{content.footer.tagline}</p>
+        <div className="site-footer__grid">
           <div>
+            <a
+              className="brand"
+              href="#main"
+              aria-label={formatMessage(content.accessibility.home, { repository: repositoryName })}
+            >
+              <span>{repositoryName}</span>
+            </a>
+            <p>{content.footer.tagline}</p>
+            <code>{shortInstallCommand}</code>
+          </div>
+          <nav aria-label={landing.footer.product}>
+            <h3>{landing.footer.product}</h3>
+            {navItems.map((item) => (
+              <a key={item.id} href={`#${item.id}`}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <nav aria-label={landing.footer.setup}>
+            <h3>{landing.footer.setup}</h3>
+            {agents.map((agent) => (
+              <a key={agent.id} href={agent.docs} target="_blank" rel="noreferrer">
+                {agent.name}
+              </a>
+            ))}
+          </nav>
+          <nav aria-label={landing.footer.resources}>
+            <h3>{landing.footer.resources}</h3>
+            <a href="https://github.com/chann/skills" target="_blank" rel="noreferrer">
+              {content.footer.github} ↗
+            </a>
+            <a href="https://github.com/chann/skills/blob/main/USAGE.md" target="_blank" rel="noreferrer">
+              {landing.footer.usage} ↗
+            </a>
+            <a
+              href="https://github.com/chann/skills/blob/main/ARCHITECTURE.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {landing.footer.architecture} ↗
+            </a>
+            <a
+              href="https://github.com/chann/skills/blob/main/skill-forge/skills/skill-forge/references/skill-package-contract.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {landing.footer.contract} ↗
+            </a>
             <a
               href="https://github.com/chann/skills/blob/main/LICENSE"
               target="_blank"
               rel="noreferrer"
             >
-              {content.footer.license}
+              {content.footer.license} ↗
             </a>
-            <a
-              href="https://github.com/chann/skills"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {content.footer.github} <ArrowRight size={14} weight="bold" aria-hidden="true" />
-            </a>
-          </div>
+          </nav>
         </div>
+        <p className="site-footer__legal">
+          {formatMessage(landing.footer.copyright, { year: new Date().getFullYear() })}
+        </p>
         <div className="site-footer__word" aria-hidden="true">
           {repositoryName.split("").map((letter, index) => (
             <motion.span
